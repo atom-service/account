@@ -10,23 +10,28 @@ import (
 )
 
 var (
-	createLabelTableStmt       *sqlx.Stmt
-	createUserTableStmt        *sqlx.Stmt
-	countLabelByIDStmt         *sqlx.NamedStmt
-	countUserByUsernameStmt    *sqlx.NamedStmt
-	countLabelByOwnerStmt      *sqlx.NamedStmt
-	queryLabelByOwnerStmt      *sqlx.NamedStmt
-	deleteLabelByIDStmt        *sqlx.NamedStmt
-	updateLabelByIDStmt        *sqlx.NamedStmt
-	queryLabelByIDStmt         *sqlx.NamedStmt
-	insertLabelByOwnerStmt     *sqlx.NamedStmt
-	countUserByIDStmt          *sqlx.NamedStmt
-	updateUserPasswordByIDStmt *sqlx.NamedStmt
-	deleteUserByIDStmt         *sqlx.NamedStmt
+	createLabelTableStmt *sqlx.Stmt
+	createUserTableStmt  *sqlx.Stmt
+
+	insertLabelByOwnerStmt *sqlx.NamedStmt
+	insertUserStmt         *sqlx.NamedStmt
+
+	countUserByIDStmt       *sqlx.NamedStmt
+	countLabelByIDStmt      *sqlx.NamedStmt
+	countUserByUsernameStmt *sqlx.NamedStmt
+	countLabelByOwnerStmt   *sqlx.NamedStmt
+
+	queryLabelByOwnerStmt   *sqlx.NamedStmt
+	queryLabelByIDStmt      *sqlx.NamedStmt
+	queryUserByIDStmt       *sqlx.NamedStmt
+	queryUserByUsernameStmt *sqlx.NamedStmt
+
 	updateUserByIDStmt         *sqlx.NamedStmt
-	queryUserByIDStmt          *sqlx.NamedStmt
-	insertUserStmt             *sqlx.NamedStmt
-	queryUserByUsernameStmt    *sqlx.NamedStmt
+	updateUserPasswordByIDStmt *sqlx.NamedStmt
+	updateLabelByIDStmt        *sqlx.NamedStmt
+
+	deleteLabelByIDStmt *sqlx.NamedStmt
+	deleteUserByIDStmt  *sqlx.NamedStmt
 )
 
 func init() {
