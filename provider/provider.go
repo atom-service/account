@@ -5,8 +5,8 @@ import (
 
 	"github.com/joho/godotenv"
 
-	"github.com/yinxulai/grpc-services/account/models"
-	"github.com/yinxulai/grpc-services/account/standard"
+	"github.com/yinxulai/grpc-module-account/models"
+	"github.com/yinxulai/grpc-module-account/standard"
 )
 
 // NewService NewService
@@ -20,28 +20,27 @@ func NewService() *Service {
 type Service struct {
 }
 
-// Create 创建用户 TODO: 检查 Inviter 是否存在
-func (srv *Service) Create(ctx context.Context, req *standard.CreateRequest) (resp *standard.CreateResponse, err error) {
+// CreateUser 创建用户
+func (srv *Service) CreateUser(ctx context.Context, req *standard.CreateUserRequest) (resp *standard.CreateUserResponse, err error) {
 	var count uint64
 	var user models.User
-	user.LoadProtoStruct(req.User)
-	user.SetPassword(req.User.GetPassword())
-	resp = new(standard.CreateResponse)
+	user.SetPassword(req.Password)
+	resp = new(standard.CreateUserResponse)
 
-	if !usernamePattern.MatchString(req.User.Username) {
+	if !usernamePattern.MatchString(req.Username) {
 		resp.State = standard.State_PARAMS_INVALID
 		resp.Message = "请检查用户名格式"
 		return resp, nil
 	}
 
-	if !passwordPattern.MatchString(req.User.Password) {
+	if !passwordPattern.MatchString(req.Password) {
 		resp.State = standard.State_PARAMS_INVALID
 		resp.Message = "请检查密码格式"
 		return resp, nil
 	}
 
 	// 查询 用户名是否已经存在
-	err = countUserByUsernameStmt.GetContext(ctx, &count, user)
+	err = countUserByUsernameNamedStmt.GetContext(ctx, &count, req)
 	if err != nil {
 		resp.State = standard.State_DB_OPERATION_FATLURE
 		resp.Message = err.Error()
@@ -55,7 +54,8 @@ func (srv *Service) Create(ctx context.Context, req *standard.CreateRequest) (re
 	}
 
 	// 执行插入
-	_, err = insertUserStmt.ExecContext(ctx, user)
+	req.Password = user.Password // 重新赋值加密过后的密码
+	_, err = insertUserNamedStmt.ExecContext(ctx, req)
 	if err != nil {
 		resp.State = standard.State_DB_OPERATION_FATLURE
 		resp.Message = err.Error()
@@ -68,10 +68,10 @@ func (srv *Service) Create(ctx context.Context, req *standard.CreateRequest) (re
 	return resp, nil
 }
 
-// QueryByID 通过ID查询用户
-func (srv *Service) QueryByID(ctx context.Context, req *standard.QueryByIDRequest) (resp *standard.QueryByIDResponse, err error) {
+// QueryUserByID 通过ID查询用户
+func (srv *Service) QueryUserByID(ctx context.Context, req *standard.QueryUserByIDRequest) (resp *standard.QueryUserByIDResponse, err error) {
 	users := []*models.User{}
-	resp = new(standard.QueryByIDResponse)
+	resp = new(standard.QueryUserByIDResponse)
 
 	if req.ID == 0 {
 		resp.State = standard.State_PARAMS_INVALID
@@ -79,7 +79,7 @@ func (srv *Service) QueryByID(ctx context.Context, req *standard.QueryByIDReques
 		return resp, nil
 	}
 
-	rows, err := queryUserByIDStmt.QueryxContext(ctx, req)
+	rows, err := queryUserByIDNamedStmt.QueryxContext(ctx, req)
 	if err != nil {
 		resp.State = standard.State_DB_OPERATION_FATLURE
 		resp.Message = err.Error()
@@ -90,7 +90,7 @@ func (srv *Service) QueryByID(ctx context.Context, req *standard.QueryByIDReques
 		var localUser models.User
 		err = rows.StructScan(&localUser)
 		if err == nil {
-			localUser.Password = "加密字段"
+			localUser.Password = "secret field"
 			users = append(users, &localUser)
 		}
 	}
@@ -107,10 +107,10 @@ func (srv *Service) QueryByID(ctx context.Context, req *standard.QueryByIDReques
 	return resp, nil
 }
 
-// QueryByUsername 通过ID查询用户
-func (srv *Service) QueryByUsername(ctx context.Context, req *standard.QueryByUsernameRequest) (resp *standard.QueryByUsernameResponse, err error) {
+// QueryUserByUsername 通过ID查询用户
+func (srv *Service) QueryUserByUsername(ctx context.Context, req *standard.QueryUserByUsernameRequest) (resp *standard.QueryUserByUsernameResponse, err error) {
 	users := []*models.User{}
-	resp = new(standard.QueryByUsernameResponse)
+	resp = new(standard.QueryUserByUsernameResponse)
 
 	if !usernamePattern.MatchString(req.Username) {
 		resp.State = standard.State_PARAMS_INVALID
@@ -118,7 +118,7 @@ func (srv *Service) QueryByUsername(ctx context.Context, req *standard.QueryByUs
 		return resp, nil
 	}
 
-	rows, err := queryUserByUsernameStmt.QueryxContext(ctx, req)
+	rows, err := queryUserByUsernameNamedStmt.QueryxContext(ctx, req)
 	if err != nil {
 		resp.State = standard.State_DB_OPERATION_FATLURE
 		resp.Message = err.Error()
@@ -147,13 +147,13 @@ func (srv *Service) QueryByUsername(ctx context.Context, req *standard.QueryByUs
 	return resp, nil
 }
 
-// UpdateByID 通过ID更新用户
-func (srv *Service) UpdateByID(ctx context.Context, req *standard.UpdateByIDRequest) (resp *standard.UpdateByIDResponse, err error) {
+// UpdateUserByID 通过ID更新用户
+func (srv *Service) UpdateUserByID(ctx context.Context, req *standard.UpdateUserByIDRequest) (resp *standard.UpdateUserByIDResponse, err error) {
 	// 检查是否存在该记录
 	var count uint64
 	user := new(models.User)
 	user.LoadProtoStruct(req.Data)
-	resp = new(standard.UpdateByIDResponse)
+	resp = new(standard.UpdateUserByIDResponse)
 
 	if req.ID == 0 {
 		resp.State = standard.State_PARAMS_INVALID
@@ -173,7 +173,7 @@ func (srv *Service) UpdateByID(ctx context.Context, req *standard.UpdateByIDRequ
 		return resp, nil
 	}
 
-	err = countUserByIDStmt.GetContext(ctx, &count, req)
+	err = countUserByIDNamedStmt.GetContext(ctx, &count, req)
 	if err != nil {
 		resp.State = standard.State_DB_OPERATION_FATLURE
 		resp.Message = err.Error()
@@ -187,7 +187,7 @@ func (srv *Service) UpdateByID(ctx context.Context, req *standard.UpdateByIDRequ
 	}
 
 	req.Data.ID = req.ID
-	_, err = updateUserByIDStmt.ExecContext(ctx, req.Data)
+	_, err = updateUserByIDNamedStmt.ExecContext(ctx, req.Data)
 	if err != nil {
 		resp.State = standard.State_DB_OPERATION_FATLURE
 		resp.Message = err.Error()
@@ -199,11 +199,11 @@ func (srv *Service) UpdateByID(ctx context.Context, req *standard.UpdateByIDRequ
 	return resp, nil
 }
 
-// DeleteByID 通过ID删除用户
-func (srv *Service) DeleteByID(ctx context.Context, req *standard.DeleteByIDRequest) (resp *standard.DeleteByIDResponse, err error) {
+// DeleteUserByID 通过ID删除用户
+func (srv *Service) DeleteUserByID(ctx context.Context, req *standard.DeleteUserByIDRequest) (resp *standard.DeleteUserByIDResponse, err error) {
 	// 检查是否存在该记录
 	var count uint64
-	resp = new(standard.DeleteByIDResponse)
+	resp = new(standard.DeleteUserByIDResponse)
 
 	if req.ID == 0 {
 		resp.State = standard.State_PARAMS_INVALID
@@ -211,7 +211,7 @@ func (srv *Service) DeleteByID(ctx context.Context, req *standard.DeleteByIDRequ
 		return resp, nil
 	}
 
-	err = countUserByIDStmt.GetContext(ctx, &count, req)
+	err = countUserByIDNamedStmt.GetContext(ctx, &count, req)
 	if err != nil {
 		resp.State = standard.State_DB_OPERATION_FATLURE
 		resp.Message = err.Error()
@@ -224,7 +224,7 @@ func (srv *Service) DeleteByID(ctx context.Context, req *standard.DeleteByIDRequ
 		return resp, nil
 	}
 
-	_, err = deleteUserByIDStmt.ExecContext(ctx, req)
+	_, err = deleteUserByIDNamedStmt.ExecContext(ctx, req)
 	if err != nil {
 		resp.State = standard.State_DB_OPERATION_FATLURE
 		resp.Message = err.Error()
@@ -237,13 +237,13 @@ func (srv *Service) DeleteByID(ctx context.Context, req *standard.DeleteByIDRequ
 	return resp, nil
 }
 
-// UpdatePasswordByID 更新用户密码
-func (srv *Service) UpdatePasswordByID(ctx context.Context, req *standard.UpdatePasswordByIDRequest) (resp *standard.UpdatePasswordByIDResponse, err error) {
+// UpdateUserPasswordByID 更新用户密码
+func (srv *Service) UpdateUserPasswordByID(ctx context.Context, req *standard.UpdateUserPasswordByIDRequest) (resp *standard.UpdateUserPasswordByIDResponse, err error) {
 	// 检查是否存在该记录
 	var count uint64
 	var user models.User
 	user.SetPassword(req.Password)
-	resp = new(standard.UpdatePasswordByIDResponse)
+	resp = new(standard.UpdateUserPasswordByIDResponse)
 
 	if req.ID == 0 {
 		resp.State = standard.State_PARAMS_INVALID
@@ -257,7 +257,7 @@ func (srv *Service) UpdatePasswordByID(ctx context.Context, req *standard.Update
 		return resp, nil
 	}
 
-	err = countUserByIDStmt.GetContext(ctx, &count, req)
+	err = countUserByIDNamedStmt.GetContext(ctx, &count, req)
 	if err != nil {
 		resp.State = standard.State_DB_OPERATION_FATLURE
 		resp.Message = err.Error()
@@ -271,7 +271,7 @@ func (srv *Service) UpdatePasswordByID(ctx context.Context, req *standard.Update
 	}
 
 	user.ID = req.ID
-	_, err = updateUserPasswordByIDStmt.ExecContext(ctx, user)
+	_, err = updateUserPasswordByIDNamedStmt.ExecContext(ctx, user)
 	if err != nil {
 		resp.State = standard.State_DB_OPERATION_FATLURE
 		resp.Message = err.Error()
@@ -284,12 +284,12 @@ func (srv *Service) UpdatePasswordByID(ctx context.Context, req *standard.Update
 	return resp, nil
 }
 
-// VerifyPasswordByID 验证密码
-func (srv *Service) VerifyPasswordByID(ctx context.Context, req *standard.VerifyPasswordByIDRequest) (resp *standard.VerifyPasswordByIDResponse, err error) {
+// VerifyUserPasswordByID 验证密码
+func (srv *Service) VerifyUserPasswordByID(ctx context.Context, req *standard.VerifyUserPasswordByIDRequest) (resp *standard.VerifyUserPasswordByIDResponse, err error) {
 	user := new(models.User)
 	users := []*models.User{}
 	user.SetPassword(req.Password)
-	resp = new(standard.VerifyPasswordByIDResponse)
+	resp = new(standard.VerifyUserPasswordByIDResponse)
 
 	if req.ID == 0 {
 		resp.State = standard.State_PARAMS_INVALID
@@ -303,7 +303,7 @@ func (srv *Service) VerifyPasswordByID(ctx context.Context, req *standard.Verify
 		return resp, nil
 	}
 
-	rows, err := queryUserByIDStmt.QueryxContext(ctx, req)
+	rows, err := queryUserByIDNamedStmt.QueryxContext(ctx, req)
 	if err != nil {
 		resp.State = standard.State_DB_OPERATION_FATLURE
 		resp.Message = err.Error()
@@ -338,12 +338,12 @@ func (srv *Service) VerifyPasswordByID(ctx context.Context, req *standard.Verify
 	return resp, nil
 }
 
-// VerifyPasswordByUsername 验证密码
-func (srv *Service) VerifyPasswordByUsername(ctx context.Context, req *standard.VerifyPasswordByUsernameRequest) (resp *standard.VerifyPasswordByUsernameResponse, err error) {
+// VerifyUserPasswordByUsername 验证密码
+func (srv *Service) VerifyUserPasswordByUsername(ctx context.Context, req *standard.VerifyUserPasswordByUsernameRequest) (resp *standard.VerifyUserPasswordByUsernameResponse, err error) {
 	user := new(models.User)
 	users := []*models.User{}
 	user.SetPassword(req.Password)
-	resp = new(standard.VerifyPasswordByUsernameResponse)
+	resp = new(standard.VerifyUserPasswordByUsernameResponse)
 
 	if !passwordPattern.MatchString(req.Password) {
 		resp.State = standard.State_PARAMS_INVALID
@@ -357,7 +357,7 @@ func (srv *Service) VerifyPasswordByUsername(ctx context.Context, req *standard.
 		return resp, nil
 	}
 
-	rows, err := queryUserByUsernameStmt.QueryxContext(ctx, req)
+	rows, err := queryUserByUsernameNamedStmt.QueryxContext(ctx, req)
 	if err != nil {
 		resp.State = standard.State_DB_OPERATION_FATLURE
 		resp.Message = err.Error()
@@ -397,7 +397,7 @@ func (srv *Service) CreateLabelByOwner(ctx context.Context, req *standard.Create
 	var count uint64
 	resp = new(standard.CreateLabelByOwnerResponse)
 
-	err = countUserByIDStmt.GetContext(ctx, &count, map[string]interface{}{"ID": req.Owner})
+	err = countUserByIDNamedStmt.GetContext(ctx, &count, map[string]interface{}{"ID": req.Owner})
 	if err != nil {
 		resp.State = standard.State_DB_OPERATION_FATLURE
 		resp.Message = err.Error()
@@ -411,7 +411,7 @@ func (srv *Service) CreateLabelByOwner(ctx context.Context, req *standard.Create
 	}
 
 	req.Label.Owner = req.Owner
-	_, err = insertLabelByOwnerStmt.ExecContext(ctx, req.Label)
+	_, err = insertLabelByOwnerNamedStmt.ExecContext(ctx, req.Label)
 	if err != nil {
 		resp.State = standard.State_DB_OPERATION_FATLURE
 		resp.Message = err.Error()
@@ -428,7 +428,7 @@ func (srv *Service) QueryLabelByID(ctx context.Context, req *standard.QueryLabel
 	labels := []*models.Label{}
 	resp = new(standard.QueryLabelByIDResponse)
 
-	rows, err := queryLabelByIDStmt.QueryxContext(ctx, req)
+	rows, err := queryLabelByIDNamedStmt.QueryxContext(ctx, req)
 	if err != nil {
 		resp.State = standard.State_DB_OPERATION_FATLURE
 		resp.Message = err.Error()
@@ -461,7 +461,7 @@ func (srv *Service) UpdateLabelByID(ctx context.Context, req *standard.UpdateLab
 	var count uint64
 	resp = new(standard.UpdateLabelByIDResponse)
 
-	err = countLabelByIDStmt.GetContext(ctx, &count, req)
+	err = countLabelByIDNamedStmt.GetContext(ctx, &count, req)
 	if err != nil {
 		resp.State = standard.State_DB_OPERATION_FATLURE
 		resp.Message = err.Error()
@@ -475,7 +475,7 @@ func (srv *Service) UpdateLabelByID(ctx context.Context, req *standard.UpdateLab
 	}
 
 	req.Data.ID = req.ID
-	_, err = updateLabelByIDStmt.ExecContext(ctx, req.Data)
+	_, err = updateLabelByIDNamedStmt.ExecContext(ctx, req.Data)
 	if err != nil {
 		resp.State = standard.State_DB_OPERATION_FATLURE
 		resp.Message = err.Error()
@@ -492,7 +492,7 @@ func (srv *Service) DeleteLabelByID(ctx context.Context, req *standard.DeleteLab
 	var count uint64
 	resp = new(standard.DeleteLabelByIDResponse)
 
-	err = countLabelByIDStmt.GetContext(ctx, &count, req)
+	err = countLabelByIDNamedStmt.GetContext(ctx, &count, req)
 	if err != nil {
 		resp.State = standard.State_DB_OPERATION_FATLURE
 		resp.Message = err.Error()
@@ -505,7 +505,7 @@ func (srv *Service) DeleteLabelByID(ctx context.Context, req *standard.DeleteLab
 		return resp, nil
 	}
 
-	_, err = deleteLabelByIDStmt.ExecContext(ctx, req)
+	_, err = deleteLabelByIDNamedStmt.ExecContext(ctx, req)
 	if err != nil {
 		resp.State = standard.State_DB_OPERATION_FATLURE
 		resp.Message = err.Error()
@@ -526,7 +526,7 @@ func (srv *Service) QueryLabelByOwner(ctx context.Context, req *standard.QueryLa
 	resp = new(standard.QueryLabelByOwnerResponse)
 
 	// 插总数
-	err = countLabelByOwnerStmt.GetContext(ctx, &count, req)
+	err = countLabelByOwnerNamedStmt.GetContext(ctx, &count, req)
 	if err != nil {
 		resp.State = standard.State_DB_OPERATION_FATLURE
 		resp.Message = err.Error()
@@ -534,7 +534,7 @@ func (srv *Service) QueryLabelByOwner(ctx context.Context, req *standard.QueryLa
 	}
 
 	// 查当前页
-	rows, err := queryLabelByOwnerStmt.QueryxContext(ctx, req)
+	rows, err := queryLabelByOwnerNamedStmt.QueryxContext(ctx, req)
 	if err != nil {
 		resp.State = standard.State_DB_OPERATION_FATLURE
 		resp.Message = err.Error()

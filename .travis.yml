@@ -1,29 +1,32 @@
 language: go
-
 go:
   - master
-
-# 禁止执行的分支
-branches:
-  except:
-  - legacy
-  - experimental
 
 # 允许执行的分支
 branches:
   only:
   - master
-  - stable
+
+stages:
+  - name: before_script
+    if: type == pull_request
 
 # 预执行脚本
 before_install:
+  # 安装依赖
   - go get -v golang.org/x/lint/golint
 
 install:
+  # 编译
+  - CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o ./bin/window-amd64 ./main.go
+  - CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./bin/liunx-amd64 ./main.go
+  - CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o ./bin/darwin-amd64 ./main.go
 
-before_script:
 
-# 执行编译
-script:
-  - go build -o ./bin/darwin-amd64 ./main.go
+before_deploy:
+  #准备服务器的 ssh_key
 
+deploy:
+
+
+after_deploy:

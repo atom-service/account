@@ -13,6 +13,7 @@ import (
 	log "log"
 	math "math"
 	net_http "net/http"
+	strconv "strconv"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -47,19 +48,19 @@ func NewHandler(grpcAddr string, stringer func(req, resp interface{}) ([]byte, e
 	mux := net_http.NewServeMux()
 	AccountClient := NewAccountClient(conn)
 	AccountServer := NewHTMLAccountServer(AccountClient, stringer)
-	mux.HandleFunc("/Account/Create", AccountServer.Create)
-	mux.HandleFunc("/Account/QueryByID", AccountServer.QueryByID)
-	mux.HandleFunc("/Account/UpdateByID", AccountServer.UpdateByID)
-	mux.HandleFunc("/Account/DeleteByID", AccountServer.DeleteByID)
-	mux.HandleFunc("/Account/QueryByUsername", AccountServer.QueryByUsername)
-	mux.HandleFunc("/Account/UpdatePasswordByID", AccountServer.UpdatePasswordByID)
-	mux.HandleFunc("/Account/VerifyPasswordByID", AccountServer.VerifyPasswordByID)
-	mux.HandleFunc("/Account/VerifyPasswordByUsername", AccountServer.VerifyPasswordByUsername)
+	mux.HandleFunc("/Account/CreateUser", AccountServer.CreateUser)
+	mux.HandleFunc("/Account/QueryUserByID", AccountServer.QueryUserByID)
+	mux.HandleFunc("/Account/UpdateUserByID", AccountServer.UpdateUserByID)
+	mux.HandleFunc("/Account/DeleteUserByID", AccountServer.DeleteUserByID)
+	mux.HandleFunc("/Account/QueryUserByUsername", AccountServer.QueryUserByUsername)
+	mux.HandleFunc("/Account/UpdateUserPasswordByID", AccountServer.UpdateUserPasswordByID)
+	mux.HandleFunc("/Account/VerifyUserPasswordByID", AccountServer.VerifyUserPasswordByID)
+	mux.HandleFunc("/Account/VerifyUserPasswordByUsername", AccountServer.VerifyUserPasswordByUsername)
 	mux.HandleFunc("/Account/QueryLabelByID", AccountServer.QueryLabelByID)
 	mux.HandleFunc("/Account/UpdateLabelByID", AccountServer.UpdateLabelByID)
 	mux.HandleFunc("/Account/DeleteLabelByID", AccountServer.DeleteLabelByID)
-	mux.HandleFunc("/Account/CreateLabelByOwner", AccountServer.CreateLabelByOwner)
 	mux.HandleFunc("/Account/QueryLabelByOwner", AccountServer.QueryLabelByOwner)
+	mux.HandleFunc("/Account/CreateLabelByOwner", AccountServer.CreateLabelByOwner)
 	return mux, nil
 }
 
@@ -72,12 +73,12 @@ func NewHTMLAccountServer(client AccountClient, stringer func(req, resp interfac
 	return &htmlAccount{client, stringer}
 }
 
-var FormAccount_Create string = `<div class="container"><div class="jumbotron">
-	<h3>Account: Create</h3>
+var FormAccount_CreateUser string = `<div class="container"><div class="jumbotron">
+	<h3>Account: CreateUser</h3>
 	
 	<form class="form-horizontal">
 	<div id="form"><div class="children"></div></div>
-    <a href="#" id="submit" class="btn btn-primary" role="button">Submit</a>
+    <input type="submit" class="btn btn-primary" role="button" value="Submit">
     </form>
     
 	<script>
@@ -150,15 +151,37 @@ function addElem(ev) {
 function getUrlParameter(sParam)
 {
     var sPageURL = window.location.search.substring(1);
-    var sURLVariables = sPageURL.split('&');
-    for (var i = 0; i < sURLVariables.length; i++)
-    {
-        var sParameterName = sURLVariables[i].split('=');
-        if (sParameterName[0] == sParam)
-        {
-            return sParameterName[1];
-        }
+    return getJsonFromUrl("?"+sPageURL)[sParam];
+}
+
+// From: https://stackoverflow.com/a/8486188
+function getJsonFromUrl(url) {
+  if(!url) url = location.href;
+  var question = url.indexOf("?");
+  var hash = url.indexOf("#");
+  if(hash==-1 && question==-1) return {};
+  if(hash==-1) hash = url.length;
+  var query = question==-1 || hash==question+1 ? url.substring(hash) :
+  url.substring(question+1,hash);
+  var result = {};
+  query.split("&").forEach(function(part) {
+    if(!part) return;
+    part = part.split("+").join(" "); // replace every + with space, regexp-free version
+    var eq = part.indexOf("=");
+    var key = eq>-1 ? part.substr(0,eq) : part;
+    var val = eq>-1 ? decodeURIComponent(part.substr(eq+1)) : "";
+    var from = key.indexOf("[");
+    if(from==-1) result[decodeURIComponent(key)] = val;
+    else {
+      var to = key.indexOf("]",from);
+      var index = decodeURIComponent(key.substring(from+1,to));
+      key = decodeURIComponent(key.substring(0,from));
+      if(!result[key]) result[key] = [];
+      if(!index) result[key].push(val);
+      else result[key][index] = val;
     }
+  });
+  return result;
 }
 
 function activateLinks(node) {
@@ -453,26 +476,18 @@ function setRepStrValue(value) {
 	return "value=" + JSON.stringify(HTMLEncode(decode_utf8(value)));
 }
 
-var nodeFactory = {"CreateRequest_RootKeyword": buildCreateRequest_RootKeyword(emptyIfNull(null)),
-"User_User": buildUser_User(emptyIfNull(null)),}
-	function buildUser_User(json) {
+var nodeFactory = {"CreateUserRequest_RootKeyword": buildCreateUserRequest_RootKeyword(emptyIfNull(null)),}
+	function buildCreateUserRequest_RootKeyword(json) {
 if (json == undefined) {
 		return "";
 	}
 	
-var s = '<div class="node" type="User_User" fieldname="User" repeated="false">';
-s += '<div class="row"><div class="col-sm-2">'
-s += '<a href="#" class="del-child btn btn-danger btn-xs" role="button" fieldname="User">Remove</a>'
-s += '</div><div class="col-sm-10">'
-s += '<label class="heading">User</label>'
-s += '</div></div>'
-s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </label><div class="col-sm-10"><input class="form-control" name="ID" type="number" step="1" '+setValue(0, json["ID"])+'/></div></div>';
-				
+var s = '<div class="node" type="CreateUserRequest_RootKeyword" fieldname="RootKeyword" repeated="false">';
 s += '<div class="field form-group"><label class="col-sm-2 control-label">Type: </label><div class="col-sm-10"><input class="form-control" name="Type" type="text" '+setStrValue("", json["Type"])+'/></div></div>';
 				
 s += '<div class="field form-group"><label class="col-sm-2 control-label">Avatar: </label><div class="col-sm-10"><input class="form-control" name="Avatar" type="text" '+setStrValue("", json["Avatar"])+'/></div></div>';
 				
-s += '<div class="field form-group"><label class="col-sm-2 control-label">Inviter: </label><div class="col-sm-10"><input class="form-control" name="Inviter" type="number" step="1" '+setValue(0, json["Inviter"])+'/></div></div>';
+s += '<div class="field form-group"><label class="col-sm-2 control-label">Inviter: </label><div class="col-sm-10"><input class="form-control" name="Inviter" type="text" '+setStrValue("", json["Inviter"])+'/></div></div>';
 				
 s += '<div class="field form-group"><label class="col-sm-2 control-label">Nickname: </label><div class="col-sm-10"><input class="form-control" name="Nickname" type="text" '+setStrValue("", json["Nickname"])+'/></div></div>';
 				
@@ -480,45 +495,26 @@ s += '<div class="field form-group"><label class="col-sm-2 control-label">Userna
 				
 s += '<div class="field form-group"><label class="col-sm-2 control-label">Password: </label><div class="col-sm-10"><input class="form-control" name="Password" type="text" '+setStrValue("", json["Password"])+'/></div></div>';
 				
-s += '<div class="field form-group"><label class="col-sm-2 control-label">CreateTime: </label><div class="col-sm-10"><input class="form-control" name="CreateTime" type="text" '+setStrValue("", json["CreateTime"])+'/></div></div>';
-				
-s += '<div class="field form-group"><label class="col-sm-2 control-label">UpdateTime: </label><div class="col-sm-10"><input class="form-control" name="UpdateTime" type="text" '+setStrValue("", json["UpdateTime"])+'/></div></div>';
-				
-
-		s += '</div>';
-		return s;
-		}
-
-function buildCreateRequest_RootKeyword(json) {
-if (json == undefined) {
-		return "";
-	}
-	
-var s = '<div class="node" type="CreateRequest_RootKeyword" fieldname="RootKeyword" repeated="false">';
-s += '<div class="children" type="User_User">' + buildUser_User(json["User"]);
-			s += '</div>';
-		s += setLink(json, "User_User", "User", "");
-		
 
 			s += '</div>';
 			var node = $(s);
 			activateLinks(node);
 			return node;
 		}function init() {
-	var root = $(nodeFactory["CreateRequest_RootKeyword"]);
+	var root = $(nodeFactory["CreateUserRequest_RootKeyword"]);
 	var jsonText = getUrlParameter("json");
 	if (jsonText == undefined) {
 		var json = emptyIfNull(null);
 	} else {
 		var json = JSON.parse(unescape(jsonText));
 	}
-	$("#form > .children").html(buildCreateRequest_RootKeyword(json));
+	$("#form > .children").html(buildCreateUserRequest_RootKeyword(json));
 	activateLinks(root);
-	$("a[id=submit]").click(function(ev) {
+	$("form").submit(function(ev) {
 		ev.preventDefault();
 		c = getChildren($("#form"));
 		j = JSON.stringify(c["RootKeyword"]);
-		window.location.assign("./Create?json="+j);
+		window.location.assign("./CreateUser?json="+j);
 	});
 }
 
@@ -576,11 +572,39 @@ s += '<div class="children" type="User_User">' + buildUser_User(json["User"]);
 	
 	</div>`
 
-func (this *htmlAccount) Create(w net_http.ResponseWriter, req *net_http.Request) {
-	w.Write([]byte(Header(`Account`, `Create`)))
+func (this *htmlAccount) CreateUser(w net_http.ResponseWriter, req *net_http.Request) {
+	w.Write([]byte(Header(`Account`, `CreateUser`)))
 	jsonString := req.FormValue("json")
 	someValue := false
-	msg := &CreateRequest{}
+	msg := &CreateUserRequest{}
+	validateMap := make(map[string]interface{})
+	err := encoding_json.Unmarshal([]byte(jsonString), &validateMap)
+	if err != nil {
+		log.Printf("[Parse Request]: %s ", err.Error())
+	}
+	if err == nil {
+		for k, v := range validateMap {
+			switch v.(type) {
+			case string:
+				vInt, err := strconv.ParseInt(v.(string), 10, 64)
+				if err != nil {
+					continue
+				}
+				validateMap[k] = vInt
+			case float64:
+				vInt := int(v.(float64))
+				if vInt > math.MaxInt32 {
+					vStr := strconv.Itoa(vInt)
+					validateMap[k] = vStr
+				}
+			}
+		}
+		jsonBytes, err := encoding_json.Marshal(validateMap)
+		if err != nil {
+			log.Printf("re-marshal failed: %s ", err.Error())
+		}
+		jsonString = string(jsonBytes)
+	}
 	if len(jsonString) > 0 {
 		err := encoding_json.Unmarshal([]byte(jsonString), msg)
 		if err != nil {
@@ -592,9 +616,9 @@ func (this *htmlAccount) Create(w net_http.ResponseWriter, req *net_http.Request
 		}
 		someValue = true
 	}
-	w.Write([]byte(FormAccount_Create))
+	w.Write([]byte(FormAccount_CreateUser))
 	if someValue {
-		reply, err := this.client.Create(golang_org_x_net_context.Background(), msg)
+		reply, err := this.client.CreateUser(golang_org_x_net_context.Background(), msg)
 		if err != nil {
 			if err != io.EOF {
 				w.Write([]byte("<div class=\"alert alert-danger\" role=\"alert\">" + err.Error() + "</div>"))
@@ -615,12 +639,12 @@ func (this *htmlAccount) Create(w net_http.ResponseWriter, req *net_http.Request
 	w.Write([]byte(Footer))
 }
 
-var FormAccount_QueryByID string = `<div class="container"><div class="jumbotron">
-	<h3>Account: QueryByID</h3>
+var FormAccount_QueryUserByID string = `<div class="container"><div class="jumbotron">
+	<h3>Account: QueryUserByID</h3>
 	
 	<form class="form-horizontal">
 	<div id="form"><div class="children"></div></div>
-    <a href="#" id="submit" class="btn btn-primary" role="button">Submit</a>
+    <input type="submit" class="btn btn-primary" role="button" value="Submit">
     </form>
     
 	<script>
@@ -693,15 +717,37 @@ function addElem(ev) {
 function getUrlParameter(sParam)
 {
     var sPageURL = window.location.search.substring(1);
-    var sURLVariables = sPageURL.split('&');
-    for (var i = 0; i < sURLVariables.length; i++)
-    {
-        var sParameterName = sURLVariables[i].split('=');
-        if (sParameterName[0] == sParam)
-        {
-            return sParameterName[1];
-        }
+    return getJsonFromUrl("?"+sPageURL)[sParam];
+}
+
+// From: https://stackoverflow.com/a/8486188
+function getJsonFromUrl(url) {
+  if(!url) url = location.href;
+  var question = url.indexOf("?");
+  var hash = url.indexOf("#");
+  if(hash==-1 && question==-1) return {};
+  if(hash==-1) hash = url.length;
+  var query = question==-1 || hash==question+1 ? url.substring(hash) :
+  url.substring(question+1,hash);
+  var result = {};
+  query.split("&").forEach(function(part) {
+    if(!part) return;
+    part = part.split("+").join(" "); // replace every + with space, regexp-free version
+    var eq = part.indexOf("=");
+    var key = eq>-1 ? part.substr(0,eq) : part;
+    var val = eq>-1 ? decodeURIComponent(part.substr(eq+1)) : "";
+    var from = key.indexOf("[");
+    if(from==-1) result[decodeURIComponent(key)] = val;
+    else {
+      var to = key.indexOf("]",from);
+      var index = decodeURIComponent(key.substring(from+1,to));
+      key = decodeURIComponent(key.substring(0,from));
+      if(!result[key]) result[key] = [];
+      if(!index) result[key].push(val);
+      else result[key][index] = val;
     }
+  });
+  return result;
 }
 
 function activateLinks(node) {
@@ -996,14 +1042,14 @@ function setRepStrValue(value) {
 	return "value=" + JSON.stringify(HTMLEncode(decode_utf8(value)));
 }
 
-var nodeFactory = {"QueryByIDRequest_RootKeyword": buildQueryByIDRequest_RootKeyword(emptyIfNull(null)),}
-	function buildQueryByIDRequest_RootKeyword(json) {
+var nodeFactory = {"QueryUserByIDRequest_RootKeyword": buildQueryUserByIDRequest_RootKeyword(emptyIfNull(null)),}
+	function buildQueryUserByIDRequest_RootKeyword(json) {
 if (json == undefined) {
 		return "";
 	}
 	
-var s = '<div class="node" type="QueryByIDRequest_RootKeyword" fieldname="RootKeyword" repeated="false">';
-s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </label><div class="col-sm-10"><input class="form-control" name="ID" type="number" step="1" '+setValue(0, json["ID"])+'/></div></div>';
+var s = '<div class="node" type="QueryUserByIDRequest_RootKeyword" fieldname="RootKeyword" repeated="false">';
+s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </label><div class="col-sm-10"><input class="form-control" name="ID" type="text" '+setStrValue("", json["ID"])+'/></div></div>';
 				
 
 			s += '</div>';
@@ -1011,20 +1057,20 @@ s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </
 			activateLinks(node);
 			return node;
 		}function init() {
-	var root = $(nodeFactory["QueryByIDRequest_RootKeyword"]);
+	var root = $(nodeFactory["QueryUserByIDRequest_RootKeyword"]);
 	var jsonText = getUrlParameter("json");
 	if (jsonText == undefined) {
 		var json = emptyIfNull(null);
 	} else {
 		var json = JSON.parse(unescape(jsonText));
 	}
-	$("#form > .children").html(buildQueryByIDRequest_RootKeyword(json));
+	$("#form > .children").html(buildQueryUserByIDRequest_RootKeyword(json));
 	activateLinks(root);
-	$("a[id=submit]").click(function(ev) {
+	$("form").submit(function(ev) {
 		ev.preventDefault();
 		c = getChildren($("#form"));
 		j = JSON.stringify(c["RootKeyword"]);
-		window.location.assign("./QueryByID?json="+j);
+		window.location.assign("./QueryUserByID?json="+j);
 	});
 }
 
@@ -1082,11 +1128,39 @@ s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </
 	
 	</div>`
 
-func (this *htmlAccount) QueryByID(w net_http.ResponseWriter, req *net_http.Request) {
-	w.Write([]byte(Header(`Account`, `QueryByID`)))
+func (this *htmlAccount) QueryUserByID(w net_http.ResponseWriter, req *net_http.Request) {
+	w.Write([]byte(Header(`Account`, `QueryUserByID`)))
 	jsonString := req.FormValue("json")
 	someValue := false
-	msg := &QueryByIDRequest{}
+	msg := &QueryUserByIDRequest{}
+	validateMap := make(map[string]interface{})
+	err := encoding_json.Unmarshal([]byte(jsonString), &validateMap)
+	if err != nil {
+		log.Printf("[Parse Request]: %s ", err.Error())
+	}
+	if err == nil {
+		for k, v := range validateMap {
+			switch v.(type) {
+			case string:
+				vInt, err := strconv.ParseInt(v.(string), 10, 64)
+				if err != nil {
+					continue
+				}
+				validateMap[k] = vInt
+			case float64:
+				vInt := int(v.(float64))
+				if vInt > math.MaxInt32 {
+					vStr := strconv.Itoa(vInt)
+					validateMap[k] = vStr
+				}
+			}
+		}
+		jsonBytes, err := encoding_json.Marshal(validateMap)
+		if err != nil {
+			log.Printf("re-marshal failed: %s ", err.Error())
+		}
+		jsonString = string(jsonBytes)
+	}
 	if len(jsonString) > 0 {
 		err := encoding_json.Unmarshal([]byte(jsonString), msg)
 		if err != nil {
@@ -1098,9 +1172,9 @@ func (this *htmlAccount) QueryByID(w net_http.ResponseWriter, req *net_http.Requ
 		}
 		someValue = true
 	}
-	w.Write([]byte(FormAccount_QueryByID))
+	w.Write([]byte(FormAccount_QueryUserByID))
 	if someValue {
-		reply, err := this.client.QueryByID(golang_org_x_net_context.Background(), msg)
+		reply, err := this.client.QueryUserByID(golang_org_x_net_context.Background(), msg)
 		if err != nil {
 			if err != io.EOF {
 				w.Write([]byte("<div class=\"alert alert-danger\" role=\"alert\">" + err.Error() + "</div>"))
@@ -1121,12 +1195,12 @@ func (this *htmlAccount) QueryByID(w net_http.ResponseWriter, req *net_http.Requ
 	w.Write([]byte(Footer))
 }
 
-var FormAccount_UpdateByID string = `<div class="container"><div class="jumbotron">
-	<h3>Account: UpdateByID</h3>
+var FormAccount_UpdateUserByID string = `<div class="container"><div class="jumbotron">
+	<h3>Account: UpdateUserByID</h3>
 	
 	<form class="form-horizontal">
 	<div id="form"><div class="children"></div></div>
-    <a href="#" id="submit" class="btn btn-primary" role="button">Submit</a>
+    <input type="submit" class="btn btn-primary" role="button" value="Submit">
     </form>
     
 	<script>
@@ -1199,15 +1273,37 @@ function addElem(ev) {
 function getUrlParameter(sParam)
 {
     var sPageURL = window.location.search.substring(1);
-    var sURLVariables = sPageURL.split('&');
-    for (var i = 0; i < sURLVariables.length; i++)
-    {
-        var sParameterName = sURLVariables[i].split('=');
-        if (sParameterName[0] == sParam)
-        {
-            return sParameterName[1];
-        }
+    return getJsonFromUrl("?"+sPageURL)[sParam];
+}
+
+// From: https://stackoverflow.com/a/8486188
+function getJsonFromUrl(url) {
+  if(!url) url = location.href;
+  var question = url.indexOf("?");
+  var hash = url.indexOf("#");
+  if(hash==-1 && question==-1) return {};
+  if(hash==-1) hash = url.length;
+  var query = question==-1 || hash==question+1 ? url.substring(hash) :
+  url.substring(question+1,hash);
+  var result = {};
+  query.split("&").forEach(function(part) {
+    if(!part) return;
+    part = part.split("+").join(" "); // replace every + with space, regexp-free version
+    var eq = part.indexOf("=");
+    var key = eq>-1 ? part.substr(0,eq) : part;
+    var val = eq>-1 ? decodeURIComponent(part.substr(eq+1)) : "";
+    var from = key.indexOf("[");
+    if(from==-1) result[decodeURIComponent(key)] = val;
+    else {
+      var to = key.indexOf("]",from);
+      var index = decodeURIComponent(key.substring(from+1,to));
+      key = decodeURIComponent(key.substring(0,from));
+      if(!result[key]) result[key] = [];
+      if(!index) result[key].push(val);
+      else result[key][index] = val;
     }
+  });
+  return result;
 }
 
 function activateLinks(node) {
@@ -1502,7 +1598,7 @@ function setRepStrValue(value) {
 	return "value=" + JSON.stringify(HTMLEncode(decode_utf8(value)));
 }
 
-var nodeFactory = {"UpdateByIDRequest_RootKeyword": buildUpdateByIDRequest_RootKeyword(emptyIfNull(null)),
+var nodeFactory = {"UpdateUserByIDRequest_RootKeyword": buildUpdateUserByIDRequest_RootKeyword(emptyIfNull(null)),
 "User_Data": buildUser_Data(emptyIfNull(null)),}
 	function buildUser_Data(json) {
 if (json == undefined) {
@@ -1515,13 +1611,13 @@ s += '<a href="#" class="del-child btn btn-danger btn-xs" role="button" fieldnam
 s += '</div><div class="col-sm-10">'
 s += '<label class="heading">Data</label>'
 s += '</div></div>'
-s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </label><div class="col-sm-10"><input class="form-control" name="ID" type="number" step="1" '+setValue(0, json["ID"])+'/></div></div>';
+s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </label><div class="col-sm-10"><input class="form-control" name="ID" type="text" '+setStrValue("", json["ID"])+'/></div></div>';
 				
 s += '<div class="field form-group"><label class="col-sm-2 control-label">Type: </label><div class="col-sm-10"><input class="form-control" name="Type" type="text" '+setStrValue("", json["Type"])+'/></div></div>';
 				
 s += '<div class="field form-group"><label class="col-sm-2 control-label">Avatar: </label><div class="col-sm-10"><input class="form-control" name="Avatar" type="text" '+setStrValue("", json["Avatar"])+'/></div></div>';
 				
-s += '<div class="field form-group"><label class="col-sm-2 control-label">Inviter: </label><div class="col-sm-10"><input class="form-control" name="Inviter" type="number" step="1" '+setValue(0, json["Inviter"])+'/></div></div>';
+s += '<div class="field form-group"><label class="col-sm-2 control-label">Inviter: </label><div class="col-sm-10"><input class="form-control" name="Inviter" type="text" '+setStrValue("", json["Inviter"])+'/></div></div>';
 				
 s += '<div class="field form-group"><label class="col-sm-2 control-label">Nickname: </label><div class="col-sm-10"><input class="form-control" name="Nickname" type="text" '+setStrValue("", json["Nickname"])+'/></div></div>';
 				
@@ -1538,13 +1634,13 @@ s += '<div class="field form-group"><label class="col-sm-2 control-label">Update
 		return s;
 		}
 
-function buildUpdateByIDRequest_RootKeyword(json) {
+function buildUpdateUserByIDRequest_RootKeyword(json) {
 if (json == undefined) {
 		return "";
 	}
 	
-var s = '<div class="node" type="UpdateByIDRequest_RootKeyword" fieldname="RootKeyword" repeated="false">';
-s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </label><div class="col-sm-10"><input class="form-control" name="ID" type="number" step="1" '+setValue(0, json["ID"])+'/></div></div>';
+var s = '<div class="node" type="UpdateUserByIDRequest_RootKeyword" fieldname="RootKeyword" repeated="false">';
+s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </label><div class="col-sm-10"><input class="form-control" name="ID" type="text" '+setStrValue("", json["ID"])+'/></div></div>';
 				
 s += '<div class="children" type="User_Data">' + buildUser_Data(json["Data"]);
 			s += '</div>';
@@ -1556,20 +1652,20 @@ s += '<div class="children" type="User_Data">' + buildUser_Data(json["Data"]);
 			activateLinks(node);
 			return node;
 		}function init() {
-	var root = $(nodeFactory["UpdateByIDRequest_RootKeyword"]);
+	var root = $(nodeFactory["UpdateUserByIDRequest_RootKeyword"]);
 	var jsonText = getUrlParameter("json");
 	if (jsonText == undefined) {
 		var json = emptyIfNull(null);
 	} else {
 		var json = JSON.parse(unescape(jsonText));
 	}
-	$("#form > .children").html(buildUpdateByIDRequest_RootKeyword(json));
+	$("#form > .children").html(buildUpdateUserByIDRequest_RootKeyword(json));
 	activateLinks(root);
-	$("a[id=submit]").click(function(ev) {
+	$("form").submit(function(ev) {
 		ev.preventDefault();
 		c = getChildren($("#form"));
 		j = JSON.stringify(c["RootKeyword"]);
-		window.location.assign("./UpdateByID?json="+j);
+		window.location.assign("./UpdateUserByID?json="+j);
 	});
 }
 
@@ -1627,11 +1723,39 @@ s += '<div class="children" type="User_Data">' + buildUser_Data(json["Data"]);
 	
 	</div>`
 
-func (this *htmlAccount) UpdateByID(w net_http.ResponseWriter, req *net_http.Request) {
-	w.Write([]byte(Header(`Account`, `UpdateByID`)))
+func (this *htmlAccount) UpdateUserByID(w net_http.ResponseWriter, req *net_http.Request) {
+	w.Write([]byte(Header(`Account`, `UpdateUserByID`)))
 	jsonString := req.FormValue("json")
 	someValue := false
-	msg := &UpdateByIDRequest{}
+	msg := &UpdateUserByIDRequest{}
+	validateMap := make(map[string]interface{})
+	err := encoding_json.Unmarshal([]byte(jsonString), &validateMap)
+	if err != nil {
+		log.Printf("[Parse Request]: %s ", err.Error())
+	}
+	if err == nil {
+		for k, v := range validateMap {
+			switch v.(type) {
+			case string:
+				vInt, err := strconv.ParseInt(v.(string), 10, 64)
+				if err != nil {
+					continue
+				}
+				validateMap[k] = vInt
+			case float64:
+				vInt := int(v.(float64))
+				if vInt > math.MaxInt32 {
+					vStr := strconv.Itoa(vInt)
+					validateMap[k] = vStr
+				}
+			}
+		}
+		jsonBytes, err := encoding_json.Marshal(validateMap)
+		if err != nil {
+			log.Printf("re-marshal failed: %s ", err.Error())
+		}
+		jsonString = string(jsonBytes)
+	}
 	if len(jsonString) > 0 {
 		err := encoding_json.Unmarshal([]byte(jsonString), msg)
 		if err != nil {
@@ -1643,9 +1767,9 @@ func (this *htmlAccount) UpdateByID(w net_http.ResponseWriter, req *net_http.Req
 		}
 		someValue = true
 	}
-	w.Write([]byte(FormAccount_UpdateByID))
+	w.Write([]byte(FormAccount_UpdateUserByID))
 	if someValue {
-		reply, err := this.client.UpdateByID(golang_org_x_net_context.Background(), msg)
+		reply, err := this.client.UpdateUserByID(golang_org_x_net_context.Background(), msg)
 		if err != nil {
 			if err != io.EOF {
 				w.Write([]byte("<div class=\"alert alert-danger\" role=\"alert\">" + err.Error() + "</div>"))
@@ -1666,12 +1790,12 @@ func (this *htmlAccount) UpdateByID(w net_http.ResponseWriter, req *net_http.Req
 	w.Write([]byte(Footer))
 }
 
-var FormAccount_DeleteByID string = `<div class="container"><div class="jumbotron">
-	<h3>Account: DeleteByID</h3>
+var FormAccount_DeleteUserByID string = `<div class="container"><div class="jumbotron">
+	<h3>Account: DeleteUserByID</h3>
 	
 	<form class="form-horizontal">
 	<div id="form"><div class="children"></div></div>
-    <a href="#" id="submit" class="btn btn-primary" role="button">Submit</a>
+    <input type="submit" class="btn btn-primary" role="button" value="Submit">
     </form>
     
 	<script>
@@ -1744,15 +1868,37 @@ function addElem(ev) {
 function getUrlParameter(sParam)
 {
     var sPageURL = window.location.search.substring(1);
-    var sURLVariables = sPageURL.split('&');
-    for (var i = 0; i < sURLVariables.length; i++)
-    {
-        var sParameterName = sURLVariables[i].split('=');
-        if (sParameterName[0] == sParam)
-        {
-            return sParameterName[1];
-        }
+    return getJsonFromUrl("?"+sPageURL)[sParam];
+}
+
+// From: https://stackoverflow.com/a/8486188
+function getJsonFromUrl(url) {
+  if(!url) url = location.href;
+  var question = url.indexOf("?");
+  var hash = url.indexOf("#");
+  if(hash==-1 && question==-1) return {};
+  if(hash==-1) hash = url.length;
+  var query = question==-1 || hash==question+1 ? url.substring(hash) :
+  url.substring(question+1,hash);
+  var result = {};
+  query.split("&").forEach(function(part) {
+    if(!part) return;
+    part = part.split("+").join(" "); // replace every + with space, regexp-free version
+    var eq = part.indexOf("=");
+    var key = eq>-1 ? part.substr(0,eq) : part;
+    var val = eq>-1 ? decodeURIComponent(part.substr(eq+1)) : "";
+    var from = key.indexOf("[");
+    if(from==-1) result[decodeURIComponent(key)] = val;
+    else {
+      var to = key.indexOf("]",from);
+      var index = decodeURIComponent(key.substring(from+1,to));
+      key = decodeURIComponent(key.substring(0,from));
+      if(!result[key]) result[key] = [];
+      if(!index) result[key].push(val);
+      else result[key][index] = val;
     }
+  });
+  return result;
 }
 
 function activateLinks(node) {
@@ -2047,14 +2193,14 @@ function setRepStrValue(value) {
 	return "value=" + JSON.stringify(HTMLEncode(decode_utf8(value)));
 }
 
-var nodeFactory = {"DeleteByIDRequest_RootKeyword": buildDeleteByIDRequest_RootKeyword(emptyIfNull(null)),}
-	function buildDeleteByIDRequest_RootKeyword(json) {
+var nodeFactory = {"DeleteUserByIDRequest_RootKeyword": buildDeleteUserByIDRequest_RootKeyword(emptyIfNull(null)),}
+	function buildDeleteUserByIDRequest_RootKeyword(json) {
 if (json == undefined) {
 		return "";
 	}
 	
-var s = '<div class="node" type="DeleteByIDRequest_RootKeyword" fieldname="RootKeyword" repeated="false">';
-s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </label><div class="col-sm-10"><input class="form-control" name="ID" type="number" step="1" '+setValue(0, json["ID"])+'/></div></div>';
+var s = '<div class="node" type="DeleteUserByIDRequest_RootKeyword" fieldname="RootKeyword" repeated="false">';
+s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </label><div class="col-sm-10"><input class="form-control" name="ID" type="text" '+setStrValue("", json["ID"])+'/></div></div>';
 				
 
 			s += '</div>';
@@ -2062,20 +2208,20 @@ s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </
 			activateLinks(node);
 			return node;
 		}function init() {
-	var root = $(nodeFactory["DeleteByIDRequest_RootKeyword"]);
+	var root = $(nodeFactory["DeleteUserByIDRequest_RootKeyword"]);
 	var jsonText = getUrlParameter("json");
 	if (jsonText == undefined) {
 		var json = emptyIfNull(null);
 	} else {
 		var json = JSON.parse(unescape(jsonText));
 	}
-	$("#form > .children").html(buildDeleteByIDRequest_RootKeyword(json));
+	$("#form > .children").html(buildDeleteUserByIDRequest_RootKeyword(json));
 	activateLinks(root);
-	$("a[id=submit]").click(function(ev) {
+	$("form").submit(function(ev) {
 		ev.preventDefault();
 		c = getChildren($("#form"));
 		j = JSON.stringify(c["RootKeyword"]);
-		window.location.assign("./DeleteByID?json="+j);
+		window.location.assign("./DeleteUserByID?json="+j);
 	});
 }
 
@@ -2133,11 +2279,39 @@ s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </
 	
 	</div>`
 
-func (this *htmlAccount) DeleteByID(w net_http.ResponseWriter, req *net_http.Request) {
-	w.Write([]byte(Header(`Account`, `DeleteByID`)))
+func (this *htmlAccount) DeleteUserByID(w net_http.ResponseWriter, req *net_http.Request) {
+	w.Write([]byte(Header(`Account`, `DeleteUserByID`)))
 	jsonString := req.FormValue("json")
 	someValue := false
-	msg := &DeleteByIDRequest{}
+	msg := &DeleteUserByIDRequest{}
+	validateMap := make(map[string]interface{})
+	err := encoding_json.Unmarshal([]byte(jsonString), &validateMap)
+	if err != nil {
+		log.Printf("[Parse Request]: %s ", err.Error())
+	}
+	if err == nil {
+		for k, v := range validateMap {
+			switch v.(type) {
+			case string:
+				vInt, err := strconv.ParseInt(v.(string), 10, 64)
+				if err != nil {
+					continue
+				}
+				validateMap[k] = vInt
+			case float64:
+				vInt := int(v.(float64))
+				if vInt > math.MaxInt32 {
+					vStr := strconv.Itoa(vInt)
+					validateMap[k] = vStr
+				}
+			}
+		}
+		jsonBytes, err := encoding_json.Marshal(validateMap)
+		if err != nil {
+			log.Printf("re-marshal failed: %s ", err.Error())
+		}
+		jsonString = string(jsonBytes)
+	}
 	if len(jsonString) > 0 {
 		err := encoding_json.Unmarshal([]byte(jsonString), msg)
 		if err != nil {
@@ -2149,9 +2323,9 @@ func (this *htmlAccount) DeleteByID(w net_http.ResponseWriter, req *net_http.Req
 		}
 		someValue = true
 	}
-	w.Write([]byte(FormAccount_DeleteByID))
+	w.Write([]byte(FormAccount_DeleteUserByID))
 	if someValue {
-		reply, err := this.client.DeleteByID(golang_org_x_net_context.Background(), msg)
+		reply, err := this.client.DeleteUserByID(golang_org_x_net_context.Background(), msg)
 		if err != nil {
 			if err != io.EOF {
 				w.Write([]byte("<div class=\"alert alert-danger\" role=\"alert\">" + err.Error() + "</div>"))
@@ -2172,12 +2346,12 @@ func (this *htmlAccount) DeleteByID(w net_http.ResponseWriter, req *net_http.Req
 	w.Write([]byte(Footer))
 }
 
-var FormAccount_QueryByUsername string = `<div class="container"><div class="jumbotron">
-	<h3>Account: QueryByUsername</h3>
+var FormAccount_QueryUserByUsername string = `<div class="container"><div class="jumbotron">
+	<h3>Account: QueryUserByUsername</h3>
 	
 	<form class="form-horizontal">
 	<div id="form"><div class="children"></div></div>
-    <a href="#" id="submit" class="btn btn-primary" role="button">Submit</a>
+    <input type="submit" class="btn btn-primary" role="button" value="Submit">
     </form>
     
 	<script>
@@ -2250,15 +2424,37 @@ function addElem(ev) {
 function getUrlParameter(sParam)
 {
     var sPageURL = window.location.search.substring(1);
-    var sURLVariables = sPageURL.split('&');
-    for (var i = 0; i < sURLVariables.length; i++)
-    {
-        var sParameterName = sURLVariables[i].split('=');
-        if (sParameterName[0] == sParam)
-        {
-            return sParameterName[1];
-        }
+    return getJsonFromUrl("?"+sPageURL)[sParam];
+}
+
+// From: https://stackoverflow.com/a/8486188
+function getJsonFromUrl(url) {
+  if(!url) url = location.href;
+  var question = url.indexOf("?");
+  var hash = url.indexOf("#");
+  if(hash==-1 && question==-1) return {};
+  if(hash==-1) hash = url.length;
+  var query = question==-1 || hash==question+1 ? url.substring(hash) :
+  url.substring(question+1,hash);
+  var result = {};
+  query.split("&").forEach(function(part) {
+    if(!part) return;
+    part = part.split("+").join(" "); // replace every + with space, regexp-free version
+    var eq = part.indexOf("=");
+    var key = eq>-1 ? part.substr(0,eq) : part;
+    var val = eq>-1 ? decodeURIComponent(part.substr(eq+1)) : "";
+    var from = key.indexOf("[");
+    if(from==-1) result[decodeURIComponent(key)] = val;
+    else {
+      var to = key.indexOf("]",from);
+      var index = decodeURIComponent(key.substring(from+1,to));
+      key = decodeURIComponent(key.substring(0,from));
+      if(!result[key]) result[key] = [];
+      if(!index) result[key].push(val);
+      else result[key][index] = val;
     }
+  });
+  return result;
 }
 
 function activateLinks(node) {
@@ -2553,13 +2749,13 @@ function setRepStrValue(value) {
 	return "value=" + JSON.stringify(HTMLEncode(decode_utf8(value)));
 }
 
-var nodeFactory = {"QueryByUsernameRequest_RootKeyword": buildQueryByUsernameRequest_RootKeyword(emptyIfNull(null)),}
-	function buildQueryByUsernameRequest_RootKeyword(json) {
+var nodeFactory = {"QueryUserByUsernameRequest_RootKeyword": buildQueryUserByUsernameRequest_RootKeyword(emptyIfNull(null)),}
+	function buildQueryUserByUsernameRequest_RootKeyword(json) {
 if (json == undefined) {
 		return "";
 	}
 	
-var s = '<div class="node" type="QueryByUsernameRequest_RootKeyword" fieldname="RootKeyword" repeated="false">';
+var s = '<div class="node" type="QueryUserByUsernameRequest_RootKeyword" fieldname="RootKeyword" repeated="false">';
 s += '<div class="field form-group"><label class="col-sm-2 control-label">Username: </label><div class="col-sm-10"><input class="form-control" name="Username" type="text" '+setStrValue("", json["Username"])+'/></div></div>';
 				
 
@@ -2568,20 +2764,20 @@ s += '<div class="field form-group"><label class="col-sm-2 control-label">Userna
 			activateLinks(node);
 			return node;
 		}function init() {
-	var root = $(nodeFactory["QueryByUsernameRequest_RootKeyword"]);
+	var root = $(nodeFactory["QueryUserByUsernameRequest_RootKeyword"]);
 	var jsonText = getUrlParameter("json");
 	if (jsonText == undefined) {
 		var json = emptyIfNull(null);
 	} else {
 		var json = JSON.parse(unescape(jsonText));
 	}
-	$("#form > .children").html(buildQueryByUsernameRequest_RootKeyword(json));
+	$("#form > .children").html(buildQueryUserByUsernameRequest_RootKeyword(json));
 	activateLinks(root);
-	$("a[id=submit]").click(function(ev) {
+	$("form").submit(function(ev) {
 		ev.preventDefault();
 		c = getChildren($("#form"));
 		j = JSON.stringify(c["RootKeyword"]);
-		window.location.assign("./QueryByUsername?json="+j);
+		window.location.assign("./QueryUserByUsername?json="+j);
 	});
 }
 
@@ -2639,11 +2835,39 @@ s += '<div class="field form-group"><label class="col-sm-2 control-label">Userna
 	
 	</div>`
 
-func (this *htmlAccount) QueryByUsername(w net_http.ResponseWriter, req *net_http.Request) {
-	w.Write([]byte(Header(`Account`, `QueryByUsername`)))
+func (this *htmlAccount) QueryUserByUsername(w net_http.ResponseWriter, req *net_http.Request) {
+	w.Write([]byte(Header(`Account`, `QueryUserByUsername`)))
 	jsonString := req.FormValue("json")
 	someValue := false
-	msg := &QueryByUsernameRequest{}
+	msg := &QueryUserByUsernameRequest{}
+	validateMap := make(map[string]interface{})
+	err := encoding_json.Unmarshal([]byte(jsonString), &validateMap)
+	if err != nil {
+		log.Printf("[Parse Request]: %s ", err.Error())
+	}
+	if err == nil {
+		for k, v := range validateMap {
+			switch v.(type) {
+			case string:
+				vInt, err := strconv.ParseInt(v.(string), 10, 64)
+				if err != nil {
+					continue
+				}
+				validateMap[k] = vInt
+			case float64:
+				vInt := int(v.(float64))
+				if vInt > math.MaxInt32 {
+					vStr := strconv.Itoa(vInt)
+					validateMap[k] = vStr
+				}
+			}
+		}
+		jsonBytes, err := encoding_json.Marshal(validateMap)
+		if err != nil {
+			log.Printf("re-marshal failed: %s ", err.Error())
+		}
+		jsonString = string(jsonBytes)
+	}
 	if len(jsonString) > 0 {
 		err := encoding_json.Unmarshal([]byte(jsonString), msg)
 		if err != nil {
@@ -2655,9 +2879,9 @@ func (this *htmlAccount) QueryByUsername(w net_http.ResponseWriter, req *net_htt
 		}
 		someValue = true
 	}
-	w.Write([]byte(FormAccount_QueryByUsername))
+	w.Write([]byte(FormAccount_QueryUserByUsername))
 	if someValue {
-		reply, err := this.client.QueryByUsername(golang_org_x_net_context.Background(), msg)
+		reply, err := this.client.QueryUserByUsername(golang_org_x_net_context.Background(), msg)
 		if err != nil {
 			if err != io.EOF {
 				w.Write([]byte("<div class=\"alert alert-danger\" role=\"alert\">" + err.Error() + "</div>"))
@@ -2678,12 +2902,12 @@ func (this *htmlAccount) QueryByUsername(w net_http.ResponseWriter, req *net_htt
 	w.Write([]byte(Footer))
 }
 
-var FormAccount_UpdatePasswordByID string = `<div class="container"><div class="jumbotron">
-	<h3>Account: UpdatePasswordByID</h3>
+var FormAccount_UpdateUserPasswordByID string = `<div class="container"><div class="jumbotron">
+	<h3>Account: UpdateUserPasswordByID</h3>
 	
 	<form class="form-horizontal">
 	<div id="form"><div class="children"></div></div>
-    <a href="#" id="submit" class="btn btn-primary" role="button">Submit</a>
+    <input type="submit" class="btn btn-primary" role="button" value="Submit">
     </form>
     
 	<script>
@@ -2756,15 +2980,37 @@ function addElem(ev) {
 function getUrlParameter(sParam)
 {
     var sPageURL = window.location.search.substring(1);
-    var sURLVariables = sPageURL.split('&');
-    for (var i = 0; i < sURLVariables.length; i++)
-    {
-        var sParameterName = sURLVariables[i].split('=');
-        if (sParameterName[0] == sParam)
-        {
-            return sParameterName[1];
-        }
+    return getJsonFromUrl("?"+sPageURL)[sParam];
+}
+
+// From: https://stackoverflow.com/a/8486188
+function getJsonFromUrl(url) {
+  if(!url) url = location.href;
+  var question = url.indexOf("?");
+  var hash = url.indexOf("#");
+  if(hash==-1 && question==-1) return {};
+  if(hash==-1) hash = url.length;
+  var query = question==-1 || hash==question+1 ? url.substring(hash) :
+  url.substring(question+1,hash);
+  var result = {};
+  query.split("&").forEach(function(part) {
+    if(!part) return;
+    part = part.split("+").join(" "); // replace every + with space, regexp-free version
+    var eq = part.indexOf("=");
+    var key = eq>-1 ? part.substr(0,eq) : part;
+    var val = eq>-1 ? decodeURIComponent(part.substr(eq+1)) : "";
+    var from = key.indexOf("[");
+    if(from==-1) result[decodeURIComponent(key)] = val;
+    else {
+      var to = key.indexOf("]",from);
+      var index = decodeURIComponent(key.substring(from+1,to));
+      key = decodeURIComponent(key.substring(0,from));
+      if(!result[key]) result[key] = [];
+      if(!index) result[key].push(val);
+      else result[key][index] = val;
     }
+  });
+  return result;
 }
 
 function activateLinks(node) {
@@ -3059,14 +3305,14 @@ function setRepStrValue(value) {
 	return "value=" + JSON.stringify(HTMLEncode(decode_utf8(value)));
 }
 
-var nodeFactory = {"UpdatePasswordByIDRequest_RootKeyword": buildUpdatePasswordByIDRequest_RootKeyword(emptyIfNull(null)),}
-	function buildUpdatePasswordByIDRequest_RootKeyword(json) {
+var nodeFactory = {"UpdateUserPasswordByIDRequest_RootKeyword": buildUpdateUserPasswordByIDRequest_RootKeyword(emptyIfNull(null)),}
+	function buildUpdateUserPasswordByIDRequest_RootKeyword(json) {
 if (json == undefined) {
 		return "";
 	}
 	
-var s = '<div class="node" type="UpdatePasswordByIDRequest_RootKeyword" fieldname="RootKeyword" repeated="false">';
-s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </label><div class="col-sm-10"><input class="form-control" name="ID" type="number" step="1" '+setValue(0, json["ID"])+'/></div></div>';
+var s = '<div class="node" type="UpdateUserPasswordByIDRequest_RootKeyword" fieldname="RootKeyword" repeated="false">';
+s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </label><div class="col-sm-10"><input class="form-control" name="ID" type="text" '+setStrValue("", json["ID"])+'/></div></div>';
 				
 s += '<div class="field form-group"><label class="col-sm-2 control-label">Password: </label><div class="col-sm-10"><input class="form-control" name="Password" type="text" '+setStrValue("", json["Password"])+'/></div></div>';
 				
@@ -3076,20 +3322,20 @@ s += '<div class="field form-group"><label class="col-sm-2 control-label">Passwo
 			activateLinks(node);
 			return node;
 		}function init() {
-	var root = $(nodeFactory["UpdatePasswordByIDRequest_RootKeyword"]);
+	var root = $(nodeFactory["UpdateUserPasswordByIDRequest_RootKeyword"]);
 	var jsonText = getUrlParameter("json");
 	if (jsonText == undefined) {
 		var json = emptyIfNull(null);
 	} else {
 		var json = JSON.parse(unescape(jsonText));
 	}
-	$("#form > .children").html(buildUpdatePasswordByIDRequest_RootKeyword(json));
+	$("#form > .children").html(buildUpdateUserPasswordByIDRequest_RootKeyword(json));
 	activateLinks(root);
-	$("a[id=submit]").click(function(ev) {
+	$("form").submit(function(ev) {
 		ev.preventDefault();
 		c = getChildren($("#form"));
 		j = JSON.stringify(c["RootKeyword"]);
-		window.location.assign("./UpdatePasswordByID?json="+j);
+		window.location.assign("./UpdateUserPasswordByID?json="+j);
 	});
 }
 
@@ -3147,11 +3393,39 @@ s += '<div class="field form-group"><label class="col-sm-2 control-label">Passwo
 	
 	</div>`
 
-func (this *htmlAccount) UpdatePasswordByID(w net_http.ResponseWriter, req *net_http.Request) {
-	w.Write([]byte(Header(`Account`, `UpdatePasswordByID`)))
+func (this *htmlAccount) UpdateUserPasswordByID(w net_http.ResponseWriter, req *net_http.Request) {
+	w.Write([]byte(Header(`Account`, `UpdateUserPasswordByID`)))
 	jsonString := req.FormValue("json")
 	someValue := false
-	msg := &UpdatePasswordByIDRequest{}
+	msg := &UpdateUserPasswordByIDRequest{}
+	validateMap := make(map[string]interface{})
+	err := encoding_json.Unmarshal([]byte(jsonString), &validateMap)
+	if err != nil {
+		log.Printf("[Parse Request]: %s ", err.Error())
+	}
+	if err == nil {
+		for k, v := range validateMap {
+			switch v.(type) {
+			case string:
+				vInt, err := strconv.ParseInt(v.(string), 10, 64)
+				if err != nil {
+					continue
+				}
+				validateMap[k] = vInt
+			case float64:
+				vInt := int(v.(float64))
+				if vInt > math.MaxInt32 {
+					vStr := strconv.Itoa(vInt)
+					validateMap[k] = vStr
+				}
+			}
+		}
+		jsonBytes, err := encoding_json.Marshal(validateMap)
+		if err != nil {
+			log.Printf("re-marshal failed: %s ", err.Error())
+		}
+		jsonString = string(jsonBytes)
+	}
 	if len(jsonString) > 0 {
 		err := encoding_json.Unmarshal([]byte(jsonString), msg)
 		if err != nil {
@@ -3163,9 +3437,9 @@ func (this *htmlAccount) UpdatePasswordByID(w net_http.ResponseWriter, req *net_
 		}
 		someValue = true
 	}
-	w.Write([]byte(FormAccount_UpdatePasswordByID))
+	w.Write([]byte(FormAccount_UpdateUserPasswordByID))
 	if someValue {
-		reply, err := this.client.UpdatePasswordByID(golang_org_x_net_context.Background(), msg)
+		reply, err := this.client.UpdateUserPasswordByID(golang_org_x_net_context.Background(), msg)
 		if err != nil {
 			if err != io.EOF {
 				w.Write([]byte("<div class=\"alert alert-danger\" role=\"alert\">" + err.Error() + "</div>"))
@@ -3186,12 +3460,12 @@ func (this *htmlAccount) UpdatePasswordByID(w net_http.ResponseWriter, req *net_
 	w.Write([]byte(Footer))
 }
 
-var FormAccount_VerifyPasswordByID string = `<div class="container"><div class="jumbotron">
-	<h3>Account: VerifyPasswordByID</h3>
+var FormAccount_VerifyUserPasswordByID string = `<div class="container"><div class="jumbotron">
+	<h3>Account: VerifyUserPasswordByID</h3>
 	
 	<form class="form-horizontal">
 	<div id="form"><div class="children"></div></div>
-    <a href="#" id="submit" class="btn btn-primary" role="button">Submit</a>
+    <input type="submit" class="btn btn-primary" role="button" value="Submit">
     </form>
     
 	<script>
@@ -3264,15 +3538,37 @@ function addElem(ev) {
 function getUrlParameter(sParam)
 {
     var sPageURL = window.location.search.substring(1);
-    var sURLVariables = sPageURL.split('&');
-    for (var i = 0; i < sURLVariables.length; i++)
-    {
-        var sParameterName = sURLVariables[i].split('=');
-        if (sParameterName[0] == sParam)
-        {
-            return sParameterName[1];
-        }
+    return getJsonFromUrl("?"+sPageURL)[sParam];
+}
+
+// From: https://stackoverflow.com/a/8486188
+function getJsonFromUrl(url) {
+  if(!url) url = location.href;
+  var question = url.indexOf("?");
+  var hash = url.indexOf("#");
+  if(hash==-1 && question==-1) return {};
+  if(hash==-1) hash = url.length;
+  var query = question==-1 || hash==question+1 ? url.substring(hash) :
+  url.substring(question+1,hash);
+  var result = {};
+  query.split("&").forEach(function(part) {
+    if(!part) return;
+    part = part.split("+").join(" "); // replace every + with space, regexp-free version
+    var eq = part.indexOf("=");
+    var key = eq>-1 ? part.substr(0,eq) : part;
+    var val = eq>-1 ? decodeURIComponent(part.substr(eq+1)) : "";
+    var from = key.indexOf("[");
+    if(from==-1) result[decodeURIComponent(key)] = val;
+    else {
+      var to = key.indexOf("]",from);
+      var index = decodeURIComponent(key.substring(from+1,to));
+      key = decodeURIComponent(key.substring(0,from));
+      if(!result[key]) result[key] = [];
+      if(!index) result[key].push(val);
+      else result[key][index] = val;
     }
+  });
+  return result;
 }
 
 function activateLinks(node) {
@@ -3567,14 +3863,14 @@ function setRepStrValue(value) {
 	return "value=" + JSON.stringify(HTMLEncode(decode_utf8(value)));
 }
 
-var nodeFactory = {"VerifyPasswordByIDRequest_RootKeyword": buildVerifyPasswordByIDRequest_RootKeyword(emptyIfNull(null)),}
-	function buildVerifyPasswordByIDRequest_RootKeyword(json) {
+var nodeFactory = {"VerifyUserPasswordByIDRequest_RootKeyword": buildVerifyUserPasswordByIDRequest_RootKeyword(emptyIfNull(null)),}
+	function buildVerifyUserPasswordByIDRequest_RootKeyword(json) {
 if (json == undefined) {
 		return "";
 	}
 	
-var s = '<div class="node" type="VerifyPasswordByIDRequest_RootKeyword" fieldname="RootKeyword" repeated="false">';
-s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </label><div class="col-sm-10"><input class="form-control" name="ID" type="number" step="1" '+setValue(0, json["ID"])+'/></div></div>';
+var s = '<div class="node" type="VerifyUserPasswordByIDRequest_RootKeyword" fieldname="RootKeyword" repeated="false">';
+s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </label><div class="col-sm-10"><input class="form-control" name="ID" type="text" '+setStrValue("", json["ID"])+'/></div></div>';
 				
 s += '<div class="field form-group"><label class="col-sm-2 control-label">Password: </label><div class="col-sm-10"><input class="form-control" name="Password" type="text" '+setStrValue("", json["Password"])+'/></div></div>';
 				
@@ -3584,20 +3880,20 @@ s += '<div class="field form-group"><label class="col-sm-2 control-label">Passwo
 			activateLinks(node);
 			return node;
 		}function init() {
-	var root = $(nodeFactory["VerifyPasswordByIDRequest_RootKeyword"]);
+	var root = $(nodeFactory["VerifyUserPasswordByIDRequest_RootKeyword"]);
 	var jsonText = getUrlParameter("json");
 	if (jsonText == undefined) {
 		var json = emptyIfNull(null);
 	} else {
 		var json = JSON.parse(unescape(jsonText));
 	}
-	$("#form > .children").html(buildVerifyPasswordByIDRequest_RootKeyword(json));
+	$("#form > .children").html(buildVerifyUserPasswordByIDRequest_RootKeyword(json));
 	activateLinks(root);
-	$("a[id=submit]").click(function(ev) {
+	$("form").submit(function(ev) {
 		ev.preventDefault();
 		c = getChildren($("#form"));
 		j = JSON.stringify(c["RootKeyword"]);
-		window.location.assign("./VerifyPasswordByID?json="+j);
+		window.location.assign("./VerifyUserPasswordByID?json="+j);
 	});
 }
 
@@ -3655,11 +3951,39 @@ s += '<div class="field form-group"><label class="col-sm-2 control-label">Passwo
 	
 	</div>`
 
-func (this *htmlAccount) VerifyPasswordByID(w net_http.ResponseWriter, req *net_http.Request) {
-	w.Write([]byte(Header(`Account`, `VerifyPasswordByID`)))
+func (this *htmlAccount) VerifyUserPasswordByID(w net_http.ResponseWriter, req *net_http.Request) {
+	w.Write([]byte(Header(`Account`, `VerifyUserPasswordByID`)))
 	jsonString := req.FormValue("json")
 	someValue := false
-	msg := &VerifyPasswordByIDRequest{}
+	msg := &VerifyUserPasswordByIDRequest{}
+	validateMap := make(map[string]interface{})
+	err := encoding_json.Unmarshal([]byte(jsonString), &validateMap)
+	if err != nil {
+		log.Printf("[Parse Request]: %s ", err.Error())
+	}
+	if err == nil {
+		for k, v := range validateMap {
+			switch v.(type) {
+			case string:
+				vInt, err := strconv.ParseInt(v.(string), 10, 64)
+				if err != nil {
+					continue
+				}
+				validateMap[k] = vInt
+			case float64:
+				vInt := int(v.(float64))
+				if vInt > math.MaxInt32 {
+					vStr := strconv.Itoa(vInt)
+					validateMap[k] = vStr
+				}
+			}
+		}
+		jsonBytes, err := encoding_json.Marshal(validateMap)
+		if err != nil {
+			log.Printf("re-marshal failed: %s ", err.Error())
+		}
+		jsonString = string(jsonBytes)
+	}
 	if len(jsonString) > 0 {
 		err := encoding_json.Unmarshal([]byte(jsonString), msg)
 		if err != nil {
@@ -3671,9 +3995,9 @@ func (this *htmlAccount) VerifyPasswordByID(w net_http.ResponseWriter, req *net_
 		}
 		someValue = true
 	}
-	w.Write([]byte(FormAccount_VerifyPasswordByID))
+	w.Write([]byte(FormAccount_VerifyUserPasswordByID))
 	if someValue {
-		reply, err := this.client.VerifyPasswordByID(golang_org_x_net_context.Background(), msg)
+		reply, err := this.client.VerifyUserPasswordByID(golang_org_x_net_context.Background(), msg)
 		if err != nil {
 			if err != io.EOF {
 				w.Write([]byte("<div class=\"alert alert-danger\" role=\"alert\">" + err.Error() + "</div>"))
@@ -3694,12 +4018,12 @@ func (this *htmlAccount) VerifyPasswordByID(w net_http.ResponseWriter, req *net_
 	w.Write([]byte(Footer))
 }
 
-var FormAccount_VerifyPasswordByUsername string = `<div class="container"><div class="jumbotron">
-	<h3>Account: VerifyPasswordByUsername</h3>
+var FormAccount_VerifyUserPasswordByUsername string = `<div class="container"><div class="jumbotron">
+	<h3>Account: VerifyUserPasswordByUsername</h3>
 	
 	<form class="form-horizontal">
 	<div id="form"><div class="children"></div></div>
-    <a href="#" id="submit" class="btn btn-primary" role="button">Submit</a>
+    <input type="submit" class="btn btn-primary" role="button" value="Submit">
     </form>
     
 	<script>
@@ -3772,15 +4096,37 @@ function addElem(ev) {
 function getUrlParameter(sParam)
 {
     var sPageURL = window.location.search.substring(1);
-    var sURLVariables = sPageURL.split('&');
-    for (var i = 0; i < sURLVariables.length; i++)
-    {
-        var sParameterName = sURLVariables[i].split('=');
-        if (sParameterName[0] == sParam)
-        {
-            return sParameterName[1];
-        }
+    return getJsonFromUrl("?"+sPageURL)[sParam];
+}
+
+// From: https://stackoverflow.com/a/8486188
+function getJsonFromUrl(url) {
+  if(!url) url = location.href;
+  var question = url.indexOf("?");
+  var hash = url.indexOf("#");
+  if(hash==-1 && question==-1) return {};
+  if(hash==-1) hash = url.length;
+  var query = question==-1 || hash==question+1 ? url.substring(hash) :
+  url.substring(question+1,hash);
+  var result = {};
+  query.split("&").forEach(function(part) {
+    if(!part) return;
+    part = part.split("+").join(" "); // replace every + with space, regexp-free version
+    var eq = part.indexOf("=");
+    var key = eq>-1 ? part.substr(0,eq) : part;
+    var val = eq>-1 ? decodeURIComponent(part.substr(eq+1)) : "";
+    var from = key.indexOf("[");
+    if(from==-1) result[decodeURIComponent(key)] = val;
+    else {
+      var to = key.indexOf("]",from);
+      var index = decodeURIComponent(key.substring(from+1,to));
+      key = decodeURIComponent(key.substring(0,from));
+      if(!result[key]) result[key] = [];
+      if(!index) result[key].push(val);
+      else result[key][index] = val;
     }
+  });
+  return result;
 }
 
 function activateLinks(node) {
@@ -4075,13 +4421,13 @@ function setRepStrValue(value) {
 	return "value=" + JSON.stringify(HTMLEncode(decode_utf8(value)));
 }
 
-var nodeFactory = {"VerifyPasswordByUsernameRequest_RootKeyword": buildVerifyPasswordByUsernameRequest_RootKeyword(emptyIfNull(null)),}
-	function buildVerifyPasswordByUsernameRequest_RootKeyword(json) {
+var nodeFactory = {"VerifyUserPasswordByUsernameRequest_RootKeyword": buildVerifyUserPasswordByUsernameRequest_RootKeyword(emptyIfNull(null)),}
+	function buildVerifyUserPasswordByUsernameRequest_RootKeyword(json) {
 if (json == undefined) {
 		return "";
 	}
 	
-var s = '<div class="node" type="VerifyPasswordByUsernameRequest_RootKeyword" fieldname="RootKeyword" repeated="false">';
+var s = '<div class="node" type="VerifyUserPasswordByUsernameRequest_RootKeyword" fieldname="RootKeyword" repeated="false">';
 s += '<div class="field form-group"><label class="col-sm-2 control-label">Username: </label><div class="col-sm-10"><input class="form-control" name="Username" type="text" '+setStrValue("", json["Username"])+'/></div></div>';
 				
 s += '<div class="field form-group"><label class="col-sm-2 control-label">Password: </label><div class="col-sm-10"><input class="form-control" name="Password" type="text" '+setStrValue("", json["Password"])+'/></div></div>';
@@ -4092,20 +4438,20 @@ s += '<div class="field form-group"><label class="col-sm-2 control-label">Passwo
 			activateLinks(node);
 			return node;
 		}function init() {
-	var root = $(nodeFactory["VerifyPasswordByUsernameRequest_RootKeyword"]);
+	var root = $(nodeFactory["VerifyUserPasswordByUsernameRequest_RootKeyword"]);
 	var jsonText = getUrlParameter("json");
 	if (jsonText == undefined) {
 		var json = emptyIfNull(null);
 	} else {
 		var json = JSON.parse(unescape(jsonText));
 	}
-	$("#form > .children").html(buildVerifyPasswordByUsernameRequest_RootKeyword(json));
+	$("#form > .children").html(buildVerifyUserPasswordByUsernameRequest_RootKeyword(json));
 	activateLinks(root);
-	$("a[id=submit]").click(function(ev) {
+	$("form").submit(function(ev) {
 		ev.preventDefault();
 		c = getChildren($("#form"));
 		j = JSON.stringify(c["RootKeyword"]);
-		window.location.assign("./VerifyPasswordByUsername?json="+j);
+		window.location.assign("./VerifyUserPasswordByUsername?json="+j);
 	});
 }
 
@@ -4163,11 +4509,39 @@ s += '<div class="field form-group"><label class="col-sm-2 control-label">Passwo
 	
 	</div>`
 
-func (this *htmlAccount) VerifyPasswordByUsername(w net_http.ResponseWriter, req *net_http.Request) {
-	w.Write([]byte(Header(`Account`, `VerifyPasswordByUsername`)))
+func (this *htmlAccount) VerifyUserPasswordByUsername(w net_http.ResponseWriter, req *net_http.Request) {
+	w.Write([]byte(Header(`Account`, `VerifyUserPasswordByUsername`)))
 	jsonString := req.FormValue("json")
 	someValue := false
-	msg := &VerifyPasswordByUsernameRequest{}
+	msg := &VerifyUserPasswordByUsernameRequest{}
+	validateMap := make(map[string]interface{})
+	err := encoding_json.Unmarshal([]byte(jsonString), &validateMap)
+	if err != nil {
+		log.Printf("[Parse Request]: %s ", err.Error())
+	}
+	if err == nil {
+		for k, v := range validateMap {
+			switch v.(type) {
+			case string:
+				vInt, err := strconv.ParseInt(v.(string), 10, 64)
+				if err != nil {
+					continue
+				}
+				validateMap[k] = vInt
+			case float64:
+				vInt := int(v.(float64))
+				if vInt > math.MaxInt32 {
+					vStr := strconv.Itoa(vInt)
+					validateMap[k] = vStr
+				}
+			}
+		}
+		jsonBytes, err := encoding_json.Marshal(validateMap)
+		if err != nil {
+			log.Printf("re-marshal failed: %s ", err.Error())
+		}
+		jsonString = string(jsonBytes)
+	}
 	if len(jsonString) > 0 {
 		err := encoding_json.Unmarshal([]byte(jsonString), msg)
 		if err != nil {
@@ -4179,9 +4553,9 @@ func (this *htmlAccount) VerifyPasswordByUsername(w net_http.ResponseWriter, req
 		}
 		someValue = true
 	}
-	w.Write([]byte(FormAccount_VerifyPasswordByUsername))
+	w.Write([]byte(FormAccount_VerifyUserPasswordByUsername))
 	if someValue {
-		reply, err := this.client.VerifyPasswordByUsername(golang_org_x_net_context.Background(), msg)
+		reply, err := this.client.VerifyUserPasswordByUsername(golang_org_x_net_context.Background(), msg)
 		if err != nil {
 			if err != io.EOF {
 				w.Write([]byte("<div class=\"alert alert-danger\" role=\"alert\">" + err.Error() + "</div>"))
@@ -4207,7 +4581,7 @@ var FormAccount_QueryLabelByID string = `<div class="container"><div class="jumb
 	
 	<form class="form-horizontal">
 	<div id="form"><div class="children"></div></div>
-    <a href="#" id="submit" class="btn btn-primary" role="button">Submit</a>
+    <input type="submit" class="btn btn-primary" role="button" value="Submit">
     </form>
     
 	<script>
@@ -4280,15 +4654,37 @@ function addElem(ev) {
 function getUrlParameter(sParam)
 {
     var sPageURL = window.location.search.substring(1);
-    var sURLVariables = sPageURL.split('&');
-    for (var i = 0; i < sURLVariables.length; i++)
-    {
-        var sParameterName = sURLVariables[i].split('=');
-        if (sParameterName[0] == sParam)
-        {
-            return sParameterName[1];
-        }
+    return getJsonFromUrl("?"+sPageURL)[sParam];
+}
+
+// From: https://stackoverflow.com/a/8486188
+function getJsonFromUrl(url) {
+  if(!url) url = location.href;
+  var question = url.indexOf("?");
+  var hash = url.indexOf("#");
+  if(hash==-1 && question==-1) return {};
+  if(hash==-1) hash = url.length;
+  var query = question==-1 || hash==question+1 ? url.substring(hash) :
+  url.substring(question+1,hash);
+  var result = {};
+  query.split("&").forEach(function(part) {
+    if(!part) return;
+    part = part.split("+").join(" "); // replace every + with space, regexp-free version
+    var eq = part.indexOf("=");
+    var key = eq>-1 ? part.substr(0,eq) : part;
+    var val = eq>-1 ? decodeURIComponent(part.substr(eq+1)) : "";
+    var from = key.indexOf("[");
+    if(from==-1) result[decodeURIComponent(key)] = val;
+    else {
+      var to = key.indexOf("]",from);
+      var index = decodeURIComponent(key.substring(from+1,to));
+      key = decodeURIComponent(key.substring(0,from));
+      if(!result[key]) result[key] = [];
+      if(!index) result[key].push(val);
+      else result[key][index] = val;
     }
+  });
+  return result;
 }
 
 function activateLinks(node) {
@@ -4590,7 +4986,7 @@ if (json == undefined) {
 	}
 	
 var s = '<div class="node" type="QueryLabelByIDRequest_RootKeyword" fieldname="RootKeyword" repeated="false">';
-s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </label><div class="col-sm-10"><input class="form-control" name="ID" type="number" step="1" '+setValue(0, json["ID"])+'/></div></div>';
+s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </label><div class="col-sm-10"><input class="form-control" name="ID" type="text" '+setStrValue("", json["ID"])+'/></div></div>';
 				
 
 			s += '</div>';
@@ -4607,7 +5003,7 @@ s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </
 	}
 	$("#form > .children").html(buildQueryLabelByIDRequest_RootKeyword(json));
 	activateLinks(root);
-	$("a[id=submit]").click(function(ev) {
+	$("form").submit(function(ev) {
 		ev.preventDefault();
 		c = getChildren($("#form"));
 		j = JSON.stringify(c["RootKeyword"]);
@@ -4674,6 +5070,34 @@ func (this *htmlAccount) QueryLabelByID(w net_http.ResponseWriter, req *net_http
 	jsonString := req.FormValue("json")
 	someValue := false
 	msg := &QueryLabelByIDRequest{}
+	validateMap := make(map[string]interface{})
+	err := encoding_json.Unmarshal([]byte(jsonString), &validateMap)
+	if err != nil {
+		log.Printf("[Parse Request]: %s ", err.Error())
+	}
+	if err == nil {
+		for k, v := range validateMap {
+			switch v.(type) {
+			case string:
+				vInt, err := strconv.ParseInt(v.(string), 10, 64)
+				if err != nil {
+					continue
+				}
+				validateMap[k] = vInt
+			case float64:
+				vInt := int(v.(float64))
+				if vInt > math.MaxInt32 {
+					vStr := strconv.Itoa(vInt)
+					validateMap[k] = vStr
+				}
+			}
+		}
+		jsonBytes, err := encoding_json.Marshal(validateMap)
+		if err != nil {
+			log.Printf("re-marshal failed: %s ", err.Error())
+		}
+		jsonString = string(jsonBytes)
+	}
 	if len(jsonString) > 0 {
 		err := encoding_json.Unmarshal([]byte(jsonString), msg)
 		if err != nil {
@@ -4713,7 +5137,7 @@ var FormAccount_UpdateLabelByID string = `<div class="container"><div class="jum
 	
 	<form class="form-horizontal">
 	<div id="form"><div class="children"></div></div>
-    <a href="#" id="submit" class="btn btn-primary" role="button">Submit</a>
+    <input type="submit" class="btn btn-primary" role="button" value="Submit">
     </form>
     
 	<script>
@@ -4786,15 +5210,37 @@ function addElem(ev) {
 function getUrlParameter(sParam)
 {
     var sPageURL = window.location.search.substring(1);
-    var sURLVariables = sPageURL.split('&');
-    for (var i = 0; i < sURLVariables.length; i++)
-    {
-        var sParameterName = sURLVariables[i].split('=');
-        if (sParameterName[0] == sParam)
-        {
-            return sParameterName[1];
-        }
+    return getJsonFromUrl("?"+sPageURL)[sParam];
+}
+
+// From: https://stackoverflow.com/a/8486188
+function getJsonFromUrl(url) {
+  if(!url) url = location.href;
+  var question = url.indexOf("?");
+  var hash = url.indexOf("#");
+  if(hash==-1 && question==-1) return {};
+  if(hash==-1) hash = url.length;
+  var query = question==-1 || hash==question+1 ? url.substring(hash) :
+  url.substring(question+1,hash);
+  var result = {};
+  query.split("&").forEach(function(part) {
+    if(!part) return;
+    part = part.split("+").join(" "); // replace every + with space, regexp-free version
+    var eq = part.indexOf("=");
+    var key = eq>-1 ? part.substr(0,eq) : part;
+    var val = eq>-1 ? decodeURIComponent(part.substr(eq+1)) : "";
+    var from = key.indexOf("[");
+    if(from==-1) result[decodeURIComponent(key)] = val;
+    else {
+      var to = key.indexOf("]",from);
+      var index = decodeURIComponent(key.substring(from+1,to));
+      key = decodeURIComponent(key.substring(0,from));
+      if(!result[key]) result[key] = [];
+      if(!index) result[key].push(val);
+      else result[key][index] = val;
     }
+  });
+  return result;
 }
 
 function activateLinks(node) {
@@ -5102,7 +5548,7 @@ s += '<a href="#" class="del-child btn btn-danger btn-xs" role="button" fieldnam
 s += '</div><div class="col-sm-10">'
 s += '<label class="heading">Data</label>'
 s += '</div></div>'
-s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </label><div class="col-sm-10"><input class="form-control" name="ID" type="number" step="1" '+setValue(0, json["ID"])+'/></div></div>';
+s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </label><div class="col-sm-10"><input class="form-control" name="ID" type="text" '+setStrValue("", json["ID"])+'/></div></div>';
 				
 s += '<div class="field form-group"><label class="col-sm-2 control-label">Type: </label><div class="col-sm-10"><input class="form-control" name="Type" type="text" '+setStrValue("", json["Type"])+'/></div></div>';
 				
@@ -5110,7 +5556,7 @@ s += '<div class="field form-group"><label class="col-sm-2 control-label">State:
 				
 s += '<div class="field form-group"><label class="col-sm-2 control-label">Value: </label><div class="col-sm-10"><input class="form-control" name="Value" type="text" '+setStrValue("", json["Value"])+'/></div></div>';
 				
-s += '<div class="field form-group"><label class="col-sm-2 control-label">Owner: </label><div class="col-sm-10"><input class="form-control" name="Owner" type="number" step="1" '+setValue(0, json["Owner"])+'/></div></div>';
+s += '<div class="field form-group"><label class="col-sm-2 control-label">Owner: </label><div class="col-sm-10"><input class="form-control" name="Owner" type="text" '+setStrValue("", json["Owner"])+'/></div></div>';
 				
 s += '<div class="field form-group"><label class="col-sm-2 control-label">CreateTime: </label><div class="col-sm-10"><input class="form-control" name="CreateTime" type="text" '+setStrValue("", json["CreateTime"])+'/></div></div>';
 				
@@ -5127,7 +5573,7 @@ if (json == undefined) {
 	}
 	
 var s = '<div class="node" type="UpdateLabelByIDRequest_RootKeyword" fieldname="RootKeyword" repeated="false">';
-s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </label><div class="col-sm-10"><input class="form-control" name="ID" type="number" step="1" '+setValue(0, json["ID"])+'/></div></div>';
+s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </label><div class="col-sm-10"><input class="form-control" name="ID" type="text" '+setStrValue("", json["ID"])+'/></div></div>';
 				
 s += '<div class="children" type="Label_Data">' + buildLabel_Data(json["Data"]);
 			s += '</div>';
@@ -5148,7 +5594,7 @@ s += '<div class="children" type="Label_Data">' + buildLabel_Data(json["Data"]);
 	}
 	$("#form > .children").html(buildUpdateLabelByIDRequest_RootKeyword(json));
 	activateLinks(root);
-	$("a[id=submit]").click(function(ev) {
+	$("form").submit(function(ev) {
 		ev.preventDefault();
 		c = getChildren($("#form"));
 		j = JSON.stringify(c["RootKeyword"]);
@@ -5215,6 +5661,34 @@ func (this *htmlAccount) UpdateLabelByID(w net_http.ResponseWriter, req *net_htt
 	jsonString := req.FormValue("json")
 	someValue := false
 	msg := &UpdateLabelByIDRequest{}
+	validateMap := make(map[string]interface{})
+	err := encoding_json.Unmarshal([]byte(jsonString), &validateMap)
+	if err != nil {
+		log.Printf("[Parse Request]: %s ", err.Error())
+	}
+	if err == nil {
+		for k, v := range validateMap {
+			switch v.(type) {
+			case string:
+				vInt, err := strconv.ParseInt(v.(string), 10, 64)
+				if err != nil {
+					continue
+				}
+				validateMap[k] = vInt
+			case float64:
+				vInt := int(v.(float64))
+				if vInt > math.MaxInt32 {
+					vStr := strconv.Itoa(vInt)
+					validateMap[k] = vStr
+				}
+			}
+		}
+		jsonBytes, err := encoding_json.Marshal(validateMap)
+		if err != nil {
+			log.Printf("re-marshal failed: %s ", err.Error())
+		}
+		jsonString = string(jsonBytes)
+	}
 	if len(jsonString) > 0 {
 		err := encoding_json.Unmarshal([]byte(jsonString), msg)
 		if err != nil {
@@ -5254,7 +5728,7 @@ var FormAccount_DeleteLabelByID string = `<div class="container"><div class="jum
 	
 	<form class="form-horizontal">
 	<div id="form"><div class="children"></div></div>
-    <a href="#" id="submit" class="btn btn-primary" role="button">Submit</a>
+    <input type="submit" class="btn btn-primary" role="button" value="Submit">
     </form>
     
 	<script>
@@ -5327,15 +5801,37 @@ function addElem(ev) {
 function getUrlParameter(sParam)
 {
     var sPageURL = window.location.search.substring(1);
-    var sURLVariables = sPageURL.split('&');
-    for (var i = 0; i < sURLVariables.length; i++)
-    {
-        var sParameterName = sURLVariables[i].split('=');
-        if (sParameterName[0] == sParam)
-        {
-            return sParameterName[1];
-        }
+    return getJsonFromUrl("?"+sPageURL)[sParam];
+}
+
+// From: https://stackoverflow.com/a/8486188
+function getJsonFromUrl(url) {
+  if(!url) url = location.href;
+  var question = url.indexOf("?");
+  var hash = url.indexOf("#");
+  if(hash==-1 && question==-1) return {};
+  if(hash==-1) hash = url.length;
+  var query = question==-1 || hash==question+1 ? url.substring(hash) :
+  url.substring(question+1,hash);
+  var result = {};
+  query.split("&").forEach(function(part) {
+    if(!part) return;
+    part = part.split("+").join(" "); // replace every + with space, regexp-free version
+    var eq = part.indexOf("=");
+    var key = eq>-1 ? part.substr(0,eq) : part;
+    var val = eq>-1 ? decodeURIComponent(part.substr(eq+1)) : "";
+    var from = key.indexOf("[");
+    if(from==-1) result[decodeURIComponent(key)] = val;
+    else {
+      var to = key.indexOf("]",from);
+      var index = decodeURIComponent(key.substring(from+1,to));
+      key = decodeURIComponent(key.substring(0,from));
+      if(!result[key]) result[key] = [];
+      if(!index) result[key].push(val);
+      else result[key][index] = val;
     }
+  });
+  return result;
 }
 
 function activateLinks(node) {
@@ -5637,7 +6133,7 @@ if (json == undefined) {
 	}
 	
 var s = '<div class="node" type="DeleteLabelByIDRequest_RootKeyword" fieldname="RootKeyword" repeated="false">';
-s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </label><div class="col-sm-10"><input class="form-control" name="ID" type="number" step="1" '+setValue(0, json["ID"])+'/></div></div>';
+s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </label><div class="col-sm-10"><input class="form-control" name="ID" type="text" '+setStrValue("", json["ID"])+'/></div></div>';
 				
 
 			s += '</div>';
@@ -5654,7 +6150,7 @@ s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </
 	}
 	$("#form > .children").html(buildDeleteLabelByIDRequest_RootKeyword(json));
 	activateLinks(root);
-	$("a[id=submit]").click(function(ev) {
+	$("form").submit(function(ev) {
 		ev.preventDefault();
 		c = getChildren($("#form"));
 		j = JSON.stringify(c["RootKeyword"]);
@@ -5721,6 +6217,34 @@ func (this *htmlAccount) DeleteLabelByID(w net_http.ResponseWriter, req *net_htt
 	jsonString := req.FormValue("json")
 	someValue := false
 	msg := &DeleteLabelByIDRequest{}
+	validateMap := make(map[string]interface{})
+	err := encoding_json.Unmarshal([]byte(jsonString), &validateMap)
+	if err != nil {
+		log.Printf("[Parse Request]: %s ", err.Error())
+	}
+	if err == nil {
+		for k, v := range validateMap {
+			switch v.(type) {
+			case string:
+				vInt, err := strconv.ParseInt(v.(string), 10, 64)
+				if err != nil {
+					continue
+				}
+				validateMap[k] = vInt
+			case float64:
+				vInt := int(v.(float64))
+				if vInt > math.MaxInt32 {
+					vStr := strconv.Itoa(vInt)
+					validateMap[k] = vStr
+				}
+			}
+		}
+		jsonBytes, err := encoding_json.Marshal(validateMap)
+		if err != nil {
+			log.Printf("re-marshal failed: %s ", err.Error())
+		}
+		jsonString = string(jsonBytes)
+	}
 	if len(jsonString) > 0 {
 		err := encoding_json.Unmarshal([]byte(jsonString), msg)
 		if err != nil {
@@ -5755,12 +6279,12 @@ func (this *htmlAccount) DeleteLabelByID(w net_http.ResponseWriter, req *net_htt
 	w.Write([]byte(Footer))
 }
 
-var FormAccount_CreateLabelByOwner string = `<div class="container"><div class="jumbotron">
-	<h3>Account: CreateLabelByOwner</h3>
+var FormAccount_QueryLabelByOwner string = `<div class="container"><div class="jumbotron">
+	<h3>Account: QueryLabelByOwner</h3>
 	
 	<form class="form-horizontal">
 	<div id="form"><div class="children"></div></div>
-    <a href="#" id="submit" class="btn btn-primary" role="button">Submit</a>
+    <input type="submit" class="btn btn-primary" role="button" value="Submit">
     </form>
     
 	<script>
@@ -5833,15 +6357,597 @@ function addElem(ev) {
 function getUrlParameter(sParam)
 {
     var sPageURL = window.location.search.substring(1);
-    var sURLVariables = sPageURL.split('&');
-    for (var i = 0; i < sURLVariables.length; i++)
-    {
-        var sParameterName = sURLVariables[i].split('=');
-        if (sParameterName[0] == sParam)
-        {
-            return sParameterName[1];
-        }
+    return getJsonFromUrl("?"+sPageURL)[sParam];
+}
+
+// From: https://stackoverflow.com/a/8486188
+function getJsonFromUrl(url) {
+  if(!url) url = location.href;
+  var question = url.indexOf("?");
+  var hash = url.indexOf("#");
+  if(hash==-1 && question==-1) return {};
+  if(hash==-1) hash = url.length;
+  var query = question==-1 || hash==question+1 ? url.substring(hash) :
+  url.substring(question+1,hash);
+  var result = {};
+  query.split("&").forEach(function(part) {
+    if(!part) return;
+    part = part.split("+").join(" "); // replace every + with space, regexp-free version
+    var eq = part.indexOf("=");
+    var key = eq>-1 ? part.substr(0,eq) : part;
+    var val = eq>-1 ? decodeURIComponent(part.substr(eq+1)) : "";
+    var from = key.indexOf("[");
+    if(from==-1) result[decodeURIComponent(key)] = val;
+    else {
+      var to = key.indexOf("]",from);
+      var index = decodeURIComponent(key.substring(from+1,to));
+      key = decodeURIComponent(key.substring(0,from));
+      if(!result[key]) result[key] = [];
+      if(!index) result[key].push(val);
+      else result[key][index] = val;
     }
+  });
+  return result;
+}
+
+function activateLinks(node) {
+ 	$("a.add-child", node).click(addChildNode);
+	$("a.set-child", node).click(setChildNode);
+	$("a.add-elem", node).click(addElem);
+	$("a.del-child", node).click(delChildNode);
+	$("a.del-field", node).click(delField);
+	$('label[type=checkbox]').click(function() {
+	    if ($(this).hasClass('active')) {
+	        $(this).removeClass('active');
+	    } else {
+	        $(this).addClass('active');
+	    }
+	});
+	$('[data-toggle="tooltip"]', node).tooltip();
+}
+
+function getChildren(el) {
+	var json = {};
+	$("> .children > .node", el).each(function(idx, node) {
+		var nodeJson = getFields($(node));
+		var allChildren = getChildren($(node));
+		for (childType in allChildren) {
+			nodeJson[childType] = allChildren[childType];
+		}
+		var nodeType = $(node).attr("fieldname");
+		var isRepeated = $(node).attr("repeated") == "true";
+		if (isRepeated) {
+			if (!(nodeType in json)) {
+				json[nodeType] = [];
+			}
+			json[nodeType].push(nodeJson);
+		} else {
+			json[nodeType] = nodeJson;
+		}
+	});
+	return json
+}
+
+function isInt(value) {
+  return !isNaN(value) &&
+         parseInt(Number(value)) == value &&
+         !isNaN(parseInt(value, 10));
+}
+
+function replaceAll(str, search, replace) {
+	return str.split(search).join(replace);
+}
+
+function escapeIllegal(str) {
+	return replaceAll(replaceAll(replaceAll(str, "%", "%25"), "&", "%26"), "#", "%23");
+}
+
+function getFields(node) {
+	var nodeJson = {};
+	$("> div.field > div ", $(node)).each(function(idx, field) {
+		$("> input[type=text]", $(field)).each(function(idx, input) {
+			nodeJson[$(input).attr("name")] = escapeIllegal($(input).val());
+		});
+		$("> input[type=number][step=any]", $(field)).each(function(idx, input) {
+			nodeJson[$(input).attr("name")] = parseFloat($(input).val());
+		});
+		$("> input[type=number][step=1]", $(field)).each(function(idx, input) {
+			nodeJson[$(input).attr("name")] = parseInt($(input).val());
+		});
+		$("> div > label.active", $(field)).each(function(idx, label) {
+                        var input = $("> input[type=radio]", $(label));
+			var v = input.val();
+			if (v == "true") {
+				nodeJson[input.attr("name")] = true;
+			} else if (v == "false") {
+				nodeJson[input.attr("name")] = false;
+			} else {
+				nodeJson[input.attr("name")] = parseInt(input.val());
+			}
+		});
+		$("> select", $(field)).each(function(idx, input) {
+			var textvalue = $(input).val();
+			if (isInt(textvalue)) {
+				nodeJson[$(input).attr("name")] = parseInt(textvalue);
+			} else {
+				nodeJson[$(input).attr("name")] = escapeIllegal(textvalue);
+			}
+		});
+	});
+	$("> div.fields > div ", $(node)).each(function(idx, field) {
+		$("input[type=text]", $(field)).each(function(idx, input) {
+			var fieldname = $(input).attr("name");
+			if (!(fieldname in nodeJson)) {
+				nodeJson[fieldname] = [];
+			}
+			nodeJson[fieldname].push(escapeIllegal($(input).val()));
+		});
+		$("input[type=checkbox]", $(field)).each(function(idx, input) {
+			var fieldname = $(input).attr("name");
+			if (!(fieldname in nodeJson)) {
+				nodeJson[fieldname] = [];
+			}
+			nodeJson[fieldname].push($(input).is(':checked'));
+		});
+		$("input[type=number][step=any]", $(field)).each(function(idx, input) {
+			var fieldname = $(input).attr("name");
+			if (!(fieldname in nodeJson)) {
+				nodeJson[fieldname] = [];
+			}
+			nodeJson[fieldname].push(parseFloat($(input).val()));
+		});
+		$("input[type=number][step=1]", $(field)).each(function(idx, input) {
+			var fieldname = $(input).attr("name");
+			if (!(fieldname in nodeJson)) {
+				nodeJson[fieldname] = [];
+			}
+			nodeJson[fieldname].push(parseInt($(input).val()));
+		});
+		$("label.active", $(field)).each(function(idx, label) {
+                        var input = $("> input[type=radio]", $(label));
+			var fieldname = $(input).attr("name");
+			if (!(fieldname in nodeJson)) {
+				nodeJson[fieldname] = [];
+			}
+			nodeJson[fieldname].push(parseInt(input.val()));
+		});
+		$("select", $(field)).each(function(idx, input) {
+			var fieldname = $(input).attr("name");
+			if (!(fieldname in nodeJson)) {
+				nodeJson[fieldname] = [];
+			}
+			var textvalue = $(input).val();
+			if (isInt(textvalue)) {
+				nodeJson[fieldname].push(parseInt(textvalue));
+			} else {
+				nodeJson[fieldname].push(escapeIllegal(textvalue));
+			}
+		});
+	});
+
+	return nodeJson;
+}
+
+function radioed(def, index, value) {
+	if (value == undefined) {
+		if (def == index) {
+			return "checked"
+		}
+		return ""
+	}
+	if (index == parseInt(value)) {
+		return "checked"
+	}
+	if (index == value) {
+		return "checked"
+	}
+	return ""
+}
+
+function activeradio(def, index, value) {
+	if (value == undefined) {
+		if (def == index) {
+			return "active"
+		}
+		return ""
+	}
+	if (index == parseInt(value)) {
+		return "active"
+	}
+	if (index == value) {
+		return "active"
+	}
+	return ""
+}
+
+function checked(value) {
+	if (value == undefined) {
+		return ""
+	}
+	if (value == true) {
+		return "checked='checked'"
+	}
+	return ""
+}
+
+function selected(def, index, value) {
+	if (value == undefined) {
+		if (def == index) {
+			return "selected='selected'"
+		}
+		return ""
+	}
+	if (index == parseInt(value)) {
+		return "selected='selected'"
+	}
+	if (index == value) {
+		return "selected='selected'"
+	}
+	return ""
+}
+
+function emptyIfNull(json) {
+	if (json == undefined || json == null) {
+		return JSON.parse("{}");
+	}
+	return json;
+}
+
+function getValue(json, name) {
+	var value = json[name];
+	if (value == undefined) {
+		return JSON.parse("{}");
+	}
+	return value;
+}
+
+function getList(json, name) {
+	var value = json[name];
+	if (value == undefined) {
+		return JSON.parse("[]");
+	}
+	return value;
+}
+
+function setLink(json, typ, fieldname, help) {
+var display = "";
+	if (json[fieldname] != undefined) {
+display = 'style="display:none"';
+}
+        var tooltip = "";
+        if (help.length > 0) {
+		tooltip = '<a href="#" data-toggle="tooltip" ' + display + ' title="' + help + '" class="tooltipper"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a>';
+        }
+	if (json[fieldname] == undefined) {
+		return '<a href="#" type="' + typ + '" class="set-child btn btn-success btn-sm" role="button" fieldname="' + fieldname + '">Set ' + fieldname + '</a>' + tooltip;
+	}
+	return '<a href="#" type="' + typ + '" class="set-child btn btn-success btn-sm" role="button" fieldname="' + fieldname + '" style="display: none;">Set ' + fieldname + '</a>';
+}
+
+function setValue(def, value) {
+	if (value == undefined) {
+		if (def.length == 0) {
+			return ""
+		}
+		return 'value="' + def + '"'
+	}
+	return 'value="' + value + '"'
+}
+
+function setRepValue(value) {
+	if (value == undefined) {
+		return ""
+	}
+	return 'value="' + value + '"'
+}
+
+function encode_utf8(s) {
+  return unescape(encodeURIComponent(s));
+}
+
+function decode_utf8(s) {
+  return decodeURIComponent(escape(s));
+}
+
+function HTMLEncode(str){
+  var i = str.length,
+      aRet = [];
+
+  while (i--) {
+    var iC = str[i].charCodeAt();
+    if (iC < 65 || iC > 127 || (iC>90 && iC<97)) {
+      aRet[i] = '&#'+iC+';';
+    } else {
+      aRet[i] = str[i];
+    }
+   }
+  return aRet.join('');
+}
+
+
+function setStrValue(def, value) {
+	if (value == undefined) {
+		if (def == undefined) {
+			return ""
+		}
+		return "value=" + JSON.stringify(HTMLEncode(decode_utf8(def)));
+	}
+	return "value=" + JSON.stringify(HTMLEncode(decode_utf8(value)));
+}
+
+function setRepStrValue(value) {
+	if (value == undefined) {
+		return ""
+	}
+	return "value=" + JSON.stringify(HTMLEncode(decode_utf8(value)));
+}
+
+var nodeFactory = {"QueryLabelByOwnerRequest_RootKeyword": buildQueryLabelByOwnerRequest_RootKeyword(emptyIfNull(null)),}
+	function buildQueryLabelByOwnerRequest_RootKeyword(json) {
+if (json == undefined) {
+		return "";
+	}
+	
+var s = '<div class="node" type="QueryLabelByOwnerRequest_RootKeyword" fieldname="RootKeyword" repeated="false">';
+s += '<div class="field form-group"><label class="col-sm-2 control-label">Owner: </label><div class="col-sm-10"><input class="form-control" name="Owner" type="text" '+setStrValue("", json["Owner"])+'/></div></div>';
+				
+s += '<div class="field form-group"><label class="col-sm-2 control-label">Limit: </label><div class="col-sm-10"><input class="form-control" name="Limit" type="text" '+setStrValue("", json["Limit"])+'/></div></div>';
+				
+s += '<div class="field form-group"><label class="col-sm-2 control-label">Offset: </label><div class="col-sm-10"><input class="form-control" name="Offset" type="text" '+setStrValue("", json["Offset"])+'/></div></div>';
+				
+
+			s += '</div>';
+			var node = $(s);
+			activateLinks(node);
+			return node;
+		}function init() {
+	var root = $(nodeFactory["QueryLabelByOwnerRequest_RootKeyword"]);
+	var jsonText = getUrlParameter("json");
+	if (jsonText == undefined) {
+		var json = emptyIfNull(null);
+	} else {
+		var json = JSON.parse(unescape(jsonText));
+	}
+	$("#form > .children").html(buildQueryLabelByOwnerRequest_RootKeyword(json));
+	activateLinks(root);
+	$("form").submit(function(ev) {
+		ev.preventDefault();
+		c = getChildren($("#form"));
+		j = JSON.stringify(c["RootKeyword"]);
+		window.location.assign("./QueryLabelByOwner?json="+j);
+	});
+}
+
+	init();
+
+	</script>
+
+	<style>
+
+	.node{
+		padding-left: 2em;
+		min-height:20px;
+	    padding:10px;
+	    margin-top:10px;
+	    margin-bottom:20px;
+	    //border-left:0.5px solid #999;
+	    -webkit-border-radius:4px;
+	    -moz-border-radius:4px;
+	    border-radius:4px;
+	    -webkit-box-shadow:inset 0 1px 1px rgba(0, 0, 0, 0.05);
+	    -moz-box-shadow:inset 0 1px 1px rgba(0, 0, 0, 0.05);
+	    box-shadow:inset 0 1px 1px rgba(0, 0, 0, 0.05);
+	    background-color:#eaeaea;
+	}
+
+	.node .node {
+		background-color:#e2e2e2;
+	}
+
+	.node .node .node {
+		background-color:#d9d9d9;
+	}
+
+	.node .node .node .node {
+		background-color:#d1d1d1;
+	}
+
+	.node .node .node .node .node {
+		background-color:#c7c7c7;
+	}
+
+	.node .node .node .node .node .node {
+		background-color:#c0c0c0;
+	}
+
+	label{
+	        font-weight: normal;
+	}
+
+	.heading {
+		font-weight: bold;
+	}
+
+	</style>
+	
+	</div>`
+
+func (this *htmlAccount) QueryLabelByOwner(w net_http.ResponseWriter, req *net_http.Request) {
+	w.Write([]byte(Header(`Account`, `QueryLabelByOwner`)))
+	jsonString := req.FormValue("json")
+	someValue := false
+	msg := &QueryLabelByOwnerRequest{}
+	validateMap := make(map[string]interface{})
+	err := encoding_json.Unmarshal([]byte(jsonString), &validateMap)
+	if err != nil {
+		log.Printf("[Parse Request]: %s ", err.Error())
+	}
+	if err == nil {
+		for k, v := range validateMap {
+			switch v.(type) {
+			case string:
+				vInt, err := strconv.ParseInt(v.(string), 10, 64)
+				if err != nil {
+					continue
+				}
+				validateMap[k] = vInt
+			case float64:
+				vInt := int(v.(float64))
+				if vInt > math.MaxInt32 {
+					vStr := strconv.Itoa(vInt)
+					validateMap[k] = vStr
+				}
+			}
+		}
+		jsonBytes, err := encoding_json.Marshal(validateMap)
+		if err != nil {
+			log.Printf("re-marshal failed: %s ", err.Error())
+		}
+		jsonString = string(jsonBytes)
+	}
+	if len(jsonString) > 0 {
+		err := encoding_json.Unmarshal([]byte(jsonString), msg)
+		if err != nil {
+			if err != io.EOF {
+				w.Write([]byte("<div class=\"alert alert-danger\" role=\"alert\">" + err.Error() + "</div>"))
+				return
+			}
+			w.Write([]byte("<div class=\"alert alert-danger\" role=\"alert\">" + err.Error() + "</div>"))
+		}
+		someValue = true
+	}
+	w.Write([]byte(FormAccount_QueryLabelByOwner))
+	if someValue {
+		reply, err := this.client.QueryLabelByOwner(golang_org_x_net_context.Background(), msg)
+		if err != nil {
+			if err != io.EOF {
+				w.Write([]byte("<div class=\"alert alert-danger\" role=\"alert\">" + err.Error() + "</div>"))
+				return
+			}
+			w.Write([]byte("<div class=\"alert alert-danger\" role=\"alert\">" + err.Error() + "</div>"))
+		}
+		out, err := this.stringer(msg, reply)
+		if err != nil {
+			if err != io.EOF {
+				w.Write([]byte("<div class=\"alert alert-danger\" role=\"alert\">" + err.Error() + "</div>"))
+				return
+			}
+			w.Write([]byte("<div class=\"alert alert-danger\" role=\"alert\">" + err.Error() + "</div>"))
+		}
+		w.Write(out)
+	}
+	w.Write([]byte(Footer))
+}
+
+var FormAccount_CreateLabelByOwner string = `<div class="container"><div class="jumbotron">
+	<h3>Account: CreateLabelByOwner</h3>
+	
+	<form class="form-horizontal">
+	<div id="form"><div class="children"></div></div>
+    <input type="submit" class="btn btn-primary" role="button" value="Submit">
+    </form>
+    
+	<script>
+
+function addChildNode(ev) {
+	ev.preventDefault();
+	var thisNode = $(this).parents(".node:first");
+	var myType = $(this).attr("type");
+	var child = $(nodeFactory[myType]);
+	activateLinks(child);
+	$(">.children[type=" + myType + "]", thisNode).append(child);
+}
+
+function setChildNode(ev) {
+	ev.preventDefault();
+	var thisNode = $(this).parents(".node:first");
+	var myType = $(this).attr("type");
+	var child = $(nodeFactory[myType]);
+	activateLinks(child);
+	$(">.children[type=" + myType + "]", thisNode).append(child);
+$(">.tooltipper", thisNode).hide();
+	$(this).hide();
+}
+
+function delChildNode(ev) {
+	ev.preventDefault();
+	var thisNode = $(this).parents(".node:first");
+	var parentNode = thisNode.parents(".node:first");
+	thisNode.remove();
+	var setChildLink = $(">a.set-child[fieldname='" + thisNode.attr('fieldname') + "']", parentNode);
+	if (setChildLink.length > 0) {
+		setChildLink.show();
+                $(">.tooltipper", parentNode).show();
+	}
+}
+
+function delField(ev) {
+	ev.preventDefault();
+	var thisField = $(this).parents(".field:first");
+	thisField.remove();
+}
+
+function addElem(ev) {
+	ev.preventDefault();
+	var thisNode = $(this).parents(".node:first");
+	var myType = $(this).attr("type");
+	var myFieldname = $(this).attr("fieldname");
+	if (myType == "bool") {
+		var input = $('<div class="field form-group"><label class="col-sm-2 control-label">' + myFieldname + ': </label><div class="col-sm-8"><input name="' + myFieldname + '" type="checkbox" repeated="true"/></div><div class="col-sm-2"><a href="#" class="del-field btn btn-warning btn-sm" role="button">Remove</a></div></div>');
+		$("a.del-field", input).click(delField);
+		$("> .fields[fieldname='" + myFieldname + "']", thisNode).append(input);
+	}
+	if (myType == "number") {
+		var input = $('<div class="field form-group"><label class="col-sm-2 control-label">' + myFieldname + ': </label><div class="col-sm-8"><input class="form-control" name="' + myFieldname + '" type="number" step="1" repeated="true"/></div><div class="col-sm-2"><a href="#"  class="del-field btn btn-warning btn-sm" role="button">Remove</a></div></div>');
+		$("a.del-field", input).click(delField);
+		$("> .fields[fieldname='" + myFieldname + "']", thisNode).append(input);
+	}
+	if (myType == "text") {
+		var input = $('<div class="field form-group"><label class="col-sm-2 control-label">' + myFieldname + ': </label><div class="col-sm-8"><input class="form-control" name="' + myFieldname + '" type="text" repeated="true"/></div><div class="col-sm-2"><a href="#"  class="del-field btn btn-warning btn-sm" role="button">Remove</a></div></div>');
+		$("a.del-field", input).click(delField);
+		$("> .fields[fieldname='" + myFieldname + "']", thisNode).append(input);
+	}
+	if (myType == "float") {
+		var input = $('<div class="field form-group"><label class="col-sm-2 control-label">' + myFieldname + ': </label><div class="col-sm-8"><input class="form-control" name="' + myFieldname + '" type="number" step="any" repeated="true"/></div><div class="col-sm-2"><a href="#"  class="del-field btn btn-warning btn-sm" role="button">Remove</a></div></div>');
+		$("a.del-field", input).click(delField);
+		$("> .fields[fieldname='" + myFieldname + "']", thisNode).append(input);
+	}
+}
+
+function getUrlParameter(sParam)
+{
+    var sPageURL = window.location.search.substring(1);
+    return getJsonFromUrl("?"+sPageURL)[sParam];
+}
+
+// From: https://stackoverflow.com/a/8486188
+function getJsonFromUrl(url) {
+  if(!url) url = location.href;
+  var question = url.indexOf("?");
+  var hash = url.indexOf("#");
+  if(hash==-1 && question==-1) return {};
+  if(hash==-1) hash = url.length;
+  var query = question==-1 || hash==question+1 ? url.substring(hash) :
+  url.substring(question+1,hash);
+  var result = {};
+  query.split("&").forEach(function(part) {
+    if(!part) return;
+    part = part.split("+").join(" "); // replace every + with space, regexp-free version
+    var eq = part.indexOf("=");
+    var key = eq>-1 ? part.substr(0,eq) : part;
+    var val = eq>-1 ? decodeURIComponent(part.substr(eq+1)) : "";
+    var from = key.indexOf("[");
+    if(from==-1) result[decodeURIComponent(key)] = val;
+    else {
+      var to = key.indexOf("]",from);
+      var index = decodeURIComponent(key.substring(from+1,to));
+      key = decodeURIComponent(key.substring(0,from));
+      if(!result[key]) result[key] = [];
+      if(!index) result[key].push(val);
+      else result[key][index] = val;
+    }
+  });
+  return result;
 }
 
 function activateLinks(node) {
@@ -6149,7 +7255,7 @@ s += '<a href="#" class="del-child btn btn-danger btn-xs" role="button" fieldnam
 s += '</div><div class="col-sm-10">'
 s += '<label class="heading">Label</label>'
 s += '</div></div>'
-s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </label><div class="col-sm-10"><input class="form-control" name="ID" type="number" step="1" '+setValue(0, json["ID"])+'/></div></div>';
+s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </label><div class="col-sm-10"><input class="form-control" name="ID" type="text" '+setStrValue("", json["ID"])+'/></div></div>';
 				
 s += '<div class="field form-group"><label class="col-sm-2 control-label">Type: </label><div class="col-sm-10"><input class="form-control" name="Type" type="text" '+setStrValue("", json["Type"])+'/></div></div>';
 				
@@ -6157,7 +7263,7 @@ s += '<div class="field form-group"><label class="col-sm-2 control-label">State:
 				
 s += '<div class="field form-group"><label class="col-sm-2 control-label">Value: </label><div class="col-sm-10"><input class="form-control" name="Value" type="text" '+setStrValue("", json["Value"])+'/></div></div>';
 				
-s += '<div class="field form-group"><label class="col-sm-2 control-label">Owner: </label><div class="col-sm-10"><input class="form-control" name="Owner" type="number" step="1" '+setValue(0, json["Owner"])+'/></div></div>';
+s += '<div class="field form-group"><label class="col-sm-2 control-label">Owner: </label><div class="col-sm-10"><input class="form-control" name="Owner" type="text" '+setStrValue("", json["Owner"])+'/></div></div>';
 				
 s += '<div class="field form-group"><label class="col-sm-2 control-label">CreateTime: </label><div class="col-sm-10"><input class="form-control" name="CreateTime" type="text" '+setStrValue("", json["CreateTime"])+'/></div></div>';
 				
@@ -6174,7 +7280,7 @@ if (json == undefined) {
 	}
 	
 var s = '<div class="node" type="CreateLabelByOwnerRequest_RootKeyword" fieldname="RootKeyword" repeated="false">';
-s += '<div class="field form-group"><label class="col-sm-2 control-label">Owner: </label><div class="col-sm-10"><input class="form-control" name="Owner" type="number" step="1" '+setValue(0, json["Owner"])+'/></div></div>';
+s += '<div class="field form-group"><label class="col-sm-2 control-label">Owner: </label><div class="col-sm-10"><input class="form-control" name="Owner" type="text" '+setStrValue("", json["Owner"])+'/></div></div>';
 				
 s += '<div class="children" type="Label_Label">' + buildLabel_Label(json["Label"]);
 			s += '</div>';
@@ -6195,7 +7301,7 @@ s += '<div class="children" type="Label_Label">' + buildLabel_Label(json["Label"
 	}
 	$("#form > .children").html(buildCreateLabelByOwnerRequest_RootKeyword(json));
 	activateLinks(root);
-	$("a[id=submit]").click(function(ev) {
+	$("form").submit(function(ev) {
 		ev.preventDefault();
 		c = getChildren($("#form"));
 		j = JSON.stringify(c["RootKeyword"]);
@@ -6262,6 +7368,34 @@ func (this *htmlAccount) CreateLabelByOwner(w net_http.ResponseWriter, req *net_
 	jsonString := req.FormValue("json")
 	someValue := false
 	msg := &CreateLabelByOwnerRequest{}
+	validateMap := make(map[string]interface{})
+	err := encoding_json.Unmarshal([]byte(jsonString), &validateMap)
+	if err != nil {
+		log.Printf("[Parse Request]: %s ", err.Error())
+	}
+	if err == nil {
+		for k, v := range validateMap {
+			switch v.(type) {
+			case string:
+				vInt, err := strconv.ParseInt(v.(string), 10, 64)
+				if err != nil {
+					continue
+				}
+				validateMap[k] = vInt
+			case float64:
+				vInt := int(v.(float64))
+				if vInt > math.MaxInt32 {
+					vStr := strconv.Itoa(vInt)
+					validateMap[k] = vStr
+				}
+			}
+		}
+		jsonBytes, err := encoding_json.Marshal(validateMap)
+		if err != nil {
+			log.Printf("re-marshal failed: %s ", err.Error())
+		}
+		jsonString = string(jsonBytes)
+	}
 	if len(jsonString) > 0 {
 		err := encoding_json.Unmarshal([]byte(jsonString), msg)
 		if err != nil {
@@ -6276,516 +7410,6 @@ func (this *htmlAccount) CreateLabelByOwner(w net_http.ResponseWriter, req *net_
 	w.Write([]byte(FormAccount_CreateLabelByOwner))
 	if someValue {
 		reply, err := this.client.CreateLabelByOwner(golang_org_x_net_context.Background(), msg)
-		if err != nil {
-			if err != io.EOF {
-				w.Write([]byte("<div class=\"alert alert-danger\" role=\"alert\">" + err.Error() + "</div>"))
-				return
-			}
-			w.Write([]byte("<div class=\"alert alert-danger\" role=\"alert\">" + err.Error() + "</div>"))
-		}
-		out, err := this.stringer(msg, reply)
-		if err != nil {
-			if err != io.EOF {
-				w.Write([]byte("<div class=\"alert alert-danger\" role=\"alert\">" + err.Error() + "</div>"))
-				return
-			}
-			w.Write([]byte("<div class=\"alert alert-danger\" role=\"alert\">" + err.Error() + "</div>"))
-		}
-		w.Write(out)
-	}
-	w.Write([]byte(Footer))
-}
-
-var FormAccount_QueryLabelByOwner string = `<div class="container"><div class="jumbotron">
-	<h3>Account: QueryLabelByOwner</h3>
-	
-	<form class="form-horizontal">
-	<div id="form"><div class="children"></div></div>
-    <a href="#" id="submit" class="btn btn-primary" role="button">Submit</a>
-    </form>
-    
-	<script>
-
-function addChildNode(ev) {
-	ev.preventDefault();
-	var thisNode = $(this).parents(".node:first");
-	var myType = $(this).attr("type");
-	var child = $(nodeFactory[myType]);
-	activateLinks(child);
-	$(">.children[type=" + myType + "]", thisNode).append(child);
-}
-
-function setChildNode(ev) {
-	ev.preventDefault();
-	var thisNode = $(this).parents(".node:first");
-	var myType = $(this).attr("type");
-	var child = $(nodeFactory[myType]);
-	activateLinks(child);
-	$(">.children[type=" + myType + "]", thisNode).append(child);
-$(">.tooltipper", thisNode).hide();
-	$(this).hide();
-}
-
-function delChildNode(ev) {
-	ev.preventDefault();
-	var thisNode = $(this).parents(".node:first");
-	var parentNode = thisNode.parents(".node:first");
-	thisNode.remove();
-	var setChildLink = $(">a.set-child[fieldname='" + thisNode.attr('fieldname') + "']", parentNode);
-	if (setChildLink.length > 0) {
-		setChildLink.show();
-                $(">.tooltipper", parentNode).show();
-	}
-}
-
-function delField(ev) {
-	ev.preventDefault();
-	var thisField = $(this).parents(".field:first");
-	thisField.remove();
-}
-
-function addElem(ev) {
-	ev.preventDefault();
-	var thisNode = $(this).parents(".node:first");
-	var myType = $(this).attr("type");
-	var myFieldname = $(this).attr("fieldname");
-	if (myType == "bool") {
-		var input = $('<div class="field form-group"><label class="col-sm-2 control-label">' + myFieldname + ': </label><div class="col-sm-8"><input name="' + myFieldname + '" type="checkbox" repeated="true"/></div><div class="col-sm-2"><a href="#" class="del-field btn btn-warning btn-sm" role="button">Remove</a></div></div>');
-		$("a.del-field", input).click(delField);
-		$("> .fields[fieldname='" + myFieldname + "']", thisNode).append(input);
-	}
-	if (myType == "number") {
-		var input = $('<div class="field form-group"><label class="col-sm-2 control-label">' + myFieldname + ': </label><div class="col-sm-8"><input class="form-control" name="' + myFieldname + '" type="number" step="1" repeated="true"/></div><div class="col-sm-2"><a href="#"  class="del-field btn btn-warning btn-sm" role="button">Remove</a></div></div>');
-		$("a.del-field", input).click(delField);
-		$("> .fields[fieldname='" + myFieldname + "']", thisNode).append(input);
-	}
-	if (myType == "text") {
-		var input = $('<div class="field form-group"><label class="col-sm-2 control-label">' + myFieldname + ': </label><div class="col-sm-8"><input class="form-control" name="' + myFieldname + '" type="text" repeated="true"/></div><div class="col-sm-2"><a href="#"  class="del-field btn btn-warning btn-sm" role="button">Remove</a></div></div>');
-		$("a.del-field", input).click(delField);
-		$("> .fields[fieldname='" + myFieldname + "']", thisNode).append(input);
-	}
-	if (myType == "float") {
-		var input = $('<div class="field form-group"><label class="col-sm-2 control-label">' + myFieldname + ': </label><div class="col-sm-8"><input class="form-control" name="' + myFieldname + '" type="number" step="any" repeated="true"/></div><div class="col-sm-2"><a href="#"  class="del-field btn btn-warning btn-sm" role="button">Remove</a></div></div>');
-		$("a.del-field", input).click(delField);
-		$("> .fields[fieldname='" + myFieldname + "']", thisNode).append(input);
-	}
-}
-
-function getUrlParameter(sParam)
-{
-    var sPageURL = window.location.search.substring(1);
-    var sURLVariables = sPageURL.split('&');
-    for (var i = 0; i < sURLVariables.length; i++)
-    {
-        var sParameterName = sURLVariables[i].split('=');
-        if (sParameterName[0] == sParam)
-        {
-            return sParameterName[1];
-        }
-    }
-}
-
-function activateLinks(node) {
- 	$("a.add-child", node).click(addChildNode);
-	$("a.set-child", node).click(setChildNode);
-	$("a.add-elem", node).click(addElem);
-	$("a.del-child", node).click(delChildNode);
-	$("a.del-field", node).click(delField);
-	$('label[type=checkbox]').click(function() {
-	    if ($(this).hasClass('active')) {
-	        $(this).removeClass('active');
-	    } else {
-	        $(this).addClass('active');
-	    }
-	});
-	$('[data-toggle="tooltip"]', node).tooltip();
-}
-
-function getChildren(el) {
-	var json = {};
-	$("> .children > .node", el).each(function(idx, node) {
-		var nodeJson = getFields($(node));
-		var allChildren = getChildren($(node));
-		for (childType in allChildren) {
-			nodeJson[childType] = allChildren[childType];
-		}
-		var nodeType = $(node).attr("fieldname");
-		var isRepeated = $(node).attr("repeated") == "true";
-		if (isRepeated) {
-			if (!(nodeType in json)) {
-				json[nodeType] = [];
-			}
-			json[nodeType].push(nodeJson);
-		} else {
-			json[nodeType] = nodeJson;
-		}
-	});
-	return json
-}
-
-function isInt(value) {
-  return !isNaN(value) &&
-         parseInt(Number(value)) == value &&
-         !isNaN(parseInt(value, 10));
-}
-
-function replaceAll(str, search, replace) {
-	return str.split(search).join(replace);
-}
-
-function escapeIllegal(str) {
-	return replaceAll(replaceAll(replaceAll(str, "%", "%25"), "&", "%26"), "#", "%23");
-}
-
-function getFields(node) {
-	var nodeJson = {};
-	$("> div.field > div ", $(node)).each(function(idx, field) {
-		$("> input[type=text]", $(field)).each(function(idx, input) {
-			nodeJson[$(input).attr("name")] = escapeIllegal($(input).val());
-		});
-		$("> input[type=number][step=any]", $(field)).each(function(idx, input) {
-			nodeJson[$(input).attr("name")] = parseFloat($(input).val());
-		});
-		$("> input[type=number][step=1]", $(field)).each(function(idx, input) {
-			nodeJson[$(input).attr("name")] = parseInt($(input).val());
-		});
-		$("> div > label.active", $(field)).each(function(idx, label) {
-                        var input = $("> input[type=radio]", $(label));
-			var v = input.val();
-			if (v == "true") {
-				nodeJson[input.attr("name")] = true;
-			} else if (v == "false") {
-				nodeJson[input.attr("name")] = false;
-			} else {
-				nodeJson[input.attr("name")] = parseInt(input.val());
-			}
-		});
-		$("> select", $(field)).each(function(idx, input) {
-			var textvalue = $(input).val();
-			if (isInt(textvalue)) {
-				nodeJson[$(input).attr("name")] = parseInt(textvalue);
-			} else {
-				nodeJson[$(input).attr("name")] = escapeIllegal(textvalue);
-			}
-		});
-	});
-	$("> div.fields > div ", $(node)).each(function(idx, field) {
-		$("input[type=text]", $(field)).each(function(idx, input) {
-			var fieldname = $(input).attr("name");
-			if (!(fieldname in nodeJson)) {
-				nodeJson[fieldname] = [];
-			}
-			nodeJson[fieldname].push(escapeIllegal($(input).val()));
-		});
-		$("input[type=checkbox]", $(field)).each(function(idx, input) {
-			var fieldname = $(input).attr("name");
-			if (!(fieldname in nodeJson)) {
-				nodeJson[fieldname] = [];
-			}
-			nodeJson[fieldname].push($(input).is(':checked'));
-		});
-		$("input[type=number][step=any]", $(field)).each(function(idx, input) {
-			var fieldname = $(input).attr("name");
-			if (!(fieldname in nodeJson)) {
-				nodeJson[fieldname] = [];
-			}
-			nodeJson[fieldname].push(parseFloat($(input).val()));
-		});
-		$("input[type=number][step=1]", $(field)).each(function(idx, input) {
-			var fieldname = $(input).attr("name");
-			if (!(fieldname in nodeJson)) {
-				nodeJson[fieldname] = [];
-			}
-			nodeJson[fieldname].push(parseInt($(input).val()));
-		});
-		$("label.active", $(field)).each(function(idx, label) {
-                        var input = $("> input[type=radio]", $(label));
-			var fieldname = $(input).attr("name");
-			if (!(fieldname in nodeJson)) {
-				nodeJson[fieldname] = [];
-			}
-			nodeJson[fieldname].push(parseInt(input.val()));
-		});
-		$("select", $(field)).each(function(idx, input) {
-			var fieldname = $(input).attr("name");
-			if (!(fieldname in nodeJson)) {
-				nodeJson[fieldname] = [];
-			}
-			var textvalue = $(input).val();
-			if (isInt(textvalue)) {
-				nodeJson[fieldname].push(parseInt(textvalue));
-			} else {
-				nodeJson[fieldname].push(escapeIllegal(textvalue));
-			}
-		});
-	});
-
-	return nodeJson;
-}
-
-function radioed(def, index, value) {
-	if (value == undefined) {
-		if (def == index) {
-			return "checked"
-		}
-		return ""
-	}
-	if (index == parseInt(value)) {
-		return "checked"
-	}
-	if (index == value) {
-		return "checked"
-	}
-	return ""
-}
-
-function activeradio(def, index, value) {
-	if (value == undefined) {
-		if (def == index) {
-			return "active"
-		}
-		return ""
-	}
-	if (index == parseInt(value)) {
-		return "active"
-	}
-	if (index == value) {
-		return "active"
-	}
-	return ""
-}
-
-function checked(value) {
-	if (value == undefined) {
-		return ""
-	}
-	if (value == true) {
-		return "checked='checked'"
-	}
-	return ""
-}
-
-function selected(def, index, value) {
-	if (value == undefined) {
-		if (def == index) {
-			return "selected='selected'"
-		}
-		return ""
-	}
-	if (index == parseInt(value)) {
-		return "selected='selected'"
-	}
-	if (index == value) {
-		return "selected='selected'"
-	}
-	return ""
-}
-
-function emptyIfNull(json) {
-	if (json == undefined || json == null) {
-		return JSON.parse("{}");
-	}
-	return json;
-}
-
-function getValue(json, name) {
-	var value = json[name];
-	if (value == undefined) {
-		return JSON.parse("{}");
-	}
-	return value;
-}
-
-function getList(json, name) {
-	var value = json[name];
-	if (value == undefined) {
-		return JSON.parse("[]");
-	}
-	return value;
-}
-
-function setLink(json, typ, fieldname, help) {
-var display = "";
-	if (json[fieldname] != undefined) {
-display = 'style="display:none"';
-}
-        var tooltip = "";
-        if (help.length > 0) {
-		tooltip = '<a href="#" data-toggle="tooltip" ' + display + ' title="' + help + '" class="tooltipper"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a>';
-        }
-	if (json[fieldname] == undefined) {
-		return '<a href="#" type="' + typ + '" class="set-child btn btn-success btn-sm" role="button" fieldname="' + fieldname + '">Set ' + fieldname + '</a>' + tooltip;
-	}
-	return '<a href="#" type="' + typ + '" class="set-child btn btn-success btn-sm" role="button" fieldname="' + fieldname + '" style="display: none;">Set ' + fieldname + '</a>';
-}
-
-function setValue(def, value) {
-	if (value == undefined) {
-		if (def.length == 0) {
-			return ""
-		}
-		return 'value="' + def + '"'
-	}
-	return 'value="' + value + '"'
-}
-
-function setRepValue(value) {
-	if (value == undefined) {
-		return ""
-	}
-	return 'value="' + value + '"'
-}
-
-function encode_utf8(s) {
-  return unescape(encodeURIComponent(s));
-}
-
-function decode_utf8(s) {
-  return decodeURIComponent(escape(s));
-}
-
-function HTMLEncode(str){
-  var i = str.length,
-      aRet = [];
-
-  while (i--) {
-    var iC = str[i].charCodeAt();
-    if (iC < 65 || iC > 127 || (iC>90 && iC<97)) {
-      aRet[i] = '&#'+iC+';';
-    } else {
-      aRet[i] = str[i];
-    }
-   }
-  return aRet.join('');
-}
-
-
-function setStrValue(def, value) {
-	if (value == undefined) {
-		if (def == undefined) {
-			return ""
-		}
-		return "value=" + JSON.stringify(HTMLEncode(decode_utf8(def)));
-	}
-	return "value=" + JSON.stringify(HTMLEncode(decode_utf8(value)));
-}
-
-function setRepStrValue(value) {
-	if (value == undefined) {
-		return ""
-	}
-	return "value=" + JSON.stringify(HTMLEncode(decode_utf8(value)));
-}
-
-var nodeFactory = {"QueryLabelByOwnerRequest_RootKeyword": buildQueryLabelByOwnerRequest_RootKeyword(emptyIfNull(null)),}
-	function buildQueryLabelByOwnerRequest_RootKeyword(json) {
-if (json == undefined) {
-		return "";
-	}
-	
-var s = '<div class="node" type="QueryLabelByOwnerRequest_RootKeyword" fieldname="RootKeyword" repeated="false">';
-s += '<div class="field form-group"><label class="col-sm-2 control-label">Owner: </label><div class="col-sm-10"><input class="form-control" name="Owner" type="number" step="1" '+setValue(0, json["Owner"])+'/></div></div>';
-				
-s += '<div class="field form-group"><label class="col-sm-2 control-label">Limit: </label><div class="col-sm-10"><input class="form-control" name="Limit" type="number" step="1" '+setValue(0, json["Limit"])+'/></div></div>';
-				
-s += '<div class="field form-group"><label class="col-sm-2 control-label">Offset: </label><div class="col-sm-10"><input class="form-control" name="Offset" type="number" step="1" '+setValue(0, json["Offset"])+'/></div></div>';
-				
-
-			s += '</div>';
-			var node = $(s);
-			activateLinks(node);
-			return node;
-		}function init() {
-	var root = $(nodeFactory["QueryLabelByOwnerRequest_RootKeyword"]);
-	var jsonText = getUrlParameter("json");
-	if (jsonText == undefined) {
-		var json = emptyIfNull(null);
-	} else {
-		var json = JSON.parse(unescape(jsonText));
-	}
-	$("#form > .children").html(buildQueryLabelByOwnerRequest_RootKeyword(json));
-	activateLinks(root);
-	$("a[id=submit]").click(function(ev) {
-		ev.preventDefault();
-		c = getChildren($("#form"));
-		j = JSON.stringify(c["RootKeyword"]);
-		window.location.assign("./QueryLabelByOwner?json="+j);
-	});
-}
-
-	init();
-
-	</script>
-
-	<style>
-
-	.node{
-		padding-left: 2em;
-		min-height:20px;
-	    padding:10px;
-	    margin-top:10px;
-	    margin-bottom:20px;
-	    //border-left:0.5px solid #999;
-	    -webkit-border-radius:4px;
-	    -moz-border-radius:4px;
-	    border-radius:4px;
-	    -webkit-box-shadow:inset 0 1px 1px rgba(0, 0, 0, 0.05);
-	    -moz-box-shadow:inset 0 1px 1px rgba(0, 0, 0, 0.05);
-	    box-shadow:inset 0 1px 1px rgba(0, 0, 0, 0.05);
-	    background-color:#eaeaea;
-	}
-
-	.node .node {
-		background-color:#e2e2e2;
-	}
-
-	.node .node .node {
-		background-color:#d9d9d9;
-	}
-
-	.node .node .node .node {
-		background-color:#d1d1d1;
-	}
-
-	.node .node .node .node .node {
-		background-color:#c7c7c7;
-	}
-
-	.node .node .node .node .node .node {
-		background-color:#c0c0c0;
-	}
-
-	label{
-	        font-weight: normal;
-	}
-
-	.heading {
-		font-weight: bold;
-	}
-
-	</style>
-	
-	</div>`
-
-func (this *htmlAccount) QueryLabelByOwner(w net_http.ResponseWriter, req *net_http.Request) {
-	w.Write([]byte(Header(`Account`, `QueryLabelByOwner`)))
-	jsonString := req.FormValue("json")
-	someValue := false
-	msg := &QueryLabelByOwnerRequest{}
-	if len(jsonString) > 0 {
-		err := encoding_json.Unmarshal([]byte(jsonString), msg)
-		if err != nil {
-			if err != io.EOF {
-				w.Write([]byte("<div class=\"alert alert-danger\" role=\"alert\">" + err.Error() + "</div>"))
-				return
-			}
-			w.Write([]byte("<div class=\"alert alert-danger\" role=\"alert\">" + err.Error() + "</div>"))
-		}
-		someValue = true
-	}
-	w.Write([]byte(FormAccount_QueryLabelByOwner))
-	if someValue {
-		reply, err := this.client.QueryLabelByOwner(golang_org_x_net_context.Background(), msg)
 		if err != nil {
 			if err != io.EOF {
 				w.Write([]byte("<div class=\"alert alert-danger\" role=\"alert\">" + err.Error() + "</div>"))
