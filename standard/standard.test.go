@@ -13,7 +13,6 @@ import (
 	log "log"
 	math "math"
 	net_http "net/http"
-	strconv "strconv"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -78,7 +77,7 @@ var FormAccount_CreateUser string = `<div class="container"><div class="jumbotro
 	
 	<form class="form-horizontal">
 	<div id="form"><div class="children"></div></div>
-    <input type="submit" class="btn btn-primary" role="button" value="Submit">
+    <a href="#" id="submit" class="btn btn-primary" role="button">Submit</a>
     </form>
     
 	<script>
@@ -151,37 +150,15 @@ function addElem(ev) {
 function getUrlParameter(sParam)
 {
     var sPageURL = window.location.search.substring(1);
-    return getJsonFromUrl("?"+sPageURL)[sParam];
-}
-
-// From: https://stackoverflow.com/a/8486188
-function getJsonFromUrl(url) {
-  if(!url) url = location.href;
-  var question = url.indexOf("?");
-  var hash = url.indexOf("#");
-  if(hash==-1 && question==-1) return {};
-  if(hash==-1) hash = url.length;
-  var query = question==-1 || hash==question+1 ? url.substring(hash) :
-  url.substring(question+1,hash);
-  var result = {};
-  query.split("&").forEach(function(part) {
-    if(!part) return;
-    part = part.split("+").join(" "); // replace every + with space, regexp-free version
-    var eq = part.indexOf("=");
-    var key = eq>-1 ? part.substr(0,eq) : part;
-    var val = eq>-1 ? decodeURIComponent(part.substr(eq+1)) : "";
-    var from = key.indexOf("[");
-    if(from==-1) result[decodeURIComponent(key)] = val;
-    else {
-      var to = key.indexOf("]",from);
-      var index = decodeURIComponent(key.substring(from+1,to));
-      key = decodeURIComponent(key.substring(0,from));
-      if(!result[key]) result[key] = [];
-      if(!index) result[key].push(val);
-      else result[key][index] = val;
+    var sURLVariables = sPageURL.split('&');
+    for (var i = 0; i < sURLVariables.length; i++)
+    {
+        var sParameterName = sURLVariables[i].split('=');
+        if (sParameterName[0] == sParam)
+        {
+            return sParameterName[1];
+        }
     }
-  });
-  return result;
 }
 
 function activateLinks(node) {
@@ -487,7 +464,7 @@ s += '<div class="field form-group"><label class="col-sm-2 control-label">Type: 
 				
 s += '<div class="field form-group"><label class="col-sm-2 control-label">Avatar: </label><div class="col-sm-10"><input class="form-control" name="Avatar" type="text" '+setStrValue("", json["Avatar"])+'/></div></div>';
 				
-s += '<div class="field form-group"><label class="col-sm-2 control-label">Inviter: </label><div class="col-sm-10"><input class="form-control" name="Inviter" type="text" '+setStrValue("", json["Inviter"])+'/></div></div>';
+s += '<div class="field form-group"><label class="col-sm-2 control-label">Inviter: </label><div class="col-sm-10"><input class="form-control" name="Inviter" type="number" step="1" '+setValue(0, json["Inviter"])+'/></div></div>';
 				
 s += '<div class="field form-group"><label class="col-sm-2 control-label">Nickname: </label><div class="col-sm-10"><input class="form-control" name="Nickname" type="text" '+setStrValue("", json["Nickname"])+'/></div></div>';
 				
@@ -510,7 +487,7 @@ s += '<div class="field form-group"><label class="col-sm-2 control-label">Passwo
 	}
 	$("#form > .children").html(buildCreateUserRequest_RootKeyword(json));
 	activateLinks(root);
-	$("form").submit(function(ev) {
+	$("a[id=submit]").click(function(ev) {
 		ev.preventDefault();
 		c = getChildren($("#form"));
 		j = JSON.stringify(c["RootKeyword"]);
@@ -577,34 +554,6 @@ func (this *htmlAccount) CreateUser(w net_http.ResponseWriter, req *net_http.Req
 	jsonString := req.FormValue("json")
 	someValue := false
 	msg := &CreateUserRequest{}
-	validateMap := make(map[string]interface{})
-	err := encoding_json.Unmarshal([]byte(jsonString), &validateMap)
-	if err != nil {
-		log.Printf("[Parse Request]: %s ", err.Error())
-	}
-	if err == nil {
-		for k, v := range validateMap {
-			switch v.(type) {
-			case string:
-				vInt, err := strconv.ParseInt(v.(string), 10, 64)
-				if err != nil {
-					continue
-				}
-				validateMap[k] = vInt
-			case float64:
-				vInt := int(v.(float64))
-				if vInt > math.MaxInt32 {
-					vStr := strconv.Itoa(vInt)
-					validateMap[k] = vStr
-				}
-			}
-		}
-		jsonBytes, err := encoding_json.Marshal(validateMap)
-		if err != nil {
-			log.Printf("re-marshal failed: %s ", err.Error())
-		}
-		jsonString = string(jsonBytes)
-	}
 	if len(jsonString) > 0 {
 		err := encoding_json.Unmarshal([]byte(jsonString), msg)
 		if err != nil {
@@ -644,7 +593,7 @@ var FormAccount_QueryUserByID string = `<div class="container"><div class="jumbo
 	
 	<form class="form-horizontal">
 	<div id="form"><div class="children"></div></div>
-    <input type="submit" class="btn btn-primary" role="button" value="Submit">
+    <a href="#" id="submit" class="btn btn-primary" role="button">Submit</a>
     </form>
     
 	<script>
@@ -717,37 +666,15 @@ function addElem(ev) {
 function getUrlParameter(sParam)
 {
     var sPageURL = window.location.search.substring(1);
-    return getJsonFromUrl("?"+sPageURL)[sParam];
-}
-
-// From: https://stackoverflow.com/a/8486188
-function getJsonFromUrl(url) {
-  if(!url) url = location.href;
-  var question = url.indexOf("?");
-  var hash = url.indexOf("#");
-  if(hash==-1 && question==-1) return {};
-  if(hash==-1) hash = url.length;
-  var query = question==-1 || hash==question+1 ? url.substring(hash) :
-  url.substring(question+1,hash);
-  var result = {};
-  query.split("&").forEach(function(part) {
-    if(!part) return;
-    part = part.split("+").join(" "); // replace every + with space, regexp-free version
-    var eq = part.indexOf("=");
-    var key = eq>-1 ? part.substr(0,eq) : part;
-    var val = eq>-1 ? decodeURIComponent(part.substr(eq+1)) : "";
-    var from = key.indexOf("[");
-    if(from==-1) result[decodeURIComponent(key)] = val;
-    else {
-      var to = key.indexOf("]",from);
-      var index = decodeURIComponent(key.substring(from+1,to));
-      key = decodeURIComponent(key.substring(0,from));
-      if(!result[key]) result[key] = [];
-      if(!index) result[key].push(val);
-      else result[key][index] = val;
+    var sURLVariables = sPageURL.split('&');
+    for (var i = 0; i < sURLVariables.length; i++)
+    {
+        var sParameterName = sURLVariables[i].split('=');
+        if (sParameterName[0] == sParam)
+        {
+            return sParameterName[1];
+        }
     }
-  });
-  return result;
 }
 
 function activateLinks(node) {
@@ -1049,7 +976,7 @@ if (json == undefined) {
 	}
 	
 var s = '<div class="node" type="QueryUserByIDRequest_RootKeyword" fieldname="RootKeyword" repeated="false">';
-s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </label><div class="col-sm-10"><input class="form-control" name="ID" type="text" '+setStrValue("", json["ID"])+'/></div></div>';
+s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </label><div class="col-sm-10"><input class="form-control" name="ID" type="number" step="1" '+setValue(0, json["ID"])+'/></div></div>';
 				
 
 			s += '</div>';
@@ -1066,7 +993,7 @@ s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </
 	}
 	$("#form > .children").html(buildQueryUserByIDRequest_RootKeyword(json));
 	activateLinks(root);
-	$("form").submit(function(ev) {
+	$("a[id=submit]").click(function(ev) {
 		ev.preventDefault();
 		c = getChildren($("#form"));
 		j = JSON.stringify(c["RootKeyword"]);
@@ -1133,34 +1060,6 @@ func (this *htmlAccount) QueryUserByID(w net_http.ResponseWriter, req *net_http.
 	jsonString := req.FormValue("json")
 	someValue := false
 	msg := &QueryUserByIDRequest{}
-	validateMap := make(map[string]interface{})
-	err := encoding_json.Unmarshal([]byte(jsonString), &validateMap)
-	if err != nil {
-		log.Printf("[Parse Request]: %s ", err.Error())
-	}
-	if err == nil {
-		for k, v := range validateMap {
-			switch v.(type) {
-			case string:
-				vInt, err := strconv.ParseInt(v.(string), 10, 64)
-				if err != nil {
-					continue
-				}
-				validateMap[k] = vInt
-			case float64:
-				vInt := int(v.(float64))
-				if vInt > math.MaxInt32 {
-					vStr := strconv.Itoa(vInt)
-					validateMap[k] = vStr
-				}
-			}
-		}
-		jsonBytes, err := encoding_json.Marshal(validateMap)
-		if err != nil {
-			log.Printf("re-marshal failed: %s ", err.Error())
-		}
-		jsonString = string(jsonBytes)
-	}
 	if len(jsonString) > 0 {
 		err := encoding_json.Unmarshal([]byte(jsonString), msg)
 		if err != nil {
@@ -1200,7 +1099,7 @@ var FormAccount_UpdateUserByID string = `<div class="container"><div class="jumb
 	
 	<form class="form-horizontal">
 	<div id="form"><div class="children"></div></div>
-    <input type="submit" class="btn btn-primary" role="button" value="Submit">
+    <a href="#" id="submit" class="btn btn-primary" role="button">Submit</a>
     </form>
     
 	<script>
@@ -1273,37 +1172,15 @@ function addElem(ev) {
 function getUrlParameter(sParam)
 {
     var sPageURL = window.location.search.substring(1);
-    return getJsonFromUrl("?"+sPageURL)[sParam];
-}
-
-// From: https://stackoverflow.com/a/8486188
-function getJsonFromUrl(url) {
-  if(!url) url = location.href;
-  var question = url.indexOf("?");
-  var hash = url.indexOf("#");
-  if(hash==-1 && question==-1) return {};
-  if(hash==-1) hash = url.length;
-  var query = question==-1 || hash==question+1 ? url.substring(hash) :
-  url.substring(question+1,hash);
-  var result = {};
-  query.split("&").forEach(function(part) {
-    if(!part) return;
-    part = part.split("+").join(" "); // replace every + with space, regexp-free version
-    var eq = part.indexOf("=");
-    var key = eq>-1 ? part.substr(0,eq) : part;
-    var val = eq>-1 ? decodeURIComponent(part.substr(eq+1)) : "";
-    var from = key.indexOf("[");
-    if(from==-1) result[decodeURIComponent(key)] = val;
-    else {
-      var to = key.indexOf("]",from);
-      var index = decodeURIComponent(key.substring(from+1,to));
-      key = decodeURIComponent(key.substring(0,from));
-      if(!result[key]) result[key] = [];
-      if(!index) result[key].push(val);
-      else result[key][index] = val;
+    var sURLVariables = sPageURL.split('&');
+    for (var i = 0; i < sURLVariables.length; i++)
+    {
+        var sParameterName = sURLVariables[i].split('=');
+        if (sParameterName[0] == sParam)
+        {
+            return sParameterName[1];
+        }
     }
-  });
-  return result;
 }
 
 function activateLinks(node) {
@@ -1611,13 +1488,13 @@ s += '<a href="#" class="del-child btn btn-danger btn-xs" role="button" fieldnam
 s += '</div><div class="col-sm-10">'
 s += '<label class="heading">Data</label>'
 s += '</div></div>'
-s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </label><div class="col-sm-10"><input class="form-control" name="ID" type="text" '+setStrValue("", json["ID"])+'/></div></div>';
+s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </label><div class="col-sm-10"><input class="form-control" name="ID" type="number" step="1" '+setValue(0, json["ID"])+'/></div></div>';
 				
 s += '<div class="field form-group"><label class="col-sm-2 control-label">Type: </label><div class="col-sm-10"><input class="form-control" name="Type" type="text" '+setStrValue("", json["Type"])+'/></div></div>';
 				
 s += '<div class="field form-group"><label class="col-sm-2 control-label">Avatar: </label><div class="col-sm-10"><input class="form-control" name="Avatar" type="text" '+setStrValue("", json["Avatar"])+'/></div></div>';
 				
-s += '<div class="field form-group"><label class="col-sm-2 control-label">Inviter: </label><div class="col-sm-10"><input class="form-control" name="Inviter" type="text" '+setStrValue("", json["Inviter"])+'/></div></div>';
+s += '<div class="field form-group"><label class="col-sm-2 control-label">Inviter: </label><div class="col-sm-10"><input class="form-control" name="Inviter" type="number" step="1" '+setValue(0, json["Inviter"])+'/></div></div>';
 				
 s += '<div class="field form-group"><label class="col-sm-2 control-label">Nickname: </label><div class="col-sm-10"><input class="form-control" name="Nickname" type="text" '+setStrValue("", json["Nickname"])+'/></div></div>';
 				
@@ -1640,7 +1517,7 @@ if (json == undefined) {
 	}
 	
 var s = '<div class="node" type="UpdateUserByIDRequest_RootKeyword" fieldname="RootKeyword" repeated="false">';
-s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </label><div class="col-sm-10"><input class="form-control" name="ID" type="text" '+setStrValue("", json["ID"])+'/></div></div>';
+s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </label><div class="col-sm-10"><input class="form-control" name="ID" type="number" step="1" '+setValue(0, json["ID"])+'/></div></div>';
 				
 s += '<div class="children" type="User_Data">' + buildUser_Data(json["Data"]);
 			s += '</div>';
@@ -1661,7 +1538,7 @@ s += '<div class="children" type="User_Data">' + buildUser_Data(json["Data"]);
 	}
 	$("#form > .children").html(buildUpdateUserByIDRequest_RootKeyword(json));
 	activateLinks(root);
-	$("form").submit(function(ev) {
+	$("a[id=submit]").click(function(ev) {
 		ev.preventDefault();
 		c = getChildren($("#form"));
 		j = JSON.stringify(c["RootKeyword"]);
@@ -1728,34 +1605,6 @@ func (this *htmlAccount) UpdateUserByID(w net_http.ResponseWriter, req *net_http
 	jsonString := req.FormValue("json")
 	someValue := false
 	msg := &UpdateUserByIDRequest{}
-	validateMap := make(map[string]interface{})
-	err := encoding_json.Unmarshal([]byte(jsonString), &validateMap)
-	if err != nil {
-		log.Printf("[Parse Request]: %s ", err.Error())
-	}
-	if err == nil {
-		for k, v := range validateMap {
-			switch v.(type) {
-			case string:
-				vInt, err := strconv.ParseInt(v.(string), 10, 64)
-				if err != nil {
-					continue
-				}
-				validateMap[k] = vInt
-			case float64:
-				vInt := int(v.(float64))
-				if vInt > math.MaxInt32 {
-					vStr := strconv.Itoa(vInt)
-					validateMap[k] = vStr
-				}
-			}
-		}
-		jsonBytes, err := encoding_json.Marshal(validateMap)
-		if err != nil {
-			log.Printf("re-marshal failed: %s ", err.Error())
-		}
-		jsonString = string(jsonBytes)
-	}
 	if len(jsonString) > 0 {
 		err := encoding_json.Unmarshal([]byte(jsonString), msg)
 		if err != nil {
@@ -1795,7 +1644,7 @@ var FormAccount_DeleteUserByID string = `<div class="container"><div class="jumb
 	
 	<form class="form-horizontal">
 	<div id="form"><div class="children"></div></div>
-    <input type="submit" class="btn btn-primary" role="button" value="Submit">
+    <a href="#" id="submit" class="btn btn-primary" role="button">Submit</a>
     </form>
     
 	<script>
@@ -1868,37 +1717,15 @@ function addElem(ev) {
 function getUrlParameter(sParam)
 {
     var sPageURL = window.location.search.substring(1);
-    return getJsonFromUrl("?"+sPageURL)[sParam];
-}
-
-// From: https://stackoverflow.com/a/8486188
-function getJsonFromUrl(url) {
-  if(!url) url = location.href;
-  var question = url.indexOf("?");
-  var hash = url.indexOf("#");
-  if(hash==-1 && question==-1) return {};
-  if(hash==-1) hash = url.length;
-  var query = question==-1 || hash==question+1 ? url.substring(hash) :
-  url.substring(question+1,hash);
-  var result = {};
-  query.split("&").forEach(function(part) {
-    if(!part) return;
-    part = part.split("+").join(" "); // replace every + with space, regexp-free version
-    var eq = part.indexOf("=");
-    var key = eq>-1 ? part.substr(0,eq) : part;
-    var val = eq>-1 ? decodeURIComponent(part.substr(eq+1)) : "";
-    var from = key.indexOf("[");
-    if(from==-1) result[decodeURIComponent(key)] = val;
-    else {
-      var to = key.indexOf("]",from);
-      var index = decodeURIComponent(key.substring(from+1,to));
-      key = decodeURIComponent(key.substring(0,from));
-      if(!result[key]) result[key] = [];
-      if(!index) result[key].push(val);
-      else result[key][index] = val;
+    var sURLVariables = sPageURL.split('&');
+    for (var i = 0; i < sURLVariables.length; i++)
+    {
+        var sParameterName = sURLVariables[i].split('=');
+        if (sParameterName[0] == sParam)
+        {
+            return sParameterName[1];
+        }
     }
-  });
-  return result;
 }
 
 function activateLinks(node) {
@@ -2200,7 +2027,7 @@ if (json == undefined) {
 	}
 	
 var s = '<div class="node" type="DeleteUserByIDRequest_RootKeyword" fieldname="RootKeyword" repeated="false">';
-s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </label><div class="col-sm-10"><input class="form-control" name="ID" type="text" '+setStrValue("", json["ID"])+'/></div></div>';
+s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </label><div class="col-sm-10"><input class="form-control" name="ID" type="number" step="1" '+setValue(0, json["ID"])+'/></div></div>';
 				
 
 			s += '</div>';
@@ -2217,7 +2044,7 @@ s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </
 	}
 	$("#form > .children").html(buildDeleteUserByIDRequest_RootKeyword(json));
 	activateLinks(root);
-	$("form").submit(function(ev) {
+	$("a[id=submit]").click(function(ev) {
 		ev.preventDefault();
 		c = getChildren($("#form"));
 		j = JSON.stringify(c["RootKeyword"]);
@@ -2284,34 +2111,6 @@ func (this *htmlAccount) DeleteUserByID(w net_http.ResponseWriter, req *net_http
 	jsonString := req.FormValue("json")
 	someValue := false
 	msg := &DeleteUserByIDRequest{}
-	validateMap := make(map[string]interface{})
-	err := encoding_json.Unmarshal([]byte(jsonString), &validateMap)
-	if err != nil {
-		log.Printf("[Parse Request]: %s ", err.Error())
-	}
-	if err == nil {
-		for k, v := range validateMap {
-			switch v.(type) {
-			case string:
-				vInt, err := strconv.ParseInt(v.(string), 10, 64)
-				if err != nil {
-					continue
-				}
-				validateMap[k] = vInt
-			case float64:
-				vInt := int(v.(float64))
-				if vInt > math.MaxInt32 {
-					vStr := strconv.Itoa(vInt)
-					validateMap[k] = vStr
-				}
-			}
-		}
-		jsonBytes, err := encoding_json.Marshal(validateMap)
-		if err != nil {
-			log.Printf("re-marshal failed: %s ", err.Error())
-		}
-		jsonString = string(jsonBytes)
-	}
 	if len(jsonString) > 0 {
 		err := encoding_json.Unmarshal([]byte(jsonString), msg)
 		if err != nil {
@@ -2351,7 +2150,7 @@ var FormAccount_QueryUserByUsername string = `<div class="container"><div class=
 	
 	<form class="form-horizontal">
 	<div id="form"><div class="children"></div></div>
-    <input type="submit" class="btn btn-primary" role="button" value="Submit">
+    <a href="#" id="submit" class="btn btn-primary" role="button">Submit</a>
     </form>
     
 	<script>
@@ -2424,37 +2223,15 @@ function addElem(ev) {
 function getUrlParameter(sParam)
 {
     var sPageURL = window.location.search.substring(1);
-    return getJsonFromUrl("?"+sPageURL)[sParam];
-}
-
-// From: https://stackoverflow.com/a/8486188
-function getJsonFromUrl(url) {
-  if(!url) url = location.href;
-  var question = url.indexOf("?");
-  var hash = url.indexOf("#");
-  if(hash==-1 && question==-1) return {};
-  if(hash==-1) hash = url.length;
-  var query = question==-1 || hash==question+1 ? url.substring(hash) :
-  url.substring(question+1,hash);
-  var result = {};
-  query.split("&").forEach(function(part) {
-    if(!part) return;
-    part = part.split("+").join(" "); // replace every + with space, regexp-free version
-    var eq = part.indexOf("=");
-    var key = eq>-1 ? part.substr(0,eq) : part;
-    var val = eq>-1 ? decodeURIComponent(part.substr(eq+1)) : "";
-    var from = key.indexOf("[");
-    if(from==-1) result[decodeURIComponent(key)] = val;
-    else {
-      var to = key.indexOf("]",from);
-      var index = decodeURIComponent(key.substring(from+1,to));
-      key = decodeURIComponent(key.substring(0,from));
-      if(!result[key]) result[key] = [];
-      if(!index) result[key].push(val);
-      else result[key][index] = val;
+    var sURLVariables = sPageURL.split('&');
+    for (var i = 0; i < sURLVariables.length; i++)
+    {
+        var sParameterName = sURLVariables[i].split('=');
+        if (sParameterName[0] == sParam)
+        {
+            return sParameterName[1];
+        }
     }
-  });
-  return result;
 }
 
 function activateLinks(node) {
@@ -2773,7 +2550,7 @@ s += '<div class="field form-group"><label class="col-sm-2 control-label">Userna
 	}
 	$("#form > .children").html(buildQueryUserByUsernameRequest_RootKeyword(json));
 	activateLinks(root);
-	$("form").submit(function(ev) {
+	$("a[id=submit]").click(function(ev) {
 		ev.preventDefault();
 		c = getChildren($("#form"));
 		j = JSON.stringify(c["RootKeyword"]);
@@ -2840,34 +2617,6 @@ func (this *htmlAccount) QueryUserByUsername(w net_http.ResponseWriter, req *net
 	jsonString := req.FormValue("json")
 	someValue := false
 	msg := &QueryUserByUsernameRequest{}
-	validateMap := make(map[string]interface{})
-	err := encoding_json.Unmarshal([]byte(jsonString), &validateMap)
-	if err != nil {
-		log.Printf("[Parse Request]: %s ", err.Error())
-	}
-	if err == nil {
-		for k, v := range validateMap {
-			switch v.(type) {
-			case string:
-				vInt, err := strconv.ParseInt(v.(string), 10, 64)
-				if err != nil {
-					continue
-				}
-				validateMap[k] = vInt
-			case float64:
-				vInt := int(v.(float64))
-				if vInt > math.MaxInt32 {
-					vStr := strconv.Itoa(vInt)
-					validateMap[k] = vStr
-				}
-			}
-		}
-		jsonBytes, err := encoding_json.Marshal(validateMap)
-		if err != nil {
-			log.Printf("re-marshal failed: %s ", err.Error())
-		}
-		jsonString = string(jsonBytes)
-	}
 	if len(jsonString) > 0 {
 		err := encoding_json.Unmarshal([]byte(jsonString), msg)
 		if err != nil {
@@ -2907,7 +2656,7 @@ var FormAccount_UpdateUserPasswordByID string = `<div class="container"><div cla
 	
 	<form class="form-horizontal">
 	<div id="form"><div class="children"></div></div>
-    <input type="submit" class="btn btn-primary" role="button" value="Submit">
+    <a href="#" id="submit" class="btn btn-primary" role="button">Submit</a>
     </form>
     
 	<script>
@@ -2980,37 +2729,15 @@ function addElem(ev) {
 function getUrlParameter(sParam)
 {
     var sPageURL = window.location.search.substring(1);
-    return getJsonFromUrl("?"+sPageURL)[sParam];
-}
-
-// From: https://stackoverflow.com/a/8486188
-function getJsonFromUrl(url) {
-  if(!url) url = location.href;
-  var question = url.indexOf("?");
-  var hash = url.indexOf("#");
-  if(hash==-1 && question==-1) return {};
-  if(hash==-1) hash = url.length;
-  var query = question==-1 || hash==question+1 ? url.substring(hash) :
-  url.substring(question+1,hash);
-  var result = {};
-  query.split("&").forEach(function(part) {
-    if(!part) return;
-    part = part.split("+").join(" "); // replace every + with space, regexp-free version
-    var eq = part.indexOf("=");
-    var key = eq>-1 ? part.substr(0,eq) : part;
-    var val = eq>-1 ? decodeURIComponent(part.substr(eq+1)) : "";
-    var from = key.indexOf("[");
-    if(from==-1) result[decodeURIComponent(key)] = val;
-    else {
-      var to = key.indexOf("]",from);
-      var index = decodeURIComponent(key.substring(from+1,to));
-      key = decodeURIComponent(key.substring(0,from));
-      if(!result[key]) result[key] = [];
-      if(!index) result[key].push(val);
-      else result[key][index] = val;
+    var sURLVariables = sPageURL.split('&');
+    for (var i = 0; i < sURLVariables.length; i++)
+    {
+        var sParameterName = sURLVariables[i].split('=');
+        if (sParameterName[0] == sParam)
+        {
+            return sParameterName[1];
+        }
     }
-  });
-  return result;
 }
 
 function activateLinks(node) {
@@ -3312,7 +3039,7 @@ if (json == undefined) {
 	}
 	
 var s = '<div class="node" type="UpdateUserPasswordByIDRequest_RootKeyword" fieldname="RootKeyword" repeated="false">';
-s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </label><div class="col-sm-10"><input class="form-control" name="ID" type="text" '+setStrValue("", json["ID"])+'/></div></div>';
+s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </label><div class="col-sm-10"><input class="form-control" name="ID" type="number" step="1" '+setValue(0, json["ID"])+'/></div></div>';
 				
 s += '<div class="field form-group"><label class="col-sm-2 control-label">Password: </label><div class="col-sm-10"><input class="form-control" name="Password" type="text" '+setStrValue("", json["Password"])+'/></div></div>';
 				
@@ -3331,7 +3058,7 @@ s += '<div class="field form-group"><label class="col-sm-2 control-label">Passwo
 	}
 	$("#form > .children").html(buildUpdateUserPasswordByIDRequest_RootKeyword(json));
 	activateLinks(root);
-	$("form").submit(function(ev) {
+	$("a[id=submit]").click(function(ev) {
 		ev.preventDefault();
 		c = getChildren($("#form"));
 		j = JSON.stringify(c["RootKeyword"]);
@@ -3398,34 +3125,6 @@ func (this *htmlAccount) UpdateUserPasswordByID(w net_http.ResponseWriter, req *
 	jsonString := req.FormValue("json")
 	someValue := false
 	msg := &UpdateUserPasswordByIDRequest{}
-	validateMap := make(map[string]interface{})
-	err := encoding_json.Unmarshal([]byte(jsonString), &validateMap)
-	if err != nil {
-		log.Printf("[Parse Request]: %s ", err.Error())
-	}
-	if err == nil {
-		for k, v := range validateMap {
-			switch v.(type) {
-			case string:
-				vInt, err := strconv.ParseInt(v.(string), 10, 64)
-				if err != nil {
-					continue
-				}
-				validateMap[k] = vInt
-			case float64:
-				vInt := int(v.(float64))
-				if vInt > math.MaxInt32 {
-					vStr := strconv.Itoa(vInt)
-					validateMap[k] = vStr
-				}
-			}
-		}
-		jsonBytes, err := encoding_json.Marshal(validateMap)
-		if err != nil {
-			log.Printf("re-marshal failed: %s ", err.Error())
-		}
-		jsonString = string(jsonBytes)
-	}
 	if len(jsonString) > 0 {
 		err := encoding_json.Unmarshal([]byte(jsonString), msg)
 		if err != nil {
@@ -3465,7 +3164,7 @@ var FormAccount_VerifyUserPasswordByID string = `<div class="container"><div cla
 	
 	<form class="form-horizontal">
 	<div id="form"><div class="children"></div></div>
-    <input type="submit" class="btn btn-primary" role="button" value="Submit">
+    <a href="#" id="submit" class="btn btn-primary" role="button">Submit</a>
     </form>
     
 	<script>
@@ -3538,37 +3237,15 @@ function addElem(ev) {
 function getUrlParameter(sParam)
 {
     var sPageURL = window.location.search.substring(1);
-    return getJsonFromUrl("?"+sPageURL)[sParam];
-}
-
-// From: https://stackoverflow.com/a/8486188
-function getJsonFromUrl(url) {
-  if(!url) url = location.href;
-  var question = url.indexOf("?");
-  var hash = url.indexOf("#");
-  if(hash==-1 && question==-1) return {};
-  if(hash==-1) hash = url.length;
-  var query = question==-1 || hash==question+1 ? url.substring(hash) :
-  url.substring(question+1,hash);
-  var result = {};
-  query.split("&").forEach(function(part) {
-    if(!part) return;
-    part = part.split("+").join(" "); // replace every + with space, regexp-free version
-    var eq = part.indexOf("=");
-    var key = eq>-1 ? part.substr(0,eq) : part;
-    var val = eq>-1 ? decodeURIComponent(part.substr(eq+1)) : "";
-    var from = key.indexOf("[");
-    if(from==-1) result[decodeURIComponent(key)] = val;
-    else {
-      var to = key.indexOf("]",from);
-      var index = decodeURIComponent(key.substring(from+1,to));
-      key = decodeURIComponent(key.substring(0,from));
-      if(!result[key]) result[key] = [];
-      if(!index) result[key].push(val);
-      else result[key][index] = val;
+    var sURLVariables = sPageURL.split('&');
+    for (var i = 0; i < sURLVariables.length; i++)
+    {
+        var sParameterName = sURLVariables[i].split('=');
+        if (sParameterName[0] == sParam)
+        {
+            return sParameterName[1];
+        }
     }
-  });
-  return result;
 }
 
 function activateLinks(node) {
@@ -3870,7 +3547,7 @@ if (json == undefined) {
 	}
 	
 var s = '<div class="node" type="VerifyUserPasswordByIDRequest_RootKeyword" fieldname="RootKeyword" repeated="false">';
-s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </label><div class="col-sm-10"><input class="form-control" name="ID" type="text" '+setStrValue("", json["ID"])+'/></div></div>';
+s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </label><div class="col-sm-10"><input class="form-control" name="ID" type="number" step="1" '+setValue(0, json["ID"])+'/></div></div>';
 				
 s += '<div class="field form-group"><label class="col-sm-2 control-label">Password: </label><div class="col-sm-10"><input class="form-control" name="Password" type="text" '+setStrValue("", json["Password"])+'/></div></div>';
 				
@@ -3889,7 +3566,7 @@ s += '<div class="field form-group"><label class="col-sm-2 control-label">Passwo
 	}
 	$("#form > .children").html(buildVerifyUserPasswordByIDRequest_RootKeyword(json));
 	activateLinks(root);
-	$("form").submit(function(ev) {
+	$("a[id=submit]").click(function(ev) {
 		ev.preventDefault();
 		c = getChildren($("#form"));
 		j = JSON.stringify(c["RootKeyword"]);
@@ -3956,34 +3633,6 @@ func (this *htmlAccount) VerifyUserPasswordByID(w net_http.ResponseWriter, req *
 	jsonString := req.FormValue("json")
 	someValue := false
 	msg := &VerifyUserPasswordByIDRequest{}
-	validateMap := make(map[string]interface{})
-	err := encoding_json.Unmarshal([]byte(jsonString), &validateMap)
-	if err != nil {
-		log.Printf("[Parse Request]: %s ", err.Error())
-	}
-	if err == nil {
-		for k, v := range validateMap {
-			switch v.(type) {
-			case string:
-				vInt, err := strconv.ParseInt(v.(string), 10, 64)
-				if err != nil {
-					continue
-				}
-				validateMap[k] = vInt
-			case float64:
-				vInt := int(v.(float64))
-				if vInt > math.MaxInt32 {
-					vStr := strconv.Itoa(vInt)
-					validateMap[k] = vStr
-				}
-			}
-		}
-		jsonBytes, err := encoding_json.Marshal(validateMap)
-		if err != nil {
-			log.Printf("re-marshal failed: %s ", err.Error())
-		}
-		jsonString = string(jsonBytes)
-	}
 	if len(jsonString) > 0 {
 		err := encoding_json.Unmarshal([]byte(jsonString), msg)
 		if err != nil {
@@ -4023,7 +3672,7 @@ var FormAccount_VerifyUserPasswordByUsername string = `<div class="container"><d
 	
 	<form class="form-horizontal">
 	<div id="form"><div class="children"></div></div>
-    <input type="submit" class="btn btn-primary" role="button" value="Submit">
+    <a href="#" id="submit" class="btn btn-primary" role="button">Submit</a>
     </form>
     
 	<script>
@@ -4096,37 +3745,15 @@ function addElem(ev) {
 function getUrlParameter(sParam)
 {
     var sPageURL = window.location.search.substring(1);
-    return getJsonFromUrl("?"+sPageURL)[sParam];
-}
-
-// From: https://stackoverflow.com/a/8486188
-function getJsonFromUrl(url) {
-  if(!url) url = location.href;
-  var question = url.indexOf("?");
-  var hash = url.indexOf("#");
-  if(hash==-1 && question==-1) return {};
-  if(hash==-1) hash = url.length;
-  var query = question==-1 || hash==question+1 ? url.substring(hash) :
-  url.substring(question+1,hash);
-  var result = {};
-  query.split("&").forEach(function(part) {
-    if(!part) return;
-    part = part.split("+").join(" "); // replace every + with space, regexp-free version
-    var eq = part.indexOf("=");
-    var key = eq>-1 ? part.substr(0,eq) : part;
-    var val = eq>-1 ? decodeURIComponent(part.substr(eq+1)) : "";
-    var from = key.indexOf("[");
-    if(from==-1) result[decodeURIComponent(key)] = val;
-    else {
-      var to = key.indexOf("]",from);
-      var index = decodeURIComponent(key.substring(from+1,to));
-      key = decodeURIComponent(key.substring(0,from));
-      if(!result[key]) result[key] = [];
-      if(!index) result[key].push(val);
-      else result[key][index] = val;
+    var sURLVariables = sPageURL.split('&');
+    for (var i = 0; i < sURLVariables.length; i++)
+    {
+        var sParameterName = sURLVariables[i].split('=');
+        if (sParameterName[0] == sParam)
+        {
+            return sParameterName[1];
+        }
     }
-  });
-  return result;
 }
 
 function activateLinks(node) {
@@ -4447,7 +4074,7 @@ s += '<div class="field form-group"><label class="col-sm-2 control-label">Passwo
 	}
 	$("#form > .children").html(buildVerifyUserPasswordByUsernameRequest_RootKeyword(json));
 	activateLinks(root);
-	$("form").submit(function(ev) {
+	$("a[id=submit]").click(function(ev) {
 		ev.preventDefault();
 		c = getChildren($("#form"));
 		j = JSON.stringify(c["RootKeyword"]);
@@ -4514,34 +4141,6 @@ func (this *htmlAccount) VerifyUserPasswordByUsername(w net_http.ResponseWriter,
 	jsonString := req.FormValue("json")
 	someValue := false
 	msg := &VerifyUserPasswordByUsernameRequest{}
-	validateMap := make(map[string]interface{})
-	err := encoding_json.Unmarshal([]byte(jsonString), &validateMap)
-	if err != nil {
-		log.Printf("[Parse Request]: %s ", err.Error())
-	}
-	if err == nil {
-		for k, v := range validateMap {
-			switch v.(type) {
-			case string:
-				vInt, err := strconv.ParseInt(v.(string), 10, 64)
-				if err != nil {
-					continue
-				}
-				validateMap[k] = vInt
-			case float64:
-				vInt := int(v.(float64))
-				if vInt > math.MaxInt32 {
-					vStr := strconv.Itoa(vInt)
-					validateMap[k] = vStr
-				}
-			}
-		}
-		jsonBytes, err := encoding_json.Marshal(validateMap)
-		if err != nil {
-			log.Printf("re-marshal failed: %s ", err.Error())
-		}
-		jsonString = string(jsonBytes)
-	}
 	if len(jsonString) > 0 {
 		err := encoding_json.Unmarshal([]byte(jsonString), msg)
 		if err != nil {
@@ -4581,7 +4180,7 @@ var FormAccount_QueryLabelByID string = `<div class="container"><div class="jumb
 	
 	<form class="form-horizontal">
 	<div id="form"><div class="children"></div></div>
-    <input type="submit" class="btn btn-primary" role="button" value="Submit">
+    <a href="#" id="submit" class="btn btn-primary" role="button">Submit</a>
     </form>
     
 	<script>
@@ -4654,37 +4253,15 @@ function addElem(ev) {
 function getUrlParameter(sParam)
 {
     var sPageURL = window.location.search.substring(1);
-    return getJsonFromUrl("?"+sPageURL)[sParam];
-}
-
-// From: https://stackoverflow.com/a/8486188
-function getJsonFromUrl(url) {
-  if(!url) url = location.href;
-  var question = url.indexOf("?");
-  var hash = url.indexOf("#");
-  if(hash==-1 && question==-1) return {};
-  if(hash==-1) hash = url.length;
-  var query = question==-1 || hash==question+1 ? url.substring(hash) :
-  url.substring(question+1,hash);
-  var result = {};
-  query.split("&").forEach(function(part) {
-    if(!part) return;
-    part = part.split("+").join(" "); // replace every + with space, regexp-free version
-    var eq = part.indexOf("=");
-    var key = eq>-1 ? part.substr(0,eq) : part;
-    var val = eq>-1 ? decodeURIComponent(part.substr(eq+1)) : "";
-    var from = key.indexOf("[");
-    if(from==-1) result[decodeURIComponent(key)] = val;
-    else {
-      var to = key.indexOf("]",from);
-      var index = decodeURIComponent(key.substring(from+1,to));
-      key = decodeURIComponent(key.substring(0,from));
-      if(!result[key]) result[key] = [];
-      if(!index) result[key].push(val);
-      else result[key][index] = val;
+    var sURLVariables = sPageURL.split('&');
+    for (var i = 0; i < sURLVariables.length; i++)
+    {
+        var sParameterName = sURLVariables[i].split('=');
+        if (sParameterName[0] == sParam)
+        {
+            return sParameterName[1];
+        }
     }
-  });
-  return result;
 }
 
 function activateLinks(node) {
@@ -4986,7 +4563,7 @@ if (json == undefined) {
 	}
 	
 var s = '<div class="node" type="QueryLabelByIDRequest_RootKeyword" fieldname="RootKeyword" repeated="false">';
-s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </label><div class="col-sm-10"><input class="form-control" name="ID" type="text" '+setStrValue("", json["ID"])+'/></div></div>';
+s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </label><div class="col-sm-10"><input class="form-control" name="ID" type="number" step="1" '+setValue(0, json["ID"])+'/></div></div>';
 				
 
 			s += '</div>';
@@ -5003,7 +4580,7 @@ s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </
 	}
 	$("#form > .children").html(buildQueryLabelByIDRequest_RootKeyword(json));
 	activateLinks(root);
-	$("form").submit(function(ev) {
+	$("a[id=submit]").click(function(ev) {
 		ev.preventDefault();
 		c = getChildren($("#form"));
 		j = JSON.stringify(c["RootKeyword"]);
@@ -5070,34 +4647,6 @@ func (this *htmlAccount) QueryLabelByID(w net_http.ResponseWriter, req *net_http
 	jsonString := req.FormValue("json")
 	someValue := false
 	msg := &QueryLabelByIDRequest{}
-	validateMap := make(map[string]interface{})
-	err := encoding_json.Unmarshal([]byte(jsonString), &validateMap)
-	if err != nil {
-		log.Printf("[Parse Request]: %s ", err.Error())
-	}
-	if err == nil {
-		for k, v := range validateMap {
-			switch v.(type) {
-			case string:
-				vInt, err := strconv.ParseInt(v.(string), 10, 64)
-				if err != nil {
-					continue
-				}
-				validateMap[k] = vInt
-			case float64:
-				vInt := int(v.(float64))
-				if vInt > math.MaxInt32 {
-					vStr := strconv.Itoa(vInt)
-					validateMap[k] = vStr
-				}
-			}
-		}
-		jsonBytes, err := encoding_json.Marshal(validateMap)
-		if err != nil {
-			log.Printf("re-marshal failed: %s ", err.Error())
-		}
-		jsonString = string(jsonBytes)
-	}
 	if len(jsonString) > 0 {
 		err := encoding_json.Unmarshal([]byte(jsonString), msg)
 		if err != nil {
@@ -5137,7 +4686,7 @@ var FormAccount_UpdateLabelByID string = `<div class="container"><div class="jum
 	
 	<form class="form-horizontal">
 	<div id="form"><div class="children"></div></div>
-    <input type="submit" class="btn btn-primary" role="button" value="Submit">
+    <a href="#" id="submit" class="btn btn-primary" role="button">Submit</a>
     </form>
     
 	<script>
@@ -5210,37 +4759,15 @@ function addElem(ev) {
 function getUrlParameter(sParam)
 {
     var sPageURL = window.location.search.substring(1);
-    return getJsonFromUrl("?"+sPageURL)[sParam];
-}
-
-// From: https://stackoverflow.com/a/8486188
-function getJsonFromUrl(url) {
-  if(!url) url = location.href;
-  var question = url.indexOf("?");
-  var hash = url.indexOf("#");
-  if(hash==-1 && question==-1) return {};
-  if(hash==-1) hash = url.length;
-  var query = question==-1 || hash==question+1 ? url.substring(hash) :
-  url.substring(question+1,hash);
-  var result = {};
-  query.split("&").forEach(function(part) {
-    if(!part) return;
-    part = part.split("+").join(" "); // replace every + with space, regexp-free version
-    var eq = part.indexOf("=");
-    var key = eq>-1 ? part.substr(0,eq) : part;
-    var val = eq>-1 ? decodeURIComponent(part.substr(eq+1)) : "";
-    var from = key.indexOf("[");
-    if(from==-1) result[decodeURIComponent(key)] = val;
-    else {
-      var to = key.indexOf("]",from);
-      var index = decodeURIComponent(key.substring(from+1,to));
-      key = decodeURIComponent(key.substring(0,from));
-      if(!result[key]) result[key] = [];
-      if(!index) result[key].push(val);
-      else result[key][index] = val;
+    var sURLVariables = sPageURL.split('&');
+    for (var i = 0; i < sURLVariables.length; i++)
+    {
+        var sParameterName = sURLVariables[i].split('=');
+        if (sParameterName[0] == sParam)
+        {
+            return sParameterName[1];
+        }
     }
-  });
-  return result;
 }
 
 function activateLinks(node) {
@@ -5548,7 +5075,7 @@ s += '<a href="#" class="del-child btn btn-danger btn-xs" role="button" fieldnam
 s += '</div><div class="col-sm-10">'
 s += '<label class="heading">Data</label>'
 s += '</div></div>'
-s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </label><div class="col-sm-10"><input class="form-control" name="ID" type="text" '+setStrValue("", json["ID"])+'/></div></div>';
+s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </label><div class="col-sm-10"><input class="form-control" name="ID" type="number" step="1" '+setValue(0, json["ID"])+'/></div></div>';
 				
 s += '<div class="field form-group"><label class="col-sm-2 control-label">Type: </label><div class="col-sm-10"><input class="form-control" name="Type" type="text" '+setStrValue("", json["Type"])+'/></div></div>';
 				
@@ -5556,7 +5083,7 @@ s += '<div class="field form-group"><label class="col-sm-2 control-label">State:
 				
 s += '<div class="field form-group"><label class="col-sm-2 control-label">Value: </label><div class="col-sm-10"><input class="form-control" name="Value" type="text" '+setStrValue("", json["Value"])+'/></div></div>';
 				
-s += '<div class="field form-group"><label class="col-sm-2 control-label">Owner: </label><div class="col-sm-10"><input class="form-control" name="Owner" type="text" '+setStrValue("", json["Owner"])+'/></div></div>';
+s += '<div class="field form-group"><label class="col-sm-2 control-label">Owner: </label><div class="col-sm-10"><input class="form-control" name="Owner" type="number" step="1" '+setValue(0, json["Owner"])+'/></div></div>';
 				
 s += '<div class="field form-group"><label class="col-sm-2 control-label">CreateTime: </label><div class="col-sm-10"><input class="form-control" name="CreateTime" type="text" '+setStrValue("", json["CreateTime"])+'/></div></div>';
 				
@@ -5573,7 +5100,7 @@ if (json == undefined) {
 	}
 	
 var s = '<div class="node" type="UpdateLabelByIDRequest_RootKeyword" fieldname="RootKeyword" repeated="false">';
-s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </label><div class="col-sm-10"><input class="form-control" name="ID" type="text" '+setStrValue("", json["ID"])+'/></div></div>';
+s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </label><div class="col-sm-10"><input class="form-control" name="ID" type="number" step="1" '+setValue(0, json["ID"])+'/></div></div>';
 				
 s += '<div class="children" type="Label_Data">' + buildLabel_Data(json["Data"]);
 			s += '</div>';
@@ -5594,7 +5121,7 @@ s += '<div class="children" type="Label_Data">' + buildLabel_Data(json["Data"]);
 	}
 	$("#form > .children").html(buildUpdateLabelByIDRequest_RootKeyword(json));
 	activateLinks(root);
-	$("form").submit(function(ev) {
+	$("a[id=submit]").click(function(ev) {
 		ev.preventDefault();
 		c = getChildren($("#form"));
 		j = JSON.stringify(c["RootKeyword"]);
@@ -5661,34 +5188,6 @@ func (this *htmlAccount) UpdateLabelByID(w net_http.ResponseWriter, req *net_htt
 	jsonString := req.FormValue("json")
 	someValue := false
 	msg := &UpdateLabelByIDRequest{}
-	validateMap := make(map[string]interface{})
-	err := encoding_json.Unmarshal([]byte(jsonString), &validateMap)
-	if err != nil {
-		log.Printf("[Parse Request]: %s ", err.Error())
-	}
-	if err == nil {
-		for k, v := range validateMap {
-			switch v.(type) {
-			case string:
-				vInt, err := strconv.ParseInt(v.(string), 10, 64)
-				if err != nil {
-					continue
-				}
-				validateMap[k] = vInt
-			case float64:
-				vInt := int(v.(float64))
-				if vInt > math.MaxInt32 {
-					vStr := strconv.Itoa(vInt)
-					validateMap[k] = vStr
-				}
-			}
-		}
-		jsonBytes, err := encoding_json.Marshal(validateMap)
-		if err != nil {
-			log.Printf("re-marshal failed: %s ", err.Error())
-		}
-		jsonString = string(jsonBytes)
-	}
 	if len(jsonString) > 0 {
 		err := encoding_json.Unmarshal([]byte(jsonString), msg)
 		if err != nil {
@@ -5728,7 +5227,7 @@ var FormAccount_DeleteLabelByID string = `<div class="container"><div class="jum
 	
 	<form class="form-horizontal">
 	<div id="form"><div class="children"></div></div>
-    <input type="submit" class="btn btn-primary" role="button" value="Submit">
+    <a href="#" id="submit" class="btn btn-primary" role="button">Submit</a>
     </form>
     
 	<script>
@@ -5801,37 +5300,15 @@ function addElem(ev) {
 function getUrlParameter(sParam)
 {
     var sPageURL = window.location.search.substring(1);
-    return getJsonFromUrl("?"+sPageURL)[sParam];
-}
-
-// From: https://stackoverflow.com/a/8486188
-function getJsonFromUrl(url) {
-  if(!url) url = location.href;
-  var question = url.indexOf("?");
-  var hash = url.indexOf("#");
-  if(hash==-1 && question==-1) return {};
-  if(hash==-1) hash = url.length;
-  var query = question==-1 || hash==question+1 ? url.substring(hash) :
-  url.substring(question+1,hash);
-  var result = {};
-  query.split("&").forEach(function(part) {
-    if(!part) return;
-    part = part.split("+").join(" "); // replace every + with space, regexp-free version
-    var eq = part.indexOf("=");
-    var key = eq>-1 ? part.substr(0,eq) : part;
-    var val = eq>-1 ? decodeURIComponent(part.substr(eq+1)) : "";
-    var from = key.indexOf("[");
-    if(from==-1) result[decodeURIComponent(key)] = val;
-    else {
-      var to = key.indexOf("]",from);
-      var index = decodeURIComponent(key.substring(from+1,to));
-      key = decodeURIComponent(key.substring(0,from));
-      if(!result[key]) result[key] = [];
-      if(!index) result[key].push(val);
-      else result[key][index] = val;
+    var sURLVariables = sPageURL.split('&');
+    for (var i = 0; i < sURLVariables.length; i++)
+    {
+        var sParameterName = sURLVariables[i].split('=');
+        if (sParameterName[0] == sParam)
+        {
+            return sParameterName[1];
+        }
     }
-  });
-  return result;
 }
 
 function activateLinks(node) {
@@ -6133,7 +5610,7 @@ if (json == undefined) {
 	}
 	
 var s = '<div class="node" type="DeleteLabelByIDRequest_RootKeyword" fieldname="RootKeyword" repeated="false">';
-s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </label><div class="col-sm-10"><input class="form-control" name="ID" type="text" '+setStrValue("", json["ID"])+'/></div></div>';
+s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </label><div class="col-sm-10"><input class="form-control" name="ID" type="number" step="1" '+setValue(0, json["ID"])+'/></div></div>';
 				
 
 			s += '</div>';
@@ -6150,7 +5627,7 @@ s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </
 	}
 	$("#form > .children").html(buildDeleteLabelByIDRequest_RootKeyword(json));
 	activateLinks(root);
-	$("form").submit(function(ev) {
+	$("a[id=submit]").click(function(ev) {
 		ev.preventDefault();
 		c = getChildren($("#form"));
 		j = JSON.stringify(c["RootKeyword"]);
@@ -6217,34 +5694,6 @@ func (this *htmlAccount) DeleteLabelByID(w net_http.ResponseWriter, req *net_htt
 	jsonString := req.FormValue("json")
 	someValue := false
 	msg := &DeleteLabelByIDRequest{}
-	validateMap := make(map[string]interface{})
-	err := encoding_json.Unmarshal([]byte(jsonString), &validateMap)
-	if err != nil {
-		log.Printf("[Parse Request]: %s ", err.Error())
-	}
-	if err == nil {
-		for k, v := range validateMap {
-			switch v.(type) {
-			case string:
-				vInt, err := strconv.ParseInt(v.(string), 10, 64)
-				if err != nil {
-					continue
-				}
-				validateMap[k] = vInt
-			case float64:
-				vInt := int(v.(float64))
-				if vInt > math.MaxInt32 {
-					vStr := strconv.Itoa(vInt)
-					validateMap[k] = vStr
-				}
-			}
-		}
-		jsonBytes, err := encoding_json.Marshal(validateMap)
-		if err != nil {
-			log.Printf("re-marshal failed: %s ", err.Error())
-		}
-		jsonString = string(jsonBytes)
-	}
 	if len(jsonString) > 0 {
 		err := encoding_json.Unmarshal([]byte(jsonString), msg)
 		if err != nil {
@@ -6284,7 +5733,7 @@ var FormAccount_QueryLabelByOwner string = `<div class="container"><div class="j
 	
 	<form class="form-horizontal">
 	<div id="form"><div class="children"></div></div>
-    <input type="submit" class="btn btn-primary" role="button" value="Submit">
+    <a href="#" id="submit" class="btn btn-primary" role="button">Submit</a>
     </form>
     
 	<script>
@@ -6357,37 +5806,15 @@ function addElem(ev) {
 function getUrlParameter(sParam)
 {
     var sPageURL = window.location.search.substring(1);
-    return getJsonFromUrl("?"+sPageURL)[sParam];
-}
-
-// From: https://stackoverflow.com/a/8486188
-function getJsonFromUrl(url) {
-  if(!url) url = location.href;
-  var question = url.indexOf("?");
-  var hash = url.indexOf("#");
-  if(hash==-1 && question==-1) return {};
-  if(hash==-1) hash = url.length;
-  var query = question==-1 || hash==question+1 ? url.substring(hash) :
-  url.substring(question+1,hash);
-  var result = {};
-  query.split("&").forEach(function(part) {
-    if(!part) return;
-    part = part.split("+").join(" "); // replace every + with space, regexp-free version
-    var eq = part.indexOf("=");
-    var key = eq>-1 ? part.substr(0,eq) : part;
-    var val = eq>-1 ? decodeURIComponent(part.substr(eq+1)) : "";
-    var from = key.indexOf("[");
-    if(from==-1) result[decodeURIComponent(key)] = val;
-    else {
-      var to = key.indexOf("]",from);
-      var index = decodeURIComponent(key.substring(from+1,to));
-      key = decodeURIComponent(key.substring(0,from));
-      if(!result[key]) result[key] = [];
-      if(!index) result[key].push(val);
-      else result[key][index] = val;
+    var sURLVariables = sPageURL.split('&');
+    for (var i = 0; i < sURLVariables.length; i++)
+    {
+        var sParameterName = sURLVariables[i].split('=');
+        if (sParameterName[0] == sParam)
+        {
+            return sParameterName[1];
+        }
     }
-  });
-  return result;
 }
 
 function activateLinks(node) {
@@ -6689,11 +6116,11 @@ if (json == undefined) {
 	}
 	
 var s = '<div class="node" type="QueryLabelByOwnerRequest_RootKeyword" fieldname="RootKeyword" repeated="false">';
-s += '<div class="field form-group"><label class="col-sm-2 control-label">Owner: </label><div class="col-sm-10"><input class="form-control" name="Owner" type="text" '+setStrValue("", json["Owner"])+'/></div></div>';
+s += '<div class="field form-group"><label class="col-sm-2 control-label">Owner: </label><div class="col-sm-10"><input class="form-control" name="Owner" type="number" step="1" '+setValue(0, json["Owner"])+'/></div></div>';
 				
-s += '<div class="field form-group"><label class="col-sm-2 control-label">Limit: </label><div class="col-sm-10"><input class="form-control" name="Limit" type="text" '+setStrValue("", json["Limit"])+'/></div></div>';
+s += '<div class="field form-group"><label class="col-sm-2 control-label">Limit: </label><div class="col-sm-10"><input class="form-control" name="Limit" type="number" step="1" '+setValue(0, json["Limit"])+'/></div></div>';
 				
-s += '<div class="field form-group"><label class="col-sm-2 control-label">Offset: </label><div class="col-sm-10"><input class="form-control" name="Offset" type="text" '+setStrValue("", json["Offset"])+'/></div></div>';
+s += '<div class="field form-group"><label class="col-sm-2 control-label">Offset: </label><div class="col-sm-10"><input class="form-control" name="Offset" type="number" step="1" '+setValue(0, json["Offset"])+'/></div></div>';
 				
 
 			s += '</div>';
@@ -6710,7 +6137,7 @@ s += '<div class="field form-group"><label class="col-sm-2 control-label">Offset
 	}
 	$("#form > .children").html(buildQueryLabelByOwnerRequest_RootKeyword(json));
 	activateLinks(root);
-	$("form").submit(function(ev) {
+	$("a[id=submit]").click(function(ev) {
 		ev.preventDefault();
 		c = getChildren($("#form"));
 		j = JSON.stringify(c["RootKeyword"]);
@@ -6777,34 +6204,6 @@ func (this *htmlAccount) QueryLabelByOwner(w net_http.ResponseWriter, req *net_h
 	jsonString := req.FormValue("json")
 	someValue := false
 	msg := &QueryLabelByOwnerRequest{}
-	validateMap := make(map[string]interface{})
-	err := encoding_json.Unmarshal([]byte(jsonString), &validateMap)
-	if err != nil {
-		log.Printf("[Parse Request]: %s ", err.Error())
-	}
-	if err == nil {
-		for k, v := range validateMap {
-			switch v.(type) {
-			case string:
-				vInt, err := strconv.ParseInt(v.(string), 10, 64)
-				if err != nil {
-					continue
-				}
-				validateMap[k] = vInt
-			case float64:
-				vInt := int(v.(float64))
-				if vInt > math.MaxInt32 {
-					vStr := strconv.Itoa(vInt)
-					validateMap[k] = vStr
-				}
-			}
-		}
-		jsonBytes, err := encoding_json.Marshal(validateMap)
-		if err != nil {
-			log.Printf("re-marshal failed: %s ", err.Error())
-		}
-		jsonString = string(jsonBytes)
-	}
 	if len(jsonString) > 0 {
 		err := encoding_json.Unmarshal([]byte(jsonString), msg)
 		if err != nil {
@@ -6844,7 +6243,7 @@ var FormAccount_CreateLabelByOwner string = `<div class="container"><div class="
 	
 	<form class="form-horizontal">
 	<div id="form"><div class="children"></div></div>
-    <input type="submit" class="btn btn-primary" role="button" value="Submit">
+    <a href="#" id="submit" class="btn btn-primary" role="button">Submit</a>
     </form>
     
 	<script>
@@ -6917,37 +6316,15 @@ function addElem(ev) {
 function getUrlParameter(sParam)
 {
     var sPageURL = window.location.search.substring(1);
-    return getJsonFromUrl("?"+sPageURL)[sParam];
-}
-
-// From: https://stackoverflow.com/a/8486188
-function getJsonFromUrl(url) {
-  if(!url) url = location.href;
-  var question = url.indexOf("?");
-  var hash = url.indexOf("#");
-  if(hash==-1 && question==-1) return {};
-  if(hash==-1) hash = url.length;
-  var query = question==-1 || hash==question+1 ? url.substring(hash) :
-  url.substring(question+1,hash);
-  var result = {};
-  query.split("&").forEach(function(part) {
-    if(!part) return;
-    part = part.split("+").join(" "); // replace every + with space, regexp-free version
-    var eq = part.indexOf("=");
-    var key = eq>-1 ? part.substr(0,eq) : part;
-    var val = eq>-1 ? decodeURIComponent(part.substr(eq+1)) : "";
-    var from = key.indexOf("[");
-    if(from==-1) result[decodeURIComponent(key)] = val;
-    else {
-      var to = key.indexOf("]",from);
-      var index = decodeURIComponent(key.substring(from+1,to));
-      key = decodeURIComponent(key.substring(0,from));
-      if(!result[key]) result[key] = [];
-      if(!index) result[key].push(val);
-      else result[key][index] = val;
+    var sURLVariables = sPageURL.split('&');
+    for (var i = 0; i < sURLVariables.length; i++)
+    {
+        var sParameterName = sURLVariables[i].split('=');
+        if (sParameterName[0] == sParam)
+        {
+            return sParameterName[1];
+        }
     }
-  });
-  return result;
 }
 
 function activateLinks(node) {
@@ -7255,7 +6632,7 @@ s += '<a href="#" class="del-child btn btn-danger btn-xs" role="button" fieldnam
 s += '</div><div class="col-sm-10">'
 s += '<label class="heading">Label</label>'
 s += '</div></div>'
-s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </label><div class="col-sm-10"><input class="form-control" name="ID" type="text" '+setStrValue("", json["ID"])+'/></div></div>';
+s += '<div class="field form-group"><label class="col-sm-2 control-label">ID: </label><div class="col-sm-10"><input class="form-control" name="ID" type="number" step="1" '+setValue(0, json["ID"])+'/></div></div>';
 				
 s += '<div class="field form-group"><label class="col-sm-2 control-label">Type: </label><div class="col-sm-10"><input class="form-control" name="Type" type="text" '+setStrValue("", json["Type"])+'/></div></div>';
 				
@@ -7263,7 +6640,7 @@ s += '<div class="field form-group"><label class="col-sm-2 control-label">State:
 				
 s += '<div class="field form-group"><label class="col-sm-2 control-label">Value: </label><div class="col-sm-10"><input class="form-control" name="Value" type="text" '+setStrValue("", json["Value"])+'/></div></div>';
 				
-s += '<div class="field form-group"><label class="col-sm-2 control-label">Owner: </label><div class="col-sm-10"><input class="form-control" name="Owner" type="text" '+setStrValue("", json["Owner"])+'/></div></div>';
+s += '<div class="field form-group"><label class="col-sm-2 control-label">Owner: </label><div class="col-sm-10"><input class="form-control" name="Owner" type="number" step="1" '+setValue(0, json["Owner"])+'/></div></div>';
 				
 s += '<div class="field form-group"><label class="col-sm-2 control-label">CreateTime: </label><div class="col-sm-10"><input class="form-control" name="CreateTime" type="text" '+setStrValue("", json["CreateTime"])+'/></div></div>';
 				
@@ -7280,7 +6657,7 @@ if (json == undefined) {
 	}
 	
 var s = '<div class="node" type="CreateLabelByOwnerRequest_RootKeyword" fieldname="RootKeyword" repeated="false">';
-s += '<div class="field form-group"><label class="col-sm-2 control-label">Owner: </label><div class="col-sm-10"><input class="form-control" name="Owner" type="text" '+setStrValue("", json["Owner"])+'/></div></div>';
+s += '<div class="field form-group"><label class="col-sm-2 control-label">Owner: </label><div class="col-sm-10"><input class="form-control" name="Owner" type="number" step="1" '+setValue(0, json["Owner"])+'/></div></div>';
 				
 s += '<div class="children" type="Label_Label">' + buildLabel_Label(json["Label"]);
 			s += '</div>';
@@ -7301,7 +6678,7 @@ s += '<div class="children" type="Label_Label">' + buildLabel_Label(json["Label"
 	}
 	$("#form > .children").html(buildCreateLabelByOwnerRequest_RootKeyword(json));
 	activateLinks(root);
-	$("form").submit(function(ev) {
+	$("a[id=submit]").click(function(ev) {
 		ev.preventDefault();
 		c = getChildren($("#form"));
 		j = JSON.stringify(c["RootKeyword"]);
@@ -7368,34 +6745,6 @@ func (this *htmlAccount) CreateLabelByOwner(w net_http.ResponseWriter, req *net_
 	jsonString := req.FormValue("json")
 	someValue := false
 	msg := &CreateLabelByOwnerRequest{}
-	validateMap := make(map[string]interface{})
-	err := encoding_json.Unmarshal([]byte(jsonString), &validateMap)
-	if err != nil {
-		log.Printf("[Parse Request]: %s ", err.Error())
-	}
-	if err == nil {
-		for k, v := range validateMap {
-			switch v.(type) {
-			case string:
-				vInt, err := strconv.ParseInt(v.(string), 10, 64)
-				if err != nil {
-					continue
-				}
-				validateMap[k] = vInt
-			case float64:
-				vInt := int(v.(float64))
-				if vInt > math.MaxInt32 {
-					vStr := strconv.Itoa(vInt)
-					validateMap[k] = vStr
-				}
-			}
-		}
-		jsonBytes, err := encoding_json.Marshal(validateMap)
-		if err != nil {
-			log.Printf("re-marshal failed: %s ", err.Error())
-		}
-		jsonString = string(jsonBytes)
-	}
 	if len(jsonString) > 0 {
 		err := encoding_json.Unmarshal([]byte(jsonString), msg)
 		if err != nil {
