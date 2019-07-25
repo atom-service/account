@@ -1,34 +1,27 @@
 package main
 
 import (
-	"flag"
 	"net"
-	"os"
 
 	"github.com/grpcbrick/account/provider"
 	"github.com/grpcbrick/account/standard"
-	"github.com/joho/godotenv"
+	"github.com/yinxulai/goutils/config"
 	"github.com/yinxulai/goutils/grpc/interceptor"
 	"google.golang.org/grpc"
 )
 
-var isDev bool
-
 func init() {
-	godotenv.Load()
-	flag.BoolVar(&isDev, "dev", false, "运行模式，可选 dev")
+	config.SetStandard("mysql-url", "", true, "RPC 使用的 MYSQL 数据库配置")
+	config.SetStandard("rpc-port", ":3000", true, "RPC 服务监听的端口")
+	config.CreateJSONTemplate("./config.template.json")
+	config.Development()
+	config.LoadFlag()
 }
 
 func main() {
-	flag.Parse() // 解析获取参数
+	var err error
 
-	rpcListenAddress := os.Getenv("PRC_LISTEN_ADDRESS")
-	httpDevListenAddress := os.Getenv("HTTP_DEV_LISTEN_ADDRESS")
-
-	if isDev { // 开发模式 启动一个调试工具
-		go standard.Serve(httpDevListenAddress, rpcListenAddress, standard.DefaultHtmlStringer, grpc.WithInsecure())
-	}
-
+	rpcListenAddress, err := config.Get("rpc-port")
 	lis, err := net.Listen("tcp", rpcListenAddress)
 	if err != nil {
 		panic(err)

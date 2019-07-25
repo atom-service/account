@@ -2,11 +2,10 @@ package provider
 
 import (
 	"bytes"
-	"os"
 
 	_ "github.com/go-sql-driver/mysql" // mysql 驱动
 	"github.com/jmoiron/sqlx"
-	"github.com/joho/godotenv"
+	"github.com/yinxulai/goutils/config"
 )
 
 var (
@@ -36,9 +35,8 @@ var (
 
 func init() {
 	var err error
-	godotenv.Load()
-
-	database, err := sqlx.Connect("mysql", os.Getenv("MYSQL_DB_URI"))
+	mysqlURL, err := config.Get("mysql-url")
+	database, err := sqlx.Connect("mysql", mysqlURL)
 	if err != nil {
 		panic(err)
 	}
