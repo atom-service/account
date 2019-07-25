@@ -5,8 +5,8 @@ import (
 
 	"github.com/joho/godotenv"
 
-	"github.com/yinxulai/grpc-module-account/models"
-	"github.com/yinxulai/grpc-module-account/standard"
+	"github.com/grpcbrick/account/models"
+	"github.com/grpcbrick/account/standard"
 )
 
 // NewService NewService

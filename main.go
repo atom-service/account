@@ -5,10 +5,10 @@ import (
 	"net"
 	"os"
 
+	"github.com/grpcbrick/account/provider"
+	"github.com/grpcbrick/account/standard"
 	"github.com/joho/godotenv"
 	"github.com/yinxulai/goutils/grpc/interceptor"
-	"github.com/yinxulai/grpc-module-account/provider"
-	"github.com/yinxulai/grpc-module-account/standard"
 	"google.golang.org/grpc"
 )
 
