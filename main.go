@@ -14,7 +14,6 @@ func init() {
 	config.SetStandard("mysql-url", "", true, "RPC 使用的 MYSQL 数据库配置")
 	config.SetStandard("rpc-port", ":3000", true, "RPC 服务监听的端口")
 	config.CreateJSONTemplate("./config.template.json")
-	config.Development()
 	config.LoadFlag()
 }
 
