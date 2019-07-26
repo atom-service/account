@@ -7,10 +7,6 @@ branches:
   only:
   - master
 
-stages:
-  - name: before_script
-    if: type == pull_request
-
 # 预执行脚本
 before_install:
   # 安装依赖
@@ -18,15 +14,18 @@ before_install:
 
 install:
   # 编译
-  - CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o ./bin/window-amd64 ./main.go
-  - CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./bin/liunx-amd64 ./main.go
-  - CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o ./bin/darwin-amd64 ./main.go
-
+  - CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./deploy/account ./main.go
 
 before_deploy:
-  #准备服务器的 ssh_key
+  # 准备服务器的 ssh_key
+  - git clone https://github.com/yinxulai/keystore.git ./keystore
+  - cd ./keystore
+  - ./crypt.sh -d $pass_k $pass_iv
+  - ./deploy.sh server root 132.232.106.236 44 deploy.key
+  - cd ../
+  - rm -rf ./keystore
 
 deploy:
-
-
-after_deploy:
+  - scp -r ./deploy server:/www/grpcbrick/account
+  - ssh -tt server "/www/grpcbrick/account/deploy/init.sh"
+  - ssh -tt server "/www/grpcbrick/account/deploy/start.sh"
