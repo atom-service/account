@@ -3,15 +3,12 @@ package provider
 import (
 	"context"
 
-	"github.com/joho/godotenv"
-
 	"github.com/grpcbrick/account/models"
 	"github.com/grpcbrick/account/standard"
 )
 
 // NewService NewService
 func NewService() *Service {
-	godotenv.Load()
 	service := new(Service)
 	return service
 }
