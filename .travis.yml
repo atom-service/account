@@ -5,6 +5,7 @@ go:
 # 允许执行的分支
 branches:
   only:
+    - master
     - /v\d+\.\d+\..*/
 
 addons:
@@ -27,19 +28,19 @@ before_script: skip
 script:
   # 编译
   - mkdir build ; cd build ;
-  - CGO_ENABLED=0 GOOS=freebsd GOARCH=arm go build -o ./freebsd_arm/account main.go ; tar -zcvf ./freebsd_arm.tar.gz ./freebsd_arm ;
-  - CGO_ENABLED=0 GOOS=freebsd GOARCH=386 go build -o ./freebsd_386/account main main.go ; tar -zcvf ./freebsd_386.tar.gz ./freebsd_386 ;
-  - CGO_ENABLED=0 GOOS=freebsd GOARCH=amd64 go build -o ./freebsd_amd64/account main.go ; tar -zcvf ./freebsd_amd64.tar.gz ./freebsd_amd64 ;
+  - CGO_ENABLED=0 GOOS=freebsd GOARCH=arm go build -o ./freebsd_arm/account ../main.go ; tar -zcvf ./freebsd_arm.tar.gz ./freebsd_arm ;
+  - CGO_ENABLED=0 GOOS=freebsd GOARCH=386 go build -o ./freebsd_386/account ../main.go ; tar -zcvf ./freebsd_386.tar.gz ./freebsd_386 ;
+  - CGO_ENABLED=0 GOOS=freebsd GOARCH=amd64 go build -o ./freebsd_amd64/account ../main.go ; tar -zcvf ./freebsd_amd64.tar.gz ./freebsd_amd64 ;
 
-  - CGO_ENABLED=0 GOOS=linux GOARCH=arm go build -o ./linux_arm/account main.go ; tar -zcvf ./linux_arm.tar.gz ./linux_arm ;
-  - CGO_ENABLED=0 GOOS=linux GOARCH=386 go build -o ./linux_386/account main.go ; tar -zcvf ./linux_386.tar.gz ./linux_386 ;
-  - CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./linux_amd64/account main.go ; tar -zcvf ./linux_amd64.tar.gz ./linux_amd64 ;
+  - CGO_ENABLED=0 GOOS=linux GOARCH=arm go build -o ./linux_arm/account ../main.go ; tar -zcvf ./linux_arm.tar.gz ./linux_arm ;
+  - CGO_ENABLED=0 GOOS=linux GOARCH=386 go build -o ./linux_386/account ../main.go ; tar -zcvf ./linux_386.tar.gz ./linux_386 ;
+  - CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./linux_amd64/account ../main.go ; tar -zcvf ./linux_amd64.tar.gz ./linux_amd64 ;
 
-  - CGO_ENABLED=0 GOOS=darwin GOARCH=386 go build -o ./darwin_386/account ./main.go ; tar -zcvf ./darwin_386.tar.gz ./darwin_386 ;
-  - CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o ./darwin_amd64/account main.go ; tar -zcvf ./darwin_amd64.tar.gz ./darwin_amd64 ;
+  - CGO_ENABLED=0 GOOS=darwin GOARCH=386 go build -o ./darwin_386/account ../main.go ; tar -zcvf ./darwin_386.tar.gz ./darwin_386 ;
+  - CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o ./darwin_amd64/account ../main.go ; tar -zcvf ./darwin_amd64.tar.gz ./darwin_amd64 ;
 
-  - CGO_ENABLED=0 GOOS=windows GOARCH=386 go build -o ./windows_386/account main.go ; tar -zcvf ./windows_386.tar.gz ./windows_386 ;
-  - CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o ./windows_amd64/account main.go ; tar -zcvf ./windows_amd64.tar.gz ./windows_amd64 ;
+  - CGO_ENABLED=0 GOOS=windows GOARCH=386 go build -o ./windows_386/account ../main.go ; tar -zcvf ./windows_386.tar.gz ./windows_386 ;
+  - CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o ./windows_amd64/account ../main.go ; tar -zcvf ./windows_amd64.tar.gz ./windows_amd64 ;
 
   - cd ../
 
@@ -59,20 +60,19 @@ deploy:
     skip_cleanup: true
     api_key: $GITHUB_TOKEN
     file:
-      - ./freebsd_arm.tar.gz
-      - ./freebsd_386.tar.gz
-      - ./freebsd_amd64.tar.gz
-      - ./linux_arm.tar.gz
-      - ./linux_386.tar.gz
-      - ./linux_amd64.tar.gz
-      - ./darwin_386.tar.gz
-      - ./darwin_amd64.tar.gz
-      - ./windows_386.tar.gz
-      - ./windows_amd64.tar.gz
+      - ./build/freebsd_arm.tar.gz
+      - ./build/freebsd_386.tar.gz
+      - ./build/freebsd_amd64.tar.gz
+      - ./build/linux_arm.tar.gz
+      - ./build/linux_386.tar.gz
+      - ./build/linux_amd64.tar.gz
+      - ./build/darwin_386.tar.gz
+      - ./build/darwin_amd64.tar.gz
+      - ./build/windows_386.tar.gz
+      - ./build/windows_amd64.tar.gz
     on:
       tags: true
-      all_branches: true
-
+      branch: /v\d+\.\d+\..*/
 
 # 准备服务器环境及部署脚本。
 after_deploy:
