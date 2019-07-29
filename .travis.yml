@@ -5,8 +5,7 @@ go:
 # 允许执行的分支
 branches:
   only:
-  - master
-  - /v\d+\.\d+[a-z]/
+    - /v\d+\.\d+\..*/
 
 addons:
   ssh_known_hosts:
@@ -27,30 +26,22 @@ before_script: skip
 
 script:
   # 编译
-  - go test -v ;
-  # - CGO_ENABLED=0 GOOS=freebsd GOARCH=386 go build -o ./deploy/freebsd_386 main main.go ;
-  # - CGO_ENABLED=0 GOOS=freebsd GOARCH=amd64 go build -o ./deploy/server main main.go ;
-  # - CGO_ENABLED=0 GOOS=freebsd GOARCH=arm go build -o ./deploy/server main main.go ;
+  - mkdir build ; cd build ;
+  - CGO_ENABLED=0 GOOS=freebsd GOARCH=arm go build -o ./freebsd_arm/account main.go ; tar -zcvf ./freebsd_arm.tar.gz ./freebsd_arm ;
+  - CGO_ENABLED=0 GOOS=freebsd GOARCH=386 go build -o ./freebsd_386/account main main.go ; tar -zcvf ./freebsd_386.tar.gz ./freebsd_386 ;
+  - CGO_ENABLED=0 GOOS=freebsd GOARCH=amd64 go build -o ./freebsd_amd64/account main.go ; tar -zcvf ./freebsd_amd64.tar.gz ./freebsd_amd64 ;
 
-  # - CGO_ENABLED=0 GOOS=linux GOARCH=386 go build -o ./deploy/server main main.go ;
-  - CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./deploy/server main main.go ;
-  # - CGO_ENABLED=0 GOOS=linux GOARCH=arm go build -o ./deploy/server main main.go ;
+  - CGO_ENABLED=0 GOOS=linux GOARCH=arm go build -o ./linux_arm/account main.go ; tar -zcvf ./linux_arm.tar.gz ./linux_arm ;
+  - CGO_ENABLED=0 GOOS=linux GOARCH=386 go build -o ./linux_386/account main.go ; tar -zcvf ./linux_386.tar.gz ./linux_386 ;
+  - CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./linux_amd64/account main.go ; tar -zcvf ./linux_amd64.tar.gz ./linux_amd64 ;
 
-  # - CGO_ENABLED=0 GOOS=darwin GOARCH=386 go build -o ./deploy/server ./main.go ;
-  # - CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o ./deploy/server main main.go ;
+  - CGO_ENABLED=0 GOOS=darwin GOARCH=386 go build -o ./darwin_386/account ./main.go ; tar -zcvf ./darwin_386.tar.gz ./darwin_386 ;
+  - CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o ./darwin_amd64/account main.go ; tar -zcvf ./darwin_amd64.tar.gz ./darwin_amd64 ;
 
-  # - CGO_ENABLED=0 GOOS=windows GOARCH=386 go build -o ./deploy/server main main.go ;
-  # - CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o ./deploy/server main main.go ;
+  - CGO_ENABLED=0 GOOS=windows GOARCH=386 go build -o ./windows_386/account main.go ; tar -zcvf ./windows_386.tar.gz ./windows_386 ;
+  - CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o ./windows_amd64/account main.go ; tar -zcvf ./windows_amd64.tar.gz ./windows_amd64 ;
 
-  - sudo chmod -R 744 ./deploy ; # 赋予执行权限
-
-# after_success:
-#   - pwd ; ls ;
-#   - export LAST_COMMIT_MESSAGE=$(git log --format=%s -1 | sed 's/ //g') ; # 最近的一条 commit 标题
-#   - export LAST_COMMIT_VERSION=${LAST_COMMIT_MESSAGE#VERSION:} ; # 取到 VERSION: 后的字段
-#   - echo $LAST_COMMIT_MESSAGE $LAST_COMMIT_VERSION ;
-#   - test $LAST_COMMIT_VERSION && git tag $LAST_COMMIT_VERSION ; # 如果有正确的版本号则添加版本
-#   - git tag ;
+  - cd ../
 
 before_deploy:
   # 准备服务器的 ssh_key
@@ -64,17 +55,30 @@ before_deploy:
 # 部署版本
 deploy:
   - provider: releases
+    overwrite: true
     skip_cleanup: true
     api_key: $GITHUB_TOKEN
-    file: ./deploy/deploy.tar.gz
+    file:
+      - ./freebsd_arm.tar.gz
+      - ./freebsd_386.tar.gz
+      - ./freebsd_amd64.tar.gz
+      - ./linux_arm.tar.gz
+      - ./linux_386.tar.gz
+      - ./linux_amd64.tar.gz
+      - ./darwin_386.tar.gz
+      - ./darwin_amd64.tar.gz
+      - ./windows_386.tar.gz
+      - ./windows_amd64.tar.gz
     on:
       tags: true
-      branch: master
+      all_branches: true
+
 
 # 准备服务器环境及部署脚本。
 after_deploy:
   # 执行脚本
-  - ssh -tt server "cd /www/grpcbrick/account; tar -zxvf .deploy.tar.gz . ; rm -rf ./deploy.tar.gz ;" ; # 解压
+  - scp ./deploy/deploy.tar.gz server:/www/grpcbrick/account ; #  上传部署脚本
+  - ssh -tt server "cd /www/grpcbrick/account; tar -zxvf ./deploy.tar.gz . ; rm -rf ./deploy.tar.gz ;" ; # 解压
   - ssh -tt server "cd /www/grpcbrick/account/deploy ; ./init.sh && ./start.sh ;" ; # 执行部署脚本
 
 after_script: skip
