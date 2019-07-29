@@ -6,7 +6,7 @@ go:
 branches:
   only:
   - master
-  - develop
+  - /v\d+\.\d+[a-z]/
 
 addons:
   ssh_known_hosts:
@@ -21,29 +21,60 @@ before_install:
   - go get -v -d github.com/yinxulai/goutils/...
   - go get -v -d github.com/golang/protobuf/proto
 
-install:
+install: skip
+
+before_script: skip
+
+script:
   # 编译
-  - CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./deploy/server ./main.go
-  - sudo chmod -R 744 ./deploy # 赋予执行权限
+  - go test -v ;
+  # - CGO_ENABLED=0 GOOS=freebsd GOARCH=386 go build -o ./deploy/freebsd_386 main main.go ;
+  # - CGO_ENABLED=0 GOOS=freebsd GOARCH=amd64 go build -o ./deploy/server main main.go ;
+  # - CGO_ENABLED=0 GOOS=freebsd GOARCH=arm go build -o ./deploy/server main main.go ;
+
+  # - CGO_ENABLED=0 GOOS=linux GOARCH=386 go build -o ./deploy/server main main.go ;
+  - CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./deploy/server main main.go ;
+  # - CGO_ENABLED=0 GOOS=linux GOARCH=arm go build -o ./deploy/server main main.go ;
+
+  # - CGO_ENABLED=0 GOOS=darwin GOARCH=386 go build -o ./deploy/server ./main.go ;
+  # - CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o ./deploy/server main main.go ;
+
+  # - CGO_ENABLED=0 GOOS=windows GOARCH=386 go build -o ./deploy/server main main.go ;
+  # - CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o ./deploy/server main main.go ;
+
+  - sudo chmod -R 744 ./deploy ; # 赋予执行权限
+
+# after_success:
+#   - pwd ; ls ;
+#   - export LAST_COMMIT_MESSAGE=$(git log --format=%s -1 | sed 's/ //g') ; # 最近的一条 commit 标题
+#   - export LAST_COMMIT_VERSION=${LAST_COMMIT_MESSAGE#VERSION:} ; # 取到 VERSION: 后的字段
+#   - echo $LAST_COMMIT_MESSAGE $LAST_COMMIT_VERSION ;
+#   - test $LAST_COMMIT_VERSION && git tag $LAST_COMMIT_VERSION ; # 如果有正确的版本号则添加版本
+#   - git tag ;
 
 before_deploy:
   # 准备服务器的 ssh_key
-  - git clone https://github.com/yinxulai/keystore.git ./keystore
-  - cd ./keystore
-  - ./crypt.sh -d $pass_k $pass_iv
-  - ./deploy.sh server root 132.232.106.236 44 deploy.key
-  - cd ../deploy
-  - tar -zcvf ./deploy.tar.gz ./* # 压缩档案 scp 加速
+  - git clone https://github.com/yinxulai/keystore.git ./keystore ;
+  - cd ./keystore ;
+  - ./crypt.sh -d $pass_k $pass_iv ; # 解密所有的 key
+  - export GITHUB_TOKEN=`cat ./github.token.key ;` ; # 拿到 GITHUB_TOKEN
+  - ./deploy.sh server root 132.232.106.236 44 deploy.key ; # 部署配置 SSH 服务，方便下面通过别名直接连接服务器
+  - cd ../deploy ; tar -zcvf ./deploy.tar.gz ./* ; cd ../ ; # 压缩档案
 
+# 部署版本
 deploy:
-  # 上传服务器
-  provider: script
-  skip_cleanup: true
-  script: scp -prC ./deploy.tar.gz server:/www/grpcbrick/account
-  on:
-    branch: master
+  - provider: releases
+    skip_cleanup: true
+    api_key: $GITHUB_TOKEN
+    file: ./deploy/deploy.tar.gz
+    on:
+      tags: true
+      branch: master
 
+# 准备服务器环境及部署脚本。
 after_deploy:
   # 执行脚本
-  - ssh -tt server "cd /www/grpcbrick/account; tar -zxvf .deploy.tar.gz .; rm -rf ./deploy.tar.gz" # 解压 
-  - ssh -tt server "cd /www/grpcbrick/account/deploy; ./init.sh && ./start.sh;" # 执行部署脚本
+  - ssh -tt server "cd /www/grpcbrick/account; tar -zxvf .deploy.tar.gz . ; rm -rf ./deploy.tar.gz ;" ; # 解压
+  - ssh -tt server "cd /www/grpcbrick/account/deploy ; ./init.sh && ./start.sh ;" ; # 执行部署脚本
+
+after_script: skip
