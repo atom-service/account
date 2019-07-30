@@ -21,6 +21,7 @@ func init() {
 func main() {
 	var err error
 	provider.InitDB()
+
 	rpcListenAddress, err := config.Get("port")
 	lis, err := net.Listen("tcp", rpcListenAddress)
 	if err != nil {
