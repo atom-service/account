@@ -2,12 +2,6 @@ package models
 
 import "github.com/grpcbrick/account/standard"
 
-// Label 类型
-const (
-	LabelTypeNotSetPassword   = "NotSetPassword"
-	LabelTypeBindWechatOpenID = "BindWechatOpenID"
-)
-
 // Label 标签
 type Label struct {
 	ID         uint64 `db:"ID"`

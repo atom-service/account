@@ -33,9 +33,9 @@ var (
 	deleteUserByIDNamedStmt  *sqlx.NamedStmt
 )
 
-func init() {
+func InitDB() {
 	var err error
-	mysqlURL, err := config.Get("mysql-url")
+	mysqlURL, err := config.Get("mysql")
 	database, err := sqlx.Connect("mysql", mysqlURL)
 	if err != nil {
 		panic(err)
