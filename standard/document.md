@@ -12,6 +12,7 @@
     - [DeleteLabelByIDResponse](#standard.DeleteLabelByIDResponse)
     - [DeleteUserByIDRequest](#standard.DeleteUserByIDRequest)
     - [DeleteUserByIDResponse](#standard.DeleteUserByIDResponse)
+    - [Group](#standard.Group)
     - [Label](#standard.Label)
     - [QueryLabelByIDRequest](#standard.QueryLabelByIDRequest)
     - [QueryLabelByIDResponse](#standard.QueryLabelByIDResponse)
@@ -174,6 +175,26 @@
 | ----- | ---- | ----- | ----------- |
 | State | [State](#standard.State) |  |  |
 | Message | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="standard.Group"></a>
+
+### Group
+User 用户
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| ID | [uint64](#uint64) |  |  |
+| Type | [string](#string) |  |  |
+| Name | [string](#string) |  |  |
+| CreateTime | [string](#string) |  |  |
+| UpdateTime | [string](#string) |  |  |
+| Description | [string](#string) |  |  |
 
 
 

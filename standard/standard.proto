@@ -43,6 +43,17 @@ message User {
   string UpdateTime     = 9 ;
 }
 
+// User 用户
+message Group {
+  uint64 ID             = 1 ;
+  string Type           = 2 ;
+  string Name           = 3 ;
+  string CreateTime     = 4 ;
+  string UpdateTime     = 5 ;
+  string Description    = 6 ;
+}
+
+
 message CreateUserRequest {
   string Type           = 1 ;
   string Avatar         = 2 ;
@@ -180,7 +191,7 @@ message QueryLabelByOwnerResponse {
 }
 
 service Account {
-  
+
   // 用户操作
   rpc CreateUser(CreateUserRequest)returns(CreateUserResponse){} // 创建一个用户
   rpc QueryUserByID(QueryUserByIDRequest)returns(QueryUserByIDResponse){} // 通过 ID 查询
@@ -190,7 +201,7 @@ service Account {
   rpc UpdateUserPasswordByID(UpdateUserPasswordByIDRequest)returns(UpdateUserPasswordByIDResponse){} // 更新用户密码
   rpc VerifyUserPasswordByID(VerifyUserPasswordByIDRequest)returns(VerifyUserPasswordByIDResponse){} // 验证密码
   rpc VerifyUserPasswordByUsername(VerifyUserPasswordByUsernameRequest)returns(VerifyUserPasswordByUsernameResponse){} // 验证密码
-  
+
   // 标签操作
   rpc QueryLabelByID(QueryLabelByIDRequest)returns(QueryLabelByIDResponse){} // 根据 ID 查询标签
   rpc UpdateLabelByID(UpdateLabelByIDRequest)returns(UpdateLabelByIDResponse){} // 根据 ID  更新标签
