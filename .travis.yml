@@ -16,11 +16,11 @@ addons:
 before_install:
   # 安装依赖
   - export ROOT_PATH=`pwd`
-  - go get -v -d google.golang.org/grpc
-  - go get -v -d github.com/jmoiron/sqlx
-  - go get -v -d github.com/go-sql-driver/mysql
-  - go get -v -d github.com/yinxulai/goutils/...
-  - go get -v -d github.com/golang/protobuf/proto
+  - go get -v -u -d google.golang.org/grpc
+  - go get -v -u -d github.com/jmoiron/sqlx
+  - go get -v -u -d github.com/go-sql-driver/mysql
+  - go get -v -u -d github.com/yinxulai/goutils/...
+  - go get -v -u -d github.com/golang/protobuf/proto
 
 install: skip
 
