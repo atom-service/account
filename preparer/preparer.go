@@ -1,4 +1,4 @@
-package provider
+package preparer
 
 import (
 	"bytes"
@@ -9,28 +9,23 @@ import (
 )
 
 var (
-	createLabelTableStmt *sqlx.Stmt
-	createUserTableStmt  *sqlx.Stmt
-
-	insertLabelByOwnerNamedStmt *sqlx.NamedStmt
-	insertUserNamedStmt         *sqlx.NamedStmt
-
-	countUserByIDNamedStmt       *sqlx.NamedStmt
-	countLabelByIDNamedStmt      *sqlx.NamedStmt
-	countUserByUsernameNamedStmt *sqlx.NamedStmt
-	countLabelByOwnerNamedStmt   *sqlx.NamedStmt
-
-	queryLabelByOwnerNamedStmt   *sqlx.NamedStmt
-	queryLabelByIDNamedStmt      *sqlx.NamedStmt
-	queryUserByIDNamedStmt       *sqlx.NamedStmt
-	queryUserByUsernameNamedStmt *sqlx.NamedStmt
-
-	updateUserByIDNamedStmt         *sqlx.NamedStmt
-	updateUserPasswordByIDNamedStmt *sqlx.NamedStmt
-	updateLabelByIDNamedStmt        *sqlx.NamedStmt
-
-	deleteLabelByIDNamedStmt *sqlx.NamedStmt
-	deleteUserByIDNamedStmt  *sqlx.NamedStmt
+	createLabelTableStmt            *sqlx.Stmt
+	createUserTableStmt             *sqlx.Stmt
+	InsertLabelByOwnerNamedStmt     *sqlx.NamedStmt
+	InsertUserNamedStmt             *sqlx.NamedStmt
+	CountUserByIDNamedStmt          *sqlx.NamedStmt
+	CountUserByUsernameNamedStmt    *sqlx.NamedStmt
+	CountLabelByIDNamedStmt         *sqlx.NamedStmt
+	CountLabelByOwnerNamedStmt      *sqlx.NamedStmt
+	QueryUserByIDNamedStmt          *sqlx.NamedStmt
+	QueryLabelByIDNamedStmt         *sqlx.NamedStmt
+	QueryLabelByOwnerNamedStmt      *sqlx.NamedStmt
+	QueryUserByUsernameNamedStmt    *sqlx.NamedStmt
+	UpdateUserByIDNamedStmt         *sqlx.NamedStmt
+	UpdateLabelByIDNamedStmt        *sqlx.NamedStmt
+	UpdateUserPasswordByIDNamedStmt *sqlx.NamedStmt
+	DeleteUserByIDNamedStmt         *sqlx.NamedStmt
+	DeleteLabelByIDNamedStmt        *sqlx.NamedStmt
 )
 
 // InitDB init
@@ -85,35 +80,35 @@ func InitDB() {
 	}
 
 	// 通过 ID 查询用户
-	queryUserByIDNamedStmt = MustPreparexNamed(
+	QueryUserByIDNamedStmt = MustPreparexNamed(
 		database,
 		" SELECT * FROM `users`",
 		" WHERE `ID` = :ID",
 		" ;",
 	)
 	// 通过 用户名 查询用户
-	queryUserByUsernameNamedStmt = MustPreparexNamed(
+	QueryUserByUsernameNamedStmt = MustPreparexNamed(
 		database,
 		" SELECT * FROM `users`",
 		" WHERE `Username` = :Username",
 		" ;",
 	)
 	// 通过 ID 统计用户
-	countUserByIDNamedStmt = MustPreparexNamed(
+	CountUserByIDNamedStmt = MustPreparexNamed(
 		database,
 		" SELECT COUNT(*) FROM `users`",
 		" WHERE `ID` = :ID",
 		" ;",
 	)
 	// 通过 Username 统计用户
-	countUserByUsernameNamedStmt = MustPreparexNamed(
+	CountUserByUsernameNamedStmt = MustPreparexNamed(
 		database,
 		" SELECT COUNT(*) FROM `users`",
 		" WHERE `Username` = :Username",
 		" ;",
 	)
 	// 通过 ID 更新用户密码
-	updateUserPasswordByIDNamedStmt = MustPreparexNamed(
+	UpdateUserPasswordByIDNamedStmt = MustPreparexNamed(
 		database,
 		" UPDATE `users` SET",
 		" `Password` = :Password",
@@ -121,14 +116,14 @@ func InitDB() {
 		" ;",
 	)
 	// 通过 ID 删除用户
-	deleteUserByIDNamedStmt = MustPreparexNamed(
+	DeleteUserByIDNamedStmt = MustPreparexNamed(
 		database,
 		" DELETE FROM `users`",
 		" WHERE`ID` = :ID",
 		" ;",
 	)
 	// 通过 Id 更新用户信息
-	updateUserByIDNamedStmt = MustPreparexNamed(
+	UpdateUserByIDNamedStmt = MustPreparexNamed(
 		database,
 		" UPDATE `users` SET",
 		" `Type` = :Type,",
@@ -139,7 +134,7 @@ func InitDB() {
 		" ;",
 	)
 	// 插入用户
-	insertUserNamedStmt = MustPreparexNamed(
+	InsertUserNamedStmt = MustPreparexNamed(
 		database,
 		" INSERT INTO `users`",
 		" (`Type`, `Avatar`, `Inviter`, `Nickname`, `Username`, `Password`)",
@@ -148,7 +143,7 @@ func InitDB() {
 		" ;",
 	)
 
-	countLabelByOwnerNamedStmt = MustPreparexNamed(
+	CountLabelByOwnerNamedStmt = MustPreparexNamed(
 		database,
 		" SELECT COUNT(*) FROM `labels`",
 		" WHERE `Owner` = :Owner",
@@ -156,7 +151,7 @@ func InitDB() {
 	)
 
 	// 通过 Owner 查询标签
-	queryLabelByOwnerNamedStmt = MustPreparexNamed(
+	QueryLabelByOwnerNamedStmt = MustPreparexNamed(
 		database,
 		" SELECT * FROM `labels`",
 		" WHERE `Owner` = :Owner",
@@ -166,21 +161,21 @@ func InitDB() {
 	)
 
 	// 通过 ID 统计 lable 数量
-	countLabelByIDNamedStmt = MustPreparexNamed(
+	CountLabelByIDNamedStmt = MustPreparexNamed(
 		database,
 		" SELECT COUNT(*) FROM `labels`",
 		" WHERE `ID` = :ID",
 		" ;",
 	)
 	// 通过 ID 统计 lable 数量
-	deleteLabelByIDNamedStmt = MustPreparexNamed(
+	DeleteLabelByIDNamedStmt = MustPreparexNamed(
 		database,
 		" DELETE FROM `labels`",
 		" WHERE `ID` = :ID",
 		" ;",
 	)
 	// 更新指定标签
-	updateLabelByIDNamedStmt = MustPreparexNamed(
+	UpdateLabelByIDNamedStmt = MustPreparexNamed(
 		database,
 		" UPDATE `labels` SET",
 		" `Type` = :Type,",
@@ -190,14 +185,14 @@ func InitDB() {
 		" ;",
 	)
 	// 通过ID查询记录
-	queryLabelByIDNamedStmt = MustPreparexNamed(
+	QueryLabelByIDNamedStmt = MustPreparexNamed(
 		database,
 		" SELECT * FROM `labels`",
 		" WHERE `ID` = :ID",
 		" ;",
 	)
 	// 插入记录给 制定用户 Owner
-	insertLabelByOwnerNamedStmt = MustPreparexNamed(
+	InsertLabelByOwnerNamedStmt = MustPreparexNamed(
 		database,
 		" INSERT INTO `labels`",
 		" (`Type`, `State`, `Value`, `Owner`)",

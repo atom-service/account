@@ -10,7 +10,7 @@ ENV_FILE=$4 # 启动参数
 # 环境变量
 TEMPDIR=`mktemp -d` #缓存目录
 SERVICE_PATH="/etc/systemd/user" # uint service 安装目录
-INSTALL_PATH=/usr/local/$MAIN_FILE # 程序的安装目录
+INSTALL_PATH=/usr/local/account # 程序的安装目录
 
 ready() {
   # 准备安装目录

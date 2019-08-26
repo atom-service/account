@@ -34,7 +34,6 @@
     - [VerifyUserPasswordByUsernameRequest](#standard.VerifyUserPasswordByUsernameRequest)
     - [VerifyUserPasswordByUsernameResponse](#standard.VerifyUserPasswordByUsernameResponse)
   
-    - [State](#standard.State)
   
   
     - [Account](#standard.Account)
@@ -75,7 +74,7 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| State | [State](#standard.State) |  |  |
+| State | [uint64](#uint64) |  |  |
 | Message | [string](#string) |  |  |
 
 
@@ -111,7 +110,7 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| State | [State](#standard.State) |  |  |
+| State | [uint64](#uint64) |  |  |
 | Message | [string](#string) |  |  |
 
 
@@ -142,7 +141,7 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| State | [State](#standard.State) |  |  |
+| State | [uint64](#uint64) |  |  |
 | Message | [string](#string) |  |  |
 
 
@@ -173,7 +172,7 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| State | [State](#standard.State) |  |  |
+| State | [uint64](#uint64) |  |  |
 | Message | [string](#string) |  |  |
 
 
@@ -245,7 +244,7 @@ Label 标签
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| State | [State](#standard.State) |  |  |
+| State | [uint64](#uint64) |  |  |
 | Message | [string](#string) |  |  |
 | Data | [Label](#standard.Label) |  |  |
 
@@ -279,7 +278,7 @@ Label 标签
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| State | [State](#standard.State) |  |  |
+| State | [uint64](#uint64) |  |  |
 | Message | [string](#string) |  |  |
 | Total | [uint64](#uint64) |  |  |
 | Data | [Label](#standard.Label) | repeated |  |
@@ -312,7 +311,7 @@ Label 标签
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| State | [State](#standard.State) |  |  |
+| State | [uint64](#uint64) |  |  |
 | Message | [string](#string) |  |  |
 | Data | [User](#standard.User) |  |  |
 
@@ -344,7 +343,7 @@ Label 标签
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| State | [State](#standard.State) |  |  |
+| State | [uint64](#uint64) |  |  |
 | Message | [string](#string) |  |  |
 | Data | [User](#standard.User) |  |  |
 
@@ -377,7 +376,7 @@ Label 标签
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| State | [State](#standard.State) |  |  |
+| State | [uint64](#uint64) |  |  |
 | Message | [string](#string) |  |  |
 
 
@@ -409,7 +408,7 @@ Label 标签
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| State | [State](#standard.State) |  |  |
+| State | [uint64](#uint64) |  |  |
 | Message | [string](#string) |  |  |
 
 
@@ -441,7 +440,7 @@ Label 标签
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| State | [State](#standard.State) |  |  |
+| State | [uint64](#uint64) |  |  |
 | Message | [string](#string) |  |  |
 
 
@@ -496,7 +495,7 @@ User 用户
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| State | [State](#standard.State) |  |  |
+| State | [uint64](#uint64) |  |  |
 | Message | [string](#string) |  |  |
 | Data | [bool](#bool) |  |  |
 
@@ -529,7 +528,7 @@ User 用户
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| State | [State](#standard.State) |  |  |
+| State | [uint64](#uint64) |  |  |
 | Message | [string](#string) |  |  |
 | Data | [bool](#bool) |  |  |
 
@@ -538,28 +537,6 @@ User 用户
 
 
  
-
-
-<a name="standard.State"></a>
-
-### State
-状态
-
-| Name | Number | Description |
-| ---- | ------ | ----------- |
-| UNKNOWN | 0 | 未知 |
-| SUCCESS | 1 | 成功 |
-| FAILURE | 2 | 失败 |
-| SERVICE_ERROR | 3 | 服务错误 |
-| PARAMS_INVALID | 5 | 参数不合法 |
-| ILLEGAL_REQUEST | 6 | 非法请求 |
-| LABEL_NOT_EXIST | 7 | 标签不存在 |
-| USER_NOT_EXIST | 8 | 用户不存在 |
-| USER_ALREADY_EXISTS | 9 | 用户已经存在 |
-| USER_VERIFY_FAILURE | 10 | 用户验证失败 |
-| LABEL_ALREADY_EXISTS | 11 | 标签已经存在 |
-| DB_OPERATION_FATLURE | 12 | 数据库操作失败 |
-
 
  
 

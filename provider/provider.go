@@ -3,8 +3,12 @@ package provider
 import (
 	"context"
 
+	"github.com/yinxulai/goutils/restful"
+
 	"github.com/grpcbrick/account/models"
+	"github.com/grpcbrick/account/preparer"
 	"github.com/grpcbrick/account/standard"
+	"github.com/yinxulai/goutils/pattern"
 )
 
 // NewService NewService
@@ -24,42 +28,42 @@ func (srv *Service) CreateUser(ctx context.Context, req *standard.CreateUserRequ
 	user.SetPassword(req.Password)
 	resp = new(standard.CreateUserResponse)
 
-	if !usernamePattern.MatchString(req.Username) {
-		resp.State = standard.State_PARAMS_INVALID
+	if !pattern.Username.MatchString(req.Username) {
+		resp.State = uint64(restful.PARAMERR)
 		resp.Message = "请检查用户名格式"
 		return resp, nil
 	}
 
-	if !passwordPattern.MatchString(req.Password) {
-		resp.State = standard.State_PARAMS_INVALID
+	if !pattern.Password.MatchString(req.Password) {
+		resp.State = uint64(restful.PARAMERR)
 		resp.Message = "请检查密码格式"
 		return resp, nil
 	}
 
 	// 查询 用户名是否已经存在
-	err = countUserByUsernameNamedStmt.GetContext(ctx, &count, req)
+	err = preparer.CountUserByUsernameNamedStmt.GetContext(ctx, &count, req)
 	if err != nil {
-		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.State = uint64(restful.INTERNALSERVERERROR)
 		resp.Message = err.Error()
 		return resp, nil
 	}
 
 	if count > 0 {
-		resp.State = standard.State_USER_ALREADY_EXISTS
+		resp.State = uint64(restful.INTERNALSERVERERROR)
 		resp.Message = "该用户已存在"
 		return resp, nil
 	}
 
 	// 执行插入
 	req.Password = user.Password // 重新赋值加密过后的密码
-	_, err = insertUserNamedStmt.ExecContext(ctx, req)
+	_, err = preparer.InsertUserNamedStmt.ExecContext(ctx, req)
 	if err != nil {
-		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.State = uint64(restful.INTERNALSERVERERROR)
 		resp.Message = err.Error()
 		return resp, nil
 	}
 
-	resp.State = standard.State_SUCCESS
+	resp.State = uint64(restful.OK)
 	resp.Message = "创建成功"
 
 	return resp, nil
@@ -71,14 +75,14 @@ func (srv *Service) QueryUserByID(ctx context.Context, req *standard.QueryUserBy
 	resp = new(standard.QueryUserByIDResponse)
 
 	if req.ID == 0 {
-		resp.State = standard.State_PARAMS_INVALID
+		resp.State = uint64(restful.PARAMERR)
 		resp.Message = "无效的 ID"
 		return resp, nil
 	}
 
-	rows, err := queryUserByIDNamedStmt.QueryxContext(ctx, req)
+	rows, err := preparer.QueryUserByIDNamedStmt.QueryxContext(ctx, req)
 	if err != nil {
-		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.State = uint64(restful.INTERNALSERVERERROR)
 		resp.Message = err.Error()
 		return resp, nil
 	}
@@ -93,12 +97,12 @@ func (srv *Service) QueryUserByID(ctx context.Context, req *standard.QueryUserBy
 	}
 
 	if len(users) <= 0 { // 没有找到用户
-		resp.State = standard.State_USER_NOT_EXIST
+		resp.State = uint64(restful.NOTFOUND)
 		resp.Message = "该用户不存在"
 		return resp, nil
 	}
 
-	resp.State = standard.State_SUCCESS
+	resp.State = uint64(restful.OK)
 	resp.Data = users[0].OutProtoStruct()
 	resp.Message = "查询成功"
 	return resp, nil
@@ -109,15 +113,15 @@ func (srv *Service) QueryUserByUsername(ctx context.Context, req *standard.Query
 	users := []*models.User{}
 	resp = new(standard.QueryUserByUsernameResponse)
 
-	if !usernamePattern.MatchString(req.Username) {
-		resp.State = standard.State_PARAMS_INVALID
+	if !pattern.Username.MatchString(req.Username) {
+		resp.State = uint64(restful.PARAMERR)
 		resp.Message = "请检查用户名格式"
 		return resp, nil
 	}
 
-	rows, err := queryUserByUsernameNamedStmt.QueryxContext(ctx, req)
+	rows, err := preparer.QueryUserByUsernameNamedStmt.QueryxContext(ctx, req)
 	if err != nil {
-		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.State = uint64(restful.INTERNALSERVERERROR)
 		resp.Message = err.Error()
 		return resp, nil
 	}
@@ -132,12 +136,12 @@ func (srv *Service) QueryUserByUsername(ctx context.Context, req *standard.Query
 	}
 
 	if len(users) <= 0 {
-		resp.State = standard.State_USER_NOT_EXIST
+		resp.State = uint64(restful.NOTFOUND)
 		resp.Message = "该用户不存在"
 		return resp, nil
 	}
 
-	resp.State = standard.State_SUCCESS
+	resp.State = uint64(restful.OK)
 	resp.Data = users[0].OutProtoStruct()
 	resp.Message = "查询成功"
 
@@ -153,45 +157,45 @@ func (srv *Service) UpdateUserByID(ctx context.Context, req *standard.UpdateUser
 	resp = new(standard.UpdateUserByIDResponse)
 
 	if req.ID == 0 {
-		resp.State = standard.State_PARAMS_INVALID
+		resp.State = uint64(restful.PARAMERR)
 		resp.Message = "无效的 ID"
 		return resp, nil
 	}
 
-	if !usernamePattern.MatchString(req.Data.Username) {
-		resp.State = standard.State_PARAMS_INVALID
+	if !pattern.Username.MatchString(req.Data.Username) {
+		resp.State = uint64(restful.PARAMERR)
 		resp.Message = "请检查用户名格式"
 		return resp, nil
 	}
 
-	if !nicknamePattern.MatchString(req.Data.Nickname) {
-		resp.State = standard.State_PARAMS_INVALID
+	if !pattern.Nickname.MatchString(req.Data.Nickname) {
+		resp.State = uint64(restful.PARAMERR)
 		resp.Message = "请检查昵称格式"
 		return resp, nil
 	}
 
-	err = countUserByIDNamedStmt.GetContext(ctx, &count, req)
+	err = preparer.CountUserByIDNamedStmt.GetContext(ctx, &count, req)
 	if err != nil {
-		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.State = uint64(restful.INTERNALSERVERERROR)
 		resp.Message = err.Error()
 		return resp, nil
 	}
 
 	if count <= 0 { // 用户不存在
-		resp.State = standard.State_USER_NOT_EXIST
+		resp.State = uint64(restful.NOTFOUND)
 		resp.Message = "该用户不存在"
 		return resp, nil
 	}
 
 	req.Data.ID = req.ID
-	_, err = updateUserByIDNamedStmt.ExecContext(ctx, req.Data)
+	_, err = preparer.UpdateUserByIDNamedStmt.ExecContext(ctx, req.Data)
 	if err != nil {
-		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.State = uint64(restful.INTERNALSERVERERROR)
 		resp.Message = err.Error()
 		return resp, nil
 	}
 
-	resp.State = standard.State_SUCCESS
+	resp.State = uint64(restful.OK)
 	resp.Message = "更新成功"
 	return resp, nil
 }
@@ -203,32 +207,32 @@ func (srv *Service) DeleteUserByID(ctx context.Context, req *standard.DeleteUser
 	resp = new(standard.DeleteUserByIDResponse)
 
 	if req.ID == 0 {
-		resp.State = standard.State_PARAMS_INVALID
+		resp.State = uint64(restful.PARAMERR)
 		resp.Message = "无效的 ID"
 		return resp, nil
 	}
 
-	err = countUserByIDNamedStmt.GetContext(ctx, &count, req)
+	err = preparer.CountUserByIDNamedStmt.GetContext(ctx, &count, req)
 	if err != nil {
-		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.State = uint64(restful.INTERNALSERVERERROR)
 		resp.Message = err.Error()
 		return resp, nil
 	}
 
 	if count <= 0 {
-		resp.State = standard.State_USER_NOT_EXIST
+		resp.State = uint64(restful.NOTFOUND)
 		resp.Message = "该用户不存在"
 		return resp, nil
 	}
 
-	_, err = deleteUserByIDNamedStmt.ExecContext(ctx, req)
+	_, err = preparer.DeleteUserByIDNamedStmt.ExecContext(ctx, req)
 	if err != nil {
-		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.State = uint64(restful.INTERNALSERVERERROR)
 		resp.Message = err.Error()
 		return resp, nil
 	}
 
-	resp.State = standard.State_SUCCESS
+	resp.State = uint64(restful.OK)
 	resp.Message = "删除成功"
 
 	return resp, nil
@@ -243,39 +247,39 @@ func (srv *Service) UpdateUserPasswordByID(ctx context.Context, req *standard.Up
 	resp = new(standard.UpdateUserPasswordByIDResponse)
 
 	if req.ID == 0 {
-		resp.State = standard.State_PARAMS_INVALID
+		resp.State = uint64(restful.PARAMERR)
 		resp.Message = "无效的 ID"
 		return resp, nil
 	}
 
-	if !passwordPattern.MatchString(req.Password) {
-		resp.State = standard.State_PARAMS_INVALID
+	if !pattern.Password.MatchString(req.Password) {
+		resp.State = uint64(restful.PARAMERR)
 		resp.Message = "请检查密码格式"
 		return resp, nil
 	}
 
-	err = countUserByIDNamedStmt.GetContext(ctx, &count, req)
+	err = preparer.CountUserByIDNamedStmt.GetContext(ctx, &count, req)
 	if err != nil {
-		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.State = uint64(restful.INTERNALSERVERERROR)
 		resp.Message = err.Error()
 		return resp, nil
 	}
 
 	if count <= 0 {
-		resp.State = standard.State_USER_NOT_EXIST
+		resp.State = uint64(restful.NOTFOUND)
 		resp.Message = "该用户不存在"
 		return resp, nil
 	}
 
 	user.ID = req.ID
-	_, err = updateUserPasswordByIDNamedStmt.ExecContext(ctx, user)
+	_, err = preparer.UpdateUserPasswordByIDNamedStmt.ExecContext(ctx, user)
 	if err != nil {
-		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.State = uint64(restful.INTERNALSERVERERROR)
 		resp.Message = err.Error()
 		return resp, nil
 	}
 
-	resp.State = standard.State_SUCCESS
+	resp.State = uint64(restful.OK)
 	resp.Message = "更新成功"
 
 	return resp, nil
@@ -289,20 +293,20 @@ func (srv *Service) VerifyUserPasswordByID(ctx context.Context, req *standard.Ve
 	resp = new(standard.VerifyUserPasswordByIDResponse)
 
 	if req.ID == 0 {
-		resp.State = standard.State_PARAMS_INVALID
+		resp.State = uint64(restful.PARAMERR)
 		resp.Message = "无效的 ID"
 		return resp, nil
 	}
 
-	if !passwordPattern.MatchString(req.Password) {
-		resp.State = standard.State_PARAMS_INVALID
+	if !pattern.Password.MatchString(req.Password) {
+		resp.State = uint64(restful.PARAMERR)
 		resp.Message = "请检查密码格式"
 		return resp, nil
 	}
 
-	rows, err := queryUserByIDNamedStmt.QueryxContext(ctx, req)
+	rows, err := preparer.QueryUserByIDNamedStmt.QueryxContext(ctx, req)
 	if err != nil {
-		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.State = uint64(restful.INTERNALSERVERERROR)
 		resp.Message = err.Error()
 		return resp, nil
 	}
@@ -316,19 +320,19 @@ func (srv *Service) VerifyUserPasswordByID(ctx context.Context, req *standard.Ve
 	}
 
 	if len(users) <= 0 {
-		resp.State = standard.State_USER_NOT_EXIST
+		resp.State = uint64(restful.NOTFOUND)
 		resp.Message = "该用户不存在"
 		return resp, nil
 	}
 
 	if users[0].Password != user.Password {
-		resp.State = standard.State_SUCCESS
+		resp.State = uint64(restful.OK)
 		resp.Message = "查询成功"
 		resp.Data = false
 		return resp, nil
 	}
 
-	resp.State = standard.State_SUCCESS
+	resp.State = uint64(restful.OK)
 	resp.Message = "查询成功"
 	resp.Data = true
 
@@ -342,21 +346,21 @@ func (srv *Service) VerifyUserPasswordByUsername(ctx context.Context, req *stand
 	user.SetPassword(req.Password)
 	resp = new(standard.VerifyUserPasswordByUsernameResponse)
 
-	if !passwordPattern.MatchString(req.Password) {
-		resp.State = standard.State_PARAMS_INVALID
+	if !pattern.Password.MatchString(req.Password) {
+		resp.State = uint64(restful.PARAMERR)
 		resp.Message = "请检查密码格式"
 		return resp, nil
 	}
 
-	if !usernamePattern.MatchString(req.Username) {
-		resp.State = standard.State_PARAMS_INVALID
+	if !pattern.Username.MatchString(req.Username) {
+		resp.State = uint64(restful.PARAMERR)
 		resp.Message = "请检查用户名格式"
 		return resp, nil
 	}
 
-	rows, err := queryUserByUsernameNamedStmt.QueryxContext(ctx, req)
+	rows, err := preparer.QueryUserByUsernameNamedStmt.QueryxContext(ctx, req)
 	if err != nil {
-		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.State = uint64(restful.INTERNALSERVERERROR)
 		resp.Message = err.Error()
 		return resp, nil
 	}
@@ -370,19 +374,19 @@ func (srv *Service) VerifyUserPasswordByUsername(ctx context.Context, req *stand
 	}
 
 	if len(users) <= 0 {
-		resp.State = standard.State_USER_NOT_EXIST
+		resp.State = uint64(restful.NOTFOUND)
 		resp.Message = "该用户不存在"
 		return resp, nil
 	}
 
 	if users[0].Password != user.Password {
-		resp.State = standard.State_SUCCESS
+		resp.State = uint64(restful.OK)
 		resp.Message = "查询成功"
 		resp.Data = false
 		return resp, nil
 	}
 
-	resp.State = standard.State_SUCCESS
+	resp.State = uint64(restful.OK)
 	resp.Message = "查询成功"
 	resp.Data = true
 
@@ -394,28 +398,28 @@ func (srv *Service) CreateLabelByOwner(ctx context.Context, req *standard.Create
 	var count uint64
 	resp = new(standard.CreateLabelByOwnerResponse)
 
-	err = countUserByIDNamedStmt.GetContext(ctx, &count, map[string]interface{}{"ID": req.Owner})
+	err = preparer.CountUserByIDNamedStmt.GetContext(ctx, &count, map[string]interface{}{"ID": req.Owner})
 	if err != nil {
-		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.State = uint64(restful.INTERNALSERVERERROR)
 		resp.Message = err.Error()
 		return resp, nil
 	}
 
 	if count <= 0 {
-		resp.State = standard.State_USER_NOT_EXIST
+		resp.State = uint64(restful.NOTFOUND)
 		resp.Message = "用户不存在"
 		return resp, nil
 	}
 
 	req.Label.Owner = req.Owner
-	_, err = insertLabelByOwnerNamedStmt.ExecContext(ctx, req.Label)
+	_, err = preparer.InsertLabelByOwnerNamedStmt.ExecContext(ctx, req.Label)
 	if err != nil {
-		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.State = uint64(restful.INTERNALSERVERERROR)
 		resp.Message = err.Error()
 		return resp, nil
 	}
 
-	resp.State = standard.State_SUCCESS
+	resp.State = uint64(restful.OK)
 	resp.Message = "创建成功"
 	return resp, nil
 }
@@ -425,9 +429,9 @@ func (srv *Service) QueryLabelByID(ctx context.Context, req *standard.QueryLabel
 	labels := []*models.Label{}
 	resp = new(standard.QueryLabelByIDResponse)
 
-	rows, err := queryLabelByIDNamedStmt.QueryxContext(ctx, req)
+	rows, err := preparer.QueryLabelByIDNamedStmt.QueryxContext(ctx, req)
 	if err != nil {
-		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.State = uint64(restful.INTERNALSERVERERROR)
 		resp.Message = err.Error()
 		return resp, nil
 	}
@@ -441,12 +445,12 @@ func (srv *Service) QueryLabelByID(ctx context.Context, req *standard.QueryLabel
 	}
 
 	if len(labels) <= 0 {
-		resp.State = standard.State_USER_NOT_EXIST
+		resp.State = uint64(restful.NOTFOUND)
 		resp.Message = "该标签不存在"
 		return resp, nil
 	}
 
-	resp.State = standard.State_SUCCESS
+	resp.State = uint64(restful.OK)
 	resp.Data = labels[0].OutProtoStruct()
 	resp.Message = "查询成功"
 
@@ -458,28 +462,28 @@ func (srv *Service) UpdateLabelByID(ctx context.Context, req *standard.UpdateLab
 	var count uint64
 	resp = new(standard.UpdateLabelByIDResponse)
 
-	err = countLabelByIDNamedStmt.GetContext(ctx, &count, req)
+	err = preparer.CountLabelByIDNamedStmt.GetContext(ctx, &count, req)
 	if err != nil {
-		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.State = uint64(restful.INTERNALSERVERERROR)
 		resp.Message = err.Error()
 		return resp, nil
 	}
 
 	if count <= 0 {
-		resp.State = standard.State_LABEL_NOT_EXIST
+		resp.State = uint64(restful.NOTFOUND)
 		resp.Message = "该标签不存在"
 		return resp, nil
 	}
 
 	req.Data.ID = req.ID
-	_, err = updateLabelByIDNamedStmt.ExecContext(ctx, req.Data)
+	_, err = preparer.UpdateLabelByIDNamedStmt.ExecContext(ctx, req.Data)
 	if err != nil {
-		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.State = uint64(restful.INTERNALSERVERERROR)
 		resp.Message = err.Error()
 		return resp, nil
 	}
 
-	resp.State = standard.State_SUCCESS
+	resp.State = uint64(restful.OK)
 	resp.Message = "更新成功"
 	return resp, nil
 }
@@ -489,27 +493,27 @@ func (srv *Service) DeleteLabelByID(ctx context.Context, req *standard.DeleteLab
 	var count uint64
 	resp = new(standard.DeleteLabelByIDResponse)
 
-	err = countLabelByIDNamedStmt.GetContext(ctx, &count, req)
+	err = preparer.CountLabelByIDNamedStmt.GetContext(ctx, &count, req)
 	if err != nil {
-		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.State = uint64(restful.INTERNALSERVERERROR)
 		resp.Message = err.Error()
 		return resp, nil
 	}
 
 	if count <= 0 {
-		resp.State = standard.State_LABEL_NOT_EXIST
+		resp.State = uint64(restful.NOTFOUND)
 		resp.Message = "该标签不存在"
 		return resp, nil
 	}
 
-	_, err = deleteLabelByIDNamedStmt.ExecContext(ctx, req)
+	_, err = preparer.DeleteLabelByIDNamedStmt.ExecContext(ctx, req)
 	if err != nil {
-		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.State = uint64(restful.INTERNALSERVERERROR)
 		resp.Message = err.Error()
 		return resp, nil
 	}
 
-	resp.State = standard.State_SUCCESS
+	resp.State = uint64(restful.OK)
 	resp.Message = "删除成功"
 	return resp, nil
 
@@ -523,17 +527,17 @@ func (srv *Service) QueryLabelByOwner(ctx context.Context, req *standard.QueryLa
 	resp = new(standard.QueryLabelByOwnerResponse)
 
 	// 插总数
-	err = countLabelByOwnerNamedStmt.GetContext(ctx, &count, req)
+	err = preparer.CountLabelByOwnerNamedStmt.GetContext(ctx, &count, req)
 	if err != nil {
-		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.State = uint64(restful.INTERNALSERVERERROR)
 		resp.Message = err.Error()
 		return resp, nil
 	}
 
 	// 查当前页
-	rows, err := queryLabelByOwnerNamedStmt.QueryxContext(ctx, req)
+	rows, err := preparer.QueryLabelByOwnerNamedStmt.QueryxContext(ctx, req)
 	if err != nil {
-		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.State = uint64(restful.INTERNALSERVERERROR)
 		resp.Message = err.Error()
 		return resp, nil
 	}
@@ -550,7 +554,7 @@ func (srv *Service) QueryLabelByOwner(ctx context.Context, req *standard.QueryLa
 		stdlabels = append(stdlabels, label.OutProtoStruct())
 	}
 
-	resp.State = standard.State_SUCCESS
+	resp.State = uint64(restful.OK)
 	resp.Message = "查询成功"
 	resp.Data = stdlabels
 	resp.Total = count

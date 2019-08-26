@@ -3,6 +3,7 @@ package main
 import (
 	"net"
 
+	"github.com/grpcbrick/account/preparer"
 	"github.com/grpcbrick/account/provider"
 	"github.com/grpcbrick/account/standard"
 	"github.com/yinxulai/goutils/config"
@@ -17,7 +18,7 @@ func init() {
 
 func main() {
 	var err error
-	provider.InitDB()
+	preparer.InitDB()
 
 	lis, err := net.Listen("tcp", config.MustGet("port"))
 	if err != nil {
