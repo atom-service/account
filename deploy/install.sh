@@ -9,7 +9,7 @@ TEMPDIR=`mktemp -d` #缓存目录
 SERVICE_NAME="account" # 服务的名字
 PACKAGE_NAME="linux-amd64.tar.gz" # 指定包名
 SERVICE_PATH="/etc/systemd/system" # uint service 安装目录
-INSTALL_PATH="/usr/local/account" # 程序的安装目录
+INSTALL_PATH="/www/grpc-services/account" # 程序的安装目录
 
 ready() {
   # 准备安装目录
