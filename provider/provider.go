@@ -29,13 +29,13 @@ func (srv *Service) CreateUser(ctx context.Context, req *standard.CreateUserRequ
 	resp = new(standard.CreateUserResponse)
 
 	if !pattern.Username.MatchString(req.Username) {
-		resp.State = uint64(restful.PARAMERR)
+		resp.State = uint64(restful.BADREQUEST)
 		resp.Message = "请检查用户名格式"
 		return resp, nil
 	}
 
 	if !pattern.Password.MatchString(req.Password) {
-		resp.State = uint64(restful.PARAMERR)
+		resp.State = uint64(restful.BADREQUEST)
 		resp.Message = "请检查密码格式"
 		return resp, nil
 	}
@@ -75,7 +75,7 @@ func (srv *Service) QueryUserByID(ctx context.Context, req *standard.QueryUserBy
 	resp = new(standard.QueryUserByIDResponse)
 
 	if req.ID == 0 {
-		resp.State = uint64(restful.PARAMERR)
+		resp.State = uint64(restful.BADREQUEST)
 		resp.Message = "无效的 ID"
 		return resp, nil
 	}
@@ -114,7 +114,7 @@ func (srv *Service) QueryUserByUsername(ctx context.Context, req *standard.Query
 	resp = new(standard.QueryUserByUsernameResponse)
 
 	if !pattern.Username.MatchString(req.Username) {
-		resp.State = uint64(restful.PARAMERR)
+		resp.State = uint64(restful.BADREQUEST)
 		resp.Message = "请检查用户名格式"
 		return resp, nil
 	}
@@ -157,19 +157,19 @@ func (srv *Service) UpdateUserByID(ctx context.Context, req *standard.UpdateUser
 	resp = new(standard.UpdateUserByIDResponse)
 
 	if req.ID == 0 {
-		resp.State = uint64(restful.PARAMERR)
+		resp.State = uint64(restful.BADREQUEST)
 		resp.Message = "无效的 ID"
 		return resp, nil
 	}
 
 	if !pattern.Username.MatchString(req.Data.Username) {
-		resp.State = uint64(restful.PARAMERR)
+		resp.State = uint64(restful.BADREQUEST)
 		resp.Message = "请检查用户名格式"
 		return resp, nil
 	}
 
 	if !pattern.Nickname.MatchString(req.Data.Nickname) {
-		resp.State = uint64(restful.PARAMERR)
+		resp.State = uint64(restful.BADREQUEST)
 		resp.Message = "请检查昵称格式"
 		return resp, nil
 	}
@@ -207,7 +207,7 @@ func (srv *Service) DeleteUserByID(ctx context.Context, req *standard.DeleteUser
 	resp = new(standard.DeleteUserByIDResponse)
 
 	if req.ID == 0 {
-		resp.State = uint64(restful.PARAMERR)
+		resp.State = uint64(restful.BADREQUEST)
 		resp.Message = "无效的 ID"
 		return resp, nil
 	}
@@ -247,13 +247,13 @@ func (srv *Service) UpdateUserPasswordByID(ctx context.Context, req *standard.Up
 	resp = new(standard.UpdateUserPasswordByIDResponse)
 
 	if req.ID == 0 {
-		resp.State = uint64(restful.PARAMERR)
+		resp.State = uint64(restful.BADREQUEST)
 		resp.Message = "无效的 ID"
 		return resp, nil
 	}
 
 	if !pattern.Password.MatchString(req.Password) {
-		resp.State = uint64(restful.PARAMERR)
+		resp.State = uint64(restful.BADREQUEST)
 		resp.Message = "请检查密码格式"
 		return resp, nil
 	}
@@ -293,13 +293,13 @@ func (srv *Service) VerifyUserPasswordByID(ctx context.Context, req *standard.Ve
 	resp = new(standard.VerifyUserPasswordByIDResponse)
 
 	if req.ID == 0 {
-		resp.State = uint64(restful.PARAMERR)
+		resp.State = uint64(restful.BADREQUEST)
 		resp.Message = "无效的 ID"
 		return resp, nil
 	}
 
 	if !pattern.Password.MatchString(req.Password) {
-		resp.State = uint64(restful.PARAMERR)
+		resp.State = uint64(restful.BADREQUEST)
 		resp.Message = "请检查密码格式"
 		return resp, nil
 	}
@@ -347,13 +347,13 @@ func (srv *Service) VerifyUserPasswordByUsername(ctx context.Context, req *stand
 	resp = new(standard.VerifyUserPasswordByUsernameResponse)
 
 	if !pattern.Password.MatchString(req.Password) {
-		resp.State = uint64(restful.PARAMERR)
+		resp.State = uint64(restful.BADREQUEST)
 		resp.Message = "请检查密码格式"
 		return resp, nil
 	}
 
 	if !pattern.Username.MatchString(req.Username) {
-		resp.State = uint64(restful.PARAMERR)
+		resp.State = uint64(restful.BADREQUEST)
 		resp.Message = "请检查用户名格式"
 		return resp, nil
 	}
