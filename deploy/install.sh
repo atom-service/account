@@ -5,7 +5,7 @@
 RELEASES_VERSION=$1 # 安装的版本
 
 # 环境变量
-TEMPDIR="`mktemp -d`/" #缓存目录
+TEMPDIR="`mktemp -d`" #缓存目录
 SERVICE_NAME="account" # 服务的名字
 PACKAGE_NAME="linux_amd64.tar.gz" # 指定包名
 SERVICE_PATH="/etc/systemd/user" # uint service 安装目录
@@ -20,7 +20,7 @@ ready() {
       exit 1
     fi
 	# 下载文件
-	echo "wget https://github.com/grpcbrick/account/releases/download/$RELEASES_VERSION/$PACKAGE_NAME to $TEMPDIR$PACKAGE_NAME ;"
+	echo "wget https://github.com/grpcbrick/account/releases/download/$RELEASES_VERSION/$PACKAGE_NAME to $TEMPDIR/$PACKAGE_NAME ;"
 	wget -O $TEMPDIR/$PACKAGE_NAME https://github.com/grpcbrick/account/releases/download/$RELEASES_VERSION/$PACKAGE_NAME ;
 	if [ $? != 0 ]; then
     echo "安装包下载失败"
