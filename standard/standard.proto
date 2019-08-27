@@ -174,7 +174,6 @@ message QueryLabelByOwnerResponse {
 }
 
 service Account {
-
   // 用户操作
   rpc CreateUser(CreateUserRequest)returns(CreateUserResponse){} // 创建一个用户
   rpc QueryUserByID(QueryUserByIDRequest)returns(QueryUserByIDResponse){} // 通过 ID 查询
