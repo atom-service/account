@@ -1,4 +1,4 @@
-package preparer
+package database
 
 import (
 	"bytes"

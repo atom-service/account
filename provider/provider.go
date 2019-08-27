@@ -5,8 +5,8 @@ import (
 
 	"github.com/yinxulai/goutils/restful"
 
+	"github.com/grpcbrick/account/database"
 	"github.com/grpcbrick/account/models"
-	"github.com/grpcbrick/account/preparer"
 	"github.com/grpcbrick/account/standard"
 	"github.com/yinxulai/goutils/pattern"
 )
@@ -41,7 +41,7 @@ func (srv *Service) CreateUser(ctx context.Context, req *standard.CreateUserRequ
 	}
 
 	// 查询 用户名是否已经存在
-	err = preparer.CountUserByUsernameNamedStmt.GetContext(ctx, &count, req)
+	err = database.CountUserByUsernameNamedStmt.GetContext(ctx, &count, req)
 	if err != nil {
 		resp.State = uint64(restful.INTERNALSERVERERROR)
 		resp.Message = err.Error()
@@ -56,7 +56,7 @@ func (srv *Service) CreateUser(ctx context.Context, req *standard.CreateUserRequ
 
 	// 执行插入
 	req.Password = user.Password // 重新赋值加密过后的密码
-	_, err = preparer.InsertUserNamedStmt.ExecContext(ctx, req)
+	_, err = database.InsertUserNamedStmt.ExecContext(ctx, req)
 	if err != nil {
 		resp.State = uint64(restful.INTERNALSERVERERROR)
 		resp.Message = err.Error()
@@ -80,7 +80,7 @@ func (srv *Service) QueryUserByID(ctx context.Context, req *standard.QueryUserBy
 		return resp, nil
 	}
 
-	rows, err := preparer.QueryUserByIDNamedStmt.QueryxContext(ctx, req)
+	rows, err := database.QueryUserByIDNamedStmt.QueryxContext(ctx, req)
 	if err != nil {
 		resp.State = uint64(restful.INTERNALSERVERERROR)
 		resp.Message = err.Error()
@@ -119,7 +119,7 @@ func (srv *Service) QueryUserByUsername(ctx context.Context, req *standard.Query
 		return resp, nil
 	}
 
-	rows, err := preparer.QueryUserByUsernameNamedStmt.QueryxContext(ctx, req)
+	rows, err := database.QueryUserByUsernameNamedStmt.QueryxContext(ctx, req)
 	if err != nil {
 		resp.State = uint64(restful.INTERNALSERVERERROR)
 		resp.Message = err.Error()
@@ -174,7 +174,7 @@ func (srv *Service) UpdateUserByID(ctx context.Context, req *standard.UpdateUser
 		return resp, nil
 	}
 
-	err = preparer.CountUserByIDNamedStmt.GetContext(ctx, &count, req)
+	err = database.CountUserByIDNamedStmt.GetContext(ctx, &count, req)
 	if err != nil {
 		resp.State = uint64(restful.INTERNALSERVERERROR)
 		resp.Message = err.Error()
@@ -188,7 +188,7 @@ func (srv *Service) UpdateUserByID(ctx context.Context, req *standard.UpdateUser
 	}
 
 	req.Data.ID = req.ID
-	_, err = preparer.UpdateUserByIDNamedStmt.ExecContext(ctx, req.Data)
+	_, err = database.UpdateUserByIDNamedStmt.ExecContext(ctx, req.Data)
 	if err != nil {
 		resp.State = uint64(restful.INTERNALSERVERERROR)
 		resp.Message = err.Error()
@@ -212,7 +212,7 @@ func (srv *Service) DeleteUserByID(ctx context.Context, req *standard.DeleteUser
 		return resp, nil
 	}
 
-	err = preparer.CountUserByIDNamedStmt.GetContext(ctx, &count, req)
+	err = database.CountUserByIDNamedStmt.GetContext(ctx, &count, req)
 	if err != nil {
 		resp.State = uint64(restful.INTERNALSERVERERROR)
 		resp.Message = err.Error()
@@ -225,7 +225,7 @@ func (srv *Service) DeleteUserByID(ctx context.Context, req *standard.DeleteUser
 		return resp, nil
 	}
 
-	_, err = preparer.DeleteUserByIDNamedStmt.ExecContext(ctx, req)
+	_, err = database.DeleteUserByIDNamedStmt.ExecContext(ctx, req)
 	if err != nil {
 		resp.State = uint64(restful.INTERNALSERVERERROR)
 		resp.Message = err.Error()
@@ -258,7 +258,7 @@ func (srv *Service) UpdateUserPasswordByID(ctx context.Context, req *standard.Up
 		return resp, nil
 	}
 
-	err = preparer.CountUserByIDNamedStmt.GetContext(ctx, &count, req)
+	err = database.CountUserByIDNamedStmt.GetContext(ctx, &count, req)
 	if err != nil {
 		resp.State = uint64(restful.INTERNALSERVERERROR)
 		resp.Message = err.Error()
@@ -272,7 +272,7 @@ func (srv *Service) UpdateUserPasswordByID(ctx context.Context, req *standard.Up
 	}
 
 	user.ID = req.ID
-	_, err = preparer.UpdateUserPasswordByIDNamedStmt.ExecContext(ctx, user)
+	_, err = database.UpdateUserPasswordByIDNamedStmt.ExecContext(ctx, user)
 	if err != nil {
 		resp.State = uint64(restful.INTERNALSERVERERROR)
 		resp.Message = err.Error()
@@ -304,7 +304,7 @@ func (srv *Service) VerifyUserPasswordByID(ctx context.Context, req *standard.Ve
 		return resp, nil
 	}
 
-	rows, err := preparer.QueryUserByIDNamedStmt.QueryxContext(ctx, req)
+	rows, err := database.QueryUserByIDNamedStmt.QueryxContext(ctx, req)
 	if err != nil {
 		resp.State = uint64(restful.INTERNALSERVERERROR)
 		resp.Message = err.Error()
@@ -358,7 +358,7 @@ func (srv *Service) VerifyUserPasswordByUsername(ctx context.Context, req *stand
 		return resp, nil
 	}
 
-	rows, err := preparer.QueryUserByUsernameNamedStmt.QueryxContext(ctx, req)
+	rows, err := database.QueryUserByUsernameNamedStmt.QueryxContext(ctx, req)
 	if err != nil {
 		resp.State = uint64(restful.INTERNALSERVERERROR)
 		resp.Message = err.Error()
@@ -398,7 +398,7 @@ func (srv *Service) CreateLabelByOwner(ctx context.Context, req *standard.Create
 	var count uint64
 	resp = new(standard.CreateLabelByOwnerResponse)
 
-	err = preparer.CountUserByIDNamedStmt.GetContext(ctx, &count, map[string]interface{}{"ID": req.Owner})
+	err = database.CountUserByIDNamedStmt.GetContext(ctx, &count, map[string]interface{}{"ID": req.Owner})
 	if err != nil {
 		resp.State = uint64(restful.INTERNALSERVERERROR)
 		resp.Message = err.Error()
@@ -412,7 +412,7 @@ func (srv *Service) CreateLabelByOwner(ctx context.Context, req *standard.Create
 	}
 
 	req.Label.Owner = req.Owner
-	_, err = preparer.InsertLabelByOwnerNamedStmt.ExecContext(ctx, req.Label)
+	_, err = database.InsertLabelByOwnerNamedStmt.ExecContext(ctx, req.Label)
 	if err != nil {
 		resp.State = uint64(restful.INTERNALSERVERERROR)
 		resp.Message = err.Error()
@@ -429,7 +429,7 @@ func (srv *Service) QueryLabelByID(ctx context.Context, req *standard.QueryLabel
 	labels := []*models.Label{}
 	resp = new(standard.QueryLabelByIDResponse)
 
-	rows, err := preparer.QueryLabelByIDNamedStmt.QueryxContext(ctx, req)
+	rows, err := database.QueryLabelByIDNamedStmt.QueryxContext(ctx, req)
 	if err != nil {
 		resp.State = uint64(restful.INTERNALSERVERERROR)
 		resp.Message = err.Error()
@@ -462,7 +462,7 @@ func (srv *Service) UpdateLabelByID(ctx context.Context, req *standard.UpdateLab
 	var count uint64
 	resp = new(standard.UpdateLabelByIDResponse)
 
-	err = preparer.CountLabelByIDNamedStmt.GetContext(ctx, &count, req)
+	err = database.CountLabelByIDNamedStmt.GetContext(ctx, &count, req)
 	if err != nil {
 		resp.State = uint64(restful.INTERNALSERVERERROR)
 		resp.Message = err.Error()
@@ -476,7 +476,7 @@ func (srv *Service) UpdateLabelByID(ctx context.Context, req *standard.UpdateLab
 	}
 
 	req.Data.ID = req.ID
-	_, err = preparer.UpdateLabelByIDNamedStmt.ExecContext(ctx, req.Data)
+	_, err = database.UpdateLabelByIDNamedStmt.ExecContext(ctx, req.Data)
 	if err != nil {
 		resp.State = uint64(restful.INTERNALSERVERERROR)
 		resp.Message = err.Error()
@@ -493,7 +493,7 @@ func (srv *Service) DeleteLabelByID(ctx context.Context, req *standard.DeleteLab
 	var count uint64
 	resp = new(standard.DeleteLabelByIDResponse)
 
-	err = preparer.CountLabelByIDNamedStmt.GetContext(ctx, &count, req)
+	err = database.CountLabelByIDNamedStmt.GetContext(ctx, &count, req)
 	if err != nil {
 		resp.State = uint64(restful.INTERNALSERVERERROR)
 		resp.Message = err.Error()
@@ -506,7 +506,7 @@ func (srv *Service) DeleteLabelByID(ctx context.Context, req *standard.DeleteLab
 		return resp, nil
 	}
 
-	_, err = preparer.DeleteLabelByIDNamedStmt.ExecContext(ctx, req)
+	_, err = database.DeleteLabelByIDNamedStmt.ExecContext(ctx, req)
 	if err != nil {
 		resp.State = uint64(restful.INTERNALSERVERERROR)
 		resp.Message = err.Error()
@@ -527,7 +527,7 @@ func (srv *Service) QueryLabelByOwner(ctx context.Context, req *standard.QueryLa
 	resp = new(standard.QueryLabelByOwnerResponse)
 
 	// 插总数
-	err = preparer.CountLabelByOwnerNamedStmt.GetContext(ctx, &count, req)
+	err = database.CountLabelByOwnerNamedStmt.GetContext(ctx, &count, req)
 	if err != nil {
 		resp.State = uint64(restful.INTERNALSERVERERROR)
 		resp.Message = err.Error()
@@ -535,7 +535,7 @@ func (srv *Service) QueryLabelByOwner(ctx context.Context, req *standard.QueryLa
 	}
 
 	// 查当前页
-	rows, err := preparer.QueryLabelByOwnerNamedStmt.QueryxContext(ctx, req)
+	rows, err := database.QueryLabelByOwnerNamedStmt.QueryxContext(ctx, req)
 	if err != nil {
 		resp.State = uint64(restful.INTERNALSERVERERROR)
 		resp.Message = err.Error()
