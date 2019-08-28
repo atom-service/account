@@ -28,8 +28,8 @@ var (
 	DeleteLabelByIDNamedStmt        *sqlx.NamedStmt
 )
 
-// InitDB init
-func InitDB() {
+// Init init
+func Init() {
 	var err error
 	database, err := sqlx.Connect("mysql", config.MustGet("mysql"))
 	if err != nil {

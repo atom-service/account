@@ -16,7 +16,7 @@ addons:
 before_install:
   # 安装依赖
   - export ROOT_PATH=`pwd`
-  - ./deploy/build.sh installVendor
+  - ./.deploy/build.sh installVendor
 
 install: skip
 
@@ -24,7 +24,7 @@ before_script: skip
 
 script:
   # 编译
-  - ./deploy/build.sh build
+  - ./.deploy/build.sh build
 
 before_deploy:
   # 准备服务器的 ssh_key
@@ -53,10 +53,10 @@ after_deploy:
   # 执行脚本
   - cd $ROOT_PATH ;
   - TEMPDIR=`mktemp -d` ; # 获取一个随机目录
-  - tar -zcvf ./deploy.tar.gz ./deploy ; # 压缩包
+  - tar -zcvf ./deploy.tar.gz ./.deploy ; # 压缩包
   - ssh -tt server "mkdir -p $TEMPDIR ;" ; # 创建缓存目录
   - scp ./deploy.tar.gz server:$TEMPDIR/deploy.tar.gz ; #  上传部署包
   - ssh -tt server "tar -zxvf $TEMPDIR/deploy.tar.gz -C $TEMPDIR ;" ; # 解压部署包
-  - ssh -tt server "bash -c $TEMPDIR/deploy/install.sh $TRAVIS_TAG ;" ; # 执行部署脚本
+  - ssh -tt server "bash -c $TEMPDIR/.deploy/install.sh $TRAVIS_TAG ;" ; # 执行部署脚本
   - ssh -tt server "rm -rf $TEMPDIR;" ; # 清空缓存目录
 after_script: skip
