@@ -4,8 +4,12 @@
 package standard
 
 import (
+	context "context"
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
+	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 	math "math"
 )
 
@@ -19,62 +23,6 @@ var _ = math.Inf
 // A compilation error at this line likely means your copy of the
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
-
-// 状态
-type State int32
-
-const (
-	State_UNKNOWN              State = 0
-	State_SUCCESS              State = 1
-	State_FAILURE              State = 2
-	State_SERVICE_ERROR        State = 3
-	State_PARAMS_INVALID       State = 5
-	State_ILLEGAL_REQUEST      State = 6
-	State_LABEL_NOT_EXIST      State = 7
-	State_USER_NOT_EXIST       State = 8
-	State_USER_ALREADY_EXISTS  State = 9
-	State_USER_VERIFY_FAILURE  State = 10
-	State_LABEL_ALREADY_EXISTS State = 11
-	State_DB_OPERATION_FATLURE State = 12
-)
-
-var State_name = map[int32]string{
-	0:  "UNKNOWN",
-	1:  "SUCCESS",
-	2:  "FAILURE",
-	3:  "SERVICE_ERROR",
-	5:  "PARAMS_INVALID",
-	6:  "ILLEGAL_REQUEST",
-	7:  "LABEL_NOT_EXIST",
-	8:  "USER_NOT_EXIST",
-	9:  "USER_ALREADY_EXISTS",
-	10: "USER_VERIFY_FAILURE",
-	11: "LABEL_ALREADY_EXISTS",
-	12: "DB_OPERATION_FATLURE",
-}
-
-var State_value = map[string]int32{
-	"UNKNOWN":              0,
-	"SUCCESS":              1,
-	"FAILURE":              2,
-	"SERVICE_ERROR":        3,
-	"PARAMS_INVALID":       5,
-	"ILLEGAL_REQUEST":      6,
-	"LABEL_NOT_EXIST":      7,
-	"USER_NOT_EXIST":       8,
-	"USER_ALREADY_EXISTS":  9,
-	"USER_VERIFY_FAILURE":  10,
-	"LABEL_ALREADY_EXISTS": 11,
-	"DB_OPERATION_FATLURE": 12,
-}
-
-func (x State) String() string {
-	return proto.EnumName(State_name, int32(x))
-}
-
-func (State) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{0}
-}
 
 // Label 标签
 type Label struct {
@@ -428,7 +376,7 @@ func (m *CreateUserRequest) GetPassword() string {
 }
 
 type CreateUserResponse struct {
-	State                State    `protobuf:"varint,1,opt,name=State,proto3,enum=standard.State" json:"State,omitempty"`
+	State                uint64   `protobuf:"varint,1,opt,name=State,proto3" json:"State,omitempty"`
 	Message              string   `protobuf:"bytes,2,opt,name=Message,proto3" json:"Message,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
@@ -460,11 +408,11 @@ func (m *CreateUserResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_CreateUserResponse proto.InternalMessageInfo
 
-func (m *CreateUserResponse) GetState() State {
+func (m *CreateUserResponse) GetState() uint64 {
 	if m != nil {
 		return m.State
 	}
-	return State_UNKNOWN
+	return 0
 }
 
 func (m *CreateUserResponse) GetMessage() string {
@@ -514,7 +462,7 @@ func (m *QueryUserByIDRequest) GetID() uint64 {
 }
 
 type QueryUserByIDResponse struct {
-	State                State    `protobuf:"varint,1,opt,name=State,proto3,enum=standard.State" json:"State,omitempty"`
+	State                uint64   `protobuf:"varint,1,opt,name=State,proto3" json:"State,omitempty"`
 	Message              string   `protobuf:"bytes,2,opt,name=Message,proto3" json:"Message,omitempty"`
 	Data                 *User    `protobuf:"bytes,3,opt,name=Data,proto3" json:"Data,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -547,11 +495,11 @@ func (m *QueryUserByIDResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryUserByIDResponse proto.InternalMessageInfo
 
-func (m *QueryUserByIDResponse) GetState() State {
+func (m *QueryUserByIDResponse) GetState() uint64 {
 	if m != nil {
 		return m.State
 	}
-	return State_UNKNOWN
+	return 0
 }
 
 func (m *QueryUserByIDResponse) GetMessage() string {
@@ -655,7 +603,7 @@ func (m *QueryUserByUsernameRequest) GetUsername() string {
 }
 
 type QueryUserByUsernameResponse struct {
-	State                State    `protobuf:"varint,1,opt,name=State,proto3,enum=standard.State" json:"State,omitempty"`
+	State                uint64   `protobuf:"varint,1,opt,name=State,proto3" json:"State,omitempty"`
 	Message              string   `protobuf:"bytes,2,opt,name=Message,proto3" json:"Message,omitempty"`
 	Data                 *User    `protobuf:"bytes,3,opt,name=Data,proto3" json:"Data,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -688,11 +636,11 @@ func (m *QueryUserByUsernameResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryUserByUsernameResponse proto.InternalMessageInfo
 
-func (m *QueryUserByUsernameResponse) GetState() State {
+func (m *QueryUserByUsernameResponse) GetState() uint64 {
 	if m != nil {
 		return m.State
 	}
-	return State_UNKNOWN
+	return 0
 }
 
 func (m *QueryUserByUsernameResponse) GetMessage() string {
@@ -710,7 +658,7 @@ func (m *QueryUserByUsernameResponse) GetData() *User {
 }
 
 type UpdateUserByIDResponse struct {
-	State                State    `protobuf:"varint,1,opt,name=State,proto3,enum=standard.State" json:"State,omitempty"`
+	State                uint64   `protobuf:"varint,1,opt,name=State,proto3" json:"State,omitempty"`
 	Message              string   `protobuf:"bytes,2,opt,name=Message,proto3" json:"Message,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
@@ -742,11 +690,11 @@ func (m *UpdateUserByIDResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_UpdateUserByIDResponse proto.InternalMessageInfo
 
-func (m *UpdateUserByIDResponse) GetState() State {
+func (m *UpdateUserByIDResponse) GetState() uint64 {
 	if m != nil {
 		return m.State
 	}
-	return State_UNKNOWN
+	return 0
 }
 
 func (m *UpdateUserByIDResponse) GetMessage() string {
@@ -796,7 +744,7 @@ func (m *DeleteUserByIDRequest) GetID() uint64 {
 }
 
 type DeleteUserByIDResponse struct {
-	State                State    `protobuf:"varint,1,opt,name=State,proto3,enum=standard.State" json:"State,omitempty"`
+	State                uint64   `protobuf:"varint,1,opt,name=State,proto3" json:"State,omitempty"`
 	Message              string   `protobuf:"bytes,2,opt,name=Message,proto3" json:"Message,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
@@ -828,11 +776,11 @@ func (m *DeleteUserByIDResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_DeleteUserByIDResponse proto.InternalMessageInfo
 
-func (m *DeleteUserByIDResponse) GetState() State {
+func (m *DeleteUserByIDResponse) GetState() uint64 {
 	if m != nil {
 		return m.State
 	}
-	return State_UNKNOWN
+	return 0
 }
 
 func (m *DeleteUserByIDResponse) GetMessage() string {
@@ -890,7 +838,7 @@ func (m *UpdateUserPasswordByIDRequest) GetPassword() string {
 }
 
 type UpdateUserPasswordByIDResponse struct {
-	State                State    `protobuf:"varint,1,opt,name=State,proto3,enum=standard.State" json:"State,omitempty"`
+	State                uint64   `protobuf:"varint,1,opt,name=State,proto3" json:"State,omitempty"`
 	Message              string   `protobuf:"bytes,2,opt,name=Message,proto3" json:"Message,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
@@ -922,11 +870,11 @@ func (m *UpdateUserPasswordByIDResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_UpdateUserPasswordByIDResponse proto.InternalMessageInfo
 
-func (m *UpdateUserPasswordByIDResponse) GetState() State {
+func (m *UpdateUserPasswordByIDResponse) GetState() uint64 {
 	if m != nil {
 		return m.State
 	}
-	return State_UNKNOWN
+	return 0
 }
 
 func (m *UpdateUserPasswordByIDResponse) GetMessage() string {
@@ -984,7 +932,7 @@ func (m *VerifyUserPasswordByIDRequest) GetPassword() string {
 }
 
 type VerifyUserPasswordByIDResponse struct {
-	State                State    `protobuf:"varint,1,opt,name=State,proto3,enum=standard.State" json:"State,omitempty"`
+	State                uint64   `protobuf:"varint,1,opt,name=State,proto3" json:"State,omitempty"`
 	Message              string   `protobuf:"bytes,2,opt,name=Message,proto3" json:"Message,omitempty"`
 	Data                 bool     `protobuf:"varint,3,opt,name=Data,proto3" json:"Data,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -1017,11 +965,11 @@ func (m *VerifyUserPasswordByIDResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_VerifyUserPasswordByIDResponse proto.InternalMessageInfo
 
-func (m *VerifyUserPasswordByIDResponse) GetState() State {
+func (m *VerifyUserPasswordByIDResponse) GetState() uint64 {
 	if m != nil {
 		return m.State
 	}
-	return State_UNKNOWN
+	return 0
 }
 
 func (m *VerifyUserPasswordByIDResponse) GetMessage() string {
@@ -1086,7 +1034,7 @@ func (m *VerifyUserPasswordByUsernameRequest) GetPassword() string {
 }
 
 type VerifyUserPasswordByUsernameResponse struct {
-	State                State    `protobuf:"varint,1,opt,name=State,proto3,enum=standard.State" json:"State,omitempty"`
+	State                uint64   `protobuf:"varint,1,opt,name=State,proto3" json:"State,omitempty"`
 	Message              string   `protobuf:"bytes,2,opt,name=Message,proto3" json:"Message,omitempty"`
 	Data                 bool     `protobuf:"varint,3,opt,name=Data,proto3" json:"Data,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -1119,11 +1067,11 @@ func (m *VerifyUserPasswordByUsernameResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_VerifyUserPasswordByUsernameResponse proto.InternalMessageInfo
 
-func (m *VerifyUserPasswordByUsernameResponse) GetState() State {
+func (m *VerifyUserPasswordByUsernameResponse) GetState() uint64 {
 	if m != nil {
 		return m.State
 	}
-	return State_UNKNOWN
+	return 0
 }
 
 func (m *VerifyUserPasswordByUsernameResponse) GetMessage() string {
@@ -1188,7 +1136,7 @@ func (m *CreateLabelByOwnerRequest) GetLabel() *Label {
 }
 
 type CreateLabelByOwnerResponse struct {
-	State                State    `protobuf:"varint,1,opt,name=State,proto3,enum=standard.State" json:"State,omitempty"`
+	State                uint64   `protobuf:"varint,1,opt,name=State,proto3" json:"State,omitempty"`
 	Message              string   `protobuf:"bytes,2,opt,name=Message,proto3" json:"Message,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
@@ -1220,11 +1168,11 @@ func (m *CreateLabelByOwnerResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_CreateLabelByOwnerResponse proto.InternalMessageInfo
 
-func (m *CreateLabelByOwnerResponse) GetState() State {
+func (m *CreateLabelByOwnerResponse) GetState() uint64 {
 	if m != nil {
 		return m.State
 	}
-	return State_UNKNOWN
+	return 0
 }
 
 func (m *CreateLabelByOwnerResponse) GetMessage() string {
@@ -1274,7 +1222,7 @@ func (m *QueryLabelByIDRequest) GetID() uint64 {
 }
 
 type QueryLabelByIDResponse struct {
-	State                State    `protobuf:"varint,1,opt,name=State,proto3,enum=standard.State" json:"State,omitempty"`
+	State                uint64   `protobuf:"varint,1,opt,name=State,proto3" json:"State,omitempty"`
 	Message              string   `protobuf:"bytes,2,opt,name=Message,proto3" json:"Message,omitempty"`
 	Data                 *Label   `protobuf:"bytes,3,opt,name=Data,proto3" json:"Data,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -1307,11 +1255,11 @@ func (m *QueryLabelByIDResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryLabelByIDResponse proto.InternalMessageInfo
 
-func (m *QueryLabelByIDResponse) GetState() State {
+func (m *QueryLabelByIDResponse) GetState() uint64 {
 	if m != nil {
 		return m.State
 	}
-	return State_UNKNOWN
+	return 0
 }
 
 func (m *QueryLabelByIDResponse) GetMessage() string {
@@ -1376,7 +1324,7 @@ func (m *UpdateLabelByIDRequest) GetData() *Label {
 }
 
 type UpdateLabelByIDResponse struct {
-	State                State    `protobuf:"varint,1,opt,name=State,proto3,enum=standard.State" json:"State,omitempty"`
+	State                uint64   `protobuf:"varint,1,opt,name=State,proto3" json:"State,omitempty"`
 	Message              string   `protobuf:"bytes,2,opt,name=Message,proto3" json:"Message,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
@@ -1408,11 +1356,11 @@ func (m *UpdateLabelByIDResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_UpdateLabelByIDResponse proto.InternalMessageInfo
 
-func (m *UpdateLabelByIDResponse) GetState() State {
+func (m *UpdateLabelByIDResponse) GetState() uint64 {
 	if m != nil {
 		return m.State
 	}
-	return State_UNKNOWN
+	return 0
 }
 
 func (m *UpdateLabelByIDResponse) GetMessage() string {
@@ -1462,7 +1410,7 @@ func (m *DeleteLabelByIDRequest) GetID() uint64 {
 }
 
 type DeleteLabelByIDResponse struct {
-	State                State    `protobuf:"varint,1,opt,name=State,proto3,enum=standard.State" json:"State,omitempty"`
+	State                uint64   `protobuf:"varint,1,opt,name=State,proto3" json:"State,omitempty"`
 	Message              string   `protobuf:"bytes,2,opt,name=Message,proto3" json:"Message,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
@@ -1494,11 +1442,11 @@ func (m *DeleteLabelByIDResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_DeleteLabelByIDResponse proto.InternalMessageInfo
 
-func (m *DeleteLabelByIDResponse) GetState() State {
+func (m *DeleteLabelByIDResponse) GetState() uint64 {
 	if m != nil {
 		return m.State
 	}
-	return State_UNKNOWN
+	return 0
 }
 
 func (m *DeleteLabelByIDResponse) GetMessage() string {
@@ -1564,7 +1512,7 @@ func (m *QueryLabelByOwnerRequest) GetOffset() uint64 {
 }
 
 type QueryLabelByOwnerResponse struct {
-	State                State    `protobuf:"varint,1,opt,name=State,proto3,enum=standard.State" json:"State,omitempty"`
+	State                uint64   `protobuf:"varint,1,opt,name=State,proto3" json:"State,omitempty"`
 	Message              string   `protobuf:"bytes,2,opt,name=Message,proto3" json:"Message,omitempty"`
 	Total                uint64   `protobuf:"varint,3,opt,name=Total,proto3" json:"Total,omitempty"`
 	Data                 []*Label `protobuf:"bytes,4,rep,name=Data,proto3" json:"Data,omitempty"`
@@ -1598,11 +1546,11 @@ func (m *QueryLabelByOwnerResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryLabelByOwnerResponse proto.InternalMessageInfo
 
-func (m *QueryLabelByOwnerResponse) GetState() State {
+func (m *QueryLabelByOwnerResponse) GetState() uint64 {
 	if m != nil {
 		return m.State
 	}
-	return State_UNKNOWN
+	return 0
 }
 
 func (m *QueryLabelByOwnerResponse) GetMessage() string {
@@ -1627,7 +1575,6 @@ func (m *QueryLabelByOwnerResponse) GetData() []*Label {
 }
 
 func init() {
-	proto.RegisterEnum("standard.State", State_name, State_value)
 	proto.RegisterType((*Label)(nil), "standard.Label")
 	proto.RegisterType((*User)(nil), "standard.User")
 	proto.RegisterType((*Group)(nil), "standard.Group")
@@ -1662,74 +1609,578 @@ func init() {
 func init() { proto.RegisterFile("standard.proto", fileDescriptor_0b3e239150a6a10f) }
 
 var fileDescriptor_0b3e239150a6a10f = []byte{
-	// 1093 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x58, 0x4f, 0x4f, 0xe3, 0x46,
-	0x14, 0x8f, 0x13, 0xe7, 0xdf, 0xa3, 0x1b, 0xc2, 0x10, 0xc0, 0x9b, 0xdd, 0xd2, 0xd4, 0x40, 0x17,
-	0x55, 0x2a, 0x07, 0x7a, 0xe9, 0xd5, 0x10, 0xb3, 0xb2, 0x30, 0x09, 0x3b, 0x4e, 0x52, 0x58, 0x69,
-	0x37, 0xf2, 0x92, 0xa1, 0x8a, 0x0a, 0x49, 0x6a, 0x3b, 0x8b, 0xa2, 0x56, 0xad, 0xd4, 0x2f, 0xd1,
-	0x73, 0x3f, 0x40, 0x3f, 0x58, 0x6f, 0xbd, 0xf6, 0x56, 0x79, 0xfc, 0x27, 0x13, 0x67, 0xec, 0xe4,
-	0xe0, 0xee, 0x8d, 0xf7, 0xde, 0xcc, 0xef, 0xfd, 0xde, 0x1f, 0xcf, 0x7b, 0x01, 0x2a, 0xb6, 0x63,
-	0x8e, 0x06, 0xa6, 0x35, 0x38, 0x99, 0x58, 0x63, 0x67, 0x8c, 0x4a, 0x81, 0x2c, 0xff, 0x25, 0x40,
-	0x5e, 0x37, 0x3f, 0x90, 0x07, 0x54, 0x81, 0xac, 0xd6, 0x94, 0x84, 0x86, 0x70, 0x2c, 0xe2, 0xac,
-	0xd6, 0x44, 0x08, 0xc4, 0xce, 0x6c, 0x42, 0xa4, 0x6c, 0x43, 0x38, 0x2e, 0x63, 0xfa, 0x37, 0xaa,
-	0x41, 0xde, 0x70, 0x4c, 0x87, 0x48, 0x39, 0xaa, 0xf4, 0x04, 0x57, 0xdb, 0x33, 0x1f, 0xa6, 0x44,
-	0x12, 0x3d, 0x2d, 0x15, 0x5c, 0x6d, 0xfb, 0x69, 0x44, 0x2c, 0x29, 0x4f, 0x21, 0x3d, 0x01, 0xed,
-	0x03, 0x9c, 0x5b, 0xc4, 0x74, 0x48, 0x67, 0xf8, 0x48, 0xa4, 0x02, 0xbd, 0xc0, 0x68, 0x5c, 0x7b,
-	0x77, 0x32, 0x08, 0xec, 0x45, 0xcf, 0x3e, 0xd7, 0xc8, 0xff, 0x08, 0x20, 0x76, 0x6d, 0x62, 0xad,
-	0x45, 0x77, 0x17, 0x0a, 0xca, 0x47, 0xd3, 0x31, 0x2d, 0x9f, 0xaf, 0x2f, 0x21, 0x09, 0x8a, 0xda,
-	0xe8, 0xe3, 0xd0, 0x21, 0x16, 0xa5, 0x2c, 0xe2, 0x40, 0x44, 0x75, 0x28, 0xb5, 0x86, 0x77, 0x3f,
-	0x8e, 0xcc, 0x47, 0x42, 0x79, 0x97, 0x71, 0x28, 0xbb, 0x36, 0xd7, 0x33, 0xb5, 0x79, 0xc4, 0x43,
-	0xd9, 0xb5, 0x5d, 0x9b, 0xb6, 0xfd, 0x34, 0xb6, 0x06, 0x3e, 0xe9, 0x50, 0x8e, 0x84, 0x5c, 0x5a,
-	0x11, 0x72, 0x79, 0x29, 0xe4, 0x3f, 0x05, 0xc8, 0xbf, 0xb6, 0xc6, 0xd3, 0xc9, 0x5a, 0x31, 0x23,
-	0x10, 0x5b, 0x2e, 0x43, 0x2f, 0x62, 0xfa, 0x77, 0x84, 0x81, 0xb8, 0x82, 0x41, 0x3e, 0xca, 0x00,
-	0x35, 0x60, 0xa3, 0x49, 0xec, 0x3b, 0x6b, 0x38, 0x71, 0x86, 0xe3, 0x91, 0x1f, 0x3c, 0xab, 0x72,
-	0xdb, 0x68, 0xcb, 0x03, 0x74, 0x53, 0x82, 0xc9, 0x4f, 0x53, 0x62, 0x3b, 0x21, 0x3f, 0x81, 0x5b,
-	0x93, 0x6c, 0x5c, 0x4d, 0x72, 0xf1, 0x35, 0x11, 0x13, 0x6a, 0x92, 0x4f, 0xa8, 0x49, 0x61, 0xb1,
-	0x26, 0x72, 0x17, 0x10, 0x4b, 0xd7, 0x9e, 0x8c, 0x47, 0x36, 0x41, 0x47, 0x41, 0x7b, 0xbb, 0x84,
-	0x2b, 0xa7, 0x9b, 0x27, 0xe1, 0x67, 0x43, 0xd5, 0x41, 0xbf, 0x4b, 0x50, 0xbc, 0x22, 0xb6, 0x6d,
-	0xfe, 0x10, 0x64, 0x3e, 0x10, 0xe5, 0xaf, 0xa0, 0xf6, 0x66, 0x4a, 0xac, 0x99, 0x8b, 0x7a, 0x36,
-	0xd3, 0x9a, 0x41, 0x22, 0x22, 0x85, 0x93, 0x7f, 0x81, 0x9d, 0xc8, 0xb9, 0x94, 0x18, 0x20, 0x19,
-	0xc4, 0xa6, 0xe9, 0x98, 0x34, 0x87, 0x1b, 0xa7, 0x95, 0xf9, 0x7d, 0x1a, 0x28, 0xb5, 0xc9, 0x97,
-	0xb0, 0xe3, 0x15, 0x77, 0x05, 0xcd, 0x10, 0x2c, 0x9b, 0x00, 0xf6, 0x1d, 0xd4, 0x99, 0x50, 0x82,
-	0xe4, 0x07, 0x88, 0x6c, 0x7d, 0x72, 0x8b, 0xf5, 0x91, 0x7f, 0x17, 0xe0, 0x05, 0xf7, 0xea, 0xa7,
-	0xcc, 0xc5, 0x2d, 0xec, 0x46, 0x73, 0x91, 0x56, 0x33, 0xbc, 0x82, 0x9d, 0x26, 0x79, 0x20, 0x2b,
-	0xd3, 0xec, 0x72, 0x88, 0x1e, 0x4c, 0x8b, 0xc3, 0x25, 0x7c, 0x3e, 0x0f, 0x2f, 0xe8, 0xfe, 0xa4,
-	0x92, 0xb3, 0x1f, 0x4d, 0x36, 0xf2, 0xd1, 0x98, 0xb0, 0x1f, 0x07, 0x96, 0x22, 0xdf, 0x1e, 0xb1,
-	0x86, 0xf7, 0xb3, 0x34, 0xf8, 0x4e, 0x61, 0x3f, 0x0e, 0x2c, 0xad, 0x16, 0x43, 0x4c, 0x8b, 0x95,
-	0xfc, 0x96, 0x7a, 0x07, 0x07, 0x3c, 0xb7, 0x49, 0x9f, 0x86, 0x90, 0xf0, 0x74, 0x45, 0xa3, 0xfa,
-	0x19, 0x0e, 0x93, 0xe1, 0xff, 0xcf, 0xd8, 0x6e, 0xe0, 0xb9, 0xf7, 0x6e, 0xd2, 0x9d, 0xe1, 0x6c,
-	0x46, 0x87, 0x7a, 0x10, 0x51, 0x38, 0xf1, 0x05, 0x76, 0xe2, 0x1f, 0xf9, 0x0b, 0x86, 0xff, 0x8a,
-	0x30, 0x3c, 0xa8, 0x1a, 0x7b, 0x56, 0xf9, 0x1d, 0xd4, 0x79, 0xc8, 0x29, 0x7e, 0x8c, 0xf4, 0xad,
-	0xf1, 0xd1, 0xe3, 0x3f, 0xc6, 0x5f, 0x61, 0x37, 0x7a, 0x30, 0xad, 0x84, 0x1e, 0x2c, 0xbc, 0x47,
-	0x4b, 0x89, 0xf0, 0x32, 0x7c, 0x15, 0x3c, 0x48, 0xab, 0x98, 0xae, 0x07, 0xf7, 0x16, 0xf6, 0x96,
-	0xe0, 0xd2, 0xca, 0xe9, 0x71, 0xf0, 0x6e, 0xad, 0x4c, 0xea, 0x5b, 0xd8, 0x5b, 0x3a, 0x99, 0x16,
-	0x8b, 0xf7, 0x20, 0xb1, 0x05, 0x5b, 0xa3, 0x23, 0x6b, 0x90, 0xd7, 0x87, 0x8f, 0x43, 0x87, 0x22,
-	0x89, 0xd8, 0x13, 0xdc, 0xc5, 0xa4, 0x7d, 0x7f, 0x6f, 0x13, 0xc7, 0xdf, 0x3f, 0x7c, 0x49, 0xfe,
-	0x43, 0x80, 0xe7, 0x1c, 0x07, 0x69, 0x35, 0x45, 0x0d, 0xf2, 0x9d, 0xb1, 0x63, 0x3e, 0xf8, 0x5e,
-	0x3d, 0x21, 0xac, 0xad, 0xd8, 0xc8, 0xc5, 0xd6, 0xf6, 0xeb, 0x7f, 0x05, 0xdf, 0x39, 0xda, 0x80,
-	0x62, 0xb7, 0x75, 0xd9, 0x6a, 0x7f, 0xdf, 0xaa, 0x66, 0x5c, 0xc1, 0xe8, 0x9e, 0x9f, 0xab, 0x86,
-	0x51, 0x15, 0x5c, 0xe1, 0x42, 0xd1, 0xf4, 0x2e, 0x56, 0xab, 0x59, 0xb4, 0x05, 0xcf, 0x0c, 0x15,
-	0xf7, 0xb4, 0x73, 0xb5, 0xaf, 0x62, 0xdc, 0xc6, 0xd5, 0x1c, 0x42, 0x50, 0xb9, 0x56, 0xb0, 0x72,
-	0x65, 0xf4, 0xb5, 0x56, 0x4f, 0xd1, 0xb5, 0x66, 0x35, 0x8f, 0xb6, 0x61, 0x53, 0xd3, 0x75, 0xf5,
-	0xb5, 0xa2, 0xf7, 0xb1, 0xfa, 0xa6, 0xab, 0x1a, 0x9d, 0x6a, 0xc1, 0x55, 0xea, 0xca, 0x99, 0xaa,
-	0xf7, 0x5b, 0xed, 0x4e, 0x5f, 0xbd, 0xd1, 0x8c, 0x4e, 0xb5, 0xe8, 0xde, 0xee, 0x1a, 0x2a, 0x66,
-	0x74, 0x25, 0xb4, 0x07, 0xdb, 0x54, 0xa7, 0xe8, 0x58, 0x55, 0x9a, 0xb7, 0x9e, 0xde, 0xa8, 0x96,
-	0x43, 0x43, 0x4f, 0xc5, 0xda, 0xc5, 0x6d, 0x3f, 0xa0, 0x05, 0x48, 0x82, 0x9a, 0x07, 0x1d, 0xb9,
-	0xb2, 0xe1, 0x5a, 0x9a, 0x67, 0xfd, 0xf6, 0xb5, 0x8a, 0x95, 0x8e, 0xd6, 0x6e, 0xf5, 0x2f, 0x94,
-	0x0e, 0xbd, 0xf3, 0xd9, 0xe9, 0xdf, 0x65, 0x28, 0x2a, 0x77, 0x77, 0xe3, 0xe9, 0xc8, 0x41, 0x5a,
-	0xb0, 0xde, 0xd2, 0x1f, 0x06, 0x2f, 0xe6, 0xc9, 0x5a, 0xda, 0x48, 0xeb, 0x2f, 0xf9, 0x46, 0xaf,
-	0x98, 0x72, 0x06, 0x61, 0x78, 0xb6, 0xb0, 0x98, 0xa1, 0xfd, 0xf9, 0x05, 0xde, 0x66, 0x57, 0xff,
-	0x22, 0xd6, 0x1e, 0x62, 0x76, 0xa1, 0xb2, 0xb8, 0x62, 0x20, 0xe6, 0x12, 0x77, 0x11, 0xab, 0x37,
-	0xe2, 0x0f, 0xb0, 0xb0, 0x8b, 0x5b, 0x03, 0x0b, 0xcb, 0x5d, 0x3c, 0x58, 0x58, 0xfe, 0xc2, 0x21,
-	0x67, 0xd0, 0x00, 0xb6, 0x39, 0x4b, 0x19, 0x3a, 0xe4, 0xc6, 0x19, 0x99, 0x69, 0xf5, 0xa3, 0x15,
-	0xa7, 0x42, 0x2f, 0x8f, 0xec, 0xda, 0xc5, 0x8e, 0x66, 0xf4, 0x8a, 0x17, 0x3a, 0x67, 0x13, 0xa8,
-	0x1f, 0xaf, 0x3e, 0xc8, 0xba, 0xe3, 0x6f, 0x02, 0xac, 0xbb, 0xc4, 0xc5, 0x83, 0x75, 0x97, 0xbc,
-	0x54, 0xc8, 0x19, 0xf4, 0x1b, 0xbc, 0x4c, 0x1a, 0xd1, 0xe8, 0x9b, 0x64, 0xac, 0x68, 0x56, 0x4f,
-	0xd6, 0x3d, 0xce, 0xf6, 0xc6, 0xe2, 0x10, 0x43, 0xd1, 0x3e, 0x8d, 0x3e, 0xd9, 0x6c, 0x6f, 0xf0,
-	0xe7, 0x9f, 0x9c, 0x41, 0x37, 0xb0, 0x19, 0x19, 0x26, 0x68, 0xa9, 0x53, 0x97, 0x80, 0xbf, 0x4c,
-	0x38, 0xc1, 0x22, 0x47, 0x06, 0x04, 0x5a, 0x6a, 0xd6, 0x24, 0xe4, 0x98, 0xe9, 0x22, 0x67, 0xd0,
-	0x7b, 0xd8, 0x5a, 0x7a, 0xbd, 0x91, 0xcc, 0x0f, 0x96, 0x9d, 0x1d, 0xf5, 0x83, 0xc4, 0x33, 0x21,
-	0xbe, 0x19, 0xfc, 0x92, 0x5c, 0x70, 0x70, 0x10, 0x7d, 0x67, 0x78, 0x1e, 0x0e, 0x93, 0x0f, 0x05,
-	0x2e, 0x3e, 0x14, 0xe8, 0x3f, 0x6d, 0xbe, 0xfd, 0x2f, 0x00, 0x00, 0xff, 0xff, 0xb2, 0x98, 0x8f,
-	0x14, 0xc6, 0x11, 0x00, 0x00,
+	// 903 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x57, 0xcd, 0x4e, 0xeb, 0x46,
+	0x14, 0x8e, 0x13, 0x3b, 0x3f, 0x07, 0x35, 0x88, 0x69, 0x00, 0x63, 0x68, 0x9a, 0x4e, 0xa0, 0x64,
+	0x53, 0x16, 0x74, 0xd3, 0x2d, 0x34, 0x52, 0x1b, 0xf1, 0x5b, 0x17, 0x10, 0x9b, 0x22, 0x99, 0x64,
+	0xa8, 0x5c, 0x92, 0x38, 0xd8, 0x0e, 0x28, 0xab, 0xee, 0xee, 0x7b, 0xdc, 0x07, 0xb8, 0x0f, 0x76,
+	0x77, 0xf7, 0x11, 0xae, 0x3c, 0xfe, 0xc9, 0x78, 0x3c, 0xb6, 0x23, 0x8b, 0xbb, 0xcb, 0x99, 0x73,
+	0xe6, 0x3b, 0xbf, 0x73, 0x3e, 0x07, 0x9a, 0x8e, 0x6b, 0x4c, 0x47, 0x86, 0x3d, 0x3a, 0x9a, 0xd9,
+	0x96, 0x6b, 0xa1, 0x7a, 0x28, 0xe3, 0x4f, 0x12, 0x28, 0xe7, 0xc6, 0x23, 0x19, 0xa3, 0x26, 0x94,
+	0x07, 0x7d, 0x55, 0xea, 0x48, 0x3d, 0x59, 0x2f, 0x0f, 0xfa, 0x08, 0x81, 0x7c, 0xb3, 0x98, 0x11,
+	0xb5, 0xdc, 0x91, 0x7a, 0x0d, 0x9d, 0xfe, 0x46, 0x2d, 0x50, 0xfe, 0x76, 0x0d, 0x97, 0xa8, 0x15,
+	0x7a, 0xe8, 0x0b, 0xde, 0xe9, 0x9d, 0x31, 0x9e, 0x13, 0x55, 0xf6, 0x4f, 0xa9, 0xe0, 0x9d, 0x5e,
+	0xbd, 0x4d, 0x89, 0xad, 0x2a, 0x14, 0xd2, 0x17, 0x50, 0x1b, 0xe0, 0x77, 0x9b, 0x18, 0x2e, 0xb9,
+	0x31, 0x27, 0x44, 0xad, 0xd2, 0x0b, 0xcc, 0x89, 0xa7, 0xbf, 0x9d, 0x8d, 0x42, 0x7d, 0xcd, 0xd7,
+	0x2f, 0x4f, 0xf0, 0x17, 0x09, 0xe4, 0x5b, 0x87, 0xd8, 0x2b, 0x85, 0xbb, 0x05, 0xd5, 0x93, 0x57,
+	0xc3, 0x35, 0xec, 0x20, 0xde, 0x40, 0x42, 0x2a, 0xd4, 0x06, 0xd3, 0x57, 0xd3, 0x25, 0x36, 0x0d,
+	0x59, 0xd6, 0x43, 0x11, 0x69, 0x50, 0xbf, 0x34, 0x87, 0xcf, 0x53, 0x63, 0x42, 0x68, 0xdc, 0x0d,
+	0x3d, 0x92, 0x3d, 0x9d, 0xe7, 0x99, 0xea, 0xfc, 0xc0, 0x23, 0xd9, 0xd3, 0x5d, 0x1b, 0x8e, 0xf3,
+	0x66, 0xd9, 0xa3, 0x20, 0xe8, 0x48, 0xe6, 0x52, 0xae, 0xe7, 0xa4, 0xdc, 0x48, 0xa4, 0xfc, 0x51,
+	0x02, 0xe5, 0x0f, 0xdb, 0x9a, 0xcf, 0x56, 0xca, 0x19, 0x81, 0x7c, 0xe9, 0x45, 0xe8, 0x67, 0x4c,
+	0x7f, 0x73, 0x11, 0xc8, 0x39, 0x11, 0x28, 0x7c, 0x04, 0xa8, 0x03, 0x6b, 0x7d, 0xe2, 0x0c, 0x6d,
+	0x73, 0xe6, 0x9a, 0xd6, 0x34, 0x48, 0x9e, 0x3d, 0xf2, 0xc6, 0x68, 0xc3, 0x07, 0xf4, 0x4a, 0xa2,
+	0x93, 0x97, 0x39, 0x71, 0xdc, 0x28, 0x3e, 0x49, 0xd8, 0x93, 0x72, 0x5a, 0x4f, 0x2a, 0xe9, 0x3d,
+	0x91, 0x33, 0x7a, 0xa2, 0x64, 0xf4, 0xa4, 0x1a, 0xef, 0x09, 0xee, 0x03, 0x62, 0xc3, 0x75, 0x66,
+	0xd6, 0xd4, 0x61, 0xc6, 0xdb, 0x2f, 0x71, 0x30, 0xde, 0x2a, 0xd4, 0x2e, 0x88, 0xe3, 0x18, 0xff,
+	0x86, 0x85, 0x0e, 0x45, 0xfc, 0x33, 0xb4, 0xfe, 0x9a, 0x13, 0x7b, 0xe1, 0x81, 0x9c, 0x2e, 0x06,
+	0xfd, 0x30, 0x6f, 0xae, 0x4f, 0xf8, 0x19, 0x36, 0x39, 0xbb, 0x62, 0x0e, 0x11, 0x06, 0xb9, 0x6f,
+	0xb8, 0x06, 0xad, 0xd0, 0xda, 0x71, 0xf3, 0x28, 0x7a, 0xd6, 0x34, 0x0d, 0xaa, 0xc3, 0x67, 0xb0,
+	0xe9, 0xb7, 0x2e, 0x27, 0xaa, 0x08, 0xac, 0x9c, 0x01, 0xf6, 0x1b, 0x68, 0x4c, 0xe4, 0x61, 0x69,
+	0x43, 0x44, 0xb6, 0xfa, 0x95, 0x78, 0xf5, 0xf1, 0x0b, 0xec, 0x0a, 0x6f, 0x7e, 0xc3, 0xcc, 0xff,
+	0x84, 0x2d, 0x3e, 0xf3, 0x82, 0x8d, 0x3d, 0x84, 0xcd, 0x3e, 0x19, 0x93, 0xdc, 0x1a, 0x7a, 0x2e,
+	0x79, 0xc3, 0x82, 0x2e, 0xcf, 0xe0, 0x87, 0x65, 0xf0, 0xe1, 0x9c, 0x66, 0xb5, 0x8f, 0x1d, 0xef,
+	0x32, 0x37, 0xde, 0xd7, 0xd0, 0x4e, 0x03, 0x2b, 0x1e, 0xde, 0x1d, 0xb1, 0xcd, 0xa7, 0xc5, 0x7b,
+	0x84, 0x37, 0x82, 0x76, 0x1a, 0x58, 0xc1, 0xf1, 0x40, 0xcc, 0x78, 0xd4, 0x83, 0x71, 0xf8, 0x07,
+	0xba, 0x22, 0x2f, 0x59, 0x43, 0x2c, 0x65, 0xac, 0x10, 0x3e, 0x89, 0xff, 0x60, 0x3f, 0x1b, 0xfe,
+	0x1d, 0x53, 0xb9, 0x87, 0x1d, 0x7f, 0x5d, 0x51, 0xaa, 0x3e, 0x5d, 0x50, 0x2e, 0x0d, 0x13, 0x88,
+	0x88, 0x56, 0x62, 0x89, 0xf6, 0x20, 0xe0, 0xf5, 0xe0, 0x79, 0xaf, 0x2f, 0x5f, 0x0c, 0x3d, 0xd6,
+	0x7d, 0x2d, 0x3e, 0x07, 0x4d, 0x84, 0x5c, 0xfc, 0xdd, 0xd0, 0x47, 0x1f, 0x80, 0xa5, 0xbf, 0x9b,
+	0x09, 0x6c, 0xf1, 0x86, 0x05, 0xcb, 0xd5, 0x8d, 0x2d, 0x86, 0x44, 0x9a, 0x7e, 0xfd, 0x2e, 0xc2,
+	0xcd, 0x90, 0x17, 0xd8, 0x6a, 0x70, 0x03, 0xd8, 0x4e, 0xc0, 0x15, 0xac, 0x58, 0x2f, 0x5c, 0x20,
+	0xb9, 0x25, 0x1b, 0xc0, 0x76, 0xc2, 0xb2, 0xa0, 0xd3, 0x07, 0x50, 0xd9, 0xea, 0xaf, 0x30, 0x4d,
+	0x2d, 0x50, 0xce, 0xcd, 0x89, 0xe9, 0x52, 0x24, 0x59, 0xf7, 0x05, 0x8f, 0xcb, 0xaf, 0x9e, 0x9e,
+	0x1c, 0xe2, 0x06, 0x94, 0x1d, 0x48, 0xf8, 0x83, 0x04, 0x3b, 0x02, 0x07, 0x05, 0x3b, 0xdc, 0x02,
+	0xe5, 0xc6, 0x72, 0x8d, 0x71, 0xe0, 0xc4, 0x17, 0xa2, 0x46, 0xc9, 0x9d, 0x4a, 0x6a, 0xa3, 0x8e,
+	0x3f, 0x37, 0xa0, 0x76, 0x32, 0x1c, 0x5a, 0xf3, 0xa9, 0x8b, 0x06, 0xe1, 0x47, 0x10, 0xfd, 0x7c,
+	0xdc, 0x5d, 0x5e, 0x48, 0x7c, 0xb7, 0x68, 0x7b, 0x62, 0xa5, 0x1f, 0x3f, 0x2e, 0x21, 0x1d, 0xbe,
+	0x8b, 0xf1, 0x39, 0x6a, 0x2f, 0x2f, 0x88, 0x3e, 0x08, 0xb4, 0x1f, 0x53, 0xf5, 0x11, 0xe6, 0x2d,
+	0x34, 0xe3, 0xe4, 0x85, 0x98, 0x4b, 0x42, 0x42, 0xd7, 0x3a, 0xe9, 0x06, 0x2c, 0x6c, 0x9c, 0xa0,
+	0x58, 0x58, 0x21, 0xc7, 0xb1, 0xb0, 0x62, 0x6e, 0xc3, 0x25, 0x34, 0x82, 0xef, 0x05, 0xec, 0x8e,
+	0xf6, 0x85, 0x79, 0x72, 0x1b, 0x57, 0x3b, 0xc8, 0xb1, 0x8a, 0xbc, 0x4c, 0x58, 0x42, 0x67, 0x79,
+	0x02, 0x1d, 0x8a, 0x52, 0x17, 0xd0, 0x92, 0xd6, 0xcb, 0x37, 0x64, 0xdd, 0x89, 0x69, 0x89, 0x75,
+	0x97, 0xc9, 0x82, 0xac, 0xbb, 0x6c, 0x86, 0xc3, 0x25, 0xf4, 0x3f, 0xec, 0x65, 0x11, 0x08, 0xfa,
+	0x25, 0x1b, 0x8b, 0xaf, 0xea, 0xd1, 0xaa, 0xe6, 0xec, 0x6c, 0xc4, 0x97, 0x30, 0xe2, 0xe7, 0x94,
+	0x5f, 0x4a, 0xec, 0x6c, 0x88, 0xf7, 0x37, 0x2e, 0xa1, 0x7b, 0x58, 0xe7, 0xb6, 0x23, 0x4a, 0x4c,
+	0x6a, 0x02, 0xf8, 0xa7, 0x0c, 0x0b, 0x16, 0x99, 0x5b, 0x81, 0x28, 0x31, 0xac, 0x59, 0xc8, 0x29,
+	0xfb, 0x13, 0x97, 0xd0, 0x03, 0x6c, 0x24, 0x16, 0x16, 0xc2, 0xe2, 0x64, 0xd9, 0x75, 0xa9, 0x75,
+	0x33, 0x6d, 0x22, 0x7c, 0x23, 0xfc, 0xbf, 0x11, 0x73, 0xd0, 0xe5, 0xf7, 0x8c, 0xc8, 0xc3, 0x7e,
+	0xb6, 0x51, 0xe8, 0xe2, 0xb1, 0x4a, 0xff, 0xda, 0xff, 0xfa, 0x35, 0x00, 0x00, 0xff, 0xff, 0x4c,
+	0x6d, 0x32, 0x81, 0xec, 0x0f, 0x00, 0x00,
+}
+
+// Reference imports to suppress errors if they are not otherwise used.
+var _ context.Context
+var _ grpc.ClientConn
+
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the grpc package it is being compiled against.
+const _ = grpc.SupportPackageIsVersion4
+
+// AccountClient is the client API for Account service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
+type AccountClient interface {
+	// 用户操作
+	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error)
+	QueryUserByID(ctx context.Context, in *QueryUserByIDRequest, opts ...grpc.CallOption) (*QueryUserByIDResponse, error)
+	UpdateUserByID(ctx context.Context, in *UpdateUserByIDRequest, opts ...grpc.CallOption) (*UpdateUserByIDResponse, error)
+	DeleteUserByID(ctx context.Context, in *DeleteUserByIDRequest, opts ...grpc.CallOption) (*DeleteUserByIDResponse, error)
+	QueryUserByUsername(ctx context.Context, in *QueryUserByUsernameRequest, opts ...grpc.CallOption) (*QueryUserByUsernameResponse, error)
+	UpdateUserPasswordByID(ctx context.Context, in *UpdateUserPasswordByIDRequest, opts ...grpc.CallOption) (*UpdateUserPasswordByIDResponse, error)
+	VerifyUserPasswordByID(ctx context.Context, in *VerifyUserPasswordByIDRequest, opts ...grpc.CallOption) (*VerifyUserPasswordByIDResponse, error)
+	VerifyUserPasswordByUsername(ctx context.Context, in *VerifyUserPasswordByUsernameRequest, opts ...grpc.CallOption) (*VerifyUserPasswordByUsernameResponse, error)
+	// 标签操作
+	QueryLabelByID(ctx context.Context, in *QueryLabelByIDRequest, opts ...grpc.CallOption) (*QueryLabelByIDResponse, error)
+	UpdateLabelByID(ctx context.Context, in *UpdateLabelByIDRequest, opts ...grpc.CallOption) (*UpdateLabelByIDResponse, error)
+	DeleteLabelByID(ctx context.Context, in *DeleteLabelByIDRequest, opts ...grpc.CallOption) (*DeleteLabelByIDResponse, error)
+	QueryLabelByOwner(ctx context.Context, in *QueryLabelByOwnerRequest, opts ...grpc.CallOption) (*QueryLabelByOwnerResponse, error)
+	CreateLabelByOwner(ctx context.Context, in *CreateLabelByOwnerRequest, opts ...grpc.CallOption) (*CreateLabelByOwnerResponse, error)
+}
+
+type accountClient struct {
+	cc *grpc.ClientConn
+}
+
+func NewAccountClient(cc *grpc.ClientConn) AccountClient {
+	return &accountClient{cc}
+}
+
+func (c *accountClient) CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error) {
+	out := new(CreateUserResponse)
+	err := c.cc.Invoke(ctx, "/standard.Account/CreateUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accountClient) QueryUserByID(ctx context.Context, in *QueryUserByIDRequest, opts ...grpc.CallOption) (*QueryUserByIDResponse, error) {
+	out := new(QueryUserByIDResponse)
+	err := c.cc.Invoke(ctx, "/standard.Account/QueryUserByID", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accountClient) UpdateUserByID(ctx context.Context, in *UpdateUserByIDRequest, opts ...grpc.CallOption) (*UpdateUserByIDResponse, error) {
+	out := new(UpdateUserByIDResponse)
+	err := c.cc.Invoke(ctx, "/standard.Account/UpdateUserByID", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accountClient) DeleteUserByID(ctx context.Context, in *DeleteUserByIDRequest, opts ...grpc.CallOption) (*DeleteUserByIDResponse, error) {
+	out := new(DeleteUserByIDResponse)
+	err := c.cc.Invoke(ctx, "/standard.Account/DeleteUserByID", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accountClient) QueryUserByUsername(ctx context.Context, in *QueryUserByUsernameRequest, opts ...grpc.CallOption) (*QueryUserByUsernameResponse, error) {
+	out := new(QueryUserByUsernameResponse)
+	err := c.cc.Invoke(ctx, "/standard.Account/QueryUserByUsername", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accountClient) UpdateUserPasswordByID(ctx context.Context, in *UpdateUserPasswordByIDRequest, opts ...grpc.CallOption) (*UpdateUserPasswordByIDResponse, error) {
+	out := new(UpdateUserPasswordByIDResponse)
+	err := c.cc.Invoke(ctx, "/standard.Account/UpdateUserPasswordByID", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accountClient) VerifyUserPasswordByID(ctx context.Context, in *VerifyUserPasswordByIDRequest, opts ...grpc.CallOption) (*VerifyUserPasswordByIDResponse, error) {
+	out := new(VerifyUserPasswordByIDResponse)
+	err := c.cc.Invoke(ctx, "/standard.Account/VerifyUserPasswordByID", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accountClient) VerifyUserPasswordByUsername(ctx context.Context, in *VerifyUserPasswordByUsernameRequest, opts ...grpc.CallOption) (*VerifyUserPasswordByUsernameResponse, error) {
+	out := new(VerifyUserPasswordByUsernameResponse)
+	err := c.cc.Invoke(ctx, "/standard.Account/VerifyUserPasswordByUsername", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accountClient) QueryLabelByID(ctx context.Context, in *QueryLabelByIDRequest, opts ...grpc.CallOption) (*QueryLabelByIDResponse, error) {
+	out := new(QueryLabelByIDResponse)
+	err := c.cc.Invoke(ctx, "/standard.Account/QueryLabelByID", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accountClient) UpdateLabelByID(ctx context.Context, in *UpdateLabelByIDRequest, opts ...grpc.CallOption) (*UpdateLabelByIDResponse, error) {
+	out := new(UpdateLabelByIDResponse)
+	err := c.cc.Invoke(ctx, "/standard.Account/UpdateLabelByID", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accountClient) DeleteLabelByID(ctx context.Context, in *DeleteLabelByIDRequest, opts ...grpc.CallOption) (*DeleteLabelByIDResponse, error) {
+	out := new(DeleteLabelByIDResponse)
+	err := c.cc.Invoke(ctx, "/standard.Account/DeleteLabelByID", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accountClient) QueryLabelByOwner(ctx context.Context, in *QueryLabelByOwnerRequest, opts ...grpc.CallOption) (*QueryLabelByOwnerResponse, error) {
+	out := new(QueryLabelByOwnerResponse)
+	err := c.cc.Invoke(ctx, "/standard.Account/QueryLabelByOwner", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accountClient) CreateLabelByOwner(ctx context.Context, in *CreateLabelByOwnerRequest, opts ...grpc.CallOption) (*CreateLabelByOwnerResponse, error) {
+	out := new(CreateLabelByOwnerResponse)
+	err := c.cc.Invoke(ctx, "/standard.Account/CreateLabelByOwner", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// AccountServer is the server API for Account service.
+type AccountServer interface {
+	// 用户操作
+	CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error)
+	QueryUserByID(context.Context, *QueryUserByIDRequest) (*QueryUserByIDResponse, error)
+	UpdateUserByID(context.Context, *UpdateUserByIDRequest) (*UpdateUserByIDResponse, error)
+	DeleteUserByID(context.Context, *DeleteUserByIDRequest) (*DeleteUserByIDResponse, error)
+	QueryUserByUsername(context.Context, *QueryUserByUsernameRequest) (*QueryUserByUsernameResponse, error)
+	UpdateUserPasswordByID(context.Context, *UpdateUserPasswordByIDRequest) (*UpdateUserPasswordByIDResponse, error)
+	VerifyUserPasswordByID(context.Context, *VerifyUserPasswordByIDRequest) (*VerifyUserPasswordByIDResponse, error)
+	VerifyUserPasswordByUsername(context.Context, *VerifyUserPasswordByUsernameRequest) (*VerifyUserPasswordByUsernameResponse, error)
+	// 标签操作
+	QueryLabelByID(context.Context, *QueryLabelByIDRequest) (*QueryLabelByIDResponse, error)
+	UpdateLabelByID(context.Context, *UpdateLabelByIDRequest) (*UpdateLabelByIDResponse, error)
+	DeleteLabelByID(context.Context, *DeleteLabelByIDRequest) (*DeleteLabelByIDResponse, error)
+	QueryLabelByOwner(context.Context, *QueryLabelByOwnerRequest) (*QueryLabelByOwnerResponse, error)
+	CreateLabelByOwner(context.Context, *CreateLabelByOwnerRequest) (*CreateLabelByOwnerResponse, error)
+}
+
+// UnimplementedAccountServer can be embedded to have forward compatible implementations.
+type UnimplementedAccountServer struct {
+}
+
+func (*UnimplementedAccountServer) CreateUser(ctx context.Context, req *CreateUserRequest) (*CreateUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
+}
+func (*UnimplementedAccountServer) QueryUserByID(ctx context.Context, req *QueryUserByIDRequest) (*QueryUserByIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryUserByID not implemented")
+}
+func (*UnimplementedAccountServer) UpdateUserByID(ctx context.Context, req *UpdateUserByIDRequest) (*UpdateUserByIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserByID not implemented")
+}
+func (*UnimplementedAccountServer) DeleteUserByID(ctx context.Context, req *DeleteUserByIDRequest) (*DeleteUserByIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteUserByID not implemented")
+}
+func (*UnimplementedAccountServer) QueryUserByUsername(ctx context.Context, req *QueryUserByUsernameRequest) (*QueryUserByUsernameResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryUserByUsername not implemented")
+}
+func (*UnimplementedAccountServer) UpdateUserPasswordByID(ctx context.Context, req *UpdateUserPasswordByIDRequest) (*UpdateUserPasswordByIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserPasswordByID not implemented")
+}
+func (*UnimplementedAccountServer) VerifyUserPasswordByID(ctx context.Context, req *VerifyUserPasswordByIDRequest) (*VerifyUserPasswordByIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VerifyUserPasswordByID not implemented")
+}
+func (*UnimplementedAccountServer) VerifyUserPasswordByUsername(ctx context.Context, req *VerifyUserPasswordByUsernameRequest) (*VerifyUserPasswordByUsernameResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VerifyUserPasswordByUsername not implemented")
+}
+func (*UnimplementedAccountServer) QueryLabelByID(ctx context.Context, req *QueryLabelByIDRequest) (*QueryLabelByIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryLabelByID not implemented")
+}
+func (*UnimplementedAccountServer) UpdateLabelByID(ctx context.Context, req *UpdateLabelByIDRequest) (*UpdateLabelByIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateLabelByID not implemented")
+}
+func (*UnimplementedAccountServer) DeleteLabelByID(ctx context.Context, req *DeleteLabelByIDRequest) (*DeleteLabelByIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteLabelByID not implemented")
+}
+func (*UnimplementedAccountServer) QueryLabelByOwner(ctx context.Context, req *QueryLabelByOwnerRequest) (*QueryLabelByOwnerResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryLabelByOwner not implemented")
+}
+func (*UnimplementedAccountServer) CreateLabelByOwner(ctx context.Context, req *CreateLabelByOwnerRequest) (*CreateLabelByOwnerResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateLabelByOwner not implemented")
+}
+
+func RegisterAccountServer(s *grpc.Server, srv AccountServer) {
+	s.RegisterService(&_Account_serviceDesc, srv)
+}
+
+func _Account_CreateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServer).CreateUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/standard.Account/CreateUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServer).CreateUser(ctx, req.(*CreateUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Account_QueryUserByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryUserByIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServer).QueryUserByID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/standard.Account/QueryUserByID",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServer).QueryUserByID(ctx, req.(*QueryUserByIDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Account_UpdateUserByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateUserByIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServer).UpdateUserByID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/standard.Account/UpdateUserByID",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServer).UpdateUserByID(ctx, req.(*UpdateUserByIDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Account_DeleteUserByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteUserByIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServer).DeleteUserByID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/standard.Account/DeleteUserByID",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServer).DeleteUserByID(ctx, req.(*DeleteUserByIDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Account_QueryUserByUsername_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryUserByUsernameRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServer).QueryUserByUsername(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/standard.Account/QueryUserByUsername",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServer).QueryUserByUsername(ctx, req.(*QueryUserByUsernameRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Account_UpdateUserPasswordByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateUserPasswordByIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServer).UpdateUserPasswordByID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/standard.Account/UpdateUserPasswordByID",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServer).UpdateUserPasswordByID(ctx, req.(*UpdateUserPasswordByIDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Account_VerifyUserPasswordByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VerifyUserPasswordByIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServer).VerifyUserPasswordByID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/standard.Account/VerifyUserPasswordByID",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServer).VerifyUserPasswordByID(ctx, req.(*VerifyUserPasswordByIDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Account_VerifyUserPasswordByUsername_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VerifyUserPasswordByUsernameRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServer).VerifyUserPasswordByUsername(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/standard.Account/VerifyUserPasswordByUsername",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServer).VerifyUserPasswordByUsername(ctx, req.(*VerifyUserPasswordByUsernameRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Account_QueryLabelByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryLabelByIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServer).QueryLabelByID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/standard.Account/QueryLabelByID",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServer).QueryLabelByID(ctx, req.(*QueryLabelByIDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Account_UpdateLabelByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateLabelByIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServer).UpdateLabelByID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/standard.Account/UpdateLabelByID",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServer).UpdateLabelByID(ctx, req.(*UpdateLabelByIDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Account_DeleteLabelByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteLabelByIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServer).DeleteLabelByID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/standard.Account/DeleteLabelByID",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServer).DeleteLabelByID(ctx, req.(*DeleteLabelByIDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Account_QueryLabelByOwner_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryLabelByOwnerRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServer).QueryLabelByOwner(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/standard.Account/QueryLabelByOwner",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServer).QueryLabelByOwner(ctx, req.(*QueryLabelByOwnerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Account_CreateLabelByOwner_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateLabelByOwnerRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServer).CreateLabelByOwner(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/standard.Account/CreateLabelByOwner",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServer).CreateLabelByOwner(ctx, req.(*CreateLabelByOwnerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+var _Account_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "standard.Account",
+	HandlerType: (*AccountServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "CreateUser",
+			Handler:    _Account_CreateUser_Handler,
+		},
+		{
+			MethodName: "QueryUserByID",
+			Handler:    _Account_QueryUserByID_Handler,
+		},
+		{
+			MethodName: "UpdateUserByID",
+			Handler:    _Account_UpdateUserByID_Handler,
+		},
+		{
+			MethodName: "DeleteUserByID",
+			Handler:    _Account_DeleteUserByID_Handler,
+		},
+		{
+			MethodName: "QueryUserByUsername",
+			Handler:    _Account_QueryUserByUsername_Handler,
+		},
+		{
+			MethodName: "UpdateUserPasswordByID",
+			Handler:    _Account_UpdateUserPasswordByID_Handler,
+		},
+		{
+			MethodName: "VerifyUserPasswordByID",
+			Handler:    _Account_VerifyUserPasswordByID_Handler,
+		},
+		{
+			MethodName: "VerifyUserPasswordByUsername",
+			Handler:    _Account_VerifyUserPasswordByUsername_Handler,
+		},
+		{
+			MethodName: "QueryLabelByID",
+			Handler:    _Account_QueryLabelByID_Handler,
+		},
+		{
+			MethodName: "UpdateLabelByID",
+			Handler:    _Account_UpdateLabelByID_Handler,
+		},
+		{
+			MethodName: "DeleteLabelByID",
+			Handler:    _Account_DeleteLabelByID_Handler,
+		},
+		{
+			MethodName: "QueryLabelByOwner",
+			Handler:    _Account_QueryLabelByOwner_Handler,
+		},
+		{
+			MethodName: "CreateLabelByOwner",
+			Handler:    _Account_CreateLabelByOwner_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "standard.proto",
 }

@@ -11,9 +11,8 @@ echo "[ ProtoPath ]:  $ProtoPath"
 # 进入工作目录
 cd $BasePath
 
-protoc --ts_out=. *.proto
-protoc --go_out=. *.proto
-
+protoc --ts_out=plugins=grpc:. *.proto
+protoc --go_out=plugins=grpc:. *.proto
 
 # protoc --doc_out=. --doc_opt=html,document.html *.proto
 # protoc --doc_out=. --doc_opt=markdown,document.md *.proto
