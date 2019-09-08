@@ -16,12 +16,7 @@ addons:
 before_install:
   # 安装依赖
   - export ROOT_PATH=`pwd`
-  - export MAIN_NAME="account"
-  - go get -v -d google.golang.org/grpc
-  - go get -v -d github.com/jmoiron/sqlx
-  - go get -v -d github.com/go-sql-driver/mysql
-  - go get -v -d github.com/yinxulai/goutils/...
-  - go get -v -d github.com/golang/protobuf/proto
+  - ./.deploy/build.sh installVendor
 
 install: skip
 
@@ -29,64 +24,26 @@ before_script: skip
 
 script:
   # 编译
-  - mkdir build ; cd build ;
-  - CGO_ENABLED=0 GOOS=freebsd GOARCH=arm go build -o ./freebsd_arm/$MAIN_NAME ../main.go ;
-  - CGO_ENABLED=0 GOOS=freebsd GOARCH=386 go build -o ./freebsd_386/$MAIN_NAME ../main.go ;
-  - CGO_ENABLED=0 GOOS=freebsd GOARCH=amd64 go build -o ./freebsd_amd64/$MAIN_NAME ../main.go ;
-
-  - CGO_ENABLED=0 GOOS=linux GOARCH=arm go build -o ./linux_arm/$MAIN_NAME ../main.go ;
-  - CGO_ENABLED=0 GOOS=linux GOARCH=386 go build -o ./linux_386/$MAIN_NAME ../main.go ;
-  - CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./linux_amd64/$MAIN_NAME ../main.go ;
-
-  - CGO_ENABLED=0 GOOS=darwin GOARCH=386 go build -o ./darwin_386/$MAIN_NAME ../main.go ;
-  - CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o ./darwin_amd64/$MAIN_NAME ../main.go ;
-
-  - CGO_ENABLED=0 GOOS=windows GOARCH=386 go build -o ./windows_386/$MAIN_NAME ../main.go ;
-  - CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o ./windows_amd64/$MAIN_NAME ../main.go ;
-
-  - cd $ROOT_PATH ;
+  - ./.deploy/build.sh build
 
 before_deploy:
   # 准备服务器的 ssh_key
+  - cd $ROOT_PATH
   - git clone https://github.com/yinxulai/keystore.git ./keystore ;
   - cd ./keystore ;
   - ./crypt.sh -d $pass_k $pass_iv ; # 解密所有的 key
   - export GITHUB_TOKEN=`cat ./github.token.key ;` ; # 拿到 GITHUB_TOKEN
   - ./deploy.sh server root 132.232.106.236 44 deploy.key ; # 部署配置 SSH 服务，方便下面通过别名直接连接服务器
-
-  - cd $ROOT_PATH ;
-  - tar -zcvf ./deploy.tar.gz ./deploy ;
-
-  - cd ../build ;
-  - tar -zcvf ./linux_arm.tar.gz ./linux_arm ;
-  - tar -zcvf ./linux_386.tar.gz ./linux_386 ;
-  - tar -zcvf ./linux_amd64.tar.gz ./linux_amd64 ;
-  - tar -zcvf ./freebsd_arm.tar.gz ./freebsd_arm ;
-  - tar -zcvf ./freebsd_386.tar.gz ./freebsd_386 ;
-  - tar -zcvf ./freebsd_amd64.tar.gz ./freebsd_amd64 ;
-  - tar -zcvf ./darwin_386.tar.gz ./darwin_386 ;
-  - tar -zcvf ./darwin_amd64.tar.gz ./darwin_amd64 ;
-  - tar -zcvf ./windows_386.tar.gz ./windows_386 ;
-  - tar -zcvf ./windows_amd64.tar.gz ./windows_amd64 ;
-  - cd $ROOT_PATH ;
+  - cd $ROOT_PATH
 
 # 部署版本
 deploy:
   - provider: releases
+    file: build/*
+    file_glob: trueƒ√
     overwrite: true
     skip_cleanup: true
     api_key: $GITHUB_TOKEN
-    file:
-      - ./build/freebsd_arm.tar.gz
-      - ./build/freebsd_386.tar.gz
-      - ./build/freebsd_amd64.tar.gz
-      - ./build/linux_arm.tar.gz
-      - ./build/linux_386.tar.gz
-      - ./build/linux_amd64.tar.gz
-      - ./build/darwin_386.tar.gz
-      - ./build/darwin_amd64.tar.gz
-      - ./build/windows_386.tar.gz
-      - ./build/windows_amd64.tar.gz
     on:
       tags: true
       branch: /v\d+\.\d+\..*/
@@ -95,12 +52,11 @@ deploy:
 after_deploy:
   # 执行脚本
   - cd $ROOT_PATH ;
-  - TEMPDIR=`mktemp -d` ;
-  - echo "mysql=mysql://"  > env ;
-  - echo "port=:3306"      >> env ;
-  - scp ./env server:$TEMPDIR ; #  上传环境变量脚本
-  - scp ./deploy.tar.gz server:$TEMPDIR ; #  上传部署包
-  - ssh -tt server "tar -zxvf $TEMPDIR/deploy.tar.gz" ; # 解压部署包
-  - ssh -tt server "bash $TEMPDIR/deploy/install.sh $TRAVIS_TAG linux_amd64.tar.gz $MAIN_NAME $TEMPDIR/env ;" ; # 执行部署脚本
-
+  - TEMPDIR=`mktemp -d` ; # 获取一个随机目录
+  - tar -zcvf ./deploy.tar.gz ./.deploy ; # 压缩包
+  - ssh -tt server "mkdir -p $TEMPDIR ;" ; # 创建缓存目录
+  - scp ./deploy.tar.gz server:$TEMPDIR/deploy.tar.gz ; #  上传部署包
+  - ssh -tt server "tar -zxvf $TEMPDIR/deploy.tar.gz -C $TEMPDIR ;" ; # 解压部署包
+  - ssh -tt server "bash -c $TEMPDIR/.deploy/install.sh $TRAVIS_TAG ;" ; # 执行部署脚本
+  - ssh -tt server "rm -rf $TEMPDIR;" ; # 清空缓存目录
 after_script: skip

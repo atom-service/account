@@ -2,23 +2,6 @@ syntax = "proto3";
 
 package standard;
 
-// 状态
-enum State {
-  UNKNOWN         = 0 ;   // 未知
-  SUCCESS         = 1 ;   // 成功
-  FAILURE         = 2 ;   // 失败
-  SERVICE_ERROR   = 3 ;   // 服务错误
-  PARAMS_INVALID  = 5 ;   // 参数不合法
-  ILLEGAL_REQUEST = 6 ;   // 非法请求
-  LABEL_NOT_EXIST = 7 ;   // 标签不存在
-  USER_NOT_EXIST  = 8 ;   // 用户不存在
-  USER_ALREADY_EXISTS  = 9 ;   // 用户已经存在
-  USER_VERIFY_FAILURE  = 10 ;   // 用户验证失败
-  LABEL_ALREADY_EXISTS = 11 ;   // 标签已经存在
-  DB_OPERATION_FATLURE = 12 ;    // 数据库操作失败
-}
-
-
 // Label 标签
 message Label {
 	uint64 ID          = 1 ;
@@ -64,7 +47,7 @@ message CreateUserRequest {
 }
 
 message CreateUserResponse {
-  State  State   = 1 ;
+  uint64 State   = 1 ;
   string Message = 2 ;
 }
 
@@ -73,7 +56,7 @@ message QueryUserByIDRequest {
 }
 
 message QueryUserByIDResponse {
-  State  State   = 1 ;
+  uint64  State   = 1 ;
   string Message = 2 ;
   User   Data    = 3 ;
 }
@@ -87,13 +70,13 @@ message QueryUserByUsernameRequest{
 }
 
 message QueryUserByUsernameResponse{
-  State  State   = 1 ;
+  uint64  State   = 1 ;
   string Message = 2 ;
   User   Data    = 3 ;
 }
 
 message UpdateUserByIDResponse {
-  State  State   = 1 ;
+  uint64  State   = 1 ;
   string Message = 2 ;
 }
 
@@ -102,7 +85,7 @@ message DeleteUserByIDRequest {
 }
 
 message DeleteUserByIDResponse {
-  State  State    = 1 ;
+  uint64  State    = 1 ;
   string Message  = 2 ;
 }
 
@@ -112,7 +95,7 @@ message UpdateUserPasswordByIDRequest {
 }
 
 message UpdateUserPasswordByIDResponse {
-  State  State   = 1 ;
+  uint64  State   = 1 ;
   string Message = 2 ;
 }
 
@@ -122,7 +105,7 @@ message VerifyUserPasswordByIDRequest {
 }
 
 message VerifyUserPasswordByIDResponse {
-  State  State   = 1 ;
+  uint64  State   = 1 ;
   string Message = 2 ;
   bool   Data    = 3 ;
 }
@@ -133,7 +116,7 @@ message VerifyUserPasswordByUsernameRequest {
 }
 
 message VerifyUserPasswordByUsernameResponse {
-  State  State   = 1 ;
+  uint64  State   = 1 ;
   string Message = 2 ;
   bool   Data   = 3 ;
 }
@@ -144,7 +127,7 @@ message CreateLabelByOwnerRequest {
 }
 
 message CreateLabelByOwnerResponse {
-  State  State   = 1 ;
+  uint64  State   = 1 ;
   string Message = 2 ;
 }
 
@@ -153,7 +136,7 @@ message QueryLabelByIDRequest {
 }
 
 message QueryLabelByIDResponse {
-  State  State   = 1 ;
+  uint64  State   = 1 ;
   string Message = 2 ;
   Label  Data    = 3 ;
 }
@@ -164,7 +147,7 @@ message UpdateLabelByIDRequest {
 }
 
 message UpdateLabelByIDResponse {
-  State  State   = 1 ;
+  uint64  State   = 1 ;
   string Message = 2 ;
 }
 
@@ -173,7 +156,7 @@ message DeleteLabelByIDRequest {
 }
 
 message DeleteLabelByIDResponse {
-  State  State   = 1 ;
+  uint64  State   = 1 ;
   string Message = 2 ;
 }
 
@@ -184,14 +167,13 @@ message QueryLabelByOwnerRequest {
 }
 
 message QueryLabelByOwnerResponse {
-  State  State          = 1 ;
+  uint64 State          = 1 ;
   string Message        = 2 ;
   uint64 Total = 3 ;
   repeated Label Data   = 4 ;
 }
 
 service Account {
-
   // 用户操作
   rpc CreateUser(CreateUserRequest)returns(CreateUserResponse){} // 创建一个用户
   rpc QueryUserByID(QueryUserByIDRequest)returns(QueryUserByIDResponse){} // 通过 ID 查询
