@@ -186,8 +186,8 @@ export namespace CreateUserRequest {
 }
 
 export class CreateUserResponse extends jspb.Message { 
-    getState(): State;
-    setState(value: State): void;
+    getState(): number;
+    setState(value: number): void;
 
     getMessage(): string;
     setMessage(value: string): void;
@@ -205,7 +205,7 @@ export class CreateUserResponse extends jspb.Message {
 
 export namespace CreateUserResponse {
     export type AsObject = {
-        state: State,
+        state: number,
         message: string,
     }
 }
@@ -232,8 +232,8 @@ export namespace QueryUserByIDRequest {
 }
 
 export class QueryUserByIDResponse extends jspb.Message { 
-    getState(): State;
-    setState(value: State): void;
+    getState(): number;
+    setState(value: number): void;
 
     getMessage(): string;
     setMessage(value: string): void;
@@ -257,7 +257,7 @@ export class QueryUserByIDResponse extends jspb.Message {
 
 export namespace QueryUserByIDResponse {
     export type AsObject = {
-        state: State,
+        state: number,
         message: string,
         data?: User.AsObject,
     }
@@ -313,8 +313,8 @@ export namespace QueryUserByUsernameRequest {
 }
 
 export class QueryUserByUsernameResponse extends jspb.Message { 
-    getState(): State;
-    setState(value: State): void;
+    getState(): number;
+    setState(value: number): void;
 
     getMessage(): string;
     setMessage(value: string): void;
@@ -338,15 +338,15 @@ export class QueryUserByUsernameResponse extends jspb.Message {
 
 export namespace QueryUserByUsernameResponse {
     export type AsObject = {
-        state: State,
+        state: number,
         message: string,
         data?: User.AsObject,
     }
 }
 
 export class UpdateUserByIDResponse extends jspb.Message { 
-    getState(): State;
-    setState(value: State): void;
+    getState(): number;
+    setState(value: number): void;
 
     getMessage(): string;
     setMessage(value: string): void;
@@ -364,7 +364,7 @@ export class UpdateUserByIDResponse extends jspb.Message {
 
 export namespace UpdateUserByIDResponse {
     export type AsObject = {
-        state: State,
+        state: number,
         message: string,
     }
 }
@@ -391,8 +391,8 @@ export namespace DeleteUserByIDRequest {
 }
 
 export class DeleteUserByIDResponse extends jspb.Message { 
-    getState(): State;
-    setState(value: State): void;
+    getState(): number;
+    setState(value: number): void;
 
     getMessage(): string;
     setMessage(value: string): void;
@@ -410,7 +410,7 @@ export class DeleteUserByIDResponse extends jspb.Message {
 
 export namespace DeleteUserByIDResponse {
     export type AsObject = {
-        state: State,
+        state: number,
         message: string,
     }
 }
@@ -441,8 +441,8 @@ export namespace UpdateUserPasswordByIDRequest {
 }
 
 export class UpdateUserPasswordByIDResponse extends jspb.Message { 
-    getState(): State;
-    setState(value: State): void;
+    getState(): number;
+    setState(value: number): void;
 
     getMessage(): string;
     setMessage(value: string): void;
@@ -460,7 +460,7 @@ export class UpdateUserPasswordByIDResponse extends jspb.Message {
 
 export namespace UpdateUserPasswordByIDResponse {
     export type AsObject = {
-        state: State,
+        state: number,
         message: string,
     }
 }
@@ -491,8 +491,8 @@ export namespace VerifyUserPasswordByIDRequest {
 }
 
 export class VerifyUserPasswordByIDResponse extends jspb.Message { 
-    getState(): State;
-    setState(value: State): void;
+    getState(): number;
+    setState(value: number): void;
 
     getMessage(): string;
     setMessage(value: string): void;
@@ -513,7 +513,7 @@ export class VerifyUserPasswordByIDResponse extends jspb.Message {
 
 export namespace VerifyUserPasswordByIDResponse {
     export type AsObject = {
-        state: State,
+        state: number,
         message: string,
         data: boolean,
     }
@@ -545,8 +545,8 @@ export namespace VerifyUserPasswordByUsernameRequest {
 }
 
 export class VerifyUserPasswordByUsernameResponse extends jspb.Message { 
-    getState(): State;
-    setState(value: State): void;
+    getState(): number;
+    setState(value: number): void;
 
     getMessage(): string;
     setMessage(value: string): void;
@@ -567,7 +567,7 @@ export class VerifyUserPasswordByUsernameResponse extends jspb.Message {
 
 export namespace VerifyUserPasswordByUsernameResponse {
     export type AsObject = {
-        state: State,
+        state: number,
         message: string,
         data: boolean,
     }
@@ -602,8 +602,8 @@ export namespace CreateLabelByOwnerRequest {
 }
 
 export class CreateLabelByOwnerResponse extends jspb.Message { 
-    getState(): State;
-    setState(value: State): void;
+    getState(): number;
+    setState(value: number): void;
 
     getMessage(): string;
     setMessage(value: string): void;
@@ -621,7 +621,7 @@ export class CreateLabelByOwnerResponse extends jspb.Message {
 
 export namespace CreateLabelByOwnerResponse {
     export type AsObject = {
-        state: State,
+        state: number,
         message: string,
     }
 }
@@ -648,8 +648,8 @@ export namespace QueryLabelByIDRequest {
 }
 
 export class QueryLabelByIDResponse extends jspb.Message { 
-    getState(): State;
-    setState(value: State): void;
+    getState(): number;
+    setState(value: number): void;
 
     getMessage(): string;
     setMessage(value: string): void;
@@ -673,7 +673,7 @@ export class QueryLabelByIDResponse extends jspb.Message {
 
 export namespace QueryLabelByIDResponse {
     export type AsObject = {
-        state: State,
+        state: number,
         message: string,
         data?: Label.AsObject,
     }
@@ -708,8 +708,8 @@ export namespace UpdateLabelByIDRequest {
 }
 
 export class UpdateLabelByIDResponse extends jspb.Message { 
-    getState(): State;
-    setState(value: State): void;
+    getState(): number;
+    setState(value: number): void;
 
     getMessage(): string;
     setMessage(value: string): void;
@@ -727,7 +727,7 @@ export class UpdateLabelByIDResponse extends jspb.Message {
 
 export namespace UpdateLabelByIDResponse {
     export type AsObject = {
-        state: State,
+        state: number,
         message: string,
     }
 }
@@ -754,8 +754,8 @@ export namespace DeleteLabelByIDRequest {
 }
 
 export class DeleteLabelByIDResponse extends jspb.Message { 
-    getState(): State;
-    setState(value: State): void;
+    getState(): number;
+    setState(value: number): void;
 
     getMessage(): string;
     setMessage(value: string): void;
@@ -773,7 +773,7 @@ export class DeleteLabelByIDResponse extends jspb.Message {
 
 export namespace DeleteLabelByIDResponse {
     export type AsObject = {
-        state: State,
+        state: number,
         message: string,
     }
 }
@@ -808,8 +808,8 @@ export namespace QueryLabelByOwnerRequest {
 }
 
 export class QueryLabelByOwnerResponse extends jspb.Message { 
-    getState(): State;
-    setState(value: State): void;
+    getState(): number;
+    setState(value: number): void;
 
     getMessage(): string;
     setMessage(value: string): void;
@@ -835,24 +835,9 @@ export class QueryLabelByOwnerResponse extends jspb.Message {
 
 export namespace QueryLabelByOwnerResponse {
     export type AsObject = {
-        state: State,
+        state: number,
         message: string,
         total: number,
         dataList: Array<Label.AsObject>,
     }
-}
-
-export enum State {
-    UNKNOWN = 0,
-    SUCCESS = 1,
-    FAILURE = 2,
-    SERVICE_ERROR = 3,
-    PARAMS_INVALID = 5,
-    ILLEGAL_REQUEST = 6,
-    LABEL_NOT_EXIST = 7,
-    USER_NOT_EXIST = 8,
-    USER_ALREADY_EXISTS = 9,
-    USER_VERIFY_FAILURE = 10,
-    LABEL_ALREADY_EXISTS = 11,
-    DB_OPERATION_FATLURE = 12,
 }
