@@ -4,16 +4,16 @@ package standard;
 
 // 状态
 enum State {
-  UNKNOWN         = 0 ;   // 未知
-  SUCCESS         = 1 ;   // 成功
-  FAILURE         = 2 ;   // 失败
-  SERVICE_ERROR   = 3 ;   // 服务错误
-  PARAMS_INVALID  = 5 ;   // 参数不合法
+  UNKNOWN = 0 ;   // 未知
+  SUCCESS = 1 ;   // 成功
+  FAILURE = 2 ;   // 失败
+  SERVICE_ERROR = 3 ;   // 服务错误
+  PARAMS_INVALID = 5 ;   // 参数不合法
   ILLEGAL_REQUEST = 6 ;   // 非法请求
   LABEL_NOT_EXIST = 7 ;   // 标签不存在
-  USER_NOT_EXIST  = 8 ;   // 用户不存在
-  USER_ALREADY_EXISTS  = 9 ;   // 用户已经存在
-  USER_VERIFY_FAILURE  = 10 ;   // 用户验证失败
+  USER_NOT_EXIST = 8 ;   // 用户不存在
+  USER_ALREADY_EXISTS = 9 ;   // 用户已经存在
+  USER_VERIFY_FAILURE = 10 ;   // 用户验证失败
   LABEL_ALREADY_EXISTS = 11 ;   // 标签已经存在
   DB_OPERATION_FATLURE = 12 ;    // 数据库操作失败
 }
@@ -21,54 +21,54 @@ enum State {
 
 // Label 标签
 message Label {
-	uint64 ID          = 1 ;
-	string Type        = 2 ;
-	string State       = 3 ;
-  string Value       = 4 ;
-  uint64 Owner       = 5 ;
-  string CreateTime  = 6 ;
-  string UpdateTime  = 7 ;
+	uint64 ID = 1 ;
+	string Type = 2 ;
+	string State = 3 ;
+  string Value = 4 ;
+  uint64 Owner = 5 ;
+  string CreateTime = 6 ;
+  string UpdateTime = 7 ;
 }
 
 // User 用户
 message User {
-  uint64 ID             = 1 ;
-  string Type           = 2 ;
-  string Avatar         = 3 ;
-  uint64 Inviter        = 4 ;
-	string Nickname       = 5 ;
-	string Username       = 6 ;
-  string Password       = 7 ;
-  string CreateTime     = 8 ;
-  string UpdateTime     = 9 ;
+  uint64 ID = 1 ;
+  string Type = 2 ;
+  string Avatar = 3 ;
+  uint64 Inviter = 4 ;
+	string Nickname = 5 ;
+	string Username = 6 ;
+  string Password = 7 ;
+  string CreateTime = 8 ;
+  string UpdateTime = 9 ;
 }
 
 message CreateUserRequest {
-  string Type           = 1 ;
-  string Avatar         = 2 ;
-  uint64 Inviter        = 3 ;
-	string Nickname       = 4 ;
-	string Username       = 5 ;
-  string Password       = 6 ;
+  string Type = 1 ;
+  string Avatar = 2 ;
+  uint64 Inviter = 3 ;
+	string Nickname = 4 ;
+	string Username = 5 ;
+  string Password = 6 ;
 }
 
 message CreateUserResponse {
-  State  State   = 1 ;
+  State  State = 1 ;
   string Message = 2 ;
 }
 
 message QueryUserByIDRequest {
-  uint64 ID      = 1 ;
+  uint64 ID = 1 ;
 }
 
 message QueryUserByIDResponse {
-  State  State   = 1 ;
+  State  State = 1 ;
   string Message = 2 ;
-  User   Data    = 3 ;
+  User   Data = 3 ;
 }
 message UpdateUserByIDRequest {
-  uint64 ID      = 1 ;
-  User   Data    = 2 ;
+  uint64 ID = 1 ;
+  User   Data = 2 ;
 }
 
 message QueryUserByUsernameRequest{
@@ -76,107 +76,107 @@ message QueryUserByUsernameRequest{
 }
 
 message QueryUserByUsernameResponse{
-  State  State   = 1 ;
+  State  State = 1 ;
   string Message = 2 ;
-  User   Data    = 3 ;
+  User   Data = 3 ;
 }
 
 message UpdateUserByIDResponse {
-  State  State   = 1 ;
+  State  State = 1 ;
   string Message = 2 ;
 }
 
 message DeleteUserByIDRequest {
-  uint64 ID      = 1 ;
+  uint64 ID = 1 ;
 }
 
 message DeleteUserByIDResponse {
-  State  State    = 1 ;
-  string Message  = 2 ;
+  State  State = 1 ;
+  string Message = 2 ;
 }
 
 message UpdateUserPasswordByIDRequest {
-  uint64 ID         = 1 ;
-  string Password   = 2 ;
+  uint64 ID = 1 ;
+  string Password = 2 ;
 }
 
 message UpdateUserPasswordByIDResponse {
-  State  State   = 1 ;
+  State  State = 1 ;
   string Message = 2 ;
 }
 
 message VerifyUserPasswordByIDRequest {
-  uint64 ID         = 1 ;
-  string Password   = 2 ;
+  uint64 ID = 1 ;
+  string Password = 2 ;
 }
 
 message VerifyUserPasswordByIDResponse {
-  State  State   = 1 ;
+  State  State = 1 ;
   string Message = 2 ;
-  bool   Data    = 3 ;
+  bool   Data = 3 ;
 }
 
 message VerifyUserPasswordByUsernameRequest {
-  string Username   = 1 ;
-  string Password   = 2 ;
+  string Username = 1 ;
+  string Password = 2 ;
 }
 
 message VerifyUserPasswordByUsernameResponse {
-  State  State   = 1 ;
+  State  State = 1 ;
   string Message = 2 ;
-  bool   Data   = 3 ;
+  bool   Data = 3 ;
 }
 
 message CreateLabelByOwnerRequest {
-  uint64 Owner       = 1 ;
-  Label  Label       = 2 ;
+  uint64 Owner = 1 ;
+  Label  Label = 2 ;
 }
 
 message CreateLabelByOwnerResponse {
-  State  State   = 1 ;
+  State  State = 1 ;
   string Message = 2 ;
 }
 
 message QueryLabelByIDRequest {
-  uint64 ID       = 1 ;
+  uint64 ID = 1 ;
 }
 
 message QueryLabelByIDResponse {
-  State  State   = 1 ;
+  State  State = 1 ;
   string Message = 2 ;
-  Label  Data    = 3 ;
+  Label  Data = 3 ;
 }
 
 message UpdateLabelByIDRequest {
-  uint64 ID      = 1 ;
-  Label  Data    = 3 ;
+  uint64 ID = 1 ;
+  Label  Data = 3 ;
 }
 
 message UpdateLabelByIDResponse {
-  State  State   = 1 ;
+  State  State = 1 ;
   string Message = 2 ;
 }
 
 message DeleteLabelByIDRequest {
-  uint64 ID      = 1 ;
+  uint64 ID = 1 ;
 }
 
 message DeleteLabelByIDResponse {
-  State  State   = 1 ;
+  State  State = 1 ;
   string Message = 2 ;
 }
 
 message QueryLabelByOwnerRequest {
-  uint64 Owner   = 1 ;
+  uint64 Owner = 1 ;
   uint64 Limit = 2 ;
   uint64 Offset = 3 ;
 }
 
 message QueryLabelByOwnerResponse {
-  State  State          = 1 ;
-  string Message        = 2 ;
+  State  State = 1 ;
+  string Message = 2 ;
   uint64 Total = 3 ;
-  repeated Label Data   = 4 ;
+  repeated Label Data = 4 ;
 }
 
 service Account {
