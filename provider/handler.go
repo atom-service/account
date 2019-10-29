@@ -3,7 +3,6 @@ package provider
 import (
 	"context"
 
-	"github.com/grpcbrick/account/models"
 	"github.com/grpcbrick/account/standard"
 )
 
@@ -20,7 +19,7 @@ type Service struct {
 // CreateUser 创建用户
 func (srv *Service) CreateUser(ctx context.Context, req *standard.CreateUserRequest) (resp *standard.CreateUserResponse, err error) {
 	var count uint64
-	var user models.User
+	var user model.User
 	user.SetPassword(req.Password)
 	resp = new(standard.CreateUserResponse)
 
@@ -67,7 +66,7 @@ func (srv *Service) CreateUser(ctx context.Context, req *standard.CreateUserRequ
 
 // QueryUserByID 通过ID查询用户
 func (srv *Service) QueryUserByID(ctx context.Context, req *standard.QueryUserByIDRequest) (resp *standard.QueryUserByIDResponse, err error) {
-	users := []*models.User{}
+	users := []*model.User{}
 	resp = new(standard.QueryUserByIDResponse)
 
 	if req.ID == 0 {
@@ -84,7 +83,7 @@ func (srv *Service) QueryUserByID(ctx context.Context, req *standard.QueryUserBy
 	}
 
 	for rows.Next() {
-		var localUser models.User
+		var localUser model.User
 		err = rows.StructScan(&localUser)
 		if err == nil {
 			localUser.Password = "secret field"
@@ -106,7 +105,7 @@ func (srv *Service) QueryUserByID(ctx context.Context, req *standard.QueryUserBy
 
 // QueryUserByUsername 通过ID查询用户
 func (srv *Service) QueryUserByUsername(ctx context.Context, req *standard.QueryUserByUsernameRequest) (resp *standard.QueryUserByUsernameResponse, err error) {
-	users := []*models.User{}
+	users := []*model.User{}
 	resp = new(standard.QueryUserByUsernameResponse)
 
 	if !usernamePattern.MatchString(req.Username) {
@@ -123,7 +122,7 @@ func (srv *Service) QueryUserByUsername(ctx context.Context, req *standard.Query
 	}
 
 	for rows.Next() {
-		var localUser models.User
+		var localUser model.User
 		err = rows.StructScan(&localUser)
 		if err == nil {
 			localUser.Password = "加密字段"
@@ -148,7 +147,7 @@ func (srv *Service) QueryUserByUsername(ctx context.Context, req *standard.Query
 func (srv *Service) UpdateUserByID(ctx context.Context, req *standard.UpdateUserByIDRequest) (resp *standard.UpdateUserByIDResponse, err error) {
 	// 检查是否存在该记录
 	var count uint64
-	user := new(models.User)
+	user := new(model.User)
 	user.LoadProtoStruct(req.Data)
 	resp = new(standard.UpdateUserByIDResponse)
 
@@ -238,7 +237,7 @@ func (srv *Service) DeleteUserByID(ctx context.Context, req *standard.DeleteUser
 func (srv *Service) UpdateUserPasswordByID(ctx context.Context, req *standard.UpdateUserPasswordByIDRequest) (resp *standard.UpdateUserPasswordByIDResponse, err error) {
 	// 检查是否存在该记录
 	var count uint64
-	var user models.User
+	var user model.User
 	user.SetPassword(req.Password)
 	resp = new(standard.UpdateUserPasswordByIDResponse)
 
@@ -283,8 +282,8 @@ func (srv *Service) UpdateUserPasswordByID(ctx context.Context, req *standard.Up
 
 // VerifyUserPasswordByID 验证密码
 func (srv *Service) VerifyUserPasswordByID(ctx context.Context, req *standard.VerifyUserPasswordByIDRequest) (resp *standard.VerifyUserPasswordByIDResponse, err error) {
-	user := new(models.User)
-	users := []*models.User{}
+	user := new(model.User)
+	users := []*model.User{}
 	user.SetPassword(req.Password)
 	resp = new(standard.VerifyUserPasswordByIDResponse)
 
@@ -308,7 +307,7 @@ func (srv *Service) VerifyUserPasswordByID(ctx context.Context, req *standard.Ve
 	}
 
 	for rows.Next() {
-		var localUser models.User
+		var localUser model.User
 		err = rows.StructScan(&localUser)
 		if err == nil {
 			users = append(users, &localUser)
@@ -337,8 +336,8 @@ func (srv *Service) VerifyUserPasswordByID(ctx context.Context, req *standard.Ve
 
 // VerifyUserPasswordByUsername 验证密码
 func (srv *Service) VerifyUserPasswordByUsername(ctx context.Context, req *standard.VerifyUserPasswordByUsernameRequest) (resp *standard.VerifyUserPasswordByUsernameResponse, err error) {
-	user := new(models.User)
-	users := []*models.User{}
+	user := new(model.User)
+	users := []*model.User{}
 	user.SetPassword(req.Password)
 	resp = new(standard.VerifyUserPasswordByUsernameResponse)
 
@@ -362,7 +361,7 @@ func (srv *Service) VerifyUserPasswordByUsername(ctx context.Context, req *stand
 	}
 
 	for rows.Next() {
-		var localUser models.User
+		var localUser model.User
 		err = rows.StructScan(&localUser)
 		if err == nil {
 			users = append(users, &localUser)
@@ -422,7 +421,7 @@ func (srv *Service) CreateLabelByOwner(ctx context.Context, req *standard.Create
 
 // QueryLabelByID 查询指定 Label 的信息
 func (srv *Service) QueryLabelByID(ctx context.Context, req *standard.QueryLabelByIDRequest) (resp *standard.QueryLabelByIDResponse, err error) {
-	labels := []*models.Label{}
+	labels := []*model.Label{}
 	resp = new(standard.QueryLabelByIDResponse)
 
 	rows, err := queryLabelByIDNamedStmt.QueryxContext(ctx, req)
@@ -433,7 +432,7 @@ func (srv *Service) QueryLabelByID(ctx context.Context, req *standard.QueryLabel
 	}
 
 	for rows.Next() {
-		var localLabel models.Label
+		var localLabel model.Label
 		err = rows.StructScan(&localLabel)
 		if err == nil {
 			labels = append(labels, &localLabel)
@@ -518,7 +517,7 @@ func (srv *Service) DeleteLabelByID(ctx context.Context, req *standard.DeleteLab
 // QueryLabelByOwner 查询指定 Owner 的所有标签
 func (srv *Service) QueryLabelByOwner(ctx context.Context, req *standard.QueryLabelByOwnerRequest) (resp *standard.QueryLabelByOwnerResponse, err error) {
 	var count uint64
-	labels := []*models.Label{}
+	labels := []*model.Label{}
 	stdlabels := []*standard.Label{}
 	resp = new(standard.QueryLabelByOwnerResponse)
 
@@ -539,7 +538,7 @@ func (srv *Service) QueryLabelByOwner(ctx context.Context, req *standard.QueryLa
 	}
 
 	for rows.Next() {
-		var localLabel models.Label
+		var localLabel model.Label
 		err = rows.StructScan(&localLabel)
 		if err == nil {
 			labels = append(labels, &localLabel)

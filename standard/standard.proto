@@ -8,14 +8,14 @@ enum State {
   SUCCESS = 1 ;   // 成功
   FAILURE = 2 ;   // 失败
   SERVICE_ERROR = 3 ;   // 服务错误
-  PARAMS_INVALID = 5 ;   // 参数不合法
-  ILLEGAL_REQUEST = 6 ;   // 非法请求
-  LABEL_NOT_EXIST = 7 ;   // 标签不存在
-  USER_NOT_EXIST = 8 ;   // 用户不存在
-  USER_ALREADY_EXISTS = 9 ;   // 用户已经存在
-  USER_VERIFY_FAILURE = 10 ;   // 用户验证失败
-  LABEL_ALREADY_EXISTS = 11 ;   // 标签已经存在
-  DB_OPERATION_FATLURE = 12 ;    // 数据库操作失败
+  PARAMS_INVALID = 4 ;   // 参数不合法
+  ILLEGAL_REQUEST = 5 ;   // 非法请求
+  LABEL_NOT_EXIST = 6 ;   // 标签不存在
+  USER_NOT_EXIST = 7 ;   // 用户不存在
+  USER_ALREADY_EXISTS = 8 ;   // 用户已经存在
+  USER_VERIFY_FAILURE = 9 ;   // 用户验证失败
+  LABEL_ALREADY_EXISTS = 10 ;   // 标签已经存在
+  DB_OPERATION_FATLURE = 11 ;    // 数据库操作失败
 }
 
 
@@ -66,24 +66,15 @@ message QueryUserByIDResponse {
   string Message = 2 ;
   User   Data = 3 ;
 }
-message UpdateUserByIDRequest {
-  uint64 ID = 1 ;
-  User   Data = 2 ;
-}
 
 message QueryUserByUsernameRequest{
-  string Username = 3 ;
+  string Username = 1 ;
 }
 
 message QueryUserByUsernameResponse{
   State  State = 1 ;
   string Message = 2 ;
   User   Data = 3 ;
-}
-
-message UpdateUserByIDResponse {
-  State  State = 1 ;
-  string Message = 2 ;
 }
 
 message DeleteUserByIDRequest {
@@ -137,6 +128,16 @@ message CreateLabelByOwnerResponse {
   string Message = 2 ;
 }
 
+message RemoveLabelByOwnerRequest {
+  uint64 ID = 1 ;
+  uint64 Owner = 2 ;
+}
+
+message RemoveLabelByOwnerResponse {
+  State  State = 1 ;
+  string Message = 2 ;
+}
+
 message QueryLabelByIDRequest {
   uint64 ID = 1 ;
 }
@@ -149,7 +150,7 @@ message QueryLabelByIDResponse {
 
 message UpdateLabelByIDRequest {
   uint64 ID = 1 ;
-  Label  Data = 3 ;
+  Label  Data = 2 ;
 }
 
 message UpdateLabelByIDResponse {
@@ -180,11 +181,9 @@ message QueryLabelByOwnerResponse {
 }
 
 service Account {
-
   // 用户操作
   rpc CreateUser(CreateUserRequest)returns(CreateUserResponse){} // 创建一个用户
   rpc QueryUserByID(QueryUserByIDRequest)returns(QueryUserByIDResponse){} // 通过 ID 查询
-  rpc UpdateUserByID(UpdateUserByIDRequest)returns(UpdateUserByIDResponse){} // 更新用户
   rpc DeleteUserByID(DeleteUserByIDRequest)returns(DeleteUserByIDResponse){} // 删除用户
   rpc QueryUserByUsername(QueryUserByUsernameRequest)returns(QueryUserByUsernameResponse){} // 通过 用户名 查询
   rpc UpdateUserPasswordByID(UpdateUserPasswordByIDRequest)returns(UpdateUserPasswordByIDResponse){} // 更新用户密码
@@ -193,8 +192,10 @@ service Account {
 
   // 标签操作
   rpc QueryLabelByID(QueryLabelByIDRequest)returns(QueryLabelByIDResponse){} // 根据 ID 查询标签
-  rpc UpdateLabelByID(UpdateLabelByIDRequest)returns(UpdateLabelByIDResponse){} // 根据 ID  更新标签
-  rpc DeleteLabelByID(DeleteLabelByIDRequest)returns(DeleteLabelByIDResponse){} //根据 ID  删除标签
+  rpc UpdateLabelByID(UpdateLabelByIDRequest)returns(UpdateLabelByIDResponse){} // 根据 ID 更新标签
+  rpc DeleteLabelByID(DeleteLabelByIDRequest)returns(DeleteLabelByIDResponse){} //根据 ID 删除标签
+
   rpc QueryLabelByOwner(QueryLabelByOwnerRequest)returns(QueryLabelByOwnerResponse){} // 查询指定用户的所有标签
   rpc CreateLabelByOwner(CreateLabelByOwnerRequest)returns(CreateLabelByOwnerResponse){} // 创建一个标签给指定用户
+  rpc RemoveLabelByOwner(RemoveLabelByOwnerRequest)returns(RemoveLabelByOwnerResponse){} // 移除一个标签从用户
 }
