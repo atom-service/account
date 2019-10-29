@@ -1,3 +1,3 @@
-package mongo
+package dao
 
 const labelCollectionName = "label"

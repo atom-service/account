@@ -1,4 +1,4 @@
-package mongo
+package dao
 
 import (
 	"github.com/yinxulai/goutils/mongo"
