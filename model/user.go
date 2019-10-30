@@ -1,6 +1,10 @@
 package model
 
-import "github.com/grpcbrick/account/standard"
+import (
+	"strconv"
+
+	"github.com/grpcbrick/account/standard"
+)
 
 // User 用户
 type User struct {
@@ -23,6 +27,18 @@ func (srv *User) SetPassword(password string) {
 // EqualPassword EqualPassword
 func (srv *User) EqualPassword(target string) bool {
 	return false
+}
+
+// LoadStringMap 从 string map 中加载数据
+func (srv *User) LoadStringMap(data map[string]string) {
+	srv.Class = data["Class"]
+	srv.Avatar = data["Avatar"]
+	srv.Username = data["Username"]
+	srv.Nickname = data["Nickname"]
+	srv.UpdateTime = data["UpdateTime"]
+	srv.CreateTime = data["CreateTime"]
+	srv.ID, _ = strconv.ParseUint(data["ID"], 10, 64)
+	srv.Inviter, _ = strconv.ParseUint(data["Inviter"], 10, 64)
 }
 
 // LoadProtoStruct LoadProtoStruct

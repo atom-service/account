@@ -4,6 +4,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/grpcbrick/account/model"
 	"github.com/yinxulai/goutils/easysql"
 )
 
@@ -49,6 +50,39 @@ func countUserByID(id uint64) (int, error) {
 		return 0, err
 	}
 	return count, nil
+}
+
+// 根据 id 查询
+func queryUserByID(id uint64) (*model.User, error) {
+	conn := easysql.GetConn()
+	defer conn.Close()
+
+	idstr := strconv.FormatUint(id, 10)
+	cond := map[string]string{"ID": idstr}
+	result, err := conn.Select("users", nil).Where(cond).QueryRow()
+	if err != nil {
+		return nil, err
+	}
+
+	user := new(model.User)
+	user.LoadStringMap(result)
+	return user, nil
+}
+
+// 根据 id 查询
+func queryUserByUsername(username string) (*model.User, error) {
+	conn := easysql.GetConn()
+	defer conn.Close()
+
+	cond := map[string]string{"Username": username}
+	result, err := conn.Select("users", nil).Where(cond).QueryRow()
+	if err != nil {
+		return nil, err
+	}
+
+	user := new(model.User)
+	user.LoadStringMap(result)
+	return user, nil
 }
 
 // 根据用户名统计

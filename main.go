@@ -12,9 +12,11 @@ import (
 )
 
 func init() {
-	config.SetStandard("mongo-url", "", true, "RPC 使用的 MONGODB 数据库配置")
-	config.SetStandard("mysql-url", "", true, "RPC 使用的 MYSQL 数据库配置")
 	config.SetStandard("rpc-port", ":3000", true, "RPC 服务监听的端口")
+	config.SetStandard("mysql-url", "", true, "RPC 使用的 MYSQL 数据库配置")
+	config.SetStandard("mongo-url", "", false, "RPC 使用的 MONGODB 数据库配置")
+	config.SetStandard("encrypt-password", "encrypt-password", false, "作为一些数据加密的密钥")
+
 	config.CreateJSONTemplate("./config.template.json")
 	config.LoadFlag()
 }
