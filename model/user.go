@@ -5,7 +5,7 @@ import "github.com/grpcbrick/account/standard"
 // User 用户
 type User struct {
 	ID         uint64 `db:"ID"`
-	Type       string `db:"Type"`
+	Class      string `db:"Class"`
 	Avatar     string `db:"Avatar"`
 	Inviter    uint64 `db:"Inviter"`
 	Nickname   string `db:"Nickname"`
@@ -28,7 +28,7 @@ func (srv *User) EqualPassword(target string) bool {
 // LoadProtoStruct LoadProtoStruct
 func (srv *User) LoadProtoStruct(user *standard.User) {
 	srv.ID = user.ID
-	srv.Type = user.Type
+	srv.Class = user.Class
 	srv.Avatar = user.Avatar
 	srv.Inviter = user.Inviter
 	srv.Nickname = user.Nickname
@@ -42,7 +42,7 @@ func (srv *User) OutProtoStruct() *standard.User {
 	user := new(standard.User)
 
 	user.ID = srv.ID
-	user.Type = srv.Type
+	user.Class = srv.Class
 	user.Avatar = srv.Avatar
 	user.Inviter = srv.Inviter
 	user.Nickname = srv.Nickname

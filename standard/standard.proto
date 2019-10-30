@@ -22,7 +22,7 @@ enum State {
 // Label 标签
 message Label {
 	uint64 ID = 1 ;
-	string Type = 2 ;
+	string Class = 2 ;
 	string State = 3 ;
   string Value = 4 ;
   uint64 Owner = 5 ;
@@ -33,7 +33,7 @@ message Label {
 // User 用户
 message User {
   uint64 ID = 1 ;
-  string Type = 2 ;
+  string Class = 2 ;
   string Avatar = 3 ;
   uint64 Inviter = 4 ;
 	string Nickname = 5 ;
@@ -44,7 +44,7 @@ message User {
 }
 
 message CreateUserRequest {
-  string Type = 1 ;
+  string Class = 1 ;
   string Avatar = 2 ;
   uint64 Inviter = 3 ;
 	string Nickname = 4 ;

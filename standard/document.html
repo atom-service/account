@@ -247,19 +247,19 @@
                 </li>
               
                 <li>
+                  <a href="#standard.RemoveLabelByOwnerRequest"><span class="badge">M</span>RemoveLabelByOwnerRequest</a>
+                </li>
+              
+                <li>
+                  <a href="#standard.RemoveLabelByOwnerResponse"><span class="badge">M</span>RemoveLabelByOwnerResponse</a>
+                </li>
+              
+                <li>
                   <a href="#standard.UpdateLabelByIDRequest"><span class="badge">M</span>UpdateLabelByIDRequest</a>
                 </li>
               
                 <li>
                   <a href="#standard.UpdateLabelByIDResponse"><span class="badge">M</span>UpdateLabelByIDResponse</a>
-                </li>
-              
-                <li>
-                  <a href="#standard.UpdateUserByIDRequest"><span class="badge">M</span>UpdateUserByIDRequest</a>
-                </li>
-              
-                <li>
-                  <a href="#standard.UpdateUserByIDResponse"><span class="badge">M</span>UpdateUserByIDResponse</a>
                 </li>
               
                 <li>
@@ -389,7 +389,7 @@
             <tbody>
               
                 <tr>
-                  <td>Type</td>
+                  <td>Class</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p> </p></td>
@@ -596,7 +596,7 @@
                 </tr>
               
                 <tr>
-                  <td>Type</td>
+                  <td>Class</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p> </p></td>
@@ -913,6 +913,68 @@
 
         
       
+        <h3 id="standard.RemoveLabelByOwnerRequest">RemoveLabelByOwnerRequest</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>ID</td>
+                  <td><a href="#uint64">uint64</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Owner</td>
+                  <td><a href="#uint64">uint64</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="standard.RemoveLabelByOwnerResponse">RemoveLabelByOwnerResponse</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>State</td>
+                  <td><a href="#standard.State">State</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Message</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
         <h3 id="standard.UpdateLabelByIDRequest">UpdateLabelByIDRequest</h3>
         <p></p>
 
@@ -945,68 +1007,6 @@
         
       
         <h3 id="standard.UpdateLabelByIDResponse">UpdateLabelByIDResponse</h3>
-        <p></p>
-
-        
-          <table class="field-table">
-            <thead>
-              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
-            </thead>
-            <tbody>
-              
-                <tr>
-                  <td>State</td>
-                  <td><a href="#standard.State">State</a></td>
-                  <td></td>
-                  <td><p> </p></td>
-                </tr>
-              
-                <tr>
-                  <td>Message</td>
-                  <td><a href="#string">string</a></td>
-                  <td></td>
-                  <td><p> </p></td>
-                </tr>
-              
-            </tbody>
-          </table>
-
-          
-
-        
-      
-        <h3 id="standard.UpdateUserByIDRequest">UpdateUserByIDRequest</h3>
-        <p></p>
-
-        
-          <table class="field-table">
-            <thead>
-              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
-            </thead>
-            <tbody>
-              
-                <tr>
-                  <td>ID</td>
-                  <td><a href="#uint64">uint64</a></td>
-                  <td></td>
-                  <td><p> </p></td>
-                </tr>
-              
-                <tr>
-                  <td>Data</td>
-                  <td><a href="#standard.User">User</a></td>
-                  <td></td>
-                  <td><p> </p></td>
-                </tr>
-              
-            </tbody>
-          </table>
-
-          
-
-        
-      
-        <h3 id="standard.UpdateUserByIDResponse">UpdateUserByIDResponse</h3>
         <p></p>
 
         
@@ -1117,7 +1117,7 @@
                 </tr>
               
                 <tr>
-                  <td>Type</td>
+                  <td>Class</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p> </p></td>
@@ -1353,49 +1353,49 @@
             
               <tr>
                 <td>PARAMS_INVALID</td>
-                <td>5</td>
+                <td>4</td>
                 <td><p>参数不合法</p></td>
               </tr>
             
               <tr>
                 <td>ILLEGAL_REQUEST</td>
-                <td>6</td>
+                <td>5</td>
                 <td><p>非法请求</p></td>
               </tr>
             
               <tr>
                 <td>LABEL_NOT_EXIST</td>
-                <td>7</td>
+                <td>6</td>
                 <td><p>标签不存在</p></td>
               </tr>
             
               <tr>
                 <td>USER_NOT_EXIST</td>
-                <td>8</td>
+                <td>7</td>
                 <td><p>用户不存在</p></td>
               </tr>
             
               <tr>
                 <td>USER_ALREADY_EXISTS</td>
-                <td>9</td>
+                <td>8</td>
                 <td><p>用户已经存在</p></td>
               </tr>
             
               <tr>
                 <td>USER_VERIFY_FAILURE</td>
-                <td>10</td>
+                <td>9</td>
                 <td><p>用户验证失败</p></td>
               </tr>
             
               <tr>
                 <td>LABEL_ALREADY_EXISTS</td>
-                <td>11</td>
+                <td>10</td>
                 <td><p>标签已经存在</p></td>
               </tr>
             
               <tr>
                 <td>DB_OPERATION_FATLURE</td>
-                <td>12</td>
+                <td>11</td>
                 <td><p>数据库操作失败</p></td>
               </tr>
             
@@ -1425,13 +1425,6 @@
                 <td>QueryUserByID</td>
                 <td><a href="#standard.QueryUserByIDRequest">QueryUserByIDRequest</a></td>
                 <td><a href="#standard.QueryUserByIDResponse">QueryUserByIDResponse</a></td>
-                <td><p></p></td>
-              </tr>
-            
-              <tr>
-                <td>UpdateUserByID</td>
-                <td><a href="#standard.UpdateUserByIDRequest">UpdateUserByIDRequest</a></td>
-                <td><a href="#standard.UpdateUserByIDResponse">UpdateUserByIDResponse</a></td>
                 <td><p></p></td>
               </tr>
             
@@ -1502,6 +1495,13 @@
                 <td>CreateLabelByOwner</td>
                 <td><a href="#standard.CreateLabelByOwnerRequest">CreateLabelByOwnerRequest</a></td>
                 <td><a href="#standard.CreateLabelByOwnerResponse">CreateLabelByOwnerResponse</a></td>
+                <td><p></p></td>
+              </tr>
+            
+              <tr>
+                <td>RemoveLabelByOwner</td>
+                <td><a href="#standard.RemoveLabelByOwnerRequest">RemoveLabelByOwnerRequest</a></td>
+                <td><a href="#standard.RemoveLabelByOwnerResponse">RemoveLabelByOwnerResponse</a></td>
                 <td><p></p></td>
               </tr>
             

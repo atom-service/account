@@ -21,10 +21,10 @@
     - [QueryUserByIDResponse](#standard.QueryUserByIDResponse)
     - [QueryUserByUsernameRequest](#standard.QueryUserByUsernameRequest)
     - [QueryUserByUsernameResponse](#standard.QueryUserByUsernameResponse)
+    - [RemoveLabelByOwnerRequest](#standard.RemoveLabelByOwnerRequest)
+    - [RemoveLabelByOwnerResponse](#standard.RemoveLabelByOwnerResponse)
     - [UpdateLabelByIDRequest](#standard.UpdateLabelByIDRequest)
     - [UpdateLabelByIDResponse](#standard.UpdateLabelByIDResponse)
-    - [UpdateUserByIDRequest](#standard.UpdateUserByIDRequest)
-    - [UpdateUserByIDResponse](#standard.UpdateUserByIDResponse)
     - [UpdateUserPasswordByIDRequest](#standard.UpdateUserPasswordByIDRequest)
     - [UpdateUserPasswordByIDResponse](#standard.UpdateUserPasswordByIDResponse)
     - [User](#standard.User)
@@ -90,7 +90,7 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| Type | [string](#string) |  |  |
+| Class | [string](#string) |  |  |
 | Avatar | [string](#string) |  |  |
 | Inviter | [uint64](#uint64) |  |  |
 | Nickname | [string](#string) |  |  |
@@ -189,7 +189,7 @@ Label 标签
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | ID | [uint64](#uint64) |  |  |
-| Type | [string](#string) |  |  |
+| Class | [string](#string) |  |  |
 | State | [string](#string) |  |  |
 | Value | [string](#string) |  |  |
 | Owner | [uint64](#uint64) |  |  |
@@ -332,6 +332,38 @@ Label 标签
 
 
 
+<a name="standard.RemoveLabelByOwnerRequest"></a>
+
+### RemoveLabelByOwnerRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| ID | [uint64](#uint64) |  |  |
+| Owner | [uint64](#uint64) |  |  |
+
+
+
+
+
+
+<a name="standard.RemoveLabelByOwnerResponse"></a>
+
+### RemoveLabelByOwnerResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| State | [State](#standard.State) |  |  |
+| Message | [string](#string) |  |  |
+
+
+
+
+
+
 <a name="standard.UpdateLabelByIDRequest"></a>
 
 ### UpdateLabelByIDRequest
@@ -351,38 +383,6 @@ Label 标签
 <a name="standard.UpdateLabelByIDResponse"></a>
 
 ### UpdateLabelByIDResponse
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| State | [State](#standard.State) |  |  |
-| Message | [string](#string) |  |  |
-
-
-
-
-
-
-<a name="standard.UpdateUserByIDRequest"></a>
-
-### UpdateUserByIDRequest
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| ID | [uint64](#uint64) |  |  |
-| Data | [User](#standard.User) |  |  |
-
-
-
-
-
-
-<a name="standard.UpdateUserByIDResponse"></a>
-
-### UpdateUserByIDResponse
 
 
 
@@ -437,7 +437,7 @@ User 用户
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | ID | [uint64](#uint64) |  |  |
-| Type | [string](#string) |  |  |
+| Class | [string](#string) |  |  |
 | Avatar | [string](#string) |  |  |
 | Inviter | [uint64](#uint64) |  |  |
 | Nickname | [string](#string) |  |  |
@@ -530,14 +530,14 @@ User 用户
 | SUCCESS | 1 | 成功 |
 | FAILURE | 2 | 失败 |
 | SERVICE_ERROR | 3 | 服务错误 |
-| PARAMS_INVALID | 5 | 参数不合法 |
-| ILLEGAL_REQUEST | 6 | 非法请求 |
-| LABEL_NOT_EXIST | 7 | 标签不存在 |
-| USER_NOT_EXIST | 8 | 用户不存在 |
-| USER_ALREADY_EXISTS | 9 | 用户已经存在 |
-| USER_VERIFY_FAILURE | 10 | 用户验证失败 |
-| LABEL_ALREADY_EXISTS | 11 | 标签已经存在 |
-| DB_OPERATION_FATLURE | 12 | 数据库操作失败 |
+| PARAMS_INVALID | 4 | 参数不合法 |
+| ILLEGAL_REQUEST | 5 | 非法请求 |
+| LABEL_NOT_EXIST | 6 | 标签不存在 |
+| USER_NOT_EXIST | 7 | 用户不存在 |
+| USER_ALREADY_EXISTS | 8 | 用户已经存在 |
+| USER_VERIFY_FAILURE | 9 | 用户验证失败 |
+| LABEL_ALREADY_EXISTS | 10 | 标签已经存在 |
+| DB_OPERATION_FATLURE | 11 | 数据库操作失败 |
 
 
  
@@ -554,7 +554,6 @@ User 用户
 | ----------- | ------------ | ------------- | ------------|
 | CreateUser | [CreateUserRequest](#standard.CreateUserRequest) | [CreateUserResponse](#standard.CreateUserResponse) | 用户操作 |
 | QueryUserByID | [QueryUserByIDRequest](#standard.QueryUserByIDRequest) | [QueryUserByIDResponse](#standard.QueryUserByIDResponse) |  |
-| UpdateUserByID | [UpdateUserByIDRequest](#standard.UpdateUserByIDRequest) | [UpdateUserByIDResponse](#standard.UpdateUserByIDResponse) |  |
 | DeleteUserByID | [DeleteUserByIDRequest](#standard.DeleteUserByIDRequest) | [DeleteUserByIDResponse](#standard.DeleteUserByIDResponse) |  |
 | QueryUserByUsername | [QueryUserByUsernameRequest](#standard.QueryUserByUsernameRequest) | [QueryUserByUsernameResponse](#standard.QueryUserByUsernameResponse) |  |
 | UpdateUserPasswordByID | [UpdateUserPasswordByIDRequest](#standard.UpdateUserPasswordByIDRequest) | [UpdateUserPasswordByIDResponse](#standard.UpdateUserPasswordByIDResponse) |  |
@@ -565,6 +564,7 @@ User 用户
 | DeleteLabelByID | [DeleteLabelByIDRequest](#standard.DeleteLabelByIDRequest) | [DeleteLabelByIDResponse](#standard.DeleteLabelByIDResponse) |  |
 | QueryLabelByOwner | [QueryLabelByOwnerRequest](#standard.QueryLabelByOwnerRequest) | [QueryLabelByOwnerResponse](#standard.QueryLabelByOwnerResponse) |  |
 | CreateLabelByOwner | [CreateLabelByOwnerRequest](#standard.CreateLabelByOwnerRequest) | [CreateLabelByOwnerResponse](#standard.CreateLabelByOwnerResponse) |  |
+| RemoveLabelByOwner | [RemoveLabelByOwnerRequest](#standard.RemoveLabelByOwnerRequest) | [RemoveLabelByOwnerResponse](#standard.RemoveLabelByOwnerResponse) |  |
 
  
 

@@ -5,7 +5,7 @@ import "github.com/grpcbrick/account/standard"
 // Label 标签
 type Label struct {
 	ID         uint64 `db:"ID"`
-	Type       string `db:"Type"`
+	Class      string `db:"Class"`
 	State      string `db:"State"`
 	Value      string `db:"Value"`
 	Owner      uint64 `db:"Owner"`
@@ -16,7 +16,7 @@ type Label struct {
 // LoadProtoStruct LoadProtoStruct
 func (srv *Label) LoadProtoStruct(label *standard.Label) {
 	srv.ID = label.ID
-	srv.Type = label.Type
+	srv.Class = label.Class
 	srv.State = label.State
 	srv.Value = label.Value
 	srv.CreateTime = label.CreateTime
@@ -26,7 +26,7 @@ func (srv *Label) LoadProtoStruct(label *standard.Label) {
 func (srv *Label) OutProtoStruct() *standard.Label {
 	lable := new(standard.Label)
 	lable.ID = srv.ID
-	lable.Type = srv.Type
+	lable.Class = srv.Class
 	lable.State = srv.State
 	lable.Value = srv.Value
 	lable.CreateTime = srv.CreateTime

@@ -3,11 +3,10 @@ package main
 import (
 	"net"
 
-	"github.com/yinxulai/goutils/mongo"
-
 	"github.com/grpcbrick/account/provider"
 	"github.com/grpcbrick/account/standard"
 	"github.com/yinxulai/goutils/config"
+	"github.com/yinxulai/goutils/easysql"
 	"github.com/yinxulai/goutils/grpc/interceptor"
 	"google.golang.org/grpc"
 )
@@ -22,8 +21,7 @@ func init() {
 
 func main() {
 	var err error
-	mongo.SetDefaultDatabase("account")
-	mongo.Init(config.MustGet("mongo-url"))
+	easysql.Init("mysql", config.MustGet("mysql-url"))
 	lis, err := net.Listen("tcp", config.MustGet("rpc-port"))
 	if err != nil {
 		panic(err)
