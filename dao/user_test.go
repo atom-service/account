@@ -3,6 +3,7 @@ package dao
 import (
 	"testing"
 
+	"github.com/yinxulai/goutils/config"
 	"github.com/yinxulai/goutils/easysql"
 )
 
@@ -13,8 +14,9 @@ func TestCreateUserTable(t *testing.T) {
 }
 
 func TestCreateUser(t *testing.T) {
+	config.Set("encrypt-password", "test")
 	easysql.Init("mysql", "root:root@tcp(localhost:3306)/default?charset=utf8")
-	CreateUser("test", "test", "test", "test")
+	CreateUser("test", "test2", "test2", "test")
 	t.Error("test")
 }
 

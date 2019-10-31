@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"github.com/grpcbrick/account/model"
+	"github.com/yinxulai/goutils/config"
+	"github.com/yinxulai/goutils/crypto"
 	"github.com/yinxulai/goutils/easysql"
 )
 
@@ -116,14 +118,13 @@ func CreateUser(class, nickname, username, password string) error {
 		"Class":    class,
 		"Nickname": nickname,
 		"Username": username,
-		"Password": password,
+		"Password": crypto.MD5Encrypt(password, config.MustGet("encrypt-password")),
 	}
 
 	_, err := conn.Insert("users", cond)
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -155,7 +156,9 @@ func UpdateUserInviterByID(id uint64, inviter string) error {
 
 // UpdateUserPasswordByID 更新用户密码
 func UpdateUserPasswordByID(id uint64, password string) error {
-	return updataUserFieldByID(id, map[string]string{"Password": password})
+	// 加密
+	encryptPassword := crypto.MD5Encrypt(password, config.MustGet("encrypt-password"))
+	return updataUserFieldByID(id, map[string]string{"Password": encryptPassword})
 }
 
 // 根据 ID 更新用户指定字段

@@ -23,7 +23,6 @@ func createLabelTable() error {
 			" `Class` varchar(128) NOT NULL COMMENT '类型',",
 			" `State` varchar(128) DEFAULT '' COMMENT '状态',",
 			" `Value` varchar(512) DEFAULT '' COMMENT '值',",
-			" `Owner` int(11) NOT NULL COMMENT '所属',",
 			" `DeletedTime` datetime DEFAULT NULL COMMENT '删除时间',",
 			" `CreatedTime` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',",
 			" `UpdatedTime` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',",
@@ -36,7 +35,7 @@ func createLabelTable() error {
 }
 
 // CreateLabel 创建标签
-func createLabel(owner uint64, class, state, value string) error {
+func createLabel(class, state, value string) error {
 	conn := easysql.GetConn()
 	defer conn.Close()
 
@@ -44,7 +43,6 @@ func createLabel(owner uint64, class, state, value string) error {
 		"Class": class,
 		"State": state,
 		"Value": value,
-		"Owner": strconv.FormatUint(owner, 10),
 	}
 
 	_, err := conn.Insert(labelTableName, data)
