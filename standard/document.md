@@ -12,6 +12,7 @@
     - [DeleteLabelByIDResponse](#standard.DeleteLabelByIDResponse)
     - [DeleteUserByIDRequest](#standard.DeleteUserByIDRequest)
     - [DeleteUserByIDResponse](#standard.DeleteUserByIDResponse)
+    - [Group](#standard.Group)
     - [Label](#standard.Label)
     - [QueryLabelByIDRequest](#standard.QueryLabelByIDRequest)
     - [QueryLabelByIDResponse](#standard.QueryLabelByIDResponse)
@@ -180,6 +181,28 @@
 
 
 
+<a name="standard.Group"></a>
+
+### Group
+Group 组
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| ID | [uint64](#uint64) |  |  |
+| Name | [string](#string) |  |  |
+| Class | [string](#string) |  |  |
+| State | [string](#string) |  |  |
+| Description | [string](#string) |  |  |
+| CreatedTime | [string](#string) |  |  |
+| UpdatedTime | [string](#string) |  |  |
+| DeletedTime | [string](#string) |  |  |
+
+
+
+
+
+
 <a name="standard.Label"></a>
 
 ### Label
@@ -193,8 +216,9 @@ Label 标签
 | State | [string](#string) |  |  |
 | Value | [string](#string) |  |  |
 | Owner | [uint64](#uint64) |  |  |
-| CreateTime | [string](#string) |  |  |
-| UpdateTime | [string](#string) |  |  |
+| CreatedTime | [string](#string) |  |  |
+| UpdatedTime | [string](#string) |  |  |
+| DeletedTime | [string](#string) |  |  |
 
 
 
@@ -443,8 +467,9 @@ User 用户
 | Nickname | [string](#string) |  |  |
 | Username | [string](#string) |  |  |
 | Password | [string](#string) |  |  |
-| CreateTime | [string](#string) |  |  |
-| UpdateTime | [string](#string) |  |  |
+| CreatedTime | [string](#string) |  |  |
+| UpdatedTime | [string](#string) |  |  |
+| DeletedTime | [string](#string) |  |  |
 
 
 

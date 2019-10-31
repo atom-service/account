@@ -8,14 +8,18 @@ import (
 )
 
 func TestCreateUserTable(t *testing.T) {
-	easysql.Init("mysql", "root:root@tcp(localhost:3306)/default?charset=utf8")
-	createUserTable()
-	t.Error("test")
+
+	if err := createUserTable(); err != nil {
+		t.Error("test createUserTable", err)
+	}
 }
 
 func TestCreateUser(t *testing.T) {
 	config.Set("encrypt-password", "test")
 	easysql.Init("mysql", "root:root@tcp(localhost:3306)/default?charset=utf8")
+	if err := createUserTable(); err != nil {
+		t.Error("test createUserTable", err)
+	}
 	CreateUser("test", "test2", "test2", "test")
 	t.Error("test")
 }

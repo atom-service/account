@@ -30,7 +30,7 @@ func createUserTable() error {
 			" `DeletedTime` datetime DEFAULT NULL COMMENT '删除时间',",
 			" `CreatedTime` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',",
 			" `UpdatedTime` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',",
-			" PRIMARY KEY (`ID`,`Nickname`,`Username`),",
+			" PRIMARY KEY (`ID`,`Nickname`,`Username`,`DeletedTime`),",
 			" UNIQUE KEY `Username` (`Username`)",
 			" ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4;",
 		}, "",

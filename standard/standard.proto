@@ -19,6 +19,18 @@ enum State {
 }
 
 
+// Group 组
+message Group {
+  uint64 ID = 1 ;
+  string Name = 2 ;
+	string Class = 3 ;
+  string State = 4 ;
+  string Description = 5 ;
+  string CreatedTime = 6 ;
+  string UpdatedTime = 7 ;
+  string DeletedTime = 8 ;
+}
+
 // Label 标签
 message Label {
 	uint64 ID = 1 ;
@@ -26,8 +38,9 @@ message Label {
 	string State = 3 ;
   string Value = 4 ;
   uint64 Owner = 5 ;
-  string CreateTime = 6 ;
-  string UpdateTime = 7 ;
+  string CreatedTime = 6 ;
+  string UpdatedTime = 7 ;
+  string DeletedTime = 8 ;
 }
 
 // User 用户
@@ -39,8 +52,9 @@ message User {
 	string Nickname = 5 ;
 	string Username = 6 ;
   string Password = 7 ;
-  string CreateTime = 8 ;
-  string UpdateTime = 9 ;
+  string CreatedTime = 8 ;
+  string UpdatedTime = 9 ;
+  string DeletedTime = 10 ;
 }
 
 message CreateUserRequest {

@@ -8,15 +8,16 @@ import (
 
 // User 用户
 type User struct {
-	ID         uint64 `db:"ID"`
-	Class      string `db:"Class"`
-	Avatar     string `db:"Avatar"`
-	Inviter    uint64 `db:"Inviter"`
-	Nickname   string `db:"Nickname"`
-	Username   string `db:"Username"`
-	Password   string `db:"Password"`
-	CreateTime string `db:"CreateTime"`
-	UpdateTime string `db:"UpdateTime"`
+	ID          uint64 `db:"ID"`
+	Class       string `db:"Class"`
+	Avatar      string `db:"Avatar"`
+	Inviter     uint64 `db:"Inviter"`
+	Nickname    string `db:"Nickname"`
+	Username    string `db:"Username"`
+	Password    string `db:"Password"`
+	DeletedTime string `db:"DeletedTime"`
+	CreatedTime string `db:"CreatedTime"`
+	UpdatedTime string `db:"UpdatedTime"`
 }
 
 // SetPassword SetPassword
@@ -35,8 +36,9 @@ func (srv *User) LoadStringMap(data map[string]string) {
 	srv.Avatar = data["Avatar"]
 	srv.Username = data["Username"]
 	srv.Nickname = data["Nickname"]
-	srv.UpdateTime = data["UpdateTime"]
-	srv.CreateTime = data["CreateTime"]
+	srv.DeletedTime = data["DeletedTime"]
+	srv.CreatedTime = data["CreatedTime"]
+	srv.UpdatedTime = data["UpdatedTime"]
 	srv.ID, _ = strconv.ParseUint(data["ID"], 10, 64)
 	srv.Inviter, _ = strconv.ParseUint(data["Inviter"], 10, 64)
 }
@@ -50,7 +52,9 @@ func (srv *User) LoadProtoStruct(user *standard.User) {
 	srv.Nickname = user.Nickname
 	srv.Username = user.Username
 	srv.Password = user.Password
-	srv.CreateTime = user.CreateTime
+	srv.DeletedTime = user.DeletedTime
+	srv.CreatedTime = user.CreatedTime
+	srv.UpdatedTime = user.UpdatedTime
 }
 
 // OutProtoStruct OutProtoStruct
@@ -64,7 +68,9 @@ func (srv *User) OutProtoStruct() *standard.User {
 	user.Nickname = srv.Nickname
 	user.Username = srv.Username
 	user.Password = srv.Password
-	user.CreateTime = srv.CreateTime
+	user.DeletedTime = srv.DeletedTime
+	user.CreatedTime = srv.CreatedTime
+	user.UpdatedTime = srv.UpdatedTime
 
 	return user
 }

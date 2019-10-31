@@ -8,13 +8,13 @@ import (
 
 // Label 标签
 type Label struct {
-	ID         uint64 `db:"ID"`
-	Class      string `db:"Class"`
-	State      string `db:"State"`
-	Value      string `db:"Value"`
-	Owner      uint64 `db:"Owner"`
-	CreateTime string `db:"CreateTime"`
-	UpdateTime string `db:"UpdateTime"`
+	ID          uint64 `db:"ID"`
+	Class       string `db:"Class"`
+	State       string `db:"State"`
+	Value       string `db:"Value"`
+	DeletedTime string `db:"DeletedTime"`
+	CreatedTime string `db:"CreatedTime"`
+	UpdatedTime string `db:"UpdatedTime"`
 }
 
 // LoadProtoStruct LoadProtoStruct
@@ -23,7 +23,9 @@ func (srv *Label) LoadProtoStruct(label *standard.Label) {
 	srv.Class = label.Class
 	srv.State = label.State
 	srv.Value = label.Value
-	srv.CreateTime = label.CreateTime
+	srv.DeletedTime = label.DeletedTime
+	srv.CreatedTime = label.CreatedTime
+	srv.UpdatedTime = label.UpdatedTime
 }
 
 // LoadStringMap 从 string map 中加载数据
@@ -31,8 +33,9 @@ func (srv *Label) LoadStringMap(data map[string]string) {
 	srv.Class = data["Class"]
 	srv.State = data["State"]
 	srv.Value = data["Value"]
-	srv.UpdateTime = data["UpdateTime"]
-	srv.CreateTime = data["CreateTime"]
+	srv.DeletedTime = data["DeletedTime"]
+	srv.CreatedTime = data["CreatedTime"]
+	srv.UpdatedTime = data["UpdatedTime"]
 	srv.ID, _ = strconv.ParseUint(data["ID"], 10, 64)
 }
 
@@ -43,6 +46,8 @@ func (srv *Label) OutProtoStruct() *standard.Label {
 	lable.Class = srv.Class
 	lable.State = srv.State
 	lable.Value = srv.Value
-	lable.CreateTime = srv.CreateTime
+	lable.DeletedTime = srv.DeletedTime
+	lable.CreatedTime = srv.CreatedTime
+	lable.UpdatedTime = srv.UpdatedTime
 	return lable
 }

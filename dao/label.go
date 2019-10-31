@@ -26,7 +26,7 @@ func createLabelTable() error {
 			" `DeletedTime` datetime DEFAULT NULL COMMENT '删除时间',",
 			" `CreatedTime` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',",
 			" `UpdatedTime` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',",
-			" PRIMARY KEY (`ID`,`Class`)",
+			" PRIMARY KEY (`ID`,`Class`,`DeletedTime`)",
 			" )ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4;",
 		}, "",
 		),
@@ -35,11 +35,12 @@ func createLabelTable() error {
 }
 
 // CreateLabel 创建标签
-func createLabel(class, state, value string) error {
+func createLabel(name, class, state, value string) error {
 	conn := easysql.GetConn()
 	defer conn.Close()
 
 	data := map[string]string{
+		"Name":  name,
 		"Class": class,
 		"State": state,
 		"Value": value,
@@ -80,9 +81,9 @@ func QueryLabelByID(id uint64) (*model.Label, error) {
 		return nil, err
 	}
 
-	user := new(model.Label)
-	user.LoadStringMap(result)
-	return user, nil
+	lable := new(model.Label)
+	lable.LoadStringMap(result)
+	return lable, nil
 }
 
 // DeleteLabelByID 删除标签
