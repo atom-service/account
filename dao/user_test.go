@@ -20,7 +20,7 @@ func TestCreateUser(t *testing.T) {
 	if err := createUserTable(); err != nil {
 		t.Error("test createUserTable", err)
 	}
-	CreateUser("test", "test2", "test2", "test")
+	CreateUser("test", "test2", "test2", "test", 1)
 	t.Error("test")
 }
 

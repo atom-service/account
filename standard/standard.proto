@@ -59,7 +59,6 @@ message User {
 
 message CreateUserRequest {
   string Class = 1 ;
-  string Avatar = 2 ;
   uint64 Inviter = 3 ;
 	string Nickname = 4 ;
 	string Username = 5 ;

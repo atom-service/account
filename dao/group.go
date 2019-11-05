@@ -136,8 +136,8 @@ func createGroupMappingTable() error {
 	_, err := conn.ExecSQL(
 		strings.Join([]string{
 			" CREATE TABLE IF NOT EXISTS `" + groupMappingUserTableName + "` (",
-			" `Group` int(11) NOT NULL COMMENT '组ID',",
-			" `Owner` int(11) NOT NULL COMMENT '所属者ID',",
+			" `Group` int(11) NOT NULL COMMENT '组 ID',",
+			" `Owner` int(11) NOT NULL COMMENT '所属者 ID',",
 			" `DeletedTime` datetime DEFAULT NULL COMMENT '删除时间',",
 			" `CreatedTime` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',",
 			" `UpdatedTime` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',",

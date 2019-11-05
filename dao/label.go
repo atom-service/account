@@ -10,6 +10,7 @@ import (
 )
 
 const labelTableName = "labels"
+const labelMappingUserTableName = "label-mapping"
 
 func createLabelTable() error {
 	conn := easysql.GetConn()
@@ -114,5 +115,54 @@ func updataLabelFieldByID(id uint64, field map[string]string) error {
 
 	cond := map[string]string{"ID": strconv.FormatUint(id, 10)}
 	_, err := conn.Where(cond).Update(labelTableName, field)
+	return err
+}
+
+func createLabelMappingTable() error {
+	conn := easysql.GetConn()
+	defer conn.Close()
+
+	_, err := conn.ExecSQL(
+		strings.Join([]string{
+			" CREATE TABLE IF NOT EXISTS `" + labelMappingUserTableName + "` (",
+			" `label` int(11) NOT NULL COMMENT '标签 ID',",
+			" `Owner` int(11) NOT NULL COMMENT '所属者 ID',",
+			" `DeletedTime` datetime DEFAULT NULL COMMENT '删除时间',",
+			" `CreatedTime` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',",
+			" `UpdatedTime` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',",
+			" PRIMARY KEY (`Source`,`Owner`,`DeletedTime`)",
+			" )ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4;",
+		}, "",
+		),
+	)
+	return err
+}
+
+// RemoveLabelFromUserByID 从用户身上移除标签
+func RemoveLabelFromUserByID(label, user uint64) error {
+	conn := easysql.GetConn()
+	defer conn.Close()
+
+	cond := map[string]string{
+		"Owner": strconv.FormatUint(user, 10),
+		"label": strconv.FormatUint(label, 10),
+	}
+
+	nowTime := time.Now().Format("2006-01-02 15:04:05")
+	_, err := conn.Where(cond).Update(labelMappingUserTableName, map[string]string{"DeletedTime": nowTime})
+	return err
+}
+
+// AddLabelToUserByID 添加标签给用户
+func AddLabelToUserByID(label, user uint64) error {
+	conn := easysql.GetConn()
+	defer conn.Close()
+
+	data := map[string]string{
+		"Owner": strconv.FormatUint(user, 10),
+		"label": strconv.FormatUint(label, 10),
+	}
+
+	_, err := conn.Insert(labelMappingUserTableName, data)
 	return err
 }

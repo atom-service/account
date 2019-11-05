@@ -110,7 +110,7 @@ func CountUserByUsername(username string) (int, error) {
 }
 
 // CreateUser 创建用户
-func CreateUser(class, nickname, username, password string) error {
+func CreateUser(class, nickname, username, password string, inviter uint64) error {
 	conn := easysql.GetConn()
 	defer conn.Close()
 
@@ -118,6 +118,7 @@ func CreateUser(class, nickname, username, password string) error {
 		"Class":    class,
 		"Nickname": nickname,
 		"Username": username,
+		"Inviter":  strconv.FormatUint(inviter, 10),
 		"Password": crypto.MD5Encrypt(password, config.MustGet("encrypt-password")),
 	}
 
@@ -150,8 +151,8 @@ func UpdateUserNicknameByID(id uint64, nickname string) error {
 }
 
 // UpdateUserInviterByID 更新用户邀请码
-func UpdateUserInviterByID(id uint64, inviter string) error {
-	return updataUserFieldByID(id, map[string]string{"Inviter": inviter})
+func UpdateUserInviterByID(id, inviter uint64) error {
+	return updataUserFieldByID(id, map[string]string{"Inviter": strconv.FormatUint(inviter, 10)})
 }
 
 // UpdateUserPasswordByID 更新用户密码

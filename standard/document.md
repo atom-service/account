@@ -92,7 +92,6 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | Class | [string](#string) |  |  |
-| Avatar | [string](#string) |  |  |
 | Inviter | [uint64](#uint64) |  |  |
 | Nickname | [string](#string) |  |  |
 | Username | [string](#string) |  |  |
