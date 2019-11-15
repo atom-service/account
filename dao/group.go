@@ -23,7 +23,6 @@ func createGroupTable() error {
 			" `Name` varchar(128) NOT NULL COMMENT '名称',",
 			" `Class` varchar(128) NOT NULL COMMENT '类型',",
 			" `State` varchar(128) DEFAULT '' COMMENT '状态',",
-			" `Value` varchar(512) DEFAULT '' COMMENT '值',",
 			" `Description` varchar(512) DEFAULT '' COMMENT '简介',",
 			" `DeletedTime` datetime DEFAULT NULL COMMENT '删除时间',",
 			" `CreatedTime` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',",
@@ -107,11 +106,6 @@ func UpdateGroupClassByID(id uint64, class string) error {
 // UpdateGroupStateByID 更新标签值
 func UpdateGroupStateByID(id uint64, class string) error {
 	return updataGroupFieldByID(id, map[string]string{"State": class})
-}
-
-// UpdateGroupValueByID 更新标签值
-func UpdateGroupValueByID(id uint64, class string) error {
-	return updataGroupFieldByID(id, map[string]string{"Value": class})
 }
 
 // UpdateGroupDescriptionByID 更新标签值

@@ -182,7 +182,6 @@ type Label struct {
 	Class                string   `protobuf:"bytes,2,opt,name=Class,proto3" json:"Class,omitempty"`
 	State                string   `protobuf:"bytes,3,opt,name=State,proto3" json:"State,omitempty"`
 	Value                string   `protobuf:"bytes,4,opt,name=Value,proto3" json:"Value,omitempty"`
-	Owner                uint64   `protobuf:"varint,5,opt,name=Owner,proto3" json:"Owner,omitempty"`
 	CreatedTime          string   `protobuf:"bytes,6,opt,name=CreatedTime,proto3" json:"CreatedTime,omitempty"`
 	UpdatedTime          string   `protobuf:"bytes,7,opt,name=UpdatedTime,proto3" json:"UpdatedTime,omitempty"`
 	DeletedTime          string   `protobuf:"bytes,8,opt,name=DeletedTime,proto3" json:"DeletedTime,omitempty"`
@@ -242,13 +241,6 @@ func (m *Label) GetValue() string {
 		return m.Value
 	}
 	return ""
-}
-
-func (m *Label) GetOwner() uint64 {
-	if m != nil {
-		return m.Owner
-	}
-	return 0
 }
 
 func (m *Label) GetCreatedTime() string {
@@ -1074,194 +1066,7 @@ func (m *VerifyUserPasswordByUsernameResponse) GetData() bool {
 	return false
 }
 
-type CreateLabelByOwnerRequest struct {
-	Owner                uint64   `protobuf:"varint,1,opt,name=Owner,proto3" json:"Owner,omitempty"`
-	Label                *Label   `protobuf:"bytes,2,opt,name=Label,proto3" json:"Label,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *CreateLabelByOwnerRequest) Reset()         { *m = CreateLabelByOwnerRequest{} }
-func (m *CreateLabelByOwnerRequest) String() string { return proto.CompactTextString(m) }
-func (*CreateLabelByOwnerRequest) ProtoMessage()    {}
-func (*CreateLabelByOwnerRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{17}
-}
-
-func (m *CreateLabelByOwnerRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CreateLabelByOwnerRequest.Unmarshal(m, b)
-}
-func (m *CreateLabelByOwnerRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CreateLabelByOwnerRequest.Marshal(b, m, deterministic)
-}
-func (m *CreateLabelByOwnerRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CreateLabelByOwnerRequest.Merge(m, src)
-}
-func (m *CreateLabelByOwnerRequest) XXX_Size() int {
-	return xxx_messageInfo_CreateLabelByOwnerRequest.Size(m)
-}
-func (m *CreateLabelByOwnerRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_CreateLabelByOwnerRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_CreateLabelByOwnerRequest proto.InternalMessageInfo
-
-func (m *CreateLabelByOwnerRequest) GetOwner() uint64 {
-	if m != nil {
-		return m.Owner
-	}
-	return 0
-}
-
-func (m *CreateLabelByOwnerRequest) GetLabel() *Label {
-	if m != nil {
-		return m.Label
-	}
-	return nil
-}
-
-type CreateLabelByOwnerResponse struct {
-	State                State    `protobuf:"varint,1,opt,name=State,proto3,enum=standard.State" json:"State,omitempty"`
-	Message              string   `protobuf:"bytes,2,opt,name=Message,proto3" json:"Message,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *CreateLabelByOwnerResponse) Reset()         { *m = CreateLabelByOwnerResponse{} }
-func (m *CreateLabelByOwnerResponse) String() string { return proto.CompactTextString(m) }
-func (*CreateLabelByOwnerResponse) ProtoMessage()    {}
-func (*CreateLabelByOwnerResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{18}
-}
-
-func (m *CreateLabelByOwnerResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CreateLabelByOwnerResponse.Unmarshal(m, b)
-}
-func (m *CreateLabelByOwnerResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CreateLabelByOwnerResponse.Marshal(b, m, deterministic)
-}
-func (m *CreateLabelByOwnerResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CreateLabelByOwnerResponse.Merge(m, src)
-}
-func (m *CreateLabelByOwnerResponse) XXX_Size() int {
-	return xxx_messageInfo_CreateLabelByOwnerResponse.Size(m)
-}
-func (m *CreateLabelByOwnerResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_CreateLabelByOwnerResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_CreateLabelByOwnerResponse proto.InternalMessageInfo
-
-func (m *CreateLabelByOwnerResponse) GetState() State {
-	if m != nil {
-		return m.State
-	}
-	return State_UNKNOWN
-}
-
-func (m *CreateLabelByOwnerResponse) GetMessage() string {
-	if m != nil {
-		return m.Message
-	}
-	return ""
-}
-
-type RemoveLabelByOwnerRequest struct {
-	ID                   uint64   `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
-	Owner                uint64   `protobuf:"varint,2,opt,name=Owner,proto3" json:"Owner,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *RemoveLabelByOwnerRequest) Reset()         { *m = RemoveLabelByOwnerRequest{} }
-func (m *RemoveLabelByOwnerRequest) String() string { return proto.CompactTextString(m) }
-func (*RemoveLabelByOwnerRequest) ProtoMessage()    {}
-func (*RemoveLabelByOwnerRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{19}
-}
-
-func (m *RemoveLabelByOwnerRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_RemoveLabelByOwnerRequest.Unmarshal(m, b)
-}
-func (m *RemoveLabelByOwnerRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_RemoveLabelByOwnerRequest.Marshal(b, m, deterministic)
-}
-func (m *RemoveLabelByOwnerRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_RemoveLabelByOwnerRequest.Merge(m, src)
-}
-func (m *RemoveLabelByOwnerRequest) XXX_Size() int {
-	return xxx_messageInfo_RemoveLabelByOwnerRequest.Size(m)
-}
-func (m *RemoveLabelByOwnerRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_RemoveLabelByOwnerRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_RemoveLabelByOwnerRequest proto.InternalMessageInfo
-
-func (m *RemoveLabelByOwnerRequest) GetID() uint64 {
-	if m != nil {
-		return m.ID
-	}
-	return 0
-}
-
-func (m *RemoveLabelByOwnerRequest) GetOwner() uint64 {
-	if m != nil {
-		return m.Owner
-	}
-	return 0
-}
-
-type RemoveLabelByOwnerResponse struct {
-	State                State    `protobuf:"varint,1,opt,name=State,proto3,enum=standard.State" json:"State,omitempty"`
-	Message              string   `protobuf:"bytes,2,opt,name=Message,proto3" json:"Message,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *RemoveLabelByOwnerResponse) Reset()         { *m = RemoveLabelByOwnerResponse{} }
-func (m *RemoveLabelByOwnerResponse) String() string { return proto.CompactTextString(m) }
-func (*RemoveLabelByOwnerResponse) ProtoMessage()    {}
-func (*RemoveLabelByOwnerResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{20}
-}
-
-func (m *RemoveLabelByOwnerResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_RemoveLabelByOwnerResponse.Unmarshal(m, b)
-}
-func (m *RemoveLabelByOwnerResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_RemoveLabelByOwnerResponse.Marshal(b, m, deterministic)
-}
-func (m *RemoveLabelByOwnerResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_RemoveLabelByOwnerResponse.Merge(m, src)
-}
-func (m *RemoveLabelByOwnerResponse) XXX_Size() int {
-	return xxx_messageInfo_RemoveLabelByOwnerResponse.Size(m)
-}
-func (m *RemoveLabelByOwnerResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_RemoveLabelByOwnerResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_RemoveLabelByOwnerResponse proto.InternalMessageInfo
-
-func (m *RemoveLabelByOwnerResponse) GetState() State {
-	if m != nil {
-		return m.State
-	}
-	return State_UNKNOWN
-}
-
-func (m *RemoveLabelByOwnerResponse) GetMessage() string {
-	if m != nil {
-		return m.Message
-	}
-	return ""
-}
-
+// 标签操作
 type QueryLabelByIDRequest struct {
 	ID                   uint64   `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -1273,7 +1078,7 @@ func (m *QueryLabelByIDRequest) Reset()         { *m = QueryLabelByIDRequest{} }
 func (m *QueryLabelByIDRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryLabelByIDRequest) ProtoMessage()    {}
 func (*QueryLabelByIDRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{21}
+	return fileDescriptor_0b3e239150a6a10f, []int{17}
 }
 
 func (m *QueryLabelByIDRequest) XXX_Unmarshal(b []byte) error {
@@ -1314,7 +1119,7 @@ func (m *QueryLabelByIDResponse) Reset()         { *m = QueryLabelByIDResponse{}
 func (m *QueryLabelByIDResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryLabelByIDResponse) ProtoMessage()    {}
 func (*QueryLabelByIDResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{22}
+	return fileDescriptor_0b3e239150a6a10f, []int{18}
 }
 
 func (m *QueryLabelByIDResponse) XXX_Unmarshal(b []byte) error {
@@ -1356,98 +1161,310 @@ func (m *QueryLabelByIDResponse) GetData() *Label {
 	return nil
 }
 
-type UpdateLabelByIDRequest struct {
+type UpdateLabelClassByIDRequest struct {
 	ID                   uint64   `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
-	Data                 *Label   `protobuf:"bytes,2,opt,name=Data,proto3" json:"Data,omitempty"`
+	Class                string   `protobuf:"bytes,2,opt,name=Class,proto3" json:"Class,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *UpdateLabelByIDRequest) Reset()         { *m = UpdateLabelByIDRequest{} }
-func (m *UpdateLabelByIDRequest) String() string { return proto.CompactTextString(m) }
-func (*UpdateLabelByIDRequest) ProtoMessage()    {}
-func (*UpdateLabelByIDRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{23}
+func (m *UpdateLabelClassByIDRequest) Reset()         { *m = UpdateLabelClassByIDRequest{} }
+func (m *UpdateLabelClassByIDRequest) String() string { return proto.CompactTextString(m) }
+func (*UpdateLabelClassByIDRequest) ProtoMessage()    {}
+func (*UpdateLabelClassByIDRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_0b3e239150a6a10f, []int{19}
 }
 
-func (m *UpdateLabelByIDRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_UpdateLabelByIDRequest.Unmarshal(m, b)
+func (m *UpdateLabelClassByIDRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UpdateLabelClassByIDRequest.Unmarshal(m, b)
 }
-func (m *UpdateLabelByIDRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_UpdateLabelByIDRequest.Marshal(b, m, deterministic)
+func (m *UpdateLabelClassByIDRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UpdateLabelClassByIDRequest.Marshal(b, m, deterministic)
 }
-func (m *UpdateLabelByIDRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_UpdateLabelByIDRequest.Merge(m, src)
+func (m *UpdateLabelClassByIDRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpdateLabelClassByIDRequest.Merge(m, src)
 }
-func (m *UpdateLabelByIDRequest) XXX_Size() int {
-	return xxx_messageInfo_UpdateLabelByIDRequest.Size(m)
+func (m *UpdateLabelClassByIDRequest) XXX_Size() int {
+	return xxx_messageInfo_UpdateLabelClassByIDRequest.Size(m)
 }
-func (m *UpdateLabelByIDRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_UpdateLabelByIDRequest.DiscardUnknown(m)
+func (m *UpdateLabelClassByIDRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpdateLabelClassByIDRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_UpdateLabelByIDRequest proto.InternalMessageInfo
+var xxx_messageInfo_UpdateLabelClassByIDRequest proto.InternalMessageInfo
 
-func (m *UpdateLabelByIDRequest) GetID() uint64 {
+func (m *UpdateLabelClassByIDRequest) GetID() uint64 {
 	if m != nil {
 		return m.ID
 	}
 	return 0
 }
 
-func (m *UpdateLabelByIDRequest) GetData() *Label {
+func (m *UpdateLabelClassByIDRequest) GetClass() string {
 	if m != nil {
-		return m.Data
+		return m.Class
 	}
-	return nil
+	return ""
 }
 
-type UpdateLabelByIDResponse struct {
+type UpdateLabelClassByIDResponse struct {
 	State                State    `protobuf:"varint,1,opt,name=State,proto3,enum=standard.State" json:"State,omitempty"`
 	Message              string   `protobuf:"bytes,2,opt,name=Message,proto3" json:"Message,omitempty"`
+	Data                 bool     `protobuf:"varint,3,opt,name=Data,proto3" json:"Data,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *UpdateLabelByIDResponse) Reset()         { *m = UpdateLabelByIDResponse{} }
-func (m *UpdateLabelByIDResponse) String() string { return proto.CompactTextString(m) }
-func (*UpdateLabelByIDResponse) ProtoMessage()    {}
-func (*UpdateLabelByIDResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{24}
+func (m *UpdateLabelClassByIDResponse) Reset()         { *m = UpdateLabelClassByIDResponse{} }
+func (m *UpdateLabelClassByIDResponse) String() string { return proto.CompactTextString(m) }
+func (*UpdateLabelClassByIDResponse) ProtoMessage()    {}
+func (*UpdateLabelClassByIDResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_0b3e239150a6a10f, []int{20}
 }
 
-func (m *UpdateLabelByIDResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_UpdateLabelByIDResponse.Unmarshal(m, b)
+func (m *UpdateLabelClassByIDResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UpdateLabelClassByIDResponse.Unmarshal(m, b)
 }
-func (m *UpdateLabelByIDResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_UpdateLabelByIDResponse.Marshal(b, m, deterministic)
+func (m *UpdateLabelClassByIDResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UpdateLabelClassByIDResponse.Marshal(b, m, deterministic)
 }
-func (m *UpdateLabelByIDResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_UpdateLabelByIDResponse.Merge(m, src)
+func (m *UpdateLabelClassByIDResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpdateLabelClassByIDResponse.Merge(m, src)
 }
-func (m *UpdateLabelByIDResponse) XXX_Size() int {
-	return xxx_messageInfo_UpdateLabelByIDResponse.Size(m)
+func (m *UpdateLabelClassByIDResponse) XXX_Size() int {
+	return xxx_messageInfo_UpdateLabelClassByIDResponse.Size(m)
 }
-func (m *UpdateLabelByIDResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_UpdateLabelByIDResponse.DiscardUnknown(m)
+func (m *UpdateLabelClassByIDResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpdateLabelClassByIDResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_UpdateLabelByIDResponse proto.InternalMessageInfo
+var xxx_messageInfo_UpdateLabelClassByIDResponse proto.InternalMessageInfo
 
-func (m *UpdateLabelByIDResponse) GetState() State {
+func (m *UpdateLabelClassByIDResponse) GetState() State {
 	if m != nil {
 		return m.State
 	}
 	return State_UNKNOWN
 }
 
-func (m *UpdateLabelByIDResponse) GetMessage() string {
+func (m *UpdateLabelClassByIDResponse) GetMessage() string {
 	if m != nil {
 		return m.Message
 	}
 	return ""
+}
+
+func (m *UpdateLabelClassByIDResponse) GetData() bool {
+	if m != nil {
+		return m.Data
+	}
+	return false
+}
+
+type UpdateLabelStateByIDRequest struct {
+	ID                   uint64   `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
+	State                string   `protobuf:"bytes,2,opt,name=State,proto3" json:"State,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *UpdateLabelStateByIDRequest) Reset()         { *m = UpdateLabelStateByIDRequest{} }
+func (m *UpdateLabelStateByIDRequest) String() string { return proto.CompactTextString(m) }
+func (*UpdateLabelStateByIDRequest) ProtoMessage()    {}
+func (*UpdateLabelStateByIDRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_0b3e239150a6a10f, []int{21}
+}
+
+func (m *UpdateLabelStateByIDRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UpdateLabelStateByIDRequest.Unmarshal(m, b)
+}
+func (m *UpdateLabelStateByIDRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UpdateLabelStateByIDRequest.Marshal(b, m, deterministic)
+}
+func (m *UpdateLabelStateByIDRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpdateLabelStateByIDRequest.Merge(m, src)
+}
+func (m *UpdateLabelStateByIDRequest) XXX_Size() int {
+	return xxx_messageInfo_UpdateLabelStateByIDRequest.Size(m)
+}
+func (m *UpdateLabelStateByIDRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpdateLabelStateByIDRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UpdateLabelStateByIDRequest proto.InternalMessageInfo
+
+func (m *UpdateLabelStateByIDRequest) GetID() uint64 {
+	if m != nil {
+		return m.ID
+	}
+	return 0
+}
+
+func (m *UpdateLabelStateByIDRequest) GetState() string {
+	if m != nil {
+		return m.State
+	}
+	return ""
+}
+
+type UpdateLabelStateByIDResponse struct {
+	State                State    `protobuf:"varint,1,opt,name=State,proto3,enum=standard.State" json:"State,omitempty"`
+	Message              string   `protobuf:"bytes,2,opt,name=Message,proto3" json:"Message,omitempty"`
+	Data                 bool     `protobuf:"varint,3,opt,name=Data,proto3" json:"Data,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *UpdateLabelStateByIDResponse) Reset()         { *m = UpdateLabelStateByIDResponse{} }
+func (m *UpdateLabelStateByIDResponse) String() string { return proto.CompactTextString(m) }
+func (*UpdateLabelStateByIDResponse) ProtoMessage()    {}
+func (*UpdateLabelStateByIDResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_0b3e239150a6a10f, []int{22}
+}
+
+func (m *UpdateLabelStateByIDResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UpdateLabelStateByIDResponse.Unmarshal(m, b)
+}
+func (m *UpdateLabelStateByIDResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UpdateLabelStateByIDResponse.Marshal(b, m, deterministic)
+}
+func (m *UpdateLabelStateByIDResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpdateLabelStateByIDResponse.Merge(m, src)
+}
+func (m *UpdateLabelStateByIDResponse) XXX_Size() int {
+	return xxx_messageInfo_UpdateLabelStateByIDResponse.Size(m)
+}
+func (m *UpdateLabelStateByIDResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpdateLabelStateByIDResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UpdateLabelStateByIDResponse proto.InternalMessageInfo
+
+func (m *UpdateLabelStateByIDResponse) GetState() State {
+	if m != nil {
+		return m.State
+	}
+	return State_UNKNOWN
+}
+
+func (m *UpdateLabelStateByIDResponse) GetMessage() string {
+	if m != nil {
+		return m.Message
+	}
+	return ""
+}
+
+func (m *UpdateLabelStateByIDResponse) GetData() bool {
+	if m != nil {
+		return m.Data
+	}
+	return false
+}
+
+type UpdateLabelValueByIDRequest struct {
+	ID                   uint64   `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
+	Value                string   `protobuf:"bytes,2,opt,name=Value,proto3" json:"Value,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *UpdateLabelValueByIDRequest) Reset()         { *m = UpdateLabelValueByIDRequest{} }
+func (m *UpdateLabelValueByIDRequest) String() string { return proto.CompactTextString(m) }
+func (*UpdateLabelValueByIDRequest) ProtoMessage()    {}
+func (*UpdateLabelValueByIDRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_0b3e239150a6a10f, []int{23}
+}
+
+func (m *UpdateLabelValueByIDRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UpdateLabelValueByIDRequest.Unmarshal(m, b)
+}
+func (m *UpdateLabelValueByIDRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UpdateLabelValueByIDRequest.Marshal(b, m, deterministic)
+}
+func (m *UpdateLabelValueByIDRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpdateLabelValueByIDRequest.Merge(m, src)
+}
+func (m *UpdateLabelValueByIDRequest) XXX_Size() int {
+	return xxx_messageInfo_UpdateLabelValueByIDRequest.Size(m)
+}
+func (m *UpdateLabelValueByIDRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpdateLabelValueByIDRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UpdateLabelValueByIDRequest proto.InternalMessageInfo
+
+func (m *UpdateLabelValueByIDRequest) GetID() uint64 {
+	if m != nil {
+		return m.ID
+	}
+	return 0
+}
+
+func (m *UpdateLabelValueByIDRequest) GetValue() string {
+	if m != nil {
+		return m.Value
+	}
+	return ""
+}
+
+type UpdateLabelValueByIDResponse struct {
+	State                State    `protobuf:"varint,1,opt,name=State,proto3,enum=standard.State" json:"State,omitempty"`
+	Message              string   `protobuf:"bytes,2,opt,name=Message,proto3" json:"Message,omitempty"`
+	Data                 bool     `protobuf:"varint,3,opt,name=Data,proto3" json:"Data,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *UpdateLabelValueByIDResponse) Reset()         { *m = UpdateLabelValueByIDResponse{} }
+func (m *UpdateLabelValueByIDResponse) String() string { return proto.CompactTextString(m) }
+func (*UpdateLabelValueByIDResponse) ProtoMessage()    {}
+func (*UpdateLabelValueByIDResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_0b3e239150a6a10f, []int{24}
+}
+
+func (m *UpdateLabelValueByIDResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UpdateLabelValueByIDResponse.Unmarshal(m, b)
+}
+func (m *UpdateLabelValueByIDResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UpdateLabelValueByIDResponse.Marshal(b, m, deterministic)
+}
+func (m *UpdateLabelValueByIDResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpdateLabelValueByIDResponse.Merge(m, src)
+}
+func (m *UpdateLabelValueByIDResponse) XXX_Size() int {
+	return xxx_messageInfo_UpdateLabelValueByIDResponse.Size(m)
+}
+func (m *UpdateLabelValueByIDResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpdateLabelValueByIDResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UpdateLabelValueByIDResponse proto.InternalMessageInfo
+
+func (m *UpdateLabelValueByIDResponse) GetState() State {
+	if m != nil {
+		return m.State
+	}
+	return State_UNKNOWN
+}
+
+func (m *UpdateLabelValueByIDResponse) GetMessage() string {
+	if m != nil {
+		return m.Message
+	}
+	return ""
+}
+
+func (m *UpdateLabelValueByIDResponse) GetData() bool {
+	if m != nil {
+		return m.Data
+	}
+	return false
 }
 
 type DeleteLabelByIDRequest struct {
@@ -1492,6 +1509,7 @@ func (m *DeleteLabelByIDRequest) GetID() uint64 {
 type DeleteLabelByIDResponse struct {
 	State                State    `protobuf:"varint,1,opt,name=State,proto3,enum=standard.State" json:"State,omitempty"`
 	Message              string   `protobuf:"bytes,2,opt,name=Message,proto3" json:"Message,omitempty"`
+	Data                 bool     `protobuf:"varint,3,opt,name=Data,proto3" json:"Data,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1536,122 +1554,1016 @@ func (m *DeleteLabelByIDResponse) GetMessage() string {
 	return ""
 }
 
-type QueryLabelByOwnerRequest struct {
-	Owner                uint64   `protobuf:"varint,1,opt,name=Owner,proto3" json:"Owner,omitempty"`
-	Limit                uint64   `protobuf:"varint,2,opt,name=Limit,proto3" json:"Limit,omitempty"`
-	Offset               uint64   `protobuf:"varint,3,opt,name=Offset,proto3" json:"Offset,omitempty"`
+func (m *DeleteLabelByIDResponse) GetData() bool {
+	if m != nil {
+		return m.Data
+	}
+	return false
+}
+
+type AddLabelToUserByIDRequest struct {
+	ID                   uint64   `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
+	UserID               uint64   `protobuf:"varint,2,opt,name=UserID,proto3" json:"UserID,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *QueryLabelByOwnerRequest) Reset()         { *m = QueryLabelByOwnerRequest{} }
-func (m *QueryLabelByOwnerRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryLabelByOwnerRequest) ProtoMessage()    {}
-func (*QueryLabelByOwnerRequest) Descriptor() ([]byte, []int) {
+func (m *AddLabelToUserByIDRequest) Reset()         { *m = AddLabelToUserByIDRequest{} }
+func (m *AddLabelToUserByIDRequest) String() string { return proto.CompactTextString(m) }
+func (*AddLabelToUserByIDRequest) ProtoMessage()    {}
+func (*AddLabelToUserByIDRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_0b3e239150a6a10f, []int{27}
 }
 
-func (m *QueryLabelByOwnerRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_QueryLabelByOwnerRequest.Unmarshal(m, b)
+func (m *AddLabelToUserByIDRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_AddLabelToUserByIDRequest.Unmarshal(m, b)
 }
-func (m *QueryLabelByOwnerRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_QueryLabelByOwnerRequest.Marshal(b, m, deterministic)
+func (m *AddLabelToUserByIDRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_AddLabelToUserByIDRequest.Marshal(b, m, deterministic)
 }
-func (m *QueryLabelByOwnerRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryLabelByOwnerRequest.Merge(m, src)
+func (m *AddLabelToUserByIDRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AddLabelToUserByIDRequest.Merge(m, src)
 }
-func (m *QueryLabelByOwnerRequest) XXX_Size() int {
-	return xxx_messageInfo_QueryLabelByOwnerRequest.Size(m)
+func (m *AddLabelToUserByIDRequest) XXX_Size() int {
+	return xxx_messageInfo_AddLabelToUserByIDRequest.Size(m)
 }
-func (m *QueryLabelByOwnerRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryLabelByOwnerRequest.DiscardUnknown(m)
+func (m *AddLabelToUserByIDRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_AddLabelToUserByIDRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryLabelByOwnerRequest proto.InternalMessageInfo
+var xxx_messageInfo_AddLabelToUserByIDRequest proto.InternalMessageInfo
 
-func (m *QueryLabelByOwnerRequest) GetOwner() uint64 {
+func (m *AddLabelToUserByIDRequest) GetID() uint64 {
 	if m != nil {
-		return m.Owner
+		return m.ID
 	}
 	return 0
 }
 
-func (m *QueryLabelByOwnerRequest) GetLimit() uint64 {
+func (m *AddLabelToUserByIDRequest) GetUserID() uint64 {
 	if m != nil {
-		return m.Limit
+		return m.UserID
 	}
 	return 0
 }
 
-func (m *QueryLabelByOwnerRequest) GetOffset() uint64 {
-	if m != nil {
-		return m.Offset
-	}
-	return 0
-}
-
-type QueryLabelByOwnerResponse struct {
+type AddLabelToUserByIDResponse struct {
 	State                State    `protobuf:"varint,1,opt,name=State,proto3,enum=standard.State" json:"State,omitempty"`
 	Message              string   `protobuf:"bytes,2,opt,name=Message,proto3" json:"Message,omitempty"`
-	Total                uint64   `protobuf:"varint,3,opt,name=Total,proto3" json:"Total,omitempty"`
-	Data                 []*Label `protobuf:"bytes,4,rep,name=Data,proto3" json:"Data,omitempty"`
+	Data                 bool     `protobuf:"varint,3,opt,name=Data,proto3" json:"Data,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *QueryLabelByOwnerResponse) Reset()         { *m = QueryLabelByOwnerResponse{} }
-func (m *QueryLabelByOwnerResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryLabelByOwnerResponse) ProtoMessage()    {}
-func (*QueryLabelByOwnerResponse) Descriptor() ([]byte, []int) {
+func (m *AddLabelToUserByIDResponse) Reset()         { *m = AddLabelToUserByIDResponse{} }
+func (m *AddLabelToUserByIDResponse) String() string { return proto.CompactTextString(m) }
+func (*AddLabelToUserByIDResponse) ProtoMessage()    {}
+func (*AddLabelToUserByIDResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_0b3e239150a6a10f, []int{28}
 }
 
-func (m *QueryLabelByOwnerResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_QueryLabelByOwnerResponse.Unmarshal(m, b)
+func (m *AddLabelToUserByIDResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_AddLabelToUserByIDResponse.Unmarshal(m, b)
 }
-func (m *QueryLabelByOwnerResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_QueryLabelByOwnerResponse.Marshal(b, m, deterministic)
+func (m *AddLabelToUserByIDResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_AddLabelToUserByIDResponse.Marshal(b, m, deterministic)
 }
-func (m *QueryLabelByOwnerResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryLabelByOwnerResponse.Merge(m, src)
+func (m *AddLabelToUserByIDResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AddLabelToUserByIDResponse.Merge(m, src)
 }
-func (m *QueryLabelByOwnerResponse) XXX_Size() int {
-	return xxx_messageInfo_QueryLabelByOwnerResponse.Size(m)
+func (m *AddLabelToUserByIDResponse) XXX_Size() int {
+	return xxx_messageInfo_AddLabelToUserByIDResponse.Size(m)
 }
-func (m *QueryLabelByOwnerResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryLabelByOwnerResponse.DiscardUnknown(m)
+func (m *AddLabelToUserByIDResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_AddLabelToUserByIDResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryLabelByOwnerResponse proto.InternalMessageInfo
+var xxx_messageInfo_AddLabelToUserByIDResponse proto.InternalMessageInfo
 
-func (m *QueryLabelByOwnerResponse) GetState() State {
+func (m *AddLabelToUserByIDResponse) GetState() State {
 	if m != nil {
 		return m.State
 	}
 	return State_UNKNOWN
 }
 
-func (m *QueryLabelByOwnerResponse) GetMessage() string {
+func (m *AddLabelToUserByIDResponse) GetMessage() string {
 	if m != nil {
 		return m.Message
 	}
 	return ""
 }
 
-func (m *QueryLabelByOwnerResponse) GetTotal() uint64 {
+func (m *AddLabelToUserByIDResponse) GetData() bool {
 	if m != nil {
-		return m.Total
+		return m.Data
+	}
+	return false
+}
+
+type RemoveLabelFromUserByIDRequest struct {
+	ID                   uint64   `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
+	LabelID              uint64   `protobuf:"varint,2,opt,name=LabelID,proto3" json:"LabelID,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *RemoveLabelFromUserByIDRequest) Reset()         { *m = RemoveLabelFromUserByIDRequest{} }
+func (m *RemoveLabelFromUserByIDRequest) String() string { return proto.CompactTextString(m) }
+func (*RemoveLabelFromUserByIDRequest) ProtoMessage()    {}
+func (*RemoveLabelFromUserByIDRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_0b3e239150a6a10f, []int{29}
+}
+
+func (m *RemoveLabelFromUserByIDRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_RemoveLabelFromUserByIDRequest.Unmarshal(m, b)
+}
+func (m *RemoveLabelFromUserByIDRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_RemoveLabelFromUserByIDRequest.Marshal(b, m, deterministic)
+}
+func (m *RemoveLabelFromUserByIDRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RemoveLabelFromUserByIDRequest.Merge(m, src)
+}
+func (m *RemoveLabelFromUserByIDRequest) XXX_Size() int {
+	return xxx_messageInfo_RemoveLabelFromUserByIDRequest.Size(m)
+}
+func (m *RemoveLabelFromUserByIDRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_RemoveLabelFromUserByIDRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_RemoveLabelFromUserByIDRequest proto.InternalMessageInfo
+
+func (m *RemoveLabelFromUserByIDRequest) GetID() uint64 {
+	if m != nil {
+		return m.ID
 	}
 	return 0
 }
 
-func (m *QueryLabelByOwnerResponse) GetData() []*Label {
+func (m *RemoveLabelFromUserByIDRequest) GetLabelID() uint64 {
+	if m != nil {
+		return m.LabelID
+	}
+	return 0
+}
+
+type RemoveLabelFromUserByIDResponse struct {
+	State                State    `protobuf:"varint,1,opt,name=State,proto3,enum=standard.State" json:"State,omitempty"`
+	Message              string   `protobuf:"bytes,2,opt,name=Message,proto3" json:"Message,omitempty"`
+	Data                 bool     `protobuf:"varint,3,opt,name=Data,proto3" json:"Data,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *RemoveLabelFromUserByIDResponse) Reset()         { *m = RemoveLabelFromUserByIDResponse{} }
+func (m *RemoveLabelFromUserByIDResponse) String() string { return proto.CompactTextString(m) }
+func (*RemoveLabelFromUserByIDResponse) ProtoMessage()    {}
+func (*RemoveLabelFromUserByIDResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_0b3e239150a6a10f, []int{30}
+}
+
+func (m *RemoveLabelFromUserByIDResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_RemoveLabelFromUserByIDResponse.Unmarshal(m, b)
+}
+func (m *RemoveLabelFromUserByIDResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_RemoveLabelFromUserByIDResponse.Marshal(b, m, deterministic)
+}
+func (m *RemoveLabelFromUserByIDResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RemoveLabelFromUserByIDResponse.Merge(m, src)
+}
+func (m *RemoveLabelFromUserByIDResponse) XXX_Size() int {
+	return xxx_messageInfo_RemoveLabelFromUserByIDResponse.Size(m)
+}
+func (m *RemoveLabelFromUserByIDResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_RemoveLabelFromUserByIDResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_RemoveLabelFromUserByIDResponse proto.InternalMessageInfo
+
+func (m *RemoveLabelFromUserByIDResponse) GetState() State {
+	if m != nil {
+		return m.State
+	}
+	return State_UNKNOWN
+}
+
+func (m *RemoveLabelFromUserByIDResponse) GetMessage() string {
+	if m != nil {
+		return m.Message
+	}
+	return ""
+}
+
+func (m *RemoveLabelFromUserByIDResponse) GetData() bool {
 	if m != nil {
 		return m.Data
 	}
-	return nil
+	return false
+}
+
+// 组操作
+type QueryGroupByIDRequest struct {
+	ID                   uint64   `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *QueryGroupByIDRequest) Reset()         { *m = QueryGroupByIDRequest{} }
+func (m *QueryGroupByIDRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryGroupByIDRequest) ProtoMessage()    {}
+func (*QueryGroupByIDRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_0b3e239150a6a10f, []int{31}
+}
+
+func (m *QueryGroupByIDRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_QueryGroupByIDRequest.Unmarshal(m, b)
+}
+func (m *QueryGroupByIDRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_QueryGroupByIDRequest.Marshal(b, m, deterministic)
+}
+func (m *QueryGroupByIDRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryGroupByIDRequest.Merge(m, src)
+}
+func (m *QueryGroupByIDRequest) XXX_Size() int {
+	return xxx_messageInfo_QueryGroupByIDRequest.Size(m)
+}
+func (m *QueryGroupByIDRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryGroupByIDRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryGroupByIDRequest proto.InternalMessageInfo
+
+func (m *QueryGroupByIDRequest) GetID() uint64 {
+	if m != nil {
+		return m.ID
+	}
+	return 0
+}
+
+type QueryGroupByIDResponse struct {
+	State                State    `protobuf:"varint,1,opt,name=State,proto3,enum=standard.State" json:"State,omitempty"`
+	Message              string   `protobuf:"bytes,2,opt,name=Message,proto3" json:"Message,omitempty"`
+	Data                 bool     `protobuf:"varint,3,opt,name=Data,proto3" json:"Data,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *QueryGroupByIDResponse) Reset()         { *m = QueryGroupByIDResponse{} }
+func (m *QueryGroupByIDResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryGroupByIDResponse) ProtoMessage()    {}
+func (*QueryGroupByIDResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_0b3e239150a6a10f, []int{32}
+}
+
+func (m *QueryGroupByIDResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_QueryGroupByIDResponse.Unmarshal(m, b)
+}
+func (m *QueryGroupByIDResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_QueryGroupByIDResponse.Marshal(b, m, deterministic)
+}
+func (m *QueryGroupByIDResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryGroupByIDResponse.Merge(m, src)
+}
+func (m *QueryGroupByIDResponse) XXX_Size() int {
+	return xxx_messageInfo_QueryGroupByIDResponse.Size(m)
+}
+func (m *QueryGroupByIDResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryGroupByIDResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryGroupByIDResponse proto.InternalMessageInfo
+
+func (m *QueryGroupByIDResponse) GetState() State {
+	if m != nil {
+		return m.State
+	}
+	return State_UNKNOWN
+}
+
+func (m *QueryGroupByIDResponse) GetMessage() string {
+	if m != nil {
+		return m.Message
+	}
+	return ""
+}
+
+func (m *QueryGroupByIDResponse) GetData() bool {
+	if m != nil {
+		return m.Data
+	}
+	return false
+}
+
+type UpdateGroupNameByIDRequest struct {
+	ID                   uint64   `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
+	Name                 string   `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *UpdateGroupNameByIDRequest) Reset()         { *m = UpdateGroupNameByIDRequest{} }
+func (m *UpdateGroupNameByIDRequest) String() string { return proto.CompactTextString(m) }
+func (*UpdateGroupNameByIDRequest) ProtoMessage()    {}
+func (*UpdateGroupNameByIDRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_0b3e239150a6a10f, []int{33}
+}
+
+func (m *UpdateGroupNameByIDRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UpdateGroupNameByIDRequest.Unmarshal(m, b)
+}
+func (m *UpdateGroupNameByIDRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UpdateGroupNameByIDRequest.Marshal(b, m, deterministic)
+}
+func (m *UpdateGroupNameByIDRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpdateGroupNameByIDRequest.Merge(m, src)
+}
+func (m *UpdateGroupNameByIDRequest) XXX_Size() int {
+	return xxx_messageInfo_UpdateGroupNameByIDRequest.Size(m)
+}
+func (m *UpdateGroupNameByIDRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpdateGroupNameByIDRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UpdateGroupNameByIDRequest proto.InternalMessageInfo
+
+func (m *UpdateGroupNameByIDRequest) GetID() uint64 {
+	if m != nil {
+		return m.ID
+	}
+	return 0
+}
+
+func (m *UpdateGroupNameByIDRequest) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+type UpdateGroupNameByIDResponse struct {
+	State                State    `protobuf:"varint,1,opt,name=State,proto3,enum=standard.State" json:"State,omitempty"`
+	Message              string   `protobuf:"bytes,2,opt,name=Message,proto3" json:"Message,omitempty"`
+	Data                 bool     `protobuf:"varint,3,opt,name=Data,proto3" json:"Data,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *UpdateGroupNameByIDResponse) Reset()         { *m = UpdateGroupNameByIDResponse{} }
+func (m *UpdateGroupNameByIDResponse) String() string { return proto.CompactTextString(m) }
+func (*UpdateGroupNameByIDResponse) ProtoMessage()    {}
+func (*UpdateGroupNameByIDResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_0b3e239150a6a10f, []int{34}
+}
+
+func (m *UpdateGroupNameByIDResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UpdateGroupNameByIDResponse.Unmarshal(m, b)
+}
+func (m *UpdateGroupNameByIDResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UpdateGroupNameByIDResponse.Marshal(b, m, deterministic)
+}
+func (m *UpdateGroupNameByIDResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpdateGroupNameByIDResponse.Merge(m, src)
+}
+func (m *UpdateGroupNameByIDResponse) XXX_Size() int {
+	return xxx_messageInfo_UpdateGroupNameByIDResponse.Size(m)
+}
+func (m *UpdateGroupNameByIDResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpdateGroupNameByIDResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UpdateGroupNameByIDResponse proto.InternalMessageInfo
+
+func (m *UpdateGroupNameByIDResponse) GetState() State {
+	if m != nil {
+		return m.State
+	}
+	return State_UNKNOWN
+}
+
+func (m *UpdateGroupNameByIDResponse) GetMessage() string {
+	if m != nil {
+		return m.Message
+	}
+	return ""
+}
+
+func (m *UpdateGroupNameByIDResponse) GetData() bool {
+	if m != nil {
+		return m.Data
+	}
+	return false
+}
+
+type UpdateGroupClassByIDRequest struct {
+	ID                   uint64   `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
+	Class                string   `protobuf:"bytes,2,opt,name=Class,proto3" json:"Class,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *UpdateGroupClassByIDRequest) Reset()         { *m = UpdateGroupClassByIDRequest{} }
+func (m *UpdateGroupClassByIDRequest) String() string { return proto.CompactTextString(m) }
+func (*UpdateGroupClassByIDRequest) ProtoMessage()    {}
+func (*UpdateGroupClassByIDRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_0b3e239150a6a10f, []int{35}
+}
+
+func (m *UpdateGroupClassByIDRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UpdateGroupClassByIDRequest.Unmarshal(m, b)
+}
+func (m *UpdateGroupClassByIDRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UpdateGroupClassByIDRequest.Marshal(b, m, deterministic)
+}
+func (m *UpdateGroupClassByIDRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpdateGroupClassByIDRequest.Merge(m, src)
+}
+func (m *UpdateGroupClassByIDRequest) XXX_Size() int {
+	return xxx_messageInfo_UpdateGroupClassByIDRequest.Size(m)
+}
+func (m *UpdateGroupClassByIDRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpdateGroupClassByIDRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UpdateGroupClassByIDRequest proto.InternalMessageInfo
+
+func (m *UpdateGroupClassByIDRequest) GetID() uint64 {
+	if m != nil {
+		return m.ID
+	}
+	return 0
+}
+
+func (m *UpdateGroupClassByIDRequest) GetClass() string {
+	if m != nil {
+		return m.Class
+	}
+	return ""
+}
+
+type UpdateGroupClassByIDResponse struct {
+	State                State    `protobuf:"varint,1,opt,name=State,proto3,enum=standard.State" json:"State,omitempty"`
+	Message              string   `protobuf:"bytes,2,opt,name=Message,proto3" json:"Message,omitempty"`
+	Data                 bool     `protobuf:"varint,3,opt,name=Data,proto3" json:"Data,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *UpdateGroupClassByIDResponse) Reset()         { *m = UpdateGroupClassByIDResponse{} }
+func (m *UpdateGroupClassByIDResponse) String() string { return proto.CompactTextString(m) }
+func (*UpdateGroupClassByIDResponse) ProtoMessage()    {}
+func (*UpdateGroupClassByIDResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_0b3e239150a6a10f, []int{36}
+}
+
+func (m *UpdateGroupClassByIDResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UpdateGroupClassByIDResponse.Unmarshal(m, b)
+}
+func (m *UpdateGroupClassByIDResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UpdateGroupClassByIDResponse.Marshal(b, m, deterministic)
+}
+func (m *UpdateGroupClassByIDResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpdateGroupClassByIDResponse.Merge(m, src)
+}
+func (m *UpdateGroupClassByIDResponse) XXX_Size() int {
+	return xxx_messageInfo_UpdateGroupClassByIDResponse.Size(m)
+}
+func (m *UpdateGroupClassByIDResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpdateGroupClassByIDResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UpdateGroupClassByIDResponse proto.InternalMessageInfo
+
+func (m *UpdateGroupClassByIDResponse) GetState() State {
+	if m != nil {
+		return m.State
+	}
+	return State_UNKNOWN
+}
+
+func (m *UpdateGroupClassByIDResponse) GetMessage() string {
+	if m != nil {
+		return m.Message
+	}
+	return ""
+}
+
+func (m *UpdateGroupClassByIDResponse) GetData() bool {
+	if m != nil {
+		return m.Data
+	}
+	return false
+}
+
+type UpdateGroupStateByIDRequest struct {
+	ID                   uint64   `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
+	State                string   `protobuf:"bytes,2,opt,name=State,proto3" json:"State,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *UpdateGroupStateByIDRequest) Reset()         { *m = UpdateGroupStateByIDRequest{} }
+func (m *UpdateGroupStateByIDRequest) String() string { return proto.CompactTextString(m) }
+func (*UpdateGroupStateByIDRequest) ProtoMessage()    {}
+func (*UpdateGroupStateByIDRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_0b3e239150a6a10f, []int{37}
+}
+
+func (m *UpdateGroupStateByIDRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UpdateGroupStateByIDRequest.Unmarshal(m, b)
+}
+func (m *UpdateGroupStateByIDRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UpdateGroupStateByIDRequest.Marshal(b, m, deterministic)
+}
+func (m *UpdateGroupStateByIDRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpdateGroupStateByIDRequest.Merge(m, src)
+}
+func (m *UpdateGroupStateByIDRequest) XXX_Size() int {
+	return xxx_messageInfo_UpdateGroupStateByIDRequest.Size(m)
+}
+func (m *UpdateGroupStateByIDRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpdateGroupStateByIDRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UpdateGroupStateByIDRequest proto.InternalMessageInfo
+
+func (m *UpdateGroupStateByIDRequest) GetID() uint64 {
+	if m != nil {
+		return m.ID
+	}
+	return 0
+}
+
+func (m *UpdateGroupStateByIDRequest) GetState() string {
+	if m != nil {
+		return m.State
+	}
+	return ""
+}
+
+type UpdateGroupStateByIDResponse struct {
+	State                State    `protobuf:"varint,1,opt,name=State,proto3,enum=standard.State" json:"State,omitempty"`
+	Message              string   `protobuf:"bytes,2,opt,name=Message,proto3" json:"Message,omitempty"`
+	Data                 bool     `protobuf:"varint,3,opt,name=Data,proto3" json:"Data,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *UpdateGroupStateByIDResponse) Reset()         { *m = UpdateGroupStateByIDResponse{} }
+func (m *UpdateGroupStateByIDResponse) String() string { return proto.CompactTextString(m) }
+func (*UpdateGroupStateByIDResponse) ProtoMessage()    {}
+func (*UpdateGroupStateByIDResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_0b3e239150a6a10f, []int{38}
+}
+
+func (m *UpdateGroupStateByIDResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UpdateGroupStateByIDResponse.Unmarshal(m, b)
+}
+func (m *UpdateGroupStateByIDResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UpdateGroupStateByIDResponse.Marshal(b, m, deterministic)
+}
+func (m *UpdateGroupStateByIDResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpdateGroupStateByIDResponse.Merge(m, src)
+}
+func (m *UpdateGroupStateByIDResponse) XXX_Size() int {
+	return xxx_messageInfo_UpdateGroupStateByIDResponse.Size(m)
+}
+func (m *UpdateGroupStateByIDResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpdateGroupStateByIDResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UpdateGroupStateByIDResponse proto.InternalMessageInfo
+
+func (m *UpdateGroupStateByIDResponse) GetState() State {
+	if m != nil {
+		return m.State
+	}
+	return State_UNKNOWN
+}
+
+func (m *UpdateGroupStateByIDResponse) GetMessage() string {
+	if m != nil {
+		return m.Message
+	}
+	return ""
+}
+
+func (m *UpdateGroupStateByIDResponse) GetData() bool {
+	if m != nil {
+		return m.Data
+	}
+	return false
+}
+
+type UpdateGroupDescriptionByIDRequest struct {
+	ID                   uint64   `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
+	Description          string   `protobuf:"bytes,2,opt,name=Description,proto3" json:"Description,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *UpdateGroupDescriptionByIDRequest) Reset()         { *m = UpdateGroupDescriptionByIDRequest{} }
+func (m *UpdateGroupDescriptionByIDRequest) String() string { return proto.CompactTextString(m) }
+func (*UpdateGroupDescriptionByIDRequest) ProtoMessage()    {}
+func (*UpdateGroupDescriptionByIDRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_0b3e239150a6a10f, []int{39}
+}
+
+func (m *UpdateGroupDescriptionByIDRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UpdateGroupDescriptionByIDRequest.Unmarshal(m, b)
+}
+func (m *UpdateGroupDescriptionByIDRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UpdateGroupDescriptionByIDRequest.Marshal(b, m, deterministic)
+}
+func (m *UpdateGroupDescriptionByIDRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpdateGroupDescriptionByIDRequest.Merge(m, src)
+}
+func (m *UpdateGroupDescriptionByIDRequest) XXX_Size() int {
+	return xxx_messageInfo_UpdateGroupDescriptionByIDRequest.Size(m)
+}
+func (m *UpdateGroupDescriptionByIDRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpdateGroupDescriptionByIDRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UpdateGroupDescriptionByIDRequest proto.InternalMessageInfo
+
+func (m *UpdateGroupDescriptionByIDRequest) GetID() uint64 {
+	if m != nil {
+		return m.ID
+	}
+	return 0
+}
+
+func (m *UpdateGroupDescriptionByIDRequest) GetDescription() string {
+	if m != nil {
+		return m.Description
+	}
+	return ""
+}
+
+type UpdateGroupDescriptionByIDResponse struct {
+	State                State    `protobuf:"varint,1,opt,name=State,proto3,enum=standard.State" json:"State,omitempty"`
+	Message              string   `protobuf:"bytes,2,opt,name=Message,proto3" json:"Message,omitempty"`
+	Data                 bool     `protobuf:"varint,3,opt,name=Data,proto3" json:"Data,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *UpdateGroupDescriptionByIDResponse) Reset()         { *m = UpdateGroupDescriptionByIDResponse{} }
+func (m *UpdateGroupDescriptionByIDResponse) String() string { return proto.CompactTextString(m) }
+func (*UpdateGroupDescriptionByIDResponse) ProtoMessage()    {}
+func (*UpdateGroupDescriptionByIDResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_0b3e239150a6a10f, []int{40}
+}
+
+func (m *UpdateGroupDescriptionByIDResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UpdateGroupDescriptionByIDResponse.Unmarshal(m, b)
+}
+func (m *UpdateGroupDescriptionByIDResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UpdateGroupDescriptionByIDResponse.Marshal(b, m, deterministic)
+}
+func (m *UpdateGroupDescriptionByIDResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpdateGroupDescriptionByIDResponse.Merge(m, src)
+}
+func (m *UpdateGroupDescriptionByIDResponse) XXX_Size() int {
+	return xxx_messageInfo_UpdateGroupDescriptionByIDResponse.Size(m)
+}
+func (m *UpdateGroupDescriptionByIDResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpdateGroupDescriptionByIDResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UpdateGroupDescriptionByIDResponse proto.InternalMessageInfo
+
+func (m *UpdateGroupDescriptionByIDResponse) GetState() State {
+	if m != nil {
+		return m.State
+	}
+	return State_UNKNOWN
+}
+
+func (m *UpdateGroupDescriptionByIDResponse) GetMessage() string {
+	if m != nil {
+		return m.Message
+	}
+	return ""
+}
+
+func (m *UpdateGroupDescriptionByIDResponse) GetData() bool {
+	if m != nil {
+		return m.Data
+	}
+	return false
+}
+
+type DeleteGroupByIDRequest struct {
+	ID                   uint64   `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *DeleteGroupByIDRequest) Reset()         { *m = DeleteGroupByIDRequest{} }
+func (m *DeleteGroupByIDRequest) String() string { return proto.CompactTextString(m) }
+func (*DeleteGroupByIDRequest) ProtoMessage()    {}
+func (*DeleteGroupByIDRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_0b3e239150a6a10f, []int{41}
+}
+
+func (m *DeleteGroupByIDRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteGroupByIDRequest.Unmarshal(m, b)
+}
+func (m *DeleteGroupByIDRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteGroupByIDRequest.Marshal(b, m, deterministic)
+}
+func (m *DeleteGroupByIDRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteGroupByIDRequest.Merge(m, src)
+}
+func (m *DeleteGroupByIDRequest) XXX_Size() int {
+	return xxx_messageInfo_DeleteGroupByIDRequest.Size(m)
+}
+func (m *DeleteGroupByIDRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteGroupByIDRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteGroupByIDRequest proto.InternalMessageInfo
+
+func (m *DeleteGroupByIDRequest) GetID() uint64 {
+	if m != nil {
+		return m.ID
+	}
+	return 0
+}
+
+type DeleteGroupByIDResponse struct {
+	State                State    `protobuf:"varint,1,opt,name=State,proto3,enum=standard.State" json:"State,omitempty"`
+	Message              string   `protobuf:"bytes,2,opt,name=Message,proto3" json:"Message,omitempty"`
+	Data                 bool     `protobuf:"varint,3,opt,name=Data,proto3" json:"Data,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *DeleteGroupByIDResponse) Reset()         { *m = DeleteGroupByIDResponse{} }
+func (m *DeleteGroupByIDResponse) String() string { return proto.CompactTextString(m) }
+func (*DeleteGroupByIDResponse) ProtoMessage()    {}
+func (*DeleteGroupByIDResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_0b3e239150a6a10f, []int{42}
+}
+
+func (m *DeleteGroupByIDResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteGroupByIDResponse.Unmarshal(m, b)
+}
+func (m *DeleteGroupByIDResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteGroupByIDResponse.Marshal(b, m, deterministic)
+}
+func (m *DeleteGroupByIDResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteGroupByIDResponse.Merge(m, src)
+}
+func (m *DeleteGroupByIDResponse) XXX_Size() int {
+	return xxx_messageInfo_DeleteGroupByIDResponse.Size(m)
+}
+func (m *DeleteGroupByIDResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteGroupByIDResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteGroupByIDResponse proto.InternalMessageInfo
+
+func (m *DeleteGroupByIDResponse) GetState() State {
+	if m != nil {
+		return m.State
+	}
+	return State_UNKNOWN
+}
+
+func (m *DeleteGroupByIDResponse) GetMessage() string {
+	if m != nil {
+		return m.Message
+	}
+	return ""
+}
+
+func (m *DeleteGroupByIDResponse) GetData() bool {
+	if m != nil {
+		return m.Data
+	}
+	return false
+}
+
+type AddUserToGroupByIDRequest struct {
+	ID                   uint64   `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
+	GroupID              uint64   `protobuf:"varint,2,opt,name=GroupID,proto3" json:"GroupID,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *AddUserToGroupByIDRequest) Reset()         { *m = AddUserToGroupByIDRequest{} }
+func (m *AddUserToGroupByIDRequest) String() string { return proto.CompactTextString(m) }
+func (*AddUserToGroupByIDRequest) ProtoMessage()    {}
+func (*AddUserToGroupByIDRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_0b3e239150a6a10f, []int{43}
+}
+
+func (m *AddUserToGroupByIDRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_AddUserToGroupByIDRequest.Unmarshal(m, b)
+}
+func (m *AddUserToGroupByIDRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_AddUserToGroupByIDRequest.Marshal(b, m, deterministic)
+}
+func (m *AddUserToGroupByIDRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AddUserToGroupByIDRequest.Merge(m, src)
+}
+func (m *AddUserToGroupByIDRequest) XXX_Size() int {
+	return xxx_messageInfo_AddUserToGroupByIDRequest.Size(m)
+}
+func (m *AddUserToGroupByIDRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_AddUserToGroupByIDRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_AddUserToGroupByIDRequest proto.InternalMessageInfo
+
+func (m *AddUserToGroupByIDRequest) GetID() uint64 {
+	if m != nil {
+		return m.ID
+	}
+	return 0
+}
+
+func (m *AddUserToGroupByIDRequest) GetGroupID() uint64 {
+	if m != nil {
+		return m.GroupID
+	}
+	return 0
+}
+
+type AddUserToGroupByIDResponse struct {
+	State                State    `protobuf:"varint,1,opt,name=State,proto3,enum=standard.State" json:"State,omitempty"`
+	Message              string   `protobuf:"bytes,2,opt,name=Message,proto3" json:"Message,omitempty"`
+	Data                 bool     `protobuf:"varint,3,opt,name=Data,proto3" json:"Data,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *AddUserToGroupByIDResponse) Reset()         { *m = AddUserToGroupByIDResponse{} }
+func (m *AddUserToGroupByIDResponse) String() string { return proto.CompactTextString(m) }
+func (*AddUserToGroupByIDResponse) ProtoMessage()    {}
+func (*AddUserToGroupByIDResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_0b3e239150a6a10f, []int{44}
+}
+
+func (m *AddUserToGroupByIDResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_AddUserToGroupByIDResponse.Unmarshal(m, b)
+}
+func (m *AddUserToGroupByIDResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_AddUserToGroupByIDResponse.Marshal(b, m, deterministic)
+}
+func (m *AddUserToGroupByIDResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AddUserToGroupByIDResponse.Merge(m, src)
+}
+func (m *AddUserToGroupByIDResponse) XXX_Size() int {
+	return xxx_messageInfo_AddUserToGroupByIDResponse.Size(m)
+}
+func (m *AddUserToGroupByIDResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_AddUserToGroupByIDResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_AddUserToGroupByIDResponse proto.InternalMessageInfo
+
+func (m *AddUserToGroupByIDResponse) GetState() State {
+	if m != nil {
+		return m.State
+	}
+	return State_UNKNOWN
+}
+
+func (m *AddUserToGroupByIDResponse) GetMessage() string {
+	if m != nil {
+		return m.Message
+	}
+	return ""
+}
+
+func (m *AddUserToGroupByIDResponse) GetData() bool {
+	if m != nil {
+		return m.Data
+	}
+	return false
+}
+
+type RemoveUserFromGroupByIDRequest struct {
+	ID                   uint64   `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
+	UserID               uint64   `protobuf:"varint,2,opt,name=UserID,proto3" json:"UserID,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *RemoveUserFromGroupByIDRequest) Reset()         { *m = RemoveUserFromGroupByIDRequest{} }
+func (m *RemoveUserFromGroupByIDRequest) String() string { return proto.CompactTextString(m) }
+func (*RemoveUserFromGroupByIDRequest) ProtoMessage()    {}
+func (*RemoveUserFromGroupByIDRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_0b3e239150a6a10f, []int{45}
+}
+
+func (m *RemoveUserFromGroupByIDRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_RemoveUserFromGroupByIDRequest.Unmarshal(m, b)
+}
+func (m *RemoveUserFromGroupByIDRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_RemoveUserFromGroupByIDRequest.Marshal(b, m, deterministic)
+}
+func (m *RemoveUserFromGroupByIDRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RemoveUserFromGroupByIDRequest.Merge(m, src)
+}
+func (m *RemoveUserFromGroupByIDRequest) XXX_Size() int {
+	return xxx_messageInfo_RemoveUserFromGroupByIDRequest.Size(m)
+}
+func (m *RemoveUserFromGroupByIDRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_RemoveUserFromGroupByIDRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_RemoveUserFromGroupByIDRequest proto.InternalMessageInfo
+
+func (m *RemoveUserFromGroupByIDRequest) GetID() uint64 {
+	if m != nil {
+		return m.ID
+	}
+	return 0
+}
+
+func (m *RemoveUserFromGroupByIDRequest) GetUserID() uint64 {
+	if m != nil {
+		return m.UserID
+	}
+	return 0
+}
+
+type RemoveUserFromGroupByIDResponse struct {
+	State                State    `protobuf:"varint,1,opt,name=State,proto3,enum=standard.State" json:"State,omitempty"`
+	Message              string   `protobuf:"bytes,2,opt,name=Message,proto3" json:"Message,omitempty"`
+	Data                 bool     `protobuf:"varint,3,opt,name=Data,proto3" json:"Data,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *RemoveUserFromGroupByIDResponse) Reset()         { *m = RemoveUserFromGroupByIDResponse{} }
+func (m *RemoveUserFromGroupByIDResponse) String() string { return proto.CompactTextString(m) }
+func (*RemoveUserFromGroupByIDResponse) ProtoMessage()    {}
+func (*RemoveUserFromGroupByIDResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_0b3e239150a6a10f, []int{46}
+}
+
+func (m *RemoveUserFromGroupByIDResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_RemoveUserFromGroupByIDResponse.Unmarshal(m, b)
+}
+func (m *RemoveUserFromGroupByIDResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_RemoveUserFromGroupByIDResponse.Marshal(b, m, deterministic)
+}
+func (m *RemoveUserFromGroupByIDResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RemoveUserFromGroupByIDResponse.Merge(m, src)
+}
+func (m *RemoveUserFromGroupByIDResponse) XXX_Size() int {
+	return xxx_messageInfo_RemoveUserFromGroupByIDResponse.Size(m)
+}
+func (m *RemoveUserFromGroupByIDResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_RemoveUserFromGroupByIDResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_RemoveUserFromGroupByIDResponse proto.InternalMessageInfo
+
+func (m *RemoveUserFromGroupByIDResponse) GetState() State {
+	if m != nil {
+		return m.State
+	}
+	return State_UNKNOWN
+}
+
+func (m *RemoveUserFromGroupByIDResponse) GetMessage() string {
+	if m != nil {
+		return m.Message
+	}
+	return ""
+}
+
+func (m *RemoveUserFromGroupByIDResponse) GetData() bool {
+	if m != nil {
+		return m.Data
+	}
+	return false
 }
 
 func init() {
@@ -1673,94 +2585,126 @@ func init() {
 	proto.RegisterType((*VerifyUserPasswordByIDResponse)(nil), "standard.VerifyUserPasswordByIDResponse")
 	proto.RegisterType((*VerifyUserPasswordByUsernameRequest)(nil), "standard.VerifyUserPasswordByUsernameRequest")
 	proto.RegisterType((*VerifyUserPasswordByUsernameResponse)(nil), "standard.VerifyUserPasswordByUsernameResponse")
-	proto.RegisterType((*CreateLabelByOwnerRequest)(nil), "standard.CreateLabelByOwnerRequest")
-	proto.RegisterType((*CreateLabelByOwnerResponse)(nil), "standard.CreateLabelByOwnerResponse")
-	proto.RegisterType((*RemoveLabelByOwnerRequest)(nil), "standard.RemoveLabelByOwnerRequest")
-	proto.RegisterType((*RemoveLabelByOwnerResponse)(nil), "standard.RemoveLabelByOwnerResponse")
 	proto.RegisterType((*QueryLabelByIDRequest)(nil), "standard.QueryLabelByIDRequest")
 	proto.RegisterType((*QueryLabelByIDResponse)(nil), "standard.QueryLabelByIDResponse")
-	proto.RegisterType((*UpdateLabelByIDRequest)(nil), "standard.UpdateLabelByIDRequest")
-	proto.RegisterType((*UpdateLabelByIDResponse)(nil), "standard.UpdateLabelByIDResponse")
+	proto.RegisterType((*UpdateLabelClassByIDRequest)(nil), "standard.UpdateLabelClassByIDRequest")
+	proto.RegisterType((*UpdateLabelClassByIDResponse)(nil), "standard.UpdateLabelClassByIDResponse")
+	proto.RegisterType((*UpdateLabelStateByIDRequest)(nil), "standard.UpdateLabelStateByIDRequest")
+	proto.RegisterType((*UpdateLabelStateByIDResponse)(nil), "standard.UpdateLabelStateByIDResponse")
+	proto.RegisterType((*UpdateLabelValueByIDRequest)(nil), "standard.UpdateLabelValueByIDRequest")
+	proto.RegisterType((*UpdateLabelValueByIDResponse)(nil), "standard.UpdateLabelValueByIDResponse")
 	proto.RegisterType((*DeleteLabelByIDRequest)(nil), "standard.DeleteLabelByIDRequest")
 	proto.RegisterType((*DeleteLabelByIDResponse)(nil), "standard.DeleteLabelByIDResponse")
-	proto.RegisterType((*QueryLabelByOwnerRequest)(nil), "standard.QueryLabelByOwnerRequest")
-	proto.RegisterType((*QueryLabelByOwnerResponse)(nil), "standard.QueryLabelByOwnerResponse")
+	proto.RegisterType((*AddLabelToUserByIDRequest)(nil), "standard.AddLabelToUserByIDRequest")
+	proto.RegisterType((*AddLabelToUserByIDResponse)(nil), "standard.AddLabelToUserByIDResponse")
+	proto.RegisterType((*RemoveLabelFromUserByIDRequest)(nil), "standard.RemoveLabelFromUserByIDRequest")
+	proto.RegisterType((*RemoveLabelFromUserByIDResponse)(nil), "standard.RemoveLabelFromUserByIDResponse")
+	proto.RegisterType((*QueryGroupByIDRequest)(nil), "standard.QueryGroupByIDRequest")
+	proto.RegisterType((*QueryGroupByIDResponse)(nil), "standard.QueryGroupByIDResponse")
+	proto.RegisterType((*UpdateGroupNameByIDRequest)(nil), "standard.UpdateGroupNameByIDRequest")
+	proto.RegisterType((*UpdateGroupNameByIDResponse)(nil), "standard.UpdateGroupNameByIDResponse")
+	proto.RegisterType((*UpdateGroupClassByIDRequest)(nil), "standard.UpdateGroupClassByIDRequest")
+	proto.RegisterType((*UpdateGroupClassByIDResponse)(nil), "standard.UpdateGroupClassByIDResponse")
+	proto.RegisterType((*UpdateGroupStateByIDRequest)(nil), "standard.UpdateGroupStateByIDRequest")
+	proto.RegisterType((*UpdateGroupStateByIDResponse)(nil), "standard.UpdateGroupStateByIDResponse")
+	proto.RegisterType((*UpdateGroupDescriptionByIDRequest)(nil), "standard.UpdateGroupDescriptionByIDRequest")
+	proto.RegisterType((*UpdateGroupDescriptionByIDResponse)(nil), "standard.UpdateGroupDescriptionByIDResponse")
+	proto.RegisterType((*DeleteGroupByIDRequest)(nil), "standard.DeleteGroupByIDRequest")
+	proto.RegisterType((*DeleteGroupByIDResponse)(nil), "standard.DeleteGroupByIDResponse")
+	proto.RegisterType((*AddUserToGroupByIDRequest)(nil), "standard.AddUserToGroupByIDRequest")
+	proto.RegisterType((*AddUserToGroupByIDResponse)(nil), "standard.AddUserToGroupByIDResponse")
+	proto.RegisterType((*RemoveUserFromGroupByIDRequest)(nil), "standard.RemoveUserFromGroupByIDRequest")
+	proto.RegisterType((*RemoveUserFromGroupByIDResponse)(nil), "standard.RemoveUserFromGroupByIDResponse")
 }
 
 func init() { proto.RegisterFile("standard.proto", fileDescriptor_0b3e239150a6a10f) }
 
 var fileDescriptor_0b3e239150a6a10f = []byte{
-	// 1111 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x58, 0x5f, 0x4f, 0xe3, 0x46,
-	0x10, 0x8f, 0x83, 0x43, 0xc2, 0xa0, 0x0b, 0x61, 0xc9, 0x81, 0xc9, 0x5d, 0x69, 0x6a, 0xa0, 0xa0,
-	0x4a, 0xe5, 0x81, 0xbe, 0xf4, 0xd5, 0x24, 0xe6, 0x64, 0x9d, 0x49, 0x38, 0x3b, 0x49, 0xe1, 0xa4,
-	0xbb, 0xc8, 0x47, 0x96, 0x2a, 0x6a, 0xfe, 0xd5, 0x76, 0x38, 0xa1, 0x56, 0xad, 0xd4, 0x2f, 0xd1,
-	0x7e, 0xb1, 0x3e, 0xf7, 0x53, 0xf4, 0xa1, 0x6f, 0xd5, 0xee, 0xda, 0xce, 0xc6, 0xff, 0x42, 0x25,
-	0xf7, 0xde, 0x98, 0xd9, 0xd9, 0xdf, 0xcc, 0x6f, 0x76, 0x3c, 0x33, 0x04, 0xca, 0x8e, 0x6b, 0x4d,
-	0x06, 0x96, 0x3d, 0x38, 0x9b, 0xd9, 0x53, 0x77, 0x8a, 0x4a, 0xbe, 0x2c, 0xff, 0x25, 0x40, 0xe1,
-	0x95, 0x3d, 0x9d, 0xcf, 0x50, 0x19, 0xf2, 0x5a, 0x53, 0x12, 0xea, 0xc2, 0xa9, 0x68, 0xe4, 0xb5,
-	0x26, 0x42, 0x20, 0xb6, 0xac, 0x31, 0x96, 0xf2, 0x75, 0xe1, 0x74, 0xc3, 0xa0, 0x7f, 0xa3, 0x2a,
-	0x14, 0x1a, 0x23, 0xcb, 0x71, 0xa4, 0x35, 0xaa, 0x64, 0x02, 0xd1, 0x9a, 0xae, 0xe5, 0x62, 0x49,
-	0x64, 0x5a, 0x2a, 0xa0, 0x3a, 0x6c, 0x36, 0xb1, 0x73, 0x67, 0x0f, 0x67, 0xee, 0x70, 0x3a, 0x91,
-	0x0a, 0xf4, 0x8c, 0x57, 0x11, 0x8b, 0x86, 0x8d, 0x2d, 0x17, 0x0f, 0x3a, 0xc3, 0x31, 0x96, 0xd6,
-	0x99, 0x05, 0xa7, 0x22, 0x16, 0xdd, 0xd9, 0x20, 0xb0, 0x28, 0x32, 0x0b, 0x4e, 0xc5, 0xbc, 0x8c,
-	0xb0, 0x6f, 0x51, 0xf2, 0xbd, 0x04, 0x2a, 0xf9, 0x4f, 0x01, 0x0a, 0xba, 0xf5, 0x01, 0x8f, 0x22,
-	0x0c, 0x03, 0x36, 0xf9, 0x58, 0x36, 0x6b, 0x3c, 0x9b, 0x2a, 0x14, 0x7a, 0xd6, 0x68, 0x1e, 0x70,
-	0xa4, 0x02, 0xd1, 0xb6, 0x3f, 0x4e, 0xb0, 0x4d, 0xd9, 0x89, 0x06, 0x13, 0x3e, 0x11, 0xaf, 0x3f,
-	0xf2, 0x20, 0x76, 0x1d, 0x6c, 0x3f, 0x91, 0xd6, 0x2e, 0xac, 0x2b, 0x0f, 0x96, 0x6b, 0xd9, 0x1e,
-	0x2f, 0x4f, 0x42, 0x12, 0x14, 0xb5, 0xc9, 0xc3, 0xd0, 0xc5, 0x36, 0xa5, 0x26, 0x1a, 0xbe, 0x88,
-	0x6a, 0x50, 0x6a, 0x0d, 0xef, 0x7e, 0x98, 0x90, 0x22, 0x60, 0xaf, 0x17, 0xc8, 0xe4, 0x8c, 0xf8,
-	0xa6, 0x67, 0x8c, 0x5f, 0x20, 0x93, 0xb3, 0x6b, 0xcb, 0x71, 0x3e, 0x4e, 0xed, 0x81, 0xc7, 0x2c,
-	0x90, 0xc3, 0xa9, 0x29, 0xad, 0x4c, 0xcd, 0xc6, 0xca, 0xd4, 0x40, 0x34, 0x35, 0xbf, 0x0b, 0xb0,
-	0xcd, 0x30, 0x49, 0x50, 0x06, 0xfe, 0x71, 0x8e, 0x1d, 0x77, 0x91, 0x17, 0x81, 0xcf, 0x0b, 0xc7,
-	0x7f, 0x2d, 0x99, 0xbf, 0x98, 0xc2, 0xbf, 0x90, 0xc2, 0x7f, 0x7d, 0x99, 0xbf, 0xdc, 0x05, 0xc4,
-	0x07, 0xe6, 0xcc, 0xa6, 0x13, 0x07, 0xa3, 0x63, 0xbf, 0xe4, 0x48, 0x64, 0xe5, 0xf3, 0xad, 0xb3,
-	0xe0, 0x73, 0xa5, 0x6a, 0xbf, 0x06, 0x25, 0x28, 0x5e, 0x61, 0xc7, 0xb1, 0xbe, 0xf7, 0x3f, 0x4a,
-	0x5f, 0x94, 0xbf, 0x84, 0xea, 0x9b, 0x39, 0xb6, 0x1f, 0x09, 0xea, 0xc5, 0xa3, 0xd6, 0xf4, 0x29,
-	0x87, 0x4a, 0x43, 0xfe, 0x19, 0x9e, 0x87, 0xec, 0x32, 0x8a, 0x00, 0xc9, 0x20, 0x36, 0x2d, 0xd7,
-	0xa2, 0x39, 0xdc, 0x3c, 0x2f, 0x2f, 0xee, 0x53, 0xa2, 0xf4, 0x4c, 0xfe, 0x16, 0x6a, 0x9c, 0x77,
-	0x3f, 0x5f, 0x7e, 0xac, 0x7c, 0x4a, 0x85, 0xe5, 0x94, 0xca, 0xbf, 0x09, 0xf0, 0x22, 0xf6, 0xea,
-	0xa7, 0x0c, 0xff, 0x04, 0x9e, 0xb3, 0x22, 0x5b, 0x95, 0xe5, 0x5b, 0xd8, 0x0d, 0x1b, 0x66, 0xf5,
-	0xd0, 0xaf, 0xe1, 0x33, 0xf6, 0x29, 0x10, 0x68, 0xbf, 0xaa, 0x52, 0x62, 0x59, 0x2a, 0xc6, 0x7c,
-	0xa8, 0x18, 0x2d, 0x38, 0x48, 0x02, 0xcb, 0x30, 0xde, 0x1e, 0xb6, 0x87, 0xf7, 0x8f, 0x59, 0xc4,
-	0x3b, 0x87, 0x83, 0x24, 0xb0, 0xac, 0xea, 0x00, 0x71, 0x75, 0x50, 0xf2, 0xde, 0xfd, 0x1d, 0x1c,
-	0xc6, 0xb9, 0xfd, 0x0f, 0xf5, 0x9b, 0xca, 0xea, 0x27, 0x38, 0x4a, 0x87, 0xff, 0x3f, 0xb9, 0xdd,
-	0xc0, 0x3e, 0xeb, 0x47, 0x74, 0x42, 0x5e, 0x3c, 0xd2, 0x01, 0xc6, 0x35, 0x4c, 0x36, 0xdd, 0x04,
-	0x7e, 0xba, 0x1d, 0x7b, 0xe3, 0x94, 0xc2, 0x6f, 0xf2, 0x71, 0x50, 0xb5, 0xc1, 0x4e, 0xe5, 0x77,
-	0x50, 0x8b, 0x43, 0xce, 0xaa, 0xb0, 0x14, 0xd8, 0x37, 0xf0, 0x78, 0xfa, 0x10, 0x1b, 0x78, 0xcc,
-	0x44, 0x64, 0x44, 0xf2, 0x1c, 0x11, 0x12, 0x61, 0x1c, 0x44, 0x56, 0x11, 0x9e, 0x78, 0xbd, 0xd6,
-	0x43, 0x4f, 0x6e, 0x17, 0xbf, 0xc0, 0x6e, 0xd8, 0x30, 0xab, 0x27, 0x3f, 0x5c, 0x6a, 0x6b, 0x91,
-	0xa7, 0x62, 0x35, 0x70, 0x05, 0xbb, 0xac, 0x0d, 0xac, 0x8a, 0x34, 0x80, 0xcb, 0xa7, 0xc1, 0xbd,
-	0x85, 0xbd, 0x08, 0x5c, 0x56, 0x39, 0x3d, 0xf5, 0x3b, 0xeb, 0xca, 0xa4, 0xbe, 0x85, 0xbd, 0x88,
-	0x65, 0x56, 0x51, 0xbc, 0x07, 0x89, 0x7f, 0xb0, 0x27, 0x7c, 0x33, 0x55, 0x28, 0xe8, 0xc3, 0xf1,
-	0xd0, 0xf5, 0x0b, 0x90, 0x0a, 0x64, 0x25, 0x6b, 0xdf, 0xdf, 0x3b, 0xd8, 0xf5, 0x36, 0x0f, 0x4f,
-	0x22, 0xeb, 0xcb, 0x7e, 0x8c, 0x83, 0xac, 0x8a, 0xa2, 0x0a, 0x85, 0xce, 0xd4, 0xb5, 0x46, 0x9e,
-	0x57, 0x26, 0x04, 0x6f, 0x2b, 0xd6, 0xd7, 0x12, 0xdf, 0xf6, 0xab, 0x7f, 0x04, 0xcf, 0x39, 0xda,
-	0x84, 0x62, 0xb7, 0xf5, 0xba, 0xd5, 0xfe, 0xae, 0x55, 0xc9, 0x11, 0xc1, 0xec, 0x36, 0x1a, 0xaa,
-	0x69, 0x56, 0x04, 0x22, 0x5c, 0x2a, 0x9a, 0xde, 0x35, 0xd4, 0x4a, 0x1e, 0x6d, 0xc3, 0x33, 0x53,
-	0x35, 0x7a, 0x5a, 0x43, 0xed, 0xab, 0x86, 0xd1, 0x36, 0x2a, 0x6b, 0x08, 0x41, 0xf9, 0x5a, 0x31,
-	0x94, 0x2b, 0xb3, 0xaf, 0xb5, 0x7a, 0x8a, 0xae, 0x35, 0x2b, 0x22, 0xda, 0x81, 0x2d, 0x4d, 0xd7,
-	0xd5, 0x57, 0x8a, 0xde, 0x37, 0xd4, 0x37, 0x5d, 0xd5, 0xec, 0x54, 0x0a, 0x44, 0xa9, 0x2b, 0x17,
-	0xaa, 0xde, 0x6f, 0xb5, 0x3b, 0x7d, 0xf5, 0x46, 0x33, 0x3b, 0x95, 0x75, 0x72, 0xbb, 0x6b, 0xaa,
-	0x06, 0xa7, 0x2b, 0xa2, 0x3d, 0xd8, 0xa1, 0x3a, 0x45, 0x37, 0x54, 0xa5, 0x79, 0xcb, 0xf4, 0x66,
-	0xa5, 0x14, 0x1c, 0xf4, 0x54, 0x43, 0xbb, 0xbc, 0xed, 0xfb, 0x61, 0x6d, 0x20, 0x09, 0xaa, 0x0c,
-	0x3a, 0x74, 0x05, 0xc8, 0x49, 0xf3, 0xa2, 0xdf, 0xbe, 0x56, 0x0d, 0xa5, 0xa3, 0xb5, 0x5b, 0xfd,
-	0x4b, 0xa5, 0x43, 0xef, 0x6c, 0x9e, 0xff, 0xbd, 0x01, 0x45, 0xe5, 0xee, 0x6e, 0x3a, 0x9f, 0xb8,
-	0x48, 0x03, 0x58, 0xac, 0x71, 0xe8, 0xc5, 0x22, 0x59, 0x91, 0xad, 0xb3, 0xf6, 0x32, 0xfe, 0x90,
-	0x3d, 0xa6, 0x9c, 0x43, 0x06, 0x3c, 0x5b, 0x5a, 0xc9, 0xd0, 0xc1, 0xe2, 0x42, 0xdc, 0x4e, 0x57,
-	0xfb, 0x3c, 0xf1, 0x3c, 0xc0, 0xec, 0x42, 0x79, 0x79, 0x01, 0x41, 0xdc, 0xa5, 0xd8, 0x1d, 0xa6,
-	0x56, 0x4f, 0x36, 0x08, 0x60, 0x07, 0xb0, 0x13, 0xb3, 0x84, 0xa1, 0xa3, 0xd8, 0x80, 0x42, 0xe3,
-	0xb1, 0x76, 0xbc, 0xc2, 0x2a, 0xf0, 0x32, 0xf6, 0xdb, 0x51, 0x78, 0xca, 0xa3, 0x13, 0x6e, 0x2d,
-	0x4b, 0x5b, 0x82, 0x6a, 0xa7, 0xab, 0x0d, 0x79, 0x77, 0xf1, 0x4b, 0x05, 0xef, 0x2e, 0x75, 0x87,
-	0xe1, 0xdd, 0xa5, 0xef, 0x27, 0x72, 0x0e, 0xfd, 0x0a, 0x2f, 0xd3, 0xa6, 0x3d, 0xfa, 0x3a, 0x1d,
-	0x2b, 0x9c, 0xd5, 0xb3, 0xa7, 0x9a, 0xf3, 0xb5, 0xb1, 0x3c, 0x6d, 0x50, 0xb8, 0xa0, 0xc2, 0xbd,
-	0x95, 0xaf, 0x8d, 0xf8, 0x41, 0x25, 0xe7, 0xd0, 0x0d, 0x6c, 0x85, 0xba, 0x3e, 0xaa, 0x87, 0x5f,
-	0x21, 0x02, 0xfc, 0x45, 0x8a, 0x05, 0x8f, 0x1c, 0xea, 0xe4, 0x28, 0x52, 0xac, 0x69, 0xc8, 0x09,
-	0x63, 0x40, 0xce, 0xa1, 0xf7, 0xb0, 0x1d, 0x69, 0xb3, 0x48, 0x8e, 0x27, 0xcb, 0x37, 0xf9, 0xda,
-	0x61, 0xaa, 0x4d, 0x80, 0x6f, 0xf9, 0xff, 0xec, 0x2d, 0x39, 0x38, 0x0c, 0x37, 0x84, 0x38, 0x0f,
-	0x47, 0xe9, 0x46, 0xbc, 0x8b, 0xe8, 0x0e, 0xc3, 0xbb, 0x48, 0x5c, 0x92, 0x78, 0x17, 0xc9, 0x6b,
-	0x90, 0x9c, 0xfb, 0xb0, 0x4e, 0x7f, 0x32, 0xfa, 0xe6, 0xdf, 0x00, 0x00, 0x00, 0xff, 0xff, 0x0f,
-	0xaa, 0xf6, 0xc2, 0x44, 0x12, 0x00, 0x00,
+	// 1343 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x59, 0xcd, 0x52, 0xe3, 0x46,
+	0x10, 0xb6, 0x8c, 0x8d, 0x4d, 0x53, 0x6b, 0xcc, 0xc0, 0x82, 0x23, 0x08, 0x0b, 0x02, 0x16, 0xf2,
+	0xc7, 0x81, 0x5c, 0x72, 0x8c, 0xb0, 0xc5, 0x46, 0x59, 0xaf, 0x61, 0x65, 0x9b, 0x2c, 0x87, 0x94,
+	0x4b, 0x8b, 0x95, 0x2d, 0x57, 0xb0, 0xe5, 0x95, 0x64, 0x52, 0xae, 0xa4, 0x92, 0xaa, 0xbc, 0x44,
+	0xf2, 0x34, 0xc9, 0xa3, 0xe4, 0x39, 0x72, 0x4b, 0xcd, 0xe8, 0xc7, 0xe3, 0x99, 0x91, 0x44, 0x6a,
+	0x6d, 0xdf, 0x98, 0x99, 0x9e, 0xee, 0xaf, 0x5b, 0xdd, 0x3d, 0xfd, 0x19, 0x28, 0xb9, 0x9e, 0x39,
+	0xe8, 0x9a, 0x4e, 0xf7, 0x6c, 0xe8, 0xd8, 0x9e, 0x8d, 0x8a, 0xe1, 0x5a, 0xf9, 0x47, 0x82, 0xfc,
+	0x0b, 0xc7, 0x1e, 0x0d, 0x51, 0x09, 0xb2, 0x7a, 0xad, 0x22, 0xed, 0x4b, 0xa7, 0x39, 0x23, 0xab,
+	0xd7, 0x10, 0x82, 0x5c, 0xc3, 0xec, 0x5b, 0x95, 0xec, 0xbe, 0x74, 0xba, 0x62, 0x90, 0xbf, 0xd1,
+	0x26, 0xe4, 0xab, 0xf7, 0xa6, 0xeb, 0x56, 0x96, 0xc8, 0xa6, 0xbf, 0xc0, 0xbb, 0x4d, 0xcf, 0xf4,
+	0xac, 0x4a, 0xce, 0xdf, 0x25, 0x0b, 0xb4, 0x0f, 0xab, 0x35, 0xcb, 0xbd, 0x73, 0x7a, 0x43, 0xaf,
+	0x67, 0x0f, 0x2a, 0x79, 0x72, 0x46, 0x6f, 0x61, 0x89, 0xaa, 0x63, 0x99, 0x9e, 0xd5, 0x6d, 0xf5,
+	0xfa, 0x56, 0x65, 0xd9, 0x97, 0xa0, 0xb6, 0xb0, 0x44, 0x7b, 0xd8, 0x8d, 0x24, 0x0a, 0xbe, 0x04,
+	0xb5, 0xe5, 0x5b, 0xb9, 0xb7, 0x42, 0x89, 0x62, 0x68, 0x25, 0xda, 0x52, 0xfe, 0x96, 0x20, 0x5f,
+	0x37, 0xdf, 0x5a, 0xf7, 0x9c, 0x87, 0x91, 0x37, 0x59, 0xa1, 0x37, 0x4b, 0xb4, 0x37, 0x9b, 0x90,
+	0xbf, 0x31, 0xef, 0x47, 0x91, 0x8f, 0x64, 0xb1, 0x20, 0x0f, 0xfe, 0xcc, 0x42, 0xae, 0xed, 0x5a,
+	0xce, 0x23, 0x1d, 0xd8, 0x82, 0x65, 0xf5, 0xc1, 0xf4, 0x4c, 0x27, 0xf0, 0x20, 0x58, 0xa1, 0x0a,
+	0x14, 0xf4, 0xc1, 0x43, 0xcf, 0xb3, 0x1c, 0xe2, 0x44, 0xce, 0x08, 0x97, 0x48, 0x86, 0x62, 0xa3,
+	0x77, 0xf7, 0xe3, 0x00, 0x7f, 0x6e, 0xff, 0x3b, 0x45, 0x6b, 0x7c, 0x86, 0x6d, 0x93, 0x33, 0xdf,
+	0xbf, 0x68, 0x8d, 0xcf, 0xae, 0x4d, 0xd7, 0xfd, 0xc9, 0x76, 0xba, 0x81, 0x67, 0xd1, 0x9a, 0x0d,
+	0x4d, 0x31, 0x35, 0x34, 0x2b, 0xa9, 0xa1, 0x01, 0x3e, 0x34, 0x7f, 0x48, 0xb0, 0xee, 0xeb, 0xc4,
+	0xa0, 0x0c, 0xeb, 0xfd, 0xc8, 0x72, 0xbd, 0x49, 0x5c, 0x24, 0x3a, 0x2e, 0x94, 0xff, 0x4b, 0xf1,
+	0xfe, 0xe7, 0x12, 0xfc, 0xcf, 0x27, 0xf8, 0xbf, 0x3c, 0xed, 0xbf, 0xd2, 0x06, 0x44, 0x03, 0x73,
+	0x87, 0xf6, 0xc0, 0xb5, 0xd0, 0x71, 0x98, 0x5c, 0x18, 0x59, 0xe9, 0x7c, 0xed, 0x2c, 0x2a, 0x4c,
+	0xb2, 0x1d, 0x66, 0x5b, 0x05, 0x0a, 0xaf, 0x2c, 0xd7, 0x35, 0xdf, 0x85, 0xe5, 0x17, 0x2e, 0x95,
+	0xe7, 0xb0, 0xf9, 0x7a, 0x64, 0x39, 0x63, 0xac, 0xf5, 0x62, 0xac, 0xd7, 0x42, 0x97, 0x99, 0xd4,
+	0x50, 0x7e, 0x81, 0xa7, 0x8c, 0xdc, 0x8c, 0x10, 0x20, 0x05, 0x72, 0x35, 0xd3, 0x33, 0x49, 0x0c,
+	0x57, 0xcf, 0x4b, 0x93, 0xfb, 0xc4, 0x51, 0x72, 0xa6, 0x7c, 0x05, 0x32, 0x65, 0x3d, 0x8c, 0x57,
+	0x88, 0x95, 0x0e, 0xa9, 0x34, 0x1d, 0x52, 0xe5, 0x77, 0x09, 0x76, 0x84, 0x57, 0x17, 0x09, 0xff,
+	0x04, 0x9e, 0xfa, 0x49, 0x96, 0x16, 0xe5, 0x5b, 0xd8, 0x62, 0x05, 0x67, 0xf5, 0xa1, 0x5f, 0xc2,
+	0xc7, 0x7e, 0x29, 0x60, 0xd5, 0x61, 0x56, 0x25, 0x60, 0x99, 0x4a, 0xc6, 0x2c, 0x93, 0x8c, 0x26,
+	0xec, 0xc5, 0x29, 0x9b, 0x21, 0xde, 0x1b, 0xcb, 0xe9, 0xfd, 0x30, 0x9e, 0x05, 0xde, 0x11, 0xec,
+	0xc5, 0x29, 0x9b, 0x55, 0x1e, 0x20, 0x2a, 0x0f, 0x8a, 0xc1, 0x77, 0xff, 0x1e, 0x0e, 0x45, 0x66,
+	0xff, 0x47, 0xfe, 0x26, 0x7a, 0xf5, 0x33, 0x1c, 0x25, 0xab, 0x9f, 0xa7, 0x6f, 0x27, 0x41, 0x43,
+	0x20, 0x4f, 0x61, 0x52, 0x4e, 0xff, 0x0a, 0x5b, 0xac, 0xe0, 0xac, 0x70, 0x1d, 0x4e, 0xd5, 0x1e,
+	0x75, 0x9f, 0xd8, 0x0a, 0x80, 0x56, 0x61, 0xc7, 0xcf, 0x55, 0xb2, 0x49, 0x5a, 0x77, 0x52, 0x1a,
+	0x09, 0xdf, 0x40, 0xc5, 0x85, 0x5d, 0xb1, 0x92, 0x79, 0x86, 0x78, 0x1a, 0x39, 0xd1, 0x90, 0x82,
+	0xdc, 0xc7, 0x90, 0xa5, 0x06, 0x0d, 0x06, 0x39, 0xa5, 0x64, 0x71, 0xc8, 0xc9, 0x6c, 0x93, 0x82,
+	0xdc, 0x1f, 0x86, 0xb2, 0xd4, 0x30, 0xc4, 0x20, 0xa7, 0x94, 0xcc, 0x13, 0xf9, 0x69, 0xd8, 0x81,
+	0x53, 0xf3, 0x7a, 0x00, 0xdb, 0x9c, 0xe4, 0x7c, 0x63, 0xfa, 0x91, 0xda, 0xed, 0x12, 0x63, 0x2d,
+	0x3b, 0xe5, 0x21, 0xc1, 0x33, 0x1b, 0x16, 0xd1, 0x6b, 0x44, 0x73, 0xce, 0x08, 0x56, 0xca, 0x7b,
+	0x90, 0x45, 0x4a, 0xe6, 0x89, 0xfb, 0x5b, 0xd8, 0x33, 0xac, 0xbe, 0xfd, 0xe0, 0xc7, 0xe9, 0xd2,
+	0xb1, 0xfb, 0x69, 0xe0, 0x2b, 0x50, 0x20, 0xb2, 0x11, 0xfa, 0x70, 0xa9, 0x3c, 0xc0, 0xb3, 0x58,
+	0x5d, 0x8b, 0x68, 0x76, 0x84, 0xd9, 0x24, 0x25, 0x45, 0x3f, 0x68, 0x76, 0x94, 0xe0, 0x3c, 0x71,
+	0x7d, 0x0d, 0xb2, 0x5f, 0x22, 0xc4, 0x1e, 0xa6, 0x54, 0x49, 0x71, 0x15, 0x30, 0x30, 0xc5, 0x09,
+	0x2b, 0x95, 0xd1, 0xb0, 0x90, 0xee, 0x40, 0x6c, 0x7e, 0x68, 0x47, 0x66, 0x95, 0x2c, 0x0e, 0xf9,
+	0x87, 0x76, 0x64, 0x56, 0xc9, 0x3c, 0x91, 0xb7, 0xe1, 0x80, 0x32, 0x4a, 0xb1, 0xe6, 0x24, 0xfc,
+	0x0c, 0xe5, 0xce, 0x72, 0x94, 0x5b, 0x19, 0x83, 0x92, 0xa4, 0x76, 0x21, 0x9d, 0x3a, 0xb5, 0x28,
+	0xa3, 0x4e, 0xbd, 0xa0, 0xaa, 0xd4, 0x48, 0xa7, 0xc6, 0x9d, 0xa9, 0x65, 0xa7, 0x81, 0xc3, 0xaa,
+	0x89, 0xcc, 0xa4, 0xd9, 0x05, 0xcb, 0xa0, 0x57, 0x73, 0x6a, 0xe6, 0x89, 0xfc, 0x9b, 0xb0, 0x57,
+	0x63, 0xab, 0xb8, 0xbd, 0xa6, 0xc2, 0x8f, 0x7b, 0x68, 0xa2, 0x4e, 0x2d, 0xd0, 0x34, 0x47, 0x0f,
+	0x3e, 0xfd, 0x57, 0x0a, 0xb4, 0xa2, 0x55, 0x28, 0xb4, 0x1b, 0x2f, 0x1b, 0x57, 0xdf, 0x35, 0xca,
+	0x19, 0xbc, 0x68, 0xb6, 0xab, 0x55, 0xad, 0xd9, 0x2c, 0x4b, 0x78, 0x71, 0xa9, 0xea, 0xf5, 0xb6,
+	0xa1, 0x95, 0xb3, 0x68, 0x1d, 0x9e, 0x34, 0x35, 0xe3, 0x46, 0xaf, 0x6a, 0x1d, 0xcd, 0x30, 0xae,
+	0x8c, 0xf2, 0x12, 0x42, 0x50, 0xba, 0x56, 0x0d, 0xf5, 0x55, 0xb3, 0xa3, 0x37, 0x6e, 0xd4, 0xba,
+	0x5e, 0x2b, 0xe7, 0xd0, 0x06, 0xac, 0xe9, 0xf5, 0xba, 0xf6, 0x42, 0xad, 0x77, 0x0c, 0xed, 0x75,
+	0x5b, 0x6b, 0xb6, 0xca, 0x79, 0xbc, 0x59, 0x57, 0x2f, 0xb4, 0x7a, 0xa7, 0x71, 0xd5, 0xea, 0x68,
+	0x6f, 0xf4, 0x66, 0xab, 0xbc, 0x8c, 0x6f, 0xb7, 0x9b, 0x9a, 0x41, 0xed, 0x15, 0xd0, 0x36, 0x6c,
+	0x90, 0x3d, 0xb5, 0x6e, 0x68, 0x6a, 0xed, 0xd6, 0xdf, 0x6f, 0x96, 0x8b, 0xd1, 0xc1, 0x8d, 0x66,
+	0xe8, 0x97, 0xb7, 0x9d, 0x10, 0xd6, 0x0a, 0xaa, 0xc0, 0xa6, 0xaf, 0x9a, 0xb9, 0x02, 0xf8, 0xa4,
+	0x76, 0xd1, 0xb9, 0xba, 0xd6, 0x0c, 0xb5, 0xa5, 0x5f, 0x35, 0x3a, 0x97, 0x6a, 0x8b, 0xdc, 0x59,
+	0x3d, 0xff, 0x6b, 0x1d, 0x0a, 0xea, 0xdd, 0x9d, 0x3d, 0x1a, 0x78, 0x48, 0x07, 0x98, 0xfc, 0x5c,
+	0x80, 0x76, 0x26, 0xb1, 0xe5, 0x7e, 0xdd, 0x90, 0x77, 0xc5, 0x87, 0xfe, 0x57, 0x52, 0x32, 0xc8,
+	0x80, 0x27, 0x53, 0xd4, 0x1f, 0xed, 0x4d, 0x2e, 0x88, 0x7e, 0x3b, 0x90, 0x9f, 0xc5, 0x9e, 0x47,
+	0x3a, 0xdb, 0x50, 0x9a, 0x26, 0xba, 0x88, 0xba, 0x24, 0xe4, 0xca, 0xf2, 0x7e, 0xbc, 0x40, 0xa4,
+	0xb6, 0x0b, 0x1b, 0x02, 0xb2, 0x8f, 0x8e, 0x84, 0x80, 0x18, 0x1a, 0x26, 0x1f, 0xa7, 0x48, 0x45,
+	0x56, 0xfa, 0xb0, 0x25, 0x66, 0xbf, 0xe8, 0x84, 0xa2, 0xff, 0x49, 0x64, 0x5b, 0x3e, 0x4d, 0x17,
+	0xa4, 0xcd, 0x89, 0xc9, 0x2b, 0x6d, 0x2e, 0x91, 0x2b, 0xd3, 0xe6, 0x92, 0x79, 0xb0, 0x92, 0x41,
+	0xbf, 0xc1, 0x6e, 0x12, 0xab, 0x44, 0x5f, 0x24, 0xeb, 0x62, 0xa3, 0x7a, 0xf6, 0x58, 0x71, 0x3a,
+	0x37, 0xa6, 0x09, 0x23, 0x62, 0x13, 0x8a, 0x9d, 0xcd, 0xe9, 0xdc, 0x10, 0x73, 0x4d, 0x25, 0x83,
+	0xde, 0xc0, 0x1a, 0x33, 0xaf, 0x23, 0x2e, 0xa5, 0x38, 0xc5, 0x07, 0x09, 0x12, 0x91, 0xe6, 0x77,
+	0xb0, 0x29, 0x22, 0x87, 0xe8, 0x98, 0xfd, 0xc8, 0x42, 0x06, 0x2a, 0x3f, 0x4f, 0x13, 0x8b, 0x31,
+	0x14, 0x4d, 0x0e, 0x31, 0x86, 0xd8, 0xf1, 0x24, 0xc6, 0x10, 0x37, 0x80, 0x70, 0x86, 0x22, 0xea,
+	0x15, 0x63, 0x88, 0xe5, 0x77, 0x31, 0x86, 0x38, 0x06, 0xa7, 0x64, 0x90, 0x09, 0x88, 0xe7, 0x23,
+	0xe8, 0x70, 0x72, 0x3f, 0x96, 0xf2, 0xc8, 0x47, 0xc9, 0x42, 0x91, 0x89, 0x21, 0x6c, 0xc7, 0x70,
+	0x06, 0x44, 0x95, 0x45, 0x32, 0x45, 0x91, 0x3f, 0x79, 0x84, 0x24, 0x97, 0xc0, 0xd1, 0x93, 0xc7,
+	0x25, 0x30, 0xfb, 0xac, 0x72, 0x09, 0xcc, 0xbd, 0x96, 0x74, 0x02, 0x4f, 0xf4, 0x72, 0x09, 0xcc,
+	0x29, 0x3e, 0x48, 0x90, 0xa0, 0xdb, 0xa6, 0x80, 0x04, 0xd0, 0x6d, 0x33, 0x9e, 0x65, 0xc8, 0xc7,
+	0x29, 0x52, 0x7c, 0x52, 0x4d, 0x4f, 0xec, 0x48, 0xac, 0x20, 0xbd, 0x4c, 0xc4, 0x83, 0x3f, 0x67,
+	0x28, 0xa1, 0x4c, 0x84, 0x53, 0x7c, 0x8c, 0x21, 0x51, 0x99, 0x8c, 0xa7, 0xe8, 0x17, 0x33, 0xfd,
+	0xa2, 0xcf, 0x84, 0x7a, 0xc4, 0xa3, 0xb7, 0xfc, 0xf9, 0xe3, 0x84, 0x99, 0xc2, 0x61, 0x86, 0x43,
+	0xa6, 0x70, 0xc4, 0x13, 0x28, 0x53, 0x38, 0x31, 0xf3, 0x25, 0x5d, 0x38, 0xdc, 0x08, 0xc7, 0x17,
+	0x4e, 0xdc, 0xbc, 0xc8, 0x17, 0x4e, 0xec, 0x3c, 0xa8, 0x64, 0xde, 0x2e, 0x93, 0xff, 0x26, 0x7e,
+	0xf9, 0x5f, 0x00, 0x00, 0x00, 0xff, 0xff, 0xea, 0x78, 0xf1, 0x31, 0x5f, 0x1c, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1785,11 +2729,23 @@ type AccountClient interface {
 	VerifyUserPasswordByUsername(ctx context.Context, in *VerifyUserPasswordByUsernameRequest, opts ...grpc.CallOption) (*VerifyUserPasswordByUsernameResponse, error)
 	// 标签操作
 	QueryLabelByID(ctx context.Context, in *QueryLabelByIDRequest, opts ...grpc.CallOption) (*QueryLabelByIDResponse, error)
-	UpdateLabelByID(ctx context.Context, in *UpdateLabelByIDRequest, opts ...grpc.CallOption) (*UpdateLabelByIDResponse, error)
 	DeleteLabelByID(ctx context.Context, in *DeleteLabelByIDRequest, opts ...grpc.CallOption) (*DeleteLabelByIDResponse, error)
-	QueryLabelByOwner(ctx context.Context, in *QueryLabelByOwnerRequest, opts ...grpc.CallOption) (*QueryLabelByOwnerResponse, error)
-	CreateLabelByOwner(ctx context.Context, in *CreateLabelByOwnerRequest, opts ...grpc.CallOption) (*CreateLabelByOwnerResponse, error)
-	RemoveLabelByOwner(ctx context.Context, in *RemoveLabelByOwnerRequest, opts ...grpc.CallOption) (*RemoveLabelByOwnerResponse, error)
+	UpdateLabelClassByID(ctx context.Context, in *UpdateLabelClassByIDRequest, opts ...grpc.CallOption) (*UpdateLabelClassByIDResponse, error)
+	UpdateLabelStateByID(ctx context.Context, in *UpdateLabelStateByIDRequest, opts ...grpc.CallOption) (*UpdateLabelStateByIDResponse, error)
+	UpdateLabelValueByID(ctx context.Context, in *UpdateLabelValueByIDRequest, opts ...grpc.CallOption) (*UpdateLabelValueByIDResponse, error)
+	// 标签关系操作
+	AddLabelToUserByID(ctx context.Context, in *AddLabelToUserByIDRequest, opts ...grpc.CallOption) (*AddLabelToUserByIDResponse, error)
+	RemoveLabelFromUserByID(ctx context.Context, in *RemoveLabelFromUserByIDRequest, opts ...grpc.CallOption) (*RemoveLabelFromUserByIDResponse, error)
+	// 组操作
+	QueryGroupByID(ctx context.Context, in *QueryGroupByIDRequest, opts ...grpc.CallOption) (*QueryGroupByIDResponse, error)
+	DeleteGroupByID(ctx context.Context, in *DeleteGroupByIDRequest, opts ...grpc.CallOption) (*DeleteGroupByIDResponse, error)
+	UpdateGroupNameByID(ctx context.Context, in *UpdateGroupNameByIDRequest, opts ...grpc.CallOption) (*UpdateGroupNameByIDResponse, error)
+	UpdateGroupClassByID(ctx context.Context, in *UpdateGroupClassByIDRequest, opts ...grpc.CallOption) (*UpdateGroupClassByIDResponse, error)
+	UpdateGroupStateByID(ctx context.Context, in *UpdateGroupStateByIDRequest, opts ...grpc.CallOption) (*UpdateGroupStateByIDResponse, error)
+	UpdateGroupDescriptionByID(ctx context.Context, in *UpdateGroupDescriptionByIDRequest, opts ...grpc.CallOption) (*UpdateGroupDescriptionByIDResponse, error)
+	// 组关系操作
+	AddUserToGroupByID(ctx context.Context, in *AddUserToGroupByIDRequest, opts ...grpc.CallOption) (*AddUserToGroupByIDResponse, error)
+	RemoveUserFromGroupByID(ctx context.Context, in *RemoveUserFromGroupByIDRequest, opts ...grpc.CallOption) (*RemoveUserFromGroupByIDResponse, error)
 }
 
 type accountClient struct {
@@ -1872,15 +2828,6 @@ func (c *accountClient) QueryLabelByID(ctx context.Context, in *QueryLabelByIDRe
 	return out, nil
 }
 
-func (c *accountClient) UpdateLabelByID(ctx context.Context, in *UpdateLabelByIDRequest, opts ...grpc.CallOption) (*UpdateLabelByIDResponse, error) {
-	out := new(UpdateLabelByIDResponse)
-	err := c.cc.Invoke(ctx, "/standard.Account/UpdateLabelByID", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *accountClient) DeleteLabelByID(ctx context.Context, in *DeleteLabelByIDRequest, opts ...grpc.CallOption) (*DeleteLabelByIDResponse, error) {
 	out := new(DeleteLabelByIDResponse)
 	err := c.cc.Invoke(ctx, "/standard.Account/DeleteLabelByID", in, out, opts...)
@@ -1890,27 +2837,117 @@ func (c *accountClient) DeleteLabelByID(ctx context.Context, in *DeleteLabelByID
 	return out, nil
 }
 
-func (c *accountClient) QueryLabelByOwner(ctx context.Context, in *QueryLabelByOwnerRequest, opts ...grpc.CallOption) (*QueryLabelByOwnerResponse, error) {
-	out := new(QueryLabelByOwnerResponse)
-	err := c.cc.Invoke(ctx, "/standard.Account/QueryLabelByOwner", in, out, opts...)
+func (c *accountClient) UpdateLabelClassByID(ctx context.Context, in *UpdateLabelClassByIDRequest, opts ...grpc.CallOption) (*UpdateLabelClassByIDResponse, error) {
+	out := new(UpdateLabelClassByIDResponse)
+	err := c.cc.Invoke(ctx, "/standard.Account/UpdateLabelClassByID", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *accountClient) CreateLabelByOwner(ctx context.Context, in *CreateLabelByOwnerRequest, opts ...grpc.CallOption) (*CreateLabelByOwnerResponse, error) {
-	out := new(CreateLabelByOwnerResponse)
-	err := c.cc.Invoke(ctx, "/standard.Account/CreateLabelByOwner", in, out, opts...)
+func (c *accountClient) UpdateLabelStateByID(ctx context.Context, in *UpdateLabelStateByIDRequest, opts ...grpc.CallOption) (*UpdateLabelStateByIDResponse, error) {
+	out := new(UpdateLabelStateByIDResponse)
+	err := c.cc.Invoke(ctx, "/standard.Account/UpdateLabelStateByID", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *accountClient) RemoveLabelByOwner(ctx context.Context, in *RemoveLabelByOwnerRequest, opts ...grpc.CallOption) (*RemoveLabelByOwnerResponse, error) {
-	out := new(RemoveLabelByOwnerResponse)
-	err := c.cc.Invoke(ctx, "/standard.Account/RemoveLabelByOwner", in, out, opts...)
+func (c *accountClient) UpdateLabelValueByID(ctx context.Context, in *UpdateLabelValueByIDRequest, opts ...grpc.CallOption) (*UpdateLabelValueByIDResponse, error) {
+	out := new(UpdateLabelValueByIDResponse)
+	err := c.cc.Invoke(ctx, "/standard.Account/UpdateLabelValueByID", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accountClient) AddLabelToUserByID(ctx context.Context, in *AddLabelToUserByIDRequest, opts ...grpc.CallOption) (*AddLabelToUserByIDResponse, error) {
+	out := new(AddLabelToUserByIDResponse)
+	err := c.cc.Invoke(ctx, "/standard.Account/AddLabelToUserByID", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accountClient) RemoveLabelFromUserByID(ctx context.Context, in *RemoveLabelFromUserByIDRequest, opts ...grpc.CallOption) (*RemoveLabelFromUserByIDResponse, error) {
+	out := new(RemoveLabelFromUserByIDResponse)
+	err := c.cc.Invoke(ctx, "/standard.Account/RemoveLabelFromUserByID", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accountClient) QueryGroupByID(ctx context.Context, in *QueryGroupByIDRequest, opts ...grpc.CallOption) (*QueryGroupByIDResponse, error) {
+	out := new(QueryGroupByIDResponse)
+	err := c.cc.Invoke(ctx, "/standard.Account/QueryGroupByID", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accountClient) DeleteGroupByID(ctx context.Context, in *DeleteGroupByIDRequest, opts ...grpc.CallOption) (*DeleteGroupByIDResponse, error) {
+	out := new(DeleteGroupByIDResponse)
+	err := c.cc.Invoke(ctx, "/standard.Account/DeleteGroupByID", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accountClient) UpdateGroupNameByID(ctx context.Context, in *UpdateGroupNameByIDRequest, opts ...grpc.CallOption) (*UpdateGroupNameByIDResponse, error) {
+	out := new(UpdateGroupNameByIDResponse)
+	err := c.cc.Invoke(ctx, "/standard.Account/UpdateGroupNameByID", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accountClient) UpdateGroupClassByID(ctx context.Context, in *UpdateGroupClassByIDRequest, opts ...grpc.CallOption) (*UpdateGroupClassByIDResponse, error) {
+	out := new(UpdateGroupClassByIDResponse)
+	err := c.cc.Invoke(ctx, "/standard.Account/UpdateGroupClassByID", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accountClient) UpdateGroupStateByID(ctx context.Context, in *UpdateGroupStateByIDRequest, opts ...grpc.CallOption) (*UpdateGroupStateByIDResponse, error) {
+	out := new(UpdateGroupStateByIDResponse)
+	err := c.cc.Invoke(ctx, "/standard.Account/UpdateGroupStateByID", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accountClient) UpdateGroupDescriptionByID(ctx context.Context, in *UpdateGroupDescriptionByIDRequest, opts ...grpc.CallOption) (*UpdateGroupDescriptionByIDResponse, error) {
+	out := new(UpdateGroupDescriptionByIDResponse)
+	err := c.cc.Invoke(ctx, "/standard.Account/UpdateGroupDescriptionByID", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accountClient) AddUserToGroupByID(ctx context.Context, in *AddUserToGroupByIDRequest, opts ...grpc.CallOption) (*AddUserToGroupByIDResponse, error) {
+	out := new(AddUserToGroupByIDResponse)
+	err := c.cc.Invoke(ctx, "/standard.Account/AddUserToGroupByID", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accountClient) RemoveUserFromGroupByID(ctx context.Context, in *RemoveUserFromGroupByIDRequest, opts ...grpc.CallOption) (*RemoveUserFromGroupByIDResponse, error) {
+	out := new(RemoveUserFromGroupByIDResponse)
+	err := c.cc.Invoke(ctx, "/standard.Account/RemoveUserFromGroupByID", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1929,11 +2966,23 @@ type AccountServer interface {
 	VerifyUserPasswordByUsername(context.Context, *VerifyUserPasswordByUsernameRequest) (*VerifyUserPasswordByUsernameResponse, error)
 	// 标签操作
 	QueryLabelByID(context.Context, *QueryLabelByIDRequest) (*QueryLabelByIDResponse, error)
-	UpdateLabelByID(context.Context, *UpdateLabelByIDRequest) (*UpdateLabelByIDResponse, error)
 	DeleteLabelByID(context.Context, *DeleteLabelByIDRequest) (*DeleteLabelByIDResponse, error)
-	QueryLabelByOwner(context.Context, *QueryLabelByOwnerRequest) (*QueryLabelByOwnerResponse, error)
-	CreateLabelByOwner(context.Context, *CreateLabelByOwnerRequest) (*CreateLabelByOwnerResponse, error)
-	RemoveLabelByOwner(context.Context, *RemoveLabelByOwnerRequest) (*RemoveLabelByOwnerResponse, error)
+	UpdateLabelClassByID(context.Context, *UpdateLabelClassByIDRequest) (*UpdateLabelClassByIDResponse, error)
+	UpdateLabelStateByID(context.Context, *UpdateLabelStateByIDRequest) (*UpdateLabelStateByIDResponse, error)
+	UpdateLabelValueByID(context.Context, *UpdateLabelValueByIDRequest) (*UpdateLabelValueByIDResponse, error)
+	// 标签关系操作
+	AddLabelToUserByID(context.Context, *AddLabelToUserByIDRequest) (*AddLabelToUserByIDResponse, error)
+	RemoveLabelFromUserByID(context.Context, *RemoveLabelFromUserByIDRequest) (*RemoveLabelFromUserByIDResponse, error)
+	// 组操作
+	QueryGroupByID(context.Context, *QueryGroupByIDRequest) (*QueryGroupByIDResponse, error)
+	DeleteGroupByID(context.Context, *DeleteGroupByIDRequest) (*DeleteGroupByIDResponse, error)
+	UpdateGroupNameByID(context.Context, *UpdateGroupNameByIDRequest) (*UpdateGroupNameByIDResponse, error)
+	UpdateGroupClassByID(context.Context, *UpdateGroupClassByIDRequest) (*UpdateGroupClassByIDResponse, error)
+	UpdateGroupStateByID(context.Context, *UpdateGroupStateByIDRequest) (*UpdateGroupStateByIDResponse, error)
+	UpdateGroupDescriptionByID(context.Context, *UpdateGroupDescriptionByIDRequest) (*UpdateGroupDescriptionByIDResponse, error)
+	// 组关系操作
+	AddUserToGroupByID(context.Context, *AddUserToGroupByIDRequest) (*AddUserToGroupByIDResponse, error)
+	RemoveUserFromGroupByID(context.Context, *RemoveUserFromGroupByIDRequest) (*RemoveUserFromGroupByIDResponse, error)
 }
 
 // UnimplementedAccountServer can be embedded to have forward compatible implementations.
@@ -1964,20 +3013,47 @@ func (*UnimplementedAccountServer) VerifyUserPasswordByUsername(ctx context.Cont
 func (*UnimplementedAccountServer) QueryLabelByID(ctx context.Context, req *QueryLabelByIDRequest) (*QueryLabelByIDResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryLabelByID not implemented")
 }
-func (*UnimplementedAccountServer) UpdateLabelByID(ctx context.Context, req *UpdateLabelByIDRequest) (*UpdateLabelByIDResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateLabelByID not implemented")
-}
 func (*UnimplementedAccountServer) DeleteLabelByID(ctx context.Context, req *DeleteLabelByIDRequest) (*DeleteLabelByIDResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteLabelByID not implemented")
 }
-func (*UnimplementedAccountServer) QueryLabelByOwner(ctx context.Context, req *QueryLabelByOwnerRequest) (*QueryLabelByOwnerResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryLabelByOwner not implemented")
+func (*UnimplementedAccountServer) UpdateLabelClassByID(ctx context.Context, req *UpdateLabelClassByIDRequest) (*UpdateLabelClassByIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateLabelClassByID not implemented")
 }
-func (*UnimplementedAccountServer) CreateLabelByOwner(ctx context.Context, req *CreateLabelByOwnerRequest) (*CreateLabelByOwnerResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateLabelByOwner not implemented")
+func (*UnimplementedAccountServer) UpdateLabelStateByID(ctx context.Context, req *UpdateLabelStateByIDRequest) (*UpdateLabelStateByIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateLabelStateByID not implemented")
 }
-func (*UnimplementedAccountServer) RemoveLabelByOwner(ctx context.Context, req *RemoveLabelByOwnerRequest) (*RemoveLabelByOwnerResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RemoveLabelByOwner not implemented")
+func (*UnimplementedAccountServer) UpdateLabelValueByID(ctx context.Context, req *UpdateLabelValueByIDRequest) (*UpdateLabelValueByIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateLabelValueByID not implemented")
+}
+func (*UnimplementedAccountServer) AddLabelToUserByID(ctx context.Context, req *AddLabelToUserByIDRequest) (*AddLabelToUserByIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddLabelToUserByID not implemented")
+}
+func (*UnimplementedAccountServer) RemoveLabelFromUserByID(ctx context.Context, req *RemoveLabelFromUserByIDRequest) (*RemoveLabelFromUserByIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemoveLabelFromUserByID not implemented")
+}
+func (*UnimplementedAccountServer) QueryGroupByID(ctx context.Context, req *QueryGroupByIDRequest) (*QueryGroupByIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryGroupByID not implemented")
+}
+func (*UnimplementedAccountServer) DeleteGroupByID(ctx context.Context, req *DeleteGroupByIDRequest) (*DeleteGroupByIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteGroupByID not implemented")
+}
+func (*UnimplementedAccountServer) UpdateGroupNameByID(ctx context.Context, req *UpdateGroupNameByIDRequest) (*UpdateGroupNameByIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateGroupNameByID not implemented")
+}
+func (*UnimplementedAccountServer) UpdateGroupClassByID(ctx context.Context, req *UpdateGroupClassByIDRequest) (*UpdateGroupClassByIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateGroupClassByID not implemented")
+}
+func (*UnimplementedAccountServer) UpdateGroupStateByID(ctx context.Context, req *UpdateGroupStateByIDRequest) (*UpdateGroupStateByIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateGroupStateByID not implemented")
+}
+func (*UnimplementedAccountServer) UpdateGroupDescriptionByID(ctx context.Context, req *UpdateGroupDescriptionByIDRequest) (*UpdateGroupDescriptionByIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateGroupDescriptionByID not implemented")
+}
+func (*UnimplementedAccountServer) AddUserToGroupByID(ctx context.Context, req *AddUserToGroupByIDRequest) (*AddUserToGroupByIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddUserToGroupByID not implemented")
+}
+func (*UnimplementedAccountServer) RemoveUserFromGroupByID(ctx context.Context, req *RemoveUserFromGroupByIDRequest) (*RemoveUserFromGroupByIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemoveUserFromGroupByID not implemented")
 }
 
 func RegisterAccountServer(s *grpc.Server, srv AccountServer) {
@@ -2128,24 +3204,6 @@ func _Account_QueryLabelByID_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Account_UpdateLabelByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateLabelByIDRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AccountServer).UpdateLabelByID(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/standard.Account/UpdateLabelByID",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountServer).UpdateLabelByID(ctx, req.(*UpdateLabelByIDRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Account_DeleteLabelByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DeleteLabelByIDRequest)
 	if err := dec(in); err != nil {
@@ -2164,56 +3222,236 @@ func _Account_DeleteLabelByID_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Account_QueryLabelByOwner_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryLabelByOwnerRequest)
+func _Account_UpdateLabelClassByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateLabelClassByIDRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AccountServer).QueryLabelByOwner(ctx, in)
+		return srv.(AccountServer).UpdateLabelClassByID(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/standard.Account/QueryLabelByOwner",
+		FullMethod: "/standard.Account/UpdateLabelClassByID",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountServer).QueryLabelByOwner(ctx, req.(*QueryLabelByOwnerRequest))
+		return srv.(AccountServer).UpdateLabelClassByID(ctx, req.(*UpdateLabelClassByIDRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Account_CreateLabelByOwner_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateLabelByOwnerRequest)
+func _Account_UpdateLabelStateByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateLabelStateByIDRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AccountServer).CreateLabelByOwner(ctx, in)
+		return srv.(AccountServer).UpdateLabelStateByID(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/standard.Account/CreateLabelByOwner",
+		FullMethod: "/standard.Account/UpdateLabelStateByID",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountServer).CreateLabelByOwner(ctx, req.(*CreateLabelByOwnerRequest))
+		return srv.(AccountServer).UpdateLabelStateByID(ctx, req.(*UpdateLabelStateByIDRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Account_RemoveLabelByOwner_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RemoveLabelByOwnerRequest)
+func _Account_UpdateLabelValueByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateLabelValueByIDRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AccountServer).RemoveLabelByOwner(ctx, in)
+		return srv.(AccountServer).UpdateLabelValueByID(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/standard.Account/RemoveLabelByOwner",
+		FullMethod: "/standard.Account/UpdateLabelValueByID",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountServer).RemoveLabelByOwner(ctx, req.(*RemoveLabelByOwnerRequest))
+		return srv.(AccountServer).UpdateLabelValueByID(ctx, req.(*UpdateLabelValueByIDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Account_AddLabelToUserByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddLabelToUserByIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServer).AddLabelToUserByID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/standard.Account/AddLabelToUserByID",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServer).AddLabelToUserByID(ctx, req.(*AddLabelToUserByIDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Account_RemoveLabelFromUserByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RemoveLabelFromUserByIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServer).RemoveLabelFromUserByID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/standard.Account/RemoveLabelFromUserByID",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServer).RemoveLabelFromUserByID(ctx, req.(*RemoveLabelFromUserByIDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Account_QueryGroupByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGroupByIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServer).QueryGroupByID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/standard.Account/QueryGroupByID",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServer).QueryGroupByID(ctx, req.(*QueryGroupByIDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Account_DeleteGroupByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteGroupByIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServer).DeleteGroupByID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/standard.Account/DeleteGroupByID",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServer).DeleteGroupByID(ctx, req.(*DeleteGroupByIDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Account_UpdateGroupNameByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateGroupNameByIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServer).UpdateGroupNameByID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/standard.Account/UpdateGroupNameByID",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServer).UpdateGroupNameByID(ctx, req.(*UpdateGroupNameByIDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Account_UpdateGroupClassByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateGroupClassByIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServer).UpdateGroupClassByID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/standard.Account/UpdateGroupClassByID",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServer).UpdateGroupClassByID(ctx, req.(*UpdateGroupClassByIDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Account_UpdateGroupStateByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateGroupStateByIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServer).UpdateGroupStateByID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/standard.Account/UpdateGroupStateByID",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServer).UpdateGroupStateByID(ctx, req.(*UpdateGroupStateByIDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Account_UpdateGroupDescriptionByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateGroupDescriptionByIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServer).UpdateGroupDescriptionByID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/standard.Account/UpdateGroupDescriptionByID",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServer).UpdateGroupDescriptionByID(ctx, req.(*UpdateGroupDescriptionByIDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Account_AddUserToGroupByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddUserToGroupByIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServer).AddUserToGroupByID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/standard.Account/AddUserToGroupByID",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServer).AddUserToGroupByID(ctx, req.(*AddUserToGroupByIDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Account_RemoveUserFromGroupByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RemoveUserFromGroupByIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServer).RemoveUserFromGroupByID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/standard.Account/RemoveUserFromGroupByID",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServer).RemoveUserFromGroupByID(ctx, req.(*RemoveUserFromGroupByIDRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2255,24 +3493,60 @@ var _Account_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Account_QueryLabelByID_Handler,
 		},
 		{
-			MethodName: "UpdateLabelByID",
-			Handler:    _Account_UpdateLabelByID_Handler,
-		},
-		{
 			MethodName: "DeleteLabelByID",
 			Handler:    _Account_DeleteLabelByID_Handler,
 		},
 		{
-			MethodName: "QueryLabelByOwner",
-			Handler:    _Account_QueryLabelByOwner_Handler,
+			MethodName: "UpdateLabelClassByID",
+			Handler:    _Account_UpdateLabelClassByID_Handler,
 		},
 		{
-			MethodName: "CreateLabelByOwner",
-			Handler:    _Account_CreateLabelByOwner_Handler,
+			MethodName: "UpdateLabelStateByID",
+			Handler:    _Account_UpdateLabelStateByID_Handler,
 		},
 		{
-			MethodName: "RemoveLabelByOwner",
-			Handler:    _Account_RemoveLabelByOwner_Handler,
+			MethodName: "UpdateLabelValueByID",
+			Handler:    _Account_UpdateLabelValueByID_Handler,
+		},
+		{
+			MethodName: "AddLabelToUserByID",
+			Handler:    _Account_AddLabelToUserByID_Handler,
+		},
+		{
+			MethodName: "RemoveLabelFromUserByID",
+			Handler:    _Account_RemoveLabelFromUserByID_Handler,
+		},
+		{
+			MethodName: "QueryGroupByID",
+			Handler:    _Account_QueryGroupByID_Handler,
+		},
+		{
+			MethodName: "DeleteGroupByID",
+			Handler:    _Account_DeleteGroupByID_Handler,
+		},
+		{
+			MethodName: "UpdateGroupNameByID",
+			Handler:    _Account_UpdateGroupNameByID_Handler,
+		},
+		{
+			MethodName: "UpdateGroupClassByID",
+			Handler:    _Account_UpdateGroupClassByID_Handler,
+		},
+		{
+			MethodName: "UpdateGroupStateByID",
+			Handler:    _Account_UpdateGroupStateByID_Handler,
+		},
+		{
+			MethodName: "UpdateGroupDescriptionByID",
+			Handler:    _Account_UpdateGroupDescriptionByID_Handler,
+		},
+		{
+			MethodName: "AddUserToGroupByID",
+			Handler:    _Account_AddUserToGroupByID_Handler,
+		},
+		{
+			MethodName: "RemoveUserFromGroupByID",
+			Handler:    _Account_RemoveUserFromGroupByID_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

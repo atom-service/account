@@ -4,28 +4,46 @@
 ## Table of Contents
 
 - [standard.proto](#standard.proto)
-    - [CreateLabelByOwnerRequest](#standard.CreateLabelByOwnerRequest)
-    - [CreateLabelByOwnerResponse](#standard.CreateLabelByOwnerResponse)
+    - [AddLabelToUserByIDRequest](#standard.AddLabelToUserByIDRequest)
+    - [AddLabelToUserByIDResponse](#standard.AddLabelToUserByIDResponse)
+    - [AddUserToGroupByIDRequest](#standard.AddUserToGroupByIDRequest)
+    - [AddUserToGroupByIDResponse](#standard.AddUserToGroupByIDResponse)
     - [CreateUserRequest](#standard.CreateUserRequest)
     - [CreateUserResponse](#standard.CreateUserResponse)
+    - [DeleteGroupByIDRequest](#standard.DeleteGroupByIDRequest)
+    - [DeleteGroupByIDResponse](#standard.DeleteGroupByIDResponse)
     - [DeleteLabelByIDRequest](#standard.DeleteLabelByIDRequest)
     - [DeleteLabelByIDResponse](#standard.DeleteLabelByIDResponse)
     - [DeleteUserByIDRequest](#standard.DeleteUserByIDRequest)
     - [DeleteUserByIDResponse](#standard.DeleteUserByIDResponse)
     - [Group](#standard.Group)
     - [Label](#standard.Label)
+    - [QueryGroupByIDRequest](#standard.QueryGroupByIDRequest)
+    - [QueryGroupByIDResponse](#standard.QueryGroupByIDResponse)
     - [QueryLabelByIDRequest](#standard.QueryLabelByIDRequest)
     - [QueryLabelByIDResponse](#standard.QueryLabelByIDResponse)
-    - [QueryLabelByOwnerRequest](#standard.QueryLabelByOwnerRequest)
-    - [QueryLabelByOwnerResponse](#standard.QueryLabelByOwnerResponse)
     - [QueryUserByIDRequest](#standard.QueryUserByIDRequest)
     - [QueryUserByIDResponse](#standard.QueryUserByIDResponse)
     - [QueryUserByUsernameRequest](#standard.QueryUserByUsernameRequest)
     - [QueryUserByUsernameResponse](#standard.QueryUserByUsernameResponse)
-    - [RemoveLabelByOwnerRequest](#standard.RemoveLabelByOwnerRequest)
-    - [RemoveLabelByOwnerResponse](#standard.RemoveLabelByOwnerResponse)
-    - [UpdateLabelByIDRequest](#standard.UpdateLabelByIDRequest)
-    - [UpdateLabelByIDResponse](#standard.UpdateLabelByIDResponse)
+    - [RemoveLabelFromUserByIDRequest](#standard.RemoveLabelFromUserByIDRequest)
+    - [RemoveLabelFromUserByIDResponse](#standard.RemoveLabelFromUserByIDResponse)
+    - [RemoveUserFromGroupByIDRequest](#standard.RemoveUserFromGroupByIDRequest)
+    - [RemoveUserFromGroupByIDResponse](#standard.RemoveUserFromGroupByIDResponse)
+    - [UpdateGroupClassByIDRequest](#standard.UpdateGroupClassByIDRequest)
+    - [UpdateGroupClassByIDResponse](#standard.UpdateGroupClassByIDResponse)
+    - [UpdateGroupDescriptionByIDRequest](#standard.UpdateGroupDescriptionByIDRequest)
+    - [UpdateGroupDescriptionByIDResponse](#standard.UpdateGroupDescriptionByIDResponse)
+    - [UpdateGroupNameByIDRequest](#standard.UpdateGroupNameByIDRequest)
+    - [UpdateGroupNameByIDResponse](#standard.UpdateGroupNameByIDResponse)
+    - [UpdateGroupStateByIDRequest](#standard.UpdateGroupStateByIDRequest)
+    - [UpdateGroupStateByIDResponse](#standard.UpdateGroupStateByIDResponse)
+    - [UpdateLabelClassByIDRequest](#standard.UpdateLabelClassByIDRequest)
+    - [UpdateLabelClassByIDResponse](#standard.UpdateLabelClassByIDResponse)
+    - [UpdateLabelStateByIDRequest](#standard.UpdateLabelStateByIDRequest)
+    - [UpdateLabelStateByIDResponse](#standard.UpdateLabelStateByIDResponse)
+    - [UpdateLabelValueByIDRequest](#standard.UpdateLabelValueByIDRequest)
+    - [UpdateLabelValueByIDResponse](#standard.UpdateLabelValueByIDResponse)
     - [UpdateUserPasswordByIDRequest](#standard.UpdateUserPasswordByIDRequest)
     - [UpdateUserPasswordByIDResponse](#standard.UpdateUserPasswordByIDResponse)
     - [User](#standard.User)
@@ -51,25 +69,25 @@
 
 
 
-<a name="standard.CreateLabelByOwnerRequest"></a>
+<a name="standard.AddLabelToUserByIDRequest"></a>
 
-### CreateLabelByOwnerRequest
+### AddLabelToUserByIDRequest
 
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| Owner | [uint64](#uint64) |  |  |
-| Label | [Label](#standard.Label) |  |  |
+| ID | [uint64](#uint64) |  |  |
+| UserID | [uint64](#uint64) |  | 添加标签给用户 谓语是用户 |
 
 
 
 
 
 
-<a name="standard.CreateLabelByOwnerResponse"></a>
+<a name="standard.AddLabelToUserByIDResponse"></a>
 
-### CreateLabelByOwnerResponse
+### AddLabelToUserByIDResponse
 
 
 
@@ -77,6 +95,40 @@
 | ----- | ---- | ----- | ----------- |
 | State | [State](#standard.State) |  |  |
 | Message | [string](#string) |  |  |
+| Data | [bool](#bool) |  |  |
+
+
+
+
+
+
+<a name="standard.AddUserToGroupByIDRequest"></a>
+
+### AddUserToGroupByIDRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| ID | [uint64](#uint64) |  |  |
+| GroupID | [uint64](#uint64) |  | 添加用户到组 组是谓语 |
+
+
+
+
+
+
+<a name="standard.AddUserToGroupByIDResponse"></a>
+
+### AddUserToGroupByIDResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| State | [State](#standard.State) |  |  |
+| Message | [string](#string) |  |  |
+| Data | [bool](#bool) |  |  |
 
 
 
@@ -118,6 +170,38 @@
 
 
 
+<a name="standard.DeleteGroupByIDRequest"></a>
+
+### DeleteGroupByIDRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| ID | [uint64](#uint64) |  |  |
+
+
+
+
+
+
+<a name="standard.DeleteGroupByIDResponse"></a>
+
+### DeleteGroupByIDResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| State | [State](#standard.State) |  |  |
+| Message | [string](#string) |  |  |
+| Data | [bool](#bool) |  |  |
+
+
+
+
+
+
 <a name="standard.DeleteLabelByIDRequest"></a>
 
 ### DeleteLabelByIDRequest
@@ -143,6 +227,7 @@
 | ----- | ---- | ----- | ----------- |
 | State | [State](#standard.State) |  |  |
 | Message | [string](#string) |  |  |
+| Data | [bool](#bool) |  |  |
 
 
 
@@ -214,7 +299,6 @@ Label 标签
 | Class | [string](#string) |  |  |
 | State | [string](#string) |  |  |
 | Value | [string](#string) |  |  |
-| Owner | [uint64](#uint64) |  |  |
 | CreatedTime | [string](#string) |  |  |
 | UpdatedTime | [string](#string) |  |  |
 | DeletedTime | [string](#string) |  |  |
@@ -224,10 +308,42 @@ Label 标签
 
 
 
+<a name="standard.QueryGroupByIDRequest"></a>
+
+### QueryGroupByIDRequest
+组操作
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| ID | [uint64](#uint64) |  |  |
+
+
+
+
+
+
+<a name="standard.QueryGroupByIDResponse"></a>
+
+### QueryGroupByIDResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| State | [State](#standard.State) |  |  |
+| Message | [string](#string) |  |  |
+| Data | [bool](#bool) |  |  |
+
+
+
+
+
+
 <a name="standard.QueryLabelByIDRequest"></a>
 
 ### QueryLabelByIDRequest
-
+标签操作
 
 
 | Field | Type | Label | Description |
@@ -247,44 +363,9 @@ Label 标签
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| State | [State](#standard.State) |  |  |
+| State | [State](#standard.State) |  | 状态 |
 | Message | [string](#string) |  |  |
 | Data | [Label](#standard.Label) |  |  |
-
-
-
-
-
-
-<a name="standard.QueryLabelByOwnerRequest"></a>
-
-### QueryLabelByOwnerRequest
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| Owner | [uint64](#uint64) |  |  |
-| Limit | [uint64](#uint64) |  |  |
-| Offset | [uint64](#uint64) |  |  |
-
-
-
-
-
-
-<a name="standard.QueryLabelByOwnerResponse"></a>
-
-### QueryLabelByOwnerResponse
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| State | [State](#standard.State) |  |  |
-| Message | [string](#string) |  |  |
-| Total | [uint64](#uint64) |  |  |
-| Data | [Label](#standard.Label) | repeated |  |
 
 
 
@@ -355,25 +436,25 @@ Label 标签
 
 
 
-<a name="standard.RemoveLabelByOwnerRequest"></a>
+<a name="standard.RemoveLabelFromUserByIDRequest"></a>
 
-### RemoveLabelByOwnerRequest
+### RemoveLabelFromUserByIDRequest
 
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | ID | [uint64](#uint64) |  |  |
-| Owner | [uint64](#uint64) |  |  |
+| LabelID | [uint64](#uint64) |  | 从用户身上撕下标签 所以谓语是标签 |
 
 
 
 
 
 
-<a name="standard.RemoveLabelByOwnerResponse"></a>
+<a name="standard.RemoveLabelFromUserByIDResponse"></a>
 
-### RemoveLabelByOwnerResponse
+### RemoveLabelFromUserByIDResponse
 
 
 
@@ -381,31 +462,32 @@ Label 标签
 | ----- | ---- | ----- | ----------- |
 | State | [State](#standard.State) |  |  |
 | Message | [string](#string) |  |  |
+| Data | [bool](#bool) |  |  |
 
 
 
 
 
 
-<a name="standard.UpdateLabelByIDRequest"></a>
+<a name="standard.RemoveUserFromGroupByIDRequest"></a>
 
-### UpdateLabelByIDRequest
+### RemoveUserFromGroupByIDRequest
 
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | ID | [uint64](#uint64) |  |  |
-| Data | [Label](#standard.Label) |  |  |
+| UserID | [uint64](#uint64) |  | 从组里移除用户 用户是谓语 |
 
 
 
 
 
 
-<a name="standard.UpdateLabelByIDResponse"></a>
+<a name="standard.RemoveUserFromGroupByIDResponse"></a>
 
-### UpdateLabelByIDResponse
+### RemoveUserFromGroupByIDResponse
 
 
 
@@ -413,6 +495,238 @@ Label 标签
 | ----- | ---- | ----- | ----------- |
 | State | [State](#standard.State) |  |  |
 | Message | [string](#string) |  |  |
+| Data | [bool](#bool) |  |  |
+
+
+
+
+
+
+<a name="standard.UpdateGroupClassByIDRequest"></a>
+
+### UpdateGroupClassByIDRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| ID | [uint64](#uint64) |  |  |
+| Class | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="standard.UpdateGroupClassByIDResponse"></a>
+
+### UpdateGroupClassByIDResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| State | [State](#standard.State) |  |  |
+| Message | [string](#string) |  |  |
+| Data | [bool](#bool) |  |  |
+
+
+
+
+
+
+<a name="standard.UpdateGroupDescriptionByIDRequest"></a>
+
+### UpdateGroupDescriptionByIDRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| ID | [uint64](#uint64) |  |  |
+| Description | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="standard.UpdateGroupDescriptionByIDResponse"></a>
+
+### UpdateGroupDescriptionByIDResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| State | [State](#standard.State) |  |  |
+| Message | [string](#string) |  |  |
+| Data | [bool](#bool) |  |  |
+
+
+
+
+
+
+<a name="standard.UpdateGroupNameByIDRequest"></a>
+
+### UpdateGroupNameByIDRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| ID | [uint64](#uint64) |  |  |
+| Name | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="standard.UpdateGroupNameByIDResponse"></a>
+
+### UpdateGroupNameByIDResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| State | [State](#standard.State) |  |  |
+| Message | [string](#string) |  |  |
+| Data | [bool](#bool) |  |  |
+
+
+
+
+
+
+<a name="standard.UpdateGroupStateByIDRequest"></a>
+
+### UpdateGroupStateByIDRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| ID | [uint64](#uint64) |  |  |
+| State | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="standard.UpdateGroupStateByIDResponse"></a>
+
+### UpdateGroupStateByIDResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| State | [State](#standard.State) |  |  |
+| Message | [string](#string) |  |  |
+| Data | [bool](#bool) |  |  |
+
+
+
+
+
+
+<a name="standard.UpdateLabelClassByIDRequest"></a>
+
+### UpdateLabelClassByIDRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| ID | [uint64](#uint64) |  |  |
+| Class | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="standard.UpdateLabelClassByIDResponse"></a>
+
+### UpdateLabelClassByIDResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| State | [State](#standard.State) |  |  |
+| Message | [string](#string) |  |  |
+| Data | [bool](#bool) |  |  |
+
+
+
+
+
+
+<a name="standard.UpdateLabelStateByIDRequest"></a>
+
+### UpdateLabelStateByIDRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| ID | [uint64](#uint64) |  |  |
+| State | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="standard.UpdateLabelStateByIDResponse"></a>
+
+### UpdateLabelStateByIDResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| State | [State](#standard.State) |  |  |
+| Message | [string](#string) |  |  |
+| Data | [bool](#bool) |  |  |
+
+
+
+
+
+
+<a name="standard.UpdateLabelValueByIDRequest"></a>
+
+### UpdateLabelValueByIDRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| ID | [uint64](#uint64) |  |  |
+| Value | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="standard.UpdateLabelValueByIDResponse"></a>
+
+### UpdateLabelValueByIDResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| State | [State](#standard.State) |  |  |
+| Message | [string](#string) |  |  |
+| Data | [bool](#bool) |  |  |
 
 
 
@@ -584,11 +898,20 @@ User 用户
 | VerifyUserPasswordByID | [VerifyUserPasswordByIDRequest](#standard.VerifyUserPasswordByIDRequest) | [VerifyUserPasswordByIDResponse](#standard.VerifyUserPasswordByIDResponse) |  |
 | VerifyUserPasswordByUsername | [VerifyUserPasswordByUsernameRequest](#standard.VerifyUserPasswordByUsernameRequest) | [VerifyUserPasswordByUsernameResponse](#standard.VerifyUserPasswordByUsernameResponse) |  |
 | QueryLabelByID | [QueryLabelByIDRequest](#standard.QueryLabelByIDRequest) | [QueryLabelByIDResponse](#standard.QueryLabelByIDResponse) | 标签操作 |
-| UpdateLabelByID | [UpdateLabelByIDRequest](#standard.UpdateLabelByIDRequest) | [UpdateLabelByIDResponse](#standard.UpdateLabelByIDResponse) |  |
 | DeleteLabelByID | [DeleteLabelByIDRequest](#standard.DeleteLabelByIDRequest) | [DeleteLabelByIDResponse](#standard.DeleteLabelByIDResponse) |  |
-| QueryLabelByOwner | [QueryLabelByOwnerRequest](#standard.QueryLabelByOwnerRequest) | [QueryLabelByOwnerResponse](#standard.QueryLabelByOwnerResponse) |  |
-| CreateLabelByOwner | [CreateLabelByOwnerRequest](#standard.CreateLabelByOwnerRequest) | [CreateLabelByOwnerResponse](#standard.CreateLabelByOwnerResponse) |  |
-| RemoveLabelByOwner | [RemoveLabelByOwnerRequest](#standard.RemoveLabelByOwnerRequest) | [RemoveLabelByOwnerResponse](#standard.RemoveLabelByOwnerResponse) |  |
+| UpdateLabelClassByID | [UpdateLabelClassByIDRequest](#standard.UpdateLabelClassByIDRequest) | [UpdateLabelClassByIDResponse](#standard.UpdateLabelClassByIDResponse) |  |
+| UpdateLabelStateByID | [UpdateLabelStateByIDRequest](#standard.UpdateLabelStateByIDRequest) | [UpdateLabelStateByIDResponse](#standard.UpdateLabelStateByIDResponse) |  |
+| UpdateLabelValueByID | [UpdateLabelValueByIDRequest](#standard.UpdateLabelValueByIDRequest) | [UpdateLabelValueByIDResponse](#standard.UpdateLabelValueByIDResponse) |  |
+| AddLabelToUserByID | [AddLabelToUserByIDRequest](#standard.AddLabelToUserByIDRequest) | [AddLabelToUserByIDResponse](#standard.AddLabelToUserByIDResponse) | 标签关系操作 |
+| RemoveLabelFromUserByID | [RemoveLabelFromUserByIDRequest](#standard.RemoveLabelFromUserByIDRequest) | [RemoveLabelFromUserByIDResponse](#standard.RemoveLabelFromUserByIDResponse) |  |
+| QueryGroupByID | [QueryGroupByIDRequest](#standard.QueryGroupByIDRequest) | [QueryGroupByIDResponse](#standard.QueryGroupByIDResponse) | 组操作 |
+| DeleteGroupByID | [DeleteGroupByIDRequest](#standard.DeleteGroupByIDRequest) | [DeleteGroupByIDResponse](#standard.DeleteGroupByIDResponse) |  |
+| UpdateGroupNameByID | [UpdateGroupNameByIDRequest](#standard.UpdateGroupNameByIDRequest) | [UpdateGroupNameByIDResponse](#standard.UpdateGroupNameByIDResponse) |  |
+| UpdateGroupClassByID | [UpdateGroupClassByIDRequest](#standard.UpdateGroupClassByIDRequest) | [UpdateGroupClassByIDResponse](#standard.UpdateGroupClassByIDResponse) |  |
+| UpdateGroupStateByID | [UpdateGroupStateByIDRequest](#standard.UpdateGroupStateByIDRequest) | [UpdateGroupStateByIDResponse](#standard.UpdateGroupStateByIDResponse) |  |
+| UpdateGroupDescriptionByID | [UpdateGroupDescriptionByIDRequest](#standard.UpdateGroupDescriptionByIDRequest) | [UpdateGroupDescriptionByIDResponse](#standard.UpdateGroupDescriptionByIDResponse) |  |
+| AddUserToGroupByID | [AddUserToGroupByIDRequest](#standard.AddUserToGroupByIDRequest) | [AddUserToGroupByIDResponse](#standard.AddUserToGroupByIDResponse) | 组关系操作 |
+| RemoveUserFromGroupByID | [RemoveUserFromGroupByIDRequest](#standard.RemoveUserFromGroupByIDRequest) | [RemoveUserFromGroupByIDResponse](#standard.RemoveUserFromGroupByIDResponse) |  |
 
  
 

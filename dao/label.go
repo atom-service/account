@@ -118,6 +118,7 @@ func updataLabelFieldByID(id uint64, field map[string]string) error {
 	return err
 }
 
+// 映射关系
 func createLabelMappingTable() error {
 	conn := easysql.GetConn()
 	defer conn.Close()

@@ -179,11 +179,19 @@
             <ul>
               
                 <li>
-                  <a href="#standard.CreateLabelByOwnerRequest"><span class="badge">M</span>CreateLabelByOwnerRequest</a>
+                  <a href="#standard.AddLabelToUserByIDRequest"><span class="badge">M</span>AddLabelToUserByIDRequest</a>
                 </li>
               
                 <li>
-                  <a href="#standard.CreateLabelByOwnerResponse"><span class="badge">M</span>CreateLabelByOwnerResponse</a>
+                  <a href="#standard.AddLabelToUserByIDResponse"><span class="badge">M</span>AddLabelToUserByIDResponse</a>
+                </li>
+              
+                <li>
+                  <a href="#standard.AddUserToGroupByIDRequest"><span class="badge">M</span>AddUserToGroupByIDRequest</a>
+                </li>
+              
+                <li>
+                  <a href="#standard.AddUserToGroupByIDResponse"><span class="badge">M</span>AddUserToGroupByIDResponse</a>
                 </li>
               
                 <li>
@@ -192,6 +200,14 @@
               
                 <li>
                   <a href="#standard.CreateUserResponse"><span class="badge">M</span>CreateUserResponse</a>
+                </li>
+              
+                <li>
+                  <a href="#standard.DeleteGroupByIDRequest"><span class="badge">M</span>DeleteGroupByIDRequest</a>
+                </li>
+              
+                <li>
+                  <a href="#standard.DeleteGroupByIDResponse"><span class="badge">M</span>DeleteGroupByIDResponse</a>
                 </li>
               
                 <li>
@@ -219,19 +235,19 @@
                 </li>
               
                 <li>
+                  <a href="#standard.QueryGroupByIDRequest"><span class="badge">M</span>QueryGroupByIDRequest</a>
+                </li>
+              
+                <li>
+                  <a href="#standard.QueryGroupByIDResponse"><span class="badge">M</span>QueryGroupByIDResponse</a>
+                </li>
+              
+                <li>
                   <a href="#standard.QueryLabelByIDRequest"><span class="badge">M</span>QueryLabelByIDRequest</a>
                 </li>
               
                 <li>
                   <a href="#standard.QueryLabelByIDResponse"><span class="badge">M</span>QueryLabelByIDResponse</a>
-                </li>
-              
-                <li>
-                  <a href="#standard.QueryLabelByOwnerRequest"><span class="badge">M</span>QueryLabelByOwnerRequest</a>
-                </li>
-              
-                <li>
-                  <a href="#standard.QueryLabelByOwnerResponse"><span class="badge">M</span>QueryLabelByOwnerResponse</a>
                 </li>
               
                 <li>
@@ -251,19 +267,75 @@
                 </li>
               
                 <li>
-                  <a href="#standard.RemoveLabelByOwnerRequest"><span class="badge">M</span>RemoveLabelByOwnerRequest</a>
+                  <a href="#standard.RemoveLabelFromUserByIDRequest"><span class="badge">M</span>RemoveLabelFromUserByIDRequest</a>
                 </li>
               
                 <li>
-                  <a href="#standard.RemoveLabelByOwnerResponse"><span class="badge">M</span>RemoveLabelByOwnerResponse</a>
+                  <a href="#standard.RemoveLabelFromUserByIDResponse"><span class="badge">M</span>RemoveLabelFromUserByIDResponse</a>
                 </li>
               
                 <li>
-                  <a href="#standard.UpdateLabelByIDRequest"><span class="badge">M</span>UpdateLabelByIDRequest</a>
+                  <a href="#standard.RemoveUserFromGroupByIDRequest"><span class="badge">M</span>RemoveUserFromGroupByIDRequest</a>
                 </li>
               
                 <li>
-                  <a href="#standard.UpdateLabelByIDResponse"><span class="badge">M</span>UpdateLabelByIDResponse</a>
+                  <a href="#standard.RemoveUserFromGroupByIDResponse"><span class="badge">M</span>RemoveUserFromGroupByIDResponse</a>
+                </li>
+              
+                <li>
+                  <a href="#standard.UpdateGroupClassByIDRequest"><span class="badge">M</span>UpdateGroupClassByIDRequest</a>
+                </li>
+              
+                <li>
+                  <a href="#standard.UpdateGroupClassByIDResponse"><span class="badge">M</span>UpdateGroupClassByIDResponse</a>
+                </li>
+              
+                <li>
+                  <a href="#standard.UpdateGroupDescriptionByIDRequest"><span class="badge">M</span>UpdateGroupDescriptionByIDRequest</a>
+                </li>
+              
+                <li>
+                  <a href="#standard.UpdateGroupDescriptionByIDResponse"><span class="badge">M</span>UpdateGroupDescriptionByIDResponse</a>
+                </li>
+              
+                <li>
+                  <a href="#standard.UpdateGroupNameByIDRequest"><span class="badge">M</span>UpdateGroupNameByIDRequest</a>
+                </li>
+              
+                <li>
+                  <a href="#standard.UpdateGroupNameByIDResponse"><span class="badge">M</span>UpdateGroupNameByIDResponse</a>
+                </li>
+              
+                <li>
+                  <a href="#standard.UpdateGroupStateByIDRequest"><span class="badge">M</span>UpdateGroupStateByIDRequest</a>
+                </li>
+              
+                <li>
+                  <a href="#standard.UpdateGroupStateByIDResponse"><span class="badge">M</span>UpdateGroupStateByIDResponse</a>
+                </li>
+              
+                <li>
+                  <a href="#standard.UpdateLabelClassByIDRequest"><span class="badge">M</span>UpdateLabelClassByIDRequest</a>
+                </li>
+              
+                <li>
+                  <a href="#standard.UpdateLabelClassByIDResponse"><span class="badge">M</span>UpdateLabelClassByIDResponse</a>
+                </li>
+              
+                <li>
+                  <a href="#standard.UpdateLabelStateByIDRequest"><span class="badge">M</span>UpdateLabelStateByIDRequest</a>
+                </li>
+              
+                <li>
+                  <a href="#standard.UpdateLabelStateByIDResponse"><span class="badge">M</span>UpdateLabelStateByIDResponse</a>
+                </li>
+              
+                <li>
+                  <a href="#standard.UpdateLabelValueByIDRequest"><span class="badge">M</span>UpdateLabelValueByIDRequest</a>
+                </li>
+              
+                <li>
+                  <a href="#standard.UpdateLabelValueByIDResponse"><span class="badge">M</span>UpdateLabelValueByIDResponse</a>
                 </li>
               
                 <li>
@@ -320,7 +392,7 @@
       <p></p>
 
       
-        <h3 id="standard.CreateLabelByOwnerRequest">CreateLabelByOwnerRequest</h3>
+        <h3 id="standard.AddLabelToUserByIDRequest">AddLabelToUserByIDRequest</h3>
         <p></p>
 
         
@@ -331,17 +403,17 @@
             <tbody>
               
                 <tr>
-                  <td>Owner</td>
+                  <td>ID</td>
                   <td><a href="#uint64">uint64</a></td>
                   <td></td>
                   <td><p> </p></td>
                 </tr>
               
                 <tr>
-                  <td>Label</td>
-                  <td><a href="#standard.Label">Label</a></td>
+                  <td>UserID</td>
+                  <td><a href="#uint64">uint64</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>添加标签给用户 谓语是用户 </p></td>
                 </tr>
               
             </tbody>
@@ -351,7 +423,7 @@
 
         
       
-        <h3 id="standard.CreateLabelByOwnerResponse">CreateLabelByOwnerResponse</h3>
+        <h3 id="standard.AddLabelToUserByIDResponse">AddLabelToUserByIDResponse</h3>
         <p></p>
 
         
@@ -371,6 +443,82 @@
                 <tr>
                   <td>Message</td>
                   <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Data</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="standard.AddUserToGroupByIDRequest">AddUserToGroupByIDRequest</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>ID</td>
+                  <td><a href="#uint64">uint64</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>GroupID</td>
+                  <td><a href="#uint64">uint64</a></td>
+                  <td></td>
+                  <td><p>添加用户到组 组是谓语 </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="standard.AddUserToGroupByIDResponse">AddUserToGroupByIDResponse</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>State</td>
+                  <td><a href="#standard.State">State</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Message</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Data</td>
+                  <td><a href="#bool">bool</a></td>
                   <td></td>
                   <td><p> </p></td>
                 </tr>
@@ -465,6 +613,68 @@
 
         
       
+        <h3 id="standard.DeleteGroupByIDRequest">DeleteGroupByIDRequest</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>ID</td>
+                  <td><a href="#uint64">uint64</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="standard.DeleteGroupByIDResponse">DeleteGroupByIDResponse</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>State</td>
+                  <td><a href="#standard.State">State</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Message</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Data</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
         <h3 id="standard.DeleteLabelByIDRequest">DeleteLabelByIDRequest</h3>
         <p></p>
 
@@ -509,6 +719,13 @@
                 <tr>
                   <td>Message</td>
                   <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Data</td>
+                  <td><a href="#bool">bool</a></td>
                   <td></td>
                   <td><p> </p></td>
                 </tr>
@@ -687,13 +904,6 @@
                 </tr>
               
                 <tr>
-                  <td>Owner</td>
-                  <td><a href="#uint64">uint64</a></td>
-                  <td></td>
-                  <td><p> </p></td>
-                </tr>
-              
-                <tr>
                   <td>CreatedTime</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
@@ -721,8 +931,70 @@
 
         
       
-        <h3 id="standard.QueryLabelByIDRequest">QueryLabelByIDRequest</h3>
+        <h3 id="standard.QueryGroupByIDRequest">QueryGroupByIDRequest</h3>
+        <p>组操作</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>ID</td>
+                  <td><a href="#uint64">uint64</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="standard.QueryGroupByIDResponse">QueryGroupByIDResponse</h3>
         <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>State</td>
+                  <td><a href="#standard.State">State</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Message</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Data</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="standard.QueryLabelByIDRequest">QueryLabelByIDRequest</h3>
+        <p>标签操作</p>
 
         
           <table class="field-table">
@@ -759,7 +1031,7 @@
                   <td>State</td>
                   <td><a href="#standard.State">State</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>状态 </p></td>
                 </tr>
               
                 <tr>
@@ -773,89 +1045,6 @@
                   <td>Data</td>
                   <td><a href="#standard.Label">Label</a></td>
                   <td></td>
-                  <td><p> </p></td>
-                </tr>
-              
-            </tbody>
-          </table>
-
-          
-
-        
-      
-        <h3 id="standard.QueryLabelByOwnerRequest">QueryLabelByOwnerRequest</h3>
-        <p></p>
-
-        
-          <table class="field-table">
-            <thead>
-              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
-            </thead>
-            <tbody>
-              
-                <tr>
-                  <td>Owner</td>
-                  <td><a href="#uint64">uint64</a></td>
-                  <td></td>
-                  <td><p> </p></td>
-                </tr>
-              
-                <tr>
-                  <td>Limit</td>
-                  <td><a href="#uint64">uint64</a></td>
-                  <td></td>
-                  <td><p> </p></td>
-                </tr>
-              
-                <tr>
-                  <td>Offset</td>
-                  <td><a href="#uint64">uint64</a></td>
-                  <td></td>
-                  <td><p> </p></td>
-                </tr>
-              
-            </tbody>
-          </table>
-
-          
-
-        
-      
-        <h3 id="standard.QueryLabelByOwnerResponse">QueryLabelByOwnerResponse</h3>
-        <p></p>
-
-        
-          <table class="field-table">
-            <thead>
-              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
-            </thead>
-            <tbody>
-              
-                <tr>
-                  <td>State</td>
-                  <td><a href="#standard.State">State</a></td>
-                  <td></td>
-                  <td><p> </p></td>
-                </tr>
-              
-                <tr>
-                  <td>Message</td>
-                  <td><a href="#string">string</a></td>
-                  <td></td>
-                  <td><p> </p></td>
-                </tr>
-              
-                <tr>
-                  <td>Total</td>
-                  <td><a href="#uint64">uint64</a></td>
-                  <td></td>
-                  <td><p> </p></td>
-                </tr>
-              
-                <tr>
-                  <td>Data</td>
-                  <td><a href="#standard.Label">Label</a></td>
-                  <td>repeated</td>
                   <td><p> </p></td>
                 </tr>
               
@@ -990,7 +1179,7 @@
 
         
       
-        <h3 id="standard.RemoveLabelByOwnerRequest">RemoveLabelByOwnerRequest</h3>
+        <h3 id="standard.RemoveLabelFromUserByIDRequest">RemoveLabelFromUserByIDRequest</h3>
         <p></p>
 
         
@@ -1008,10 +1197,10 @@
                 </tr>
               
                 <tr>
-                  <td>Owner</td>
+                  <td>LabelID</td>
                   <td><a href="#uint64">uint64</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>从用户身上撕下标签 所以谓语是标签 </p></td>
                 </tr>
               
             </tbody>
@@ -1021,7 +1210,7 @@
 
         
       
-        <h3 id="standard.RemoveLabelByOwnerResponse">RemoveLabelByOwnerResponse</h3>
+        <h3 id="standard.RemoveLabelFromUserByIDResponse">RemoveLabelFromUserByIDResponse</h3>
         <p></p>
 
         
@@ -1041,37 +1230,13 @@
                 <tr>
                   <td>Message</td>
                   <td><a href="#string">string</a></td>
-                  <td></td>
-                  <td><p> </p></td>
-                </tr>
-              
-            </tbody>
-          </table>
-
-          
-
-        
-      
-        <h3 id="standard.UpdateLabelByIDRequest">UpdateLabelByIDRequest</h3>
-        <p></p>
-
-        
-          <table class="field-table">
-            <thead>
-              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
-            </thead>
-            <tbody>
-              
-                <tr>
-                  <td>ID</td>
-                  <td><a href="#uint64">uint64</a></td>
                   <td></td>
                   <td><p> </p></td>
                 </tr>
               
                 <tr>
                   <td>Data</td>
-                  <td><a href="#standard.Label">Label</a></td>
+                  <td><a href="#bool">bool</a></td>
                   <td></td>
                   <td><p> </p></td>
                 </tr>
@@ -1083,7 +1248,38 @@
 
         
       
-        <h3 id="standard.UpdateLabelByIDResponse">UpdateLabelByIDResponse</h3>
+        <h3 id="standard.RemoveUserFromGroupByIDRequest">RemoveUserFromGroupByIDRequest</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>ID</td>
+                  <td><a href="#uint64">uint64</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>UserID</td>
+                  <td><a href="#uint64">uint64</a></td>
+                  <td></td>
+                  <td><p>从组里移除用户 用户是谓语 </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="standard.RemoveUserFromGroupByIDResponse">RemoveUserFromGroupByIDResponse</h3>
         <p></p>
 
         
@@ -1103,6 +1299,496 @@
                 <tr>
                   <td>Message</td>
                   <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Data</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="standard.UpdateGroupClassByIDRequest">UpdateGroupClassByIDRequest</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>ID</td>
+                  <td><a href="#uint64">uint64</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Class</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="standard.UpdateGroupClassByIDResponse">UpdateGroupClassByIDResponse</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>State</td>
+                  <td><a href="#standard.State">State</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Message</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Data</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="standard.UpdateGroupDescriptionByIDRequest">UpdateGroupDescriptionByIDRequest</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>ID</td>
+                  <td><a href="#uint64">uint64</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Description</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="standard.UpdateGroupDescriptionByIDResponse">UpdateGroupDescriptionByIDResponse</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>State</td>
+                  <td><a href="#standard.State">State</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Message</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Data</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="standard.UpdateGroupNameByIDRequest">UpdateGroupNameByIDRequest</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>ID</td>
+                  <td><a href="#uint64">uint64</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Name</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="standard.UpdateGroupNameByIDResponse">UpdateGroupNameByIDResponse</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>State</td>
+                  <td><a href="#standard.State">State</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Message</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Data</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="standard.UpdateGroupStateByIDRequest">UpdateGroupStateByIDRequest</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>ID</td>
+                  <td><a href="#uint64">uint64</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>State</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="standard.UpdateGroupStateByIDResponse">UpdateGroupStateByIDResponse</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>State</td>
+                  <td><a href="#standard.State">State</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Message</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Data</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="standard.UpdateLabelClassByIDRequest">UpdateLabelClassByIDRequest</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>ID</td>
+                  <td><a href="#uint64">uint64</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Class</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="standard.UpdateLabelClassByIDResponse">UpdateLabelClassByIDResponse</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>State</td>
+                  <td><a href="#standard.State">State</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Message</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Data</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="standard.UpdateLabelStateByIDRequest">UpdateLabelStateByIDRequest</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>ID</td>
+                  <td><a href="#uint64">uint64</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>State</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="standard.UpdateLabelStateByIDResponse">UpdateLabelStateByIDResponse</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>State</td>
+                  <td><a href="#standard.State">State</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Message</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Data</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="standard.UpdateLabelValueByIDRequest">UpdateLabelValueByIDRequest</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>ID</td>
+                  <td><a href="#uint64">uint64</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Value</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="standard.UpdateLabelValueByIDResponse">UpdateLabelValueByIDResponse</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>State</td>
+                  <td><a href="#standard.State">State</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Message</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Data</td>
+                  <td><a href="#bool">bool</a></td>
                   <td></td>
                   <td><p> </p></td>
                 </tr>
@@ -1555,13 +2241,6 @@
               </tr>
             
               <tr>
-                <td>UpdateLabelByID</td>
-                <td><a href="#standard.UpdateLabelByIDRequest">UpdateLabelByIDRequest</a></td>
-                <td><a href="#standard.UpdateLabelByIDResponse">UpdateLabelByIDResponse</a></td>
-                <td><p></p></td>
-              </tr>
-            
-              <tr>
                 <td>DeleteLabelByID</td>
                 <td><a href="#standard.DeleteLabelByIDRequest">DeleteLabelByIDRequest</a></td>
                 <td><a href="#standard.DeleteLabelByIDResponse">DeleteLabelByIDResponse</a></td>
@@ -1569,23 +2248,93 @@
               </tr>
             
               <tr>
-                <td>QueryLabelByOwner</td>
-                <td><a href="#standard.QueryLabelByOwnerRequest">QueryLabelByOwnerRequest</a></td>
-                <td><a href="#standard.QueryLabelByOwnerResponse">QueryLabelByOwnerResponse</a></td>
+                <td>UpdateLabelClassByID</td>
+                <td><a href="#standard.UpdateLabelClassByIDRequest">UpdateLabelClassByIDRequest</a></td>
+                <td><a href="#standard.UpdateLabelClassByIDResponse">UpdateLabelClassByIDResponse</a></td>
                 <td><p></p></td>
               </tr>
             
               <tr>
-                <td>CreateLabelByOwner</td>
-                <td><a href="#standard.CreateLabelByOwnerRequest">CreateLabelByOwnerRequest</a></td>
-                <td><a href="#standard.CreateLabelByOwnerResponse">CreateLabelByOwnerResponse</a></td>
+                <td>UpdateLabelStateByID</td>
+                <td><a href="#standard.UpdateLabelStateByIDRequest">UpdateLabelStateByIDRequest</a></td>
+                <td><a href="#standard.UpdateLabelStateByIDResponse">UpdateLabelStateByIDResponse</a></td>
                 <td><p></p></td>
               </tr>
             
               <tr>
-                <td>RemoveLabelByOwner</td>
-                <td><a href="#standard.RemoveLabelByOwnerRequest">RemoveLabelByOwnerRequest</a></td>
-                <td><a href="#standard.RemoveLabelByOwnerResponse">RemoveLabelByOwnerResponse</a></td>
+                <td>UpdateLabelValueByID</td>
+                <td><a href="#standard.UpdateLabelValueByIDRequest">UpdateLabelValueByIDRequest</a></td>
+                <td><a href="#standard.UpdateLabelValueByIDResponse">UpdateLabelValueByIDResponse</a></td>
+                <td><p></p></td>
+              </tr>
+            
+              <tr>
+                <td>AddLabelToUserByID</td>
+                <td><a href="#standard.AddLabelToUserByIDRequest">AddLabelToUserByIDRequest</a></td>
+                <td><a href="#standard.AddLabelToUserByIDResponse">AddLabelToUserByIDResponse</a></td>
+                <td><p>标签关系操作</p></td>
+              </tr>
+            
+              <tr>
+                <td>RemoveLabelFromUserByID</td>
+                <td><a href="#standard.RemoveLabelFromUserByIDRequest">RemoveLabelFromUserByIDRequest</a></td>
+                <td><a href="#standard.RemoveLabelFromUserByIDResponse">RemoveLabelFromUserByIDResponse</a></td>
+                <td><p></p></td>
+              </tr>
+            
+              <tr>
+                <td>QueryGroupByID</td>
+                <td><a href="#standard.QueryGroupByIDRequest">QueryGroupByIDRequest</a></td>
+                <td><a href="#standard.QueryGroupByIDResponse">QueryGroupByIDResponse</a></td>
+                <td><p>组操作</p></td>
+              </tr>
+            
+              <tr>
+                <td>DeleteGroupByID</td>
+                <td><a href="#standard.DeleteGroupByIDRequest">DeleteGroupByIDRequest</a></td>
+                <td><a href="#standard.DeleteGroupByIDResponse">DeleteGroupByIDResponse</a></td>
+                <td><p></p></td>
+              </tr>
+            
+              <tr>
+                <td>UpdateGroupNameByID</td>
+                <td><a href="#standard.UpdateGroupNameByIDRequest">UpdateGroupNameByIDRequest</a></td>
+                <td><a href="#standard.UpdateGroupNameByIDResponse">UpdateGroupNameByIDResponse</a></td>
+                <td><p></p></td>
+              </tr>
+            
+              <tr>
+                <td>UpdateGroupClassByID</td>
+                <td><a href="#standard.UpdateGroupClassByIDRequest">UpdateGroupClassByIDRequest</a></td>
+                <td><a href="#standard.UpdateGroupClassByIDResponse">UpdateGroupClassByIDResponse</a></td>
+                <td><p></p></td>
+              </tr>
+            
+              <tr>
+                <td>UpdateGroupStateByID</td>
+                <td><a href="#standard.UpdateGroupStateByIDRequest">UpdateGroupStateByIDRequest</a></td>
+                <td><a href="#standard.UpdateGroupStateByIDResponse">UpdateGroupStateByIDResponse</a></td>
+                <td><p></p></td>
+              </tr>
+            
+              <tr>
+                <td>UpdateGroupDescriptionByID</td>
+                <td><a href="#standard.UpdateGroupDescriptionByIDRequest">UpdateGroupDescriptionByIDRequest</a></td>
+                <td><a href="#standard.UpdateGroupDescriptionByIDResponse">UpdateGroupDescriptionByIDResponse</a></td>
+                <td><p></p></td>
+              </tr>
+            
+              <tr>
+                <td>AddUserToGroupByID</td>
+                <td><a href="#standard.AddUserToGroupByIDRequest">AddUserToGroupByIDRequest</a></td>
+                <td><a href="#standard.AddUserToGroupByIDResponse">AddUserToGroupByIDResponse</a></td>
+                <td><p>组关系操作</p></td>
+              </tr>
+            
+              <tr>
+                <td>RemoveUserFromGroupByID</td>
+                <td><a href="#standard.RemoveUserFromGroupByIDRequest">RemoveUserFromGroupByIDRequest</a></td>
+                <td><a href="#standard.RemoveUserFromGroupByIDResponse">RemoveUserFromGroupByIDResponse</a></td>
                 <td><p></p></td>
               </tr>
             
