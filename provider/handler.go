@@ -19,6 +19,7 @@ type Service struct {
 
 // CreateUser 创建用户
 func (srv *Service) CreateUser(ctx context.Context, req *standard.CreateUserRequest) (resp *standard.CreateUserResponse, err error) {
+	resp = new(standard.CreateUserResponse)
 	if !usernamePattern.MatchString(req.Username) {
 		resp.State = standard.State_PARAMS_INVALID
 		resp.Message = "请检查用户名格式"
@@ -51,7 +52,7 @@ func (srv *Service) CreateUser(ctx context.Context, req *standard.CreateUserRequ
 		return resp, nil
 	}
 
-	err = dao.CreateUser(req.Class, req.Nickname, req.Nickname, req.Password, req.Inviter)
+	err = dao.CreateUser(req.Class, req.Nickname, req.Username, req.Password, req.Inviter)
 	if err != nil {
 		resp.State = standard.State_DB_OPERATION_FATLURE
 		resp.Message = err.Error()
@@ -135,6 +136,7 @@ func (srv *Service) QueryUserByUsername(ctx context.Context, req *standard.Query
 	return resp, nil
 }
 
+// DeleteUserByID 通过 ID 删除用户（逻辑删除）
 func (srv *Service) DeleteUserByID(ctx context.Context, req *standard.DeleteUserByIDRequest) (resp *standard.DeleteUserByIDResponse, err error) {
 	resp = new(standard.DeleteUserByIDResponse)
 
@@ -169,6 +171,7 @@ func (srv *Service) DeleteUserByID(ctx context.Context, req *standard.DeleteUser
 	return resp, nil
 }
 
+// UpdateUserPasswordByID 通过 ID 更新用户密码
 func (srv *Service) UpdateUserPasswordByID(ctx context.Context, req *standard.UpdateUserPasswordByIDRequest) (resp *standard.UpdateUserPasswordByIDResponse, err error) {
 	resp = new(standard.UpdateUserPasswordByIDResponse)
 	if req.ID == 0 {
@@ -202,6 +205,7 @@ func (srv *Service) UpdateUserPasswordByID(ctx context.Context, req *standard.Up
 	return resp, nil
 }
 
+// VerifyUserPasswordByID 通过 ID 验证用户密码
 func (srv *Service) VerifyUserPasswordByID(ctx context.Context, req *standard.VerifyUserPasswordByIDRequest) (resp *standard.VerifyUserPasswordByIDResponse, err error) {
 	resp = new(standard.VerifyUserPasswordByIDResponse)
 	if req.ID == 0 {
@@ -288,6 +292,7 @@ func (srv *Service) VerifyUserPasswordByUsername(ctx context.Context, req *stand
 	return resp, nil
 }
 
+// QueryLabelByID 通过 ID 查询
 func (srv *Service) QueryLabelByID(ctx context.Context, req *standard.QueryLabelByIDRequest) (resp *standard.QueryLabelByIDResponse, err error) {
 	resp = new(standard.QueryLabelByIDResponse)
 	if req.ID == 0 {
@@ -309,6 +314,7 @@ func (srv *Service) QueryLabelByID(ctx context.Context, req *standard.QueryLabel
 	return resp, nil
 }
 
+// DeleteLabelByID 通过 ID 删除
 func (srv *Service) DeleteLabelByID(ctx context.Context, req *standard.DeleteLabelByIDRequest) (resp *standard.DeleteLabelByIDResponse, err error) {
 	resp = new(standard.DeleteLabelByIDResponse)
 	if req.ID == 0 {
@@ -342,6 +348,7 @@ func (srv *Service) DeleteLabelByID(ctx context.Context, req *standard.DeleteLab
 	return resp, nil
 }
 
+// UpdateLabelClassByID 通过 ID 更新分类
 func (srv *Service) UpdateLabelClassByID(ctx context.Context, req *standard.UpdateLabelClassByIDRequest) (resp *standard.UpdateLabelClassByIDResponse, err error) {
 	resp = new(standard.UpdateLabelClassByIDResponse)
 	if req.ID == 0 {
@@ -375,6 +382,7 @@ func (srv *Service) UpdateLabelClassByID(ctx context.Context, req *standard.Upda
 	return resp, nil
 }
 
+// UpdateLabelStateByID 通过 ID 更新状态
 func (srv *Service) UpdateLabelStateByID(ctx context.Context, req *standard.UpdateLabelStateByIDRequest) (resp *standard.UpdateLabelStateByIDResponse, err error) {
 	resp = new(standard.UpdateLabelStateByIDResponse)
 	if req.ID == 0 {
@@ -408,6 +416,7 @@ func (srv *Service) UpdateLabelStateByID(ctx context.Context, req *standard.Upda
 	return resp, nil
 }
 
+// UpdateLabelValueByID 通过 ID 更新值
 func (srv *Service) UpdateLabelValueByID(ctx context.Context, req *standard.UpdateLabelValueByIDRequest) (resp *standard.UpdateLabelValueByIDResponse, err error) {
 	resp = new(standard.UpdateLabelValueByIDResponse)
 	if req.ID == 0 {
@@ -441,7 +450,7 @@ func (srv *Service) UpdateLabelValueByID(ctx context.Context, req *standard.Upda
 	return resp, nil
 }
 
-// 标签关系操作
+// AddLabelToUserByID 添加标签到用户
 func (srv *Service) AddLabelToUserByID(ctx context.Context, req *standard.AddLabelToUserByIDRequest) (resp *standard.AddLabelToUserByIDResponse, err error) {
 	resp = new(standard.AddLabelToUserByIDResponse)
 	if req.ID == 0 || req.UserID == 0 {
@@ -462,6 +471,7 @@ func (srv *Service) AddLabelToUserByID(ctx context.Context, req *standard.AddLab
 	return resp, nil
 }
 
+// RemoveLabelFromUserByID 从用户身上撕下标签
 func (srv *Service) RemoveLabelFromUserByID(ctx context.Context, req *standard.RemoveLabelFromUserByIDRequest) (resp *standard.RemoveLabelFromUserByIDResponse, err error) {
 	resp = new(standard.RemoveLabelFromUserByIDResponse)
 	if req.ID == 0 || req.LabelID == 0 {
@@ -482,7 +492,7 @@ func (srv *Service) RemoveLabelFromUserByID(ctx context.Context, req *standard.R
 	return resp, nil
 }
 
-// 组操作
+// QueryGroupByID 通过 ID 查询组信息
 func (srv *Service) QueryGroupByID(ctx context.Context, req *standard.QueryGroupByIDRequest) (resp *standard.QueryGroupByIDResponse, err error) {
 	resp = new(standard.QueryGroupByIDResponse)
 	if req.ID == 0 {
@@ -515,6 +525,8 @@ func (srv *Service) QueryGroupByID(ctx context.Context, req *standard.QueryGroup
 	resp.Message = "查询成功"
 	return resp, nil
 }
+
+// DeleteGroupByID 通过 ID 删除分支
 func (srv *Service) DeleteGroupByID(ctx context.Context, req *standard.DeleteGroupByIDRequest) (resp *standard.DeleteGroupByIDResponse, err error) {
 	resp = new(standard.DeleteGroupByIDResponse)
 	if req.ID == 0 {
@@ -684,7 +696,7 @@ func (srv *Service) UpdateGroupDescriptionByID(ctx context.Context, req *standar
 	return resp, nil
 }
 
-// 组关系操作
+// AddUserToGroupByID 添加用户进组
 func (srv *Service) AddUserToGroupByID(ctx context.Context, req *standard.AddUserToGroupByIDRequest) (resp *standard.AddUserToGroupByIDResponse, err error) {
 	resp = new(standard.AddUserToGroupByIDResponse)
 	if req.ID == 0 || req.GroupID == 0 {
@@ -704,6 +716,8 @@ func (srv *Service) AddUserToGroupByID(ctx context.Context, req *standard.AddUse
 	resp.Message = "添加成功"
 	return resp, nil
 }
+
+// RemoveUserFromGroupByID 将用户移出组
 func (srv *Service) RemoveUserFromGroupByID(ctx context.Context, req *standard.RemoveUserFromGroupByIDRequest) (resp *standard.RemoveUserFromGroupByIDResponse, err error) {
 	resp = new(standard.RemoveUserFromGroupByIDResponse)
 	if req.ID == 0 || req.UserID == 0 {
