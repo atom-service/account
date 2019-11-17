@@ -15,7 +15,7 @@
         "-rpc-port",
         ":3000",
         "-mysql-url",
-        "localhost:22222@"
+        "root:root@tcp(localhost:3306)/default?charset=utf8mb4"
       ]
     }
   ]

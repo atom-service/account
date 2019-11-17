@@ -12,9 +12,15 @@ import (
 const labelTableName = "labels"
 const labelMappingUserTableName = "label-mapping"
 
+func truncateLabelTable() error {
+	conn := easysql.GetConn()
+
+	_, err := conn.ExecSQL("truncate table " + labelTableName)
+	return err
+}
+
 func createLabelTable() error {
 	conn := easysql.GetConn()
-	defer conn.Close()
 
 	_, err := conn.ExecSQL(
 		strings.Join([]string{
@@ -27,7 +33,7 @@ func createLabelTable() error {
 			" `DeletedTime` datetime DEFAULT NULL COMMENT '删除时间',",
 			" `CreatedTime` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',",
 			" `UpdatedTime` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',",
-			" PRIMARY KEY (`ID`,`Class`,`DeletedTime`)",
+			" PRIMARY KEY (`ID`,`Name`,`Class`,`State`)",
 			" )ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4;",
 		}, "",
 		),
@@ -38,7 +44,6 @@ func createLabelTable() error {
 // CreateLabel 创建标签
 func createLabel(name, class, state, value string) error {
 	conn := easysql.GetConn()
-	defer conn.Close()
 
 	data := map[string]string{
 		"Name":  name,
@@ -54,7 +59,6 @@ func createLabel(name, class, state, value string) error {
 // CountLabelByID 根据 id 统计
 func CountLabelByID(id uint64) (int, error) {
 	conn := easysql.GetConn()
-	defer conn.Close()
 
 	idstr := strconv.FormatUint(id, 10)
 	cond := map[string]string{"ID": idstr}
@@ -73,7 +77,6 @@ func CountLabelByID(id uint64) (int, error) {
 // QueryLabelByID 根据 id 查询
 func QueryLabelByID(id uint64) (*model.Label, error) {
 	conn := easysql.GetConn()
-	defer conn.Close()
 
 	idstr := strconv.FormatUint(id, 10)
 	cond := map[string]string{"ID": idstr}
@@ -88,7 +91,7 @@ func QueryLabelByID(id uint64) (*model.Label, error) {
 }
 
 // DeleteLabelByID 删除标签
-func DeleteLabelByID(id uint64, class string) error {
+func DeleteLabelByID(id uint64) error {
 	nowTime := time.Now().Format("2006-01-02 15:04:05")
 	return updataLabelFieldByID(id, map[string]string{"DeletedTime": nowTime})
 }
@@ -111,27 +114,32 @@ func UpdateLabelValueByID(id uint64, class string) error {
 // 根据 ID 更新标签
 func updataLabelFieldByID(id uint64, field map[string]string) error {
 	conn := easysql.GetConn()
-	defer conn.Close()
 
 	cond := map[string]string{"ID": strconv.FormatUint(id, 10)}
 	_, err := conn.Where(cond).Update(labelTableName, field)
 	return err
 }
 
+func truncateLabelMappingTable() error {
+	conn := easysql.GetConn()
+
+	_, err := conn.ExecSQL("truncate table " + labelMappingUserTableName)
+	return err
+}
+
 // 映射关系
 func createLabelMappingTable() error {
 	conn := easysql.GetConn()
-	defer conn.Close()
 
 	_, err := conn.ExecSQL(
 		strings.Join([]string{
 			" CREATE TABLE IF NOT EXISTS `" + labelMappingUserTableName + "` (",
-			" `label` int(11) NOT NULL COMMENT '标签 ID',",
+			" `Label` int(11) NOT NULL COMMENT '标签 ID',",
 			" `Owner` int(11) NOT NULL COMMENT '所属者 ID',",
 			" `DeletedTime` datetime DEFAULT NULL COMMENT '删除时间',",
 			" `CreatedTime` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',",
 			" `UpdatedTime` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',",
-			" PRIMARY KEY (`Source`,`Owner`,`DeletedTime`)",
+			" PRIMARY KEY (`Label`,`Owner`)",
 			" )ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4;",
 		}, "",
 		),
@@ -142,7 +150,6 @@ func createLabelMappingTable() error {
 // RemoveLabelFromUserByID 从用户身上移除标签
 func RemoveLabelFromUserByID(label, user uint64) error {
 	conn := easysql.GetConn()
-	defer conn.Close()
 
 	cond := map[string]string{
 		"Owner": strconv.FormatUint(user, 10),
@@ -157,7 +164,6 @@ func RemoveLabelFromUserByID(label, user uint64) error {
 // AddLabelToUserByID 添加标签给用户
 func AddLabelToUserByID(label, user uint64) error {
 	conn := easysql.GetConn()
-	defer conn.Close()
 
 	data := map[string]string{
 		"Owner": strconv.FormatUint(user, 10),

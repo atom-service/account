@@ -860,6 +860,11 @@ export class QueryGroupByIDResponse extends jspb.Message {
   getMessage(): string;
   setMessage(value: string): void;
 
+  hasData(): boolean;
+  clearData(): void;
+  getData(): Group | undefined;
+  setData(value?: Group): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): QueryGroupByIDResponse.AsObject;
   static toObject(includeInstance: boolean, msg: QueryGroupByIDResponse): QueryGroupByIDResponse.AsObject;
@@ -874,6 +879,7 @@ export namespace QueryGroupByIDResponse {
   export type AsObject = {
     state: StateMap[keyof StateMap],
     message: string,
+    data?: Group.AsObject,
   }
 }
 

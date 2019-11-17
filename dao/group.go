@@ -12,9 +12,15 @@ import (
 const groupTableName = "group"
 const groupMappingUserTableName = "group-mapping"
 
+func truncateGroupTable() error {
+	conn := easysql.GetConn()
+
+	_, err := conn.ExecSQL("truncate table " + groupTableName)
+	return err
+}
+
 func createGroupTable() error {
 	conn := easysql.GetConn()
-	defer conn.Close()
 
 	_, err := conn.ExecSQL(
 		strings.Join([]string{
@@ -27,7 +33,7 @@ func createGroupTable() error {
 			" `DeletedTime` datetime DEFAULT NULL COMMENT '删除时间',",
 			" `CreatedTime` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',",
 			" `UpdatedTime` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',",
-			" PRIMARY KEY (`ID`,`Class`,`DeletedTime`)",
+			" PRIMARY KEY (`ID`,`Class`,`State`)",
 			" )ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4;",
 		}, "",
 		),
@@ -38,7 +44,6 @@ func createGroupTable() error {
 // CreateGroup 创建组
 func createGroup(name, class, state, value string) error {
 	conn := easysql.GetConn()
-	defer conn.Close()
 
 	data := map[string]string{
 		"Name":  name,
@@ -54,7 +59,6 @@ func createGroup(name, class, state, value string) error {
 // CountGroupByID 根据 id 统计
 func CountGroupByID(id uint64) (int, error) {
 	conn := easysql.GetConn()
-	defer conn.Close()
 
 	idstr := strconv.FormatUint(id, 10)
 	cond := map[string]string{"ID": idstr}
@@ -73,7 +77,6 @@ func CountGroupByID(id uint64) (int, error) {
 // QueryGroupByID 根据 id 查询
 func QueryGroupByID(id uint64) (*model.Group, error) {
 	conn := easysql.GetConn()
-	defer conn.Close()
 
 	idstr := strconv.FormatUint(id, 10)
 	cond := map[string]string{"ID": idstr}
@@ -88,14 +91,14 @@ func QueryGroupByID(id uint64) (*model.Group, error) {
 }
 
 // DeleteGroupByID 删除标签
-func DeleteGroupByID(id uint64, class string) error {
+func DeleteGroupByID(id uint64) error {
 	nowTime := time.Now().Format("2006-01-02 15:04:05")
 	return updataGroupFieldByID(id, map[string]string{"DeletedTime": nowTime})
 }
 
 // UpdateGroupNameByID 更新标签类型
-func UpdateGroupNameByID(id uint64, class string) error {
-	return updataGroupFieldByID(id, map[string]string{"Name": class})
+func UpdateGroupNameByID(id uint64, name string) error {
+	return updataGroupFieldByID(id, map[string]string{"Name": name})
 }
 
 // UpdateGroupClassByID 更新标签状态
@@ -116,16 +119,21 @@ func UpdateGroupDescriptionByID(id uint64, description string) error {
 // 根据 ID 更新标签
 func updataGroupFieldByID(id uint64, field map[string]string) error {
 	conn := easysql.GetConn()
-	defer conn.Close()
 
 	cond := map[string]string{"ID": strconv.FormatUint(id, 10)}
 	_, err := conn.Where(cond).Update(groupTableName, field)
 	return err
 }
 
+func truncateGroupMappingTable() error {
+	conn := easysql.GetConn()
+
+	_, err := conn.ExecSQL("truncate table " + groupMappingUserTableName)
+	return err
+}
+
 func createGroupMappingTable() error {
 	conn := easysql.GetConn()
-	defer conn.Close()
 
 	_, err := conn.ExecSQL(
 		strings.Join([]string{
@@ -135,7 +143,7 @@ func createGroupMappingTable() error {
 			" `DeletedTime` datetime DEFAULT NULL COMMENT '删除时间',",
 			" `CreatedTime` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',",
 			" `UpdatedTime` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',",
-			" PRIMARY KEY (`Source`,`Owner`,`DeletedTime`)",
+			" PRIMARY KEY (`Group`,`Owner`)",
 			" )ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4;",
 		}, "",
 		),
@@ -146,7 +154,6 @@ func createGroupMappingTable() error {
 // RemoveUserFromGroupByID 从组里移除用户
 func RemoveUserFromGroupByID(group, user uint64) error {
 	conn := easysql.GetConn()
-	defer conn.Close()
 
 	cond := map[string]string{
 		"Owner": strconv.FormatUint(user, 10),
@@ -161,7 +168,6 @@ func RemoveUserFromGroupByID(group, user uint64) error {
 // AddUserToGroupByID 添加用户进组
 func AddUserToGroupByID(group, user uint64) error {
 	conn := easysql.GetConn()
-	defer conn.Close()
 
 	data := map[string]string{
 		"Owner": strconv.FormatUint(user, 10),

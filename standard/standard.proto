@@ -207,6 +207,7 @@ message QueryGroupByIDRequest {
 message QueryGroupByIDResponse {
   State  State = 1 ;
   string Message = 2 ;
+  Group  Data = 3 ;
 }
 
 message UpdateGroupNameByIDRequest {

@@ -13,9 +13,15 @@ import (
 
 const userTableName = "users"
 
+func truncateUserTable() error {
+	conn := easysql.GetConn()
+
+	_, err := conn.ExecSQL("truncate table " + userTableName)
+	return err
+}
+
 func createUserTable() error {
 	conn := easysql.GetConn()
-	defer conn.Close()
 
 	_, err := conn.ExecSQL(
 		strings.Join([]string{
@@ -30,7 +36,7 @@ func createUserTable() error {
 			" `DeletedTime` datetime DEFAULT NULL COMMENT '删除时间',",
 			" `CreatedTime` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',",
 			" `UpdatedTime` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',",
-			" PRIMARY KEY (`ID`,`Nickname`,`Username`,`DeletedTime`),",
+			" PRIMARY KEY (`ID`,`Nickname`,`Class`,`Username`),",
 			" UNIQUE KEY `Username` (`Username`)",
 			" ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4;",
 		}, "",
@@ -42,7 +48,6 @@ func createUserTable() error {
 // CountUserByID 根据 id 统计
 func CountUserByID(id uint64) (int, error) {
 	conn := easysql.GetConn()
-	defer conn.Close()
 
 	idstr := strconv.FormatUint(id, 10)
 	cond := map[string]string{"ID": idstr}
@@ -61,7 +66,6 @@ func CountUserByID(id uint64) (int, error) {
 // QueryUserByID 根据 id 查询
 func QueryUserByID(id uint64) (*model.User, error) {
 	conn := easysql.GetConn()
-	defer conn.Close()
 
 	idstr := strconv.FormatUint(id, 10)
 	cond := map[string]string{"ID": idstr}
@@ -78,7 +82,6 @@ func QueryUserByID(id uint64) (*model.User, error) {
 // QueryUserByUsername 根据 id 查询
 func QueryUserByUsername(username string) (*model.User, error) {
 	conn := easysql.GetConn()
-	defer conn.Close()
 
 	cond := map[string]string{"Username": username}
 	result, err := conn.Select(userTableName, nil).Where(cond).QueryRow()
@@ -94,7 +97,6 @@ func QueryUserByUsername(username string) (*model.User, error) {
 // CountUserByUsername 根据用户名统计
 func CountUserByUsername(username string) (int, error) {
 	conn := easysql.GetConn()
-	defer conn.Close()
 
 	queryField := []string{"count(*) as count"}
 	cond := map[string]string{"Username": username}
@@ -112,7 +114,6 @@ func CountUserByUsername(username string) (int, error) {
 // CreateUser 创建用户
 func CreateUser(class, nickname, username, password string, inviter uint64) error {
 	conn := easysql.GetConn()
-	defer conn.Close()
 
 	cond := map[string]string{
 		"Class":    class,
@@ -138,7 +139,6 @@ func DeleteUserByID(id uint64) error {
 // UpdataUserFieldByID 根据 ID 更新用户指定字段
 func UpdataUserFieldByID(id uint64, field map[string]string) error {
 	conn := easysql.GetConn()
-	defer conn.Close()
 
 	cond := map[string]string{"ID": strconv.FormatUint(id, 10)}
 	_, err := conn.Where(cond).Update(userTableName, field)
@@ -175,7 +175,6 @@ func UpdateUserPasswordByID(id uint64, password string) error {
 // VerifyUserPasswordByID 验证用户密码
 func VerifyUserPasswordByID(id uint64, password string) (bool, error) {
 	conn := easysql.GetConn()
-	defer conn.Close()
 
 	idstr := strconv.FormatUint(id, 10)
 	cond := map[string]string{"ID": idstr}
