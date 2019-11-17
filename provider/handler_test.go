@@ -2,7 +2,6 @@ package provider
 
 import (
 	"context"
-	"reflect"
 	"testing"
 
 	"github.com/grpcbrick/account/dao"
@@ -19,18 +18,25 @@ func TestService_CreateUser(t *testing.T) {
 
 	srv := NewService()
 	tests := []struct {
-		name     string
-		args     *standard.CreateUserRequest
-		wantResp *standard.CreateUserResponse
-		wantErr  bool
+		name      string
+		args      *standard.CreateUserRequest
+		wantState standard.State
+		wantErr   bool
 	}{
-		{"测试正常创建", &standard.CreateUserRequest{Class: "TEST", Inviter: 1, Nickname: "Nickname", Username: "Username", Password: "Username"}, nil, false},
-		{"重复的 Username", &standard.CreateUserRequest{Class: "TEST", Inviter: 1, Nickname: "Nickname", Username: "Username", Password: "Username"}, nil, false},
-		{"测试空的 Class", &standard.CreateUserRequest{Class: "TEST1", Inviter: 1, Nickname: "Nickname", Username: "Username", Password: "Username"}, nil, false},
-		{"测试空的 Inviter", &standard.CreateUserRequest{Class: "TEST2", Nickname: "Nickname", Username: "Username", Password: "Username"}, nil, false},
-		{"测试空的 Nickname", &standard.CreateUserRequest{Class: "TEST3", Inviter: 1, Username: "Username", Password: "Username"}, nil, false},
-		{"测试空的 Username", &standard.CreateUserRequest{Class: "TEST4", Inviter: 1, Nickname: "Nickname", Password: "Username"}, nil, false},
-		{"测试空的 Password", &standard.CreateUserRequest{Class: "TEST5", Inviter: 1, Nickname: "Nickname", Username: "Username"}, nil, false},
+		{"测试正常创建", &standard.CreateUserRequest{Class: "TEST", Inviter: 1, Nickname: "Nickname", Username: "Username", Password: "Password"},
+			standard.State_SUCCESS, false},
+		{"重复的 Username", &standard.CreateUserRequest{Class: "TEST", Inviter: 1, Nickname: "Nickname", Username: "Username", Password: "Password"},
+			standard.State_USER_ALREADY_EXISTS, false},
+		{"测试空的 Class", &standard.CreateUserRequest{Class: "TEST", Inviter: 1, Nickname: "Nickname", Username: "Username1", Password: "Password"},
+			standard.State_SUCCESS, false},
+		{"测试空的 Inviter", &standard.CreateUserRequest{Class: "TEST", Nickname: "Nickname", Username: "Username2", Password: "Password"},
+			standard.State_SUCCESS, false},
+		{"测试空的 Nickname", &standard.CreateUserRequest{Class: "TEST", Inviter: 1, Username: "Username3", Password: "Password"},
+			standard.State_PARAMS_INVALID, false},
+		{"测试空的 Username", &standard.CreateUserRequest{Class: "TEST", Inviter: 1, Nickname: "Nickname", Password: "Username4"},
+			standard.State_PARAMS_INVALID, false},
+		{"测试空的 Password", &standard.CreateUserRequest{Class: "TEST", Inviter: 1, Nickname: "Nickname", Username: "Username5"},
+			standard.State_PARAMS_INVALID, false},
 	}
 
 	for _, tt := range tests {
@@ -40,8 +46,8 @@ func TestService_CreateUser(t *testing.T) {
 				t.Errorf("Service.CreateUser() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(gotResp, tt.wantResp) {
-				t.Errorf("Service.CreateUser() = %v, want %v", gotResp, tt.wantResp)
+			if gotResp.State.String() != tt.wantState.String() {
+				t.Errorf("Service.CreateUser() = %v, want %v", gotResp, tt.wantState)
 			}
 		})
 	}
