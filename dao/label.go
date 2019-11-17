@@ -123,7 +123,7 @@ func updataLabelFieldByID(id uint64, field map[string]string) error {
 func truncateLabelMappingTable() error {
 	conn := easysql.GetConn()
 
-	_, err := conn.ExecSQL("truncate table " + labelMappingUserTableName)
+	_, err := conn.ExecSQL("truncate table `" + labelMappingUserTableName + "`")
 	return err
 }
 

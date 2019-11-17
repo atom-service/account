@@ -15,7 +15,7 @@ const groupMappingUserTableName = "group-mapping"
 func truncateGroupTable() error {
 	conn := easysql.GetConn()
 
-	_, err := conn.ExecSQL("truncate table " + groupTableName)
+	_, err := conn.ExecSQL("truncate table `" + groupTableName + "`")
 	return err
 }
 
@@ -128,7 +128,7 @@ func updataGroupFieldByID(id uint64, field map[string]string) error {
 func truncateGroupMappingTable() error {
 	conn := easysql.GetConn()
 
-	_, err := conn.ExecSQL("truncate table " + groupMappingUserTableName)
+	_, err := conn.ExecSQL("truncate table `" + groupMappingUserTableName + "`")
 	return err
 }
 
