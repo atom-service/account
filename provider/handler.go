@@ -137,39 +137,178 @@ func (srv *Service) QueryUserByUsername(ctx context.Context, req *standard.Query
 
 func (srv *Service) DeleteUserByID(ctx context.Context, req *standard.DeleteUserByIDRequest) (resp *standard.DeleteUserByIDResponse, err error) {
 	resp = new(standard.DeleteUserByIDResponse)
+
+	if req.ID == 0 {
+		resp.State = standard.State_PARAMS_INVALID
+		resp.Message = "无效的 ID"
+		return resp, nil
+	}
+
+	count, err := dao.CountUserByID(req.ID)
+	if err != nil {
+		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.Message = err.Error()
+		return resp, nil
+	}
+
+	if count <= 0 { // 没有找到用户
+		resp.State = standard.State_USER_NOT_EXIST
+		resp.Message = "该用户不存在"
+		return resp, nil
+	}
+
+	err = dao.DeleteUserByID(req.ID)
+	if err != nil {
+		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.Message = err.Error()
+		return resp, nil
+	}
+
+	resp.State = standard.State_SUCCESS
+	resp.Message = "删除成功"
 	return resp, nil
 }
 
 func (srv *Service) UpdateUserPasswordByID(ctx context.Context, req *standard.UpdateUserPasswordByIDRequest) (resp *standard.UpdateUserPasswordByIDResponse, err error) {
 	resp = new(standard.UpdateUserPasswordByIDResponse)
-	return resp, nil
-}
-func (srv *Service) VerifyUserPasswordByID(ctx context.Context, req *standard.VerifyUserPasswordByIDRequest) (resp *standard.VerifyUserPasswordByIDResponse, err error) {
-	resp = new(standard.VerifyUserPasswordByIDResponse)
-	return resp, nil
-}
-func (srv *Service) VerifyUserPasswordByUsername(ctx context.Context, req *standard.VerifyUserPasswordByUsernameRequest) (resp *standard.VerifyUserPasswordByUsernameResponse, err error) {
-	resp = new(standard.VerifyUserPasswordByUsernameResponse)
+	if req.ID == 0 {
+		resp.State = standard.State_PARAMS_INVALID
+		resp.Message = "无效的 ID"
+		return resp, nil
+	}
+
+	count, err := dao.CountUserByID(req.ID)
+	if err != nil {
+		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.Message = err.Error()
+		return resp, nil
+	}
+
+	if count <= 0 { // 没有找到用户
+		resp.State = standard.State_USER_NOT_EXIST
+		resp.Message = "该用户不存在"
+		return resp, nil
+	}
+
+	err = dao.UpdateUserPasswordByID(req.ID, req.Password)
+	if err != nil {
+		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.Message = err.Error()
+		return resp, nil
+	}
+
+	resp.State = standard.State_SUCCESS
+	resp.Message = "更新成功"
 	return resp, nil
 }
 
-// 标签操作
-func (srv *Service) QueryLabelByID(ctx context.Context, req *standard.QueryLabelByIDRequest) (resp *standard.QueryLabelByIDResponse, err error) {
-	resp = new(standard.QueryLabelByIDResponse)
+func (srv *Service) VerifyUserPasswordByID(ctx context.Context, req *standard.VerifyUserPasswordByIDRequest) (resp *standard.VerifyUserPasswordByIDResponse, err error) {
+	resp = new(standard.VerifyUserPasswordByIDResponse)
+	if req.ID == 0 {
+		resp.State = standard.State_PARAMS_INVALID
+		resp.Message = "无效的 ID"
+		return resp, nil
+	}
+
+	count, err := dao.CountUserByID(req.ID)
+	if err != nil {
+		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.Message = err.Error()
+		return resp, nil
+	}
+
+	if count <= 0 { // 没有找到用户
+		resp.State = standard.State_USER_NOT_EXIST
+		resp.Message = "该用户不存在"
+		return resp, nil
+	}
+
+	pass, err := dao.VerifyUserPasswordByID(req.ID, req.Password)
+	if err != nil {
+		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.Message = err.Error()
+		return resp, nil
+	}
+
+	if pass == false {
+		resp.State = standard.State_USER_VERIFY_FAILURE
+		resp.Message = "账户或密码错误"
+		return
+	}
+
+	resp.State = standard.State_SUCCESS
+	resp.Message = "验证成功"
 	return resp, nil
 }
+
+// VerifyUserPasswordByUsername VerifyUserPasswordByUsername
+func (srv *Service) VerifyUserPasswordByUsername(ctx context.Context, req *standard.VerifyUserPasswordByUsernameRequest) (resp *standard.VerifyUserPasswordByUsernameResponse, err error) {
+	resp = new(standard.VerifyUserPasswordByUsernameResponse)
+	if req.Username == "" {
+		resp.State = standard.State_PARAMS_INVALID
+		resp.Message = "无效的 Username"
+		return resp, nil
+	}
+
+	count, err := dao.CountUserByUsername(req.Username)
+	if err != nil {
+		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.Message = err.Error()
+		return resp, nil
+	}
+
+	if count <= 0 { // 没有找到用户
+		resp.State = standard.State_USER_NOT_EXIST
+		resp.Message = "该用户不存在"
+		return resp, nil
+	}
+
+	user, err := dao.QueryUserByUsername(req.Username)
+	if err != nil {
+		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.Message = err.Error()
+		return resp, nil
+	}
+
+	pass, err := dao.VerifyUserPasswordByID(user.ID, req.Password)
+	if err != nil {
+		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.Message = err.Error()
+		return resp, nil
+	}
+
+	if pass == false {
+		resp.State = standard.State_USER_VERIFY_FAILURE
+		resp.Message = "账户或密码错误"
+		return
+	}
+
+	resp.State = standard.State_SUCCESS
+	resp.Message = "验证成功"
+	return resp, nil
+}
+
+func (srv *Service) QueryLabelByID(ctx context.Context, req *standard.QueryLabelByIDRequest) (resp *standard.QueryLabelByIDResponse, err error) {
+	resp = new(standard.QueryLabelByIDResponse)
+
+	return resp, nil
+}
+
 func (srv *Service) DeleteLabelByID(ctx context.Context, req *standard.DeleteLabelByIDRequest) (resp *standard.DeleteLabelByIDResponse, err error) {
 	resp = new(standard.DeleteLabelByIDResponse)
 	return resp, nil
 }
+
 func (srv *Service) UpdateLabelClassByID(ctx context.Context, req *standard.UpdateLabelClassByIDRequest) (resp *standard.UpdateLabelClassByIDResponse, err error) {
 	resp = new(standard.UpdateLabelClassByIDResponse)
 	return resp, nil
 }
+
 func (srv *Service) UpdateLabelStateByID(ctx context.Context, req *standard.UpdateLabelStateByIDRequest) (resp *standard.UpdateLabelStateByIDResponse, err error) {
 	resp = new(standard.UpdateLabelStateByIDResponse)
 	return resp, nil
 }
+
 func (srv *Service) UpdateLabelValueByID(ctx context.Context, req *standard.UpdateLabelValueByIDRequest) (resp *standard.UpdateLabelValueByIDResponse, err error) {
 	resp = new(standard.UpdateLabelValueByIDResponse)
 	return resp, nil
@@ -180,6 +319,7 @@ func (srv *Service) AddLabelToUserByID(ctx context.Context, req *standard.AddLab
 	resp = new(standard.AddLabelToUserByIDResponse)
 	return resp, nil
 }
+
 func (srv *Service) RemoveLabelFromUserByID(ctx context.Context, req *standard.RemoveLabelFromUserByIDRequest) (resp *standard.RemoveLabelFromUserByIDResponse, err error) {
 	resp = new(standard.RemoveLabelFromUserByIDResponse)
 	return resp, nil

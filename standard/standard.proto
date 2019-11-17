@@ -11,11 +11,12 @@ enum State {
   PARAMS_INVALID = 4 ;   // 参数不合法
   ILLEGAL_REQUEST = 5 ;   // 非法请求
   LABEL_NOT_EXIST = 6 ;   // 标签不存在
-  USER_NOT_EXIST = 7 ;   // 用户不存在
-  USER_ALREADY_EXISTS = 8 ;   // 用户已经存在
-  USER_VERIFY_FAILURE = 9 ;   // 用户验证失败
-  LABEL_ALREADY_EXISTS = 10 ;   // 标签已经存在
-  DB_OPERATION_FATLURE = 11 ;    // 数据库操作失败
+  GROUP_NOT_EXIST = 7 ;   // 分组不存在
+  USER_NOT_EXIST = 8 ;   // 用户不存在
+  USER_ALREADY_EXISTS = 9 ;   // 用户已经存在
+  USER_VERIFY_FAILURE = 10 ;   // 用户验证失败
+  LABEL_ALREADY_EXISTS = 11 ;   // 标签已经存在
+  DB_OPERATION_FATLURE = 12 ;    // 数据库操作失败
 }
 
 
@@ -116,7 +117,6 @@ message VerifyUserPasswordByIDRequest {
 message VerifyUserPasswordByIDResponse {
   State  State = 1 ;
   string Message = 2 ;
-  bool   Data = 3 ;
 }
 
 message VerifyUserPasswordByUsernameRequest {
@@ -127,7 +127,6 @@ message VerifyUserPasswordByUsernameRequest {
 message VerifyUserPasswordByUsernameResponse {
   State  State = 1 ;
   string Message = 2 ;
-  bool   Data = 3 ;
 }
 
 // 标签操作
@@ -149,7 +148,6 @@ message UpdateLabelClassByIDRequest {
 message UpdateLabelClassByIDResponse {
   State  State = 1 ;
   string Message = 2 ;
-  bool   Data = 3 ;
 }
 
 message UpdateLabelStateByIDRequest {
@@ -160,7 +158,6 @@ message UpdateLabelStateByIDRequest {
 message UpdateLabelStateByIDResponse {
   State  State = 1 ;
   string Message = 2 ;
-  bool   Data = 3 ;
 }
 
 message UpdateLabelValueByIDRequest {
@@ -171,7 +168,6 @@ message UpdateLabelValueByIDRequest {
 message UpdateLabelValueByIDResponse {
   State  State = 1 ;
   string Message = 2 ;
-  bool   Data = 3 ;
 }
 
 message DeleteLabelByIDRequest {
@@ -181,7 +177,6 @@ message DeleteLabelByIDRequest {
 message DeleteLabelByIDResponse {
   State  State = 1 ;
   string Message = 2 ;
-  bool   Data = 3 ;
 }
 
 message AddLabelToUserByIDRequest {
@@ -192,7 +187,6 @@ message AddLabelToUserByIDRequest {
 message AddLabelToUserByIDResponse {
   State  State = 1 ;
   string Message = 2 ;
-  bool   Data = 3 ;
 }
 
 message RemoveLabelFromUserByIDRequest {
@@ -203,7 +197,6 @@ message RemoveLabelFromUserByIDRequest {
 message RemoveLabelFromUserByIDResponse {
   State  State = 1 ;
   string Message = 2 ;
-  bool   Data = 3 ;
 }
 
 // 组操作
@@ -214,7 +207,6 @@ message QueryGroupByIDRequest {
 message QueryGroupByIDResponse {
   State  State = 1 ;
   string Message = 2 ;
-  bool   Data = 3 ;
 }
 
 message UpdateGroupNameByIDRequest {
@@ -225,7 +217,6 @@ message UpdateGroupNameByIDRequest {
 message UpdateGroupNameByIDResponse {
   State  State = 1 ;
   string Message = 2 ;
-  bool   Data = 3 ;
 }
 
 message UpdateGroupClassByIDRequest {
@@ -236,7 +227,6 @@ message UpdateGroupClassByIDRequest {
 message UpdateGroupClassByIDResponse {
   State  State = 1 ;
   string Message = 2 ;
-  bool   Data = 3 ;
 }
 
 message UpdateGroupStateByIDRequest {
@@ -247,7 +237,6 @@ message UpdateGroupStateByIDRequest {
 message UpdateGroupStateByIDResponse {
   State  State = 1 ;
   string Message = 2 ;
-  bool   Data = 3 ;
 }
 
 message UpdateGroupDescriptionByIDRequest {
@@ -258,7 +247,6 @@ message UpdateGroupDescriptionByIDRequest {
 message UpdateGroupDescriptionByIDResponse {
   State  State = 1 ;
   string Message = 2 ;
-  bool   Data = 3 ;
 }
 
 message DeleteGroupByIDRequest {
@@ -268,7 +256,6 @@ message DeleteGroupByIDRequest {
 message DeleteGroupByIDResponse {
   State  State = 1 ;
   string Message = 2 ;
-  bool   Data = 3 ;
 }
 
 message AddUserToGroupByIDRequest {
@@ -279,7 +266,6 @@ message AddUserToGroupByIDRequest {
 message AddUserToGroupByIDResponse {
   State  State = 1 ;
   string Message = 2 ;
-  bool   Data = 3 ;
 }
 
 message RemoveUserFromGroupByIDRequest {
@@ -290,7 +276,6 @@ message RemoveUserFromGroupByIDRequest {
 message RemoveUserFromGroupByIDResponse {
   State  State = 1 ;
   string Message = 2 ;
-  bool   Data = 3 ;
 }
 
 service Account {

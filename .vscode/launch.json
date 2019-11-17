@@ -12,10 +12,10 @@
       "program": "${workspaceFolder}/main.go",
       "env": {},
       "args": [
-        "-mysql",
-        "22222",
-        "-port",
-        ":42412"
+        "-rpc-port",
+        ":3000",
+        "-mysql-url",
+        "localhost:22222@"
       ]
     }
   ]

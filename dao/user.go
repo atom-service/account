@@ -130,44 +130,65 @@ func CreateUser(class, nickname, username, password string, inviter uint64) erro
 }
 
 // DeleteUserByID 删除用户
-func DeleteUserByID(id uint64, class string) error {
+func DeleteUserByID(id uint64) error {
 	nowTime := time.Now().Format("2006-01-02 15:04:05")
-	return updataUserFieldByID(id, map[string]string{"DeletedTime": nowTime})
+	return UpdataUserFieldByID(id, map[string]string{"DeletedTime": nowTime})
 }
 
-// UpdateUserClassByID 更新用户类型
-func UpdateUserClassByID(id uint64, class string) error {
-	return updataUserFieldByID(id, map[string]string{"Class": class})
-}
-
-// UpdateUserAvatarByID 更新用户头像
-func UpdateUserAvatarByID(id uint64, avatar string) error {
-	return updataUserFieldByID(id, map[string]string{"Avatar": avatar})
-}
-
-// UpdateUserNicknameByID 更新用户昵称
-func UpdateUserNicknameByID(id uint64, nickname string) error {
-	return updataUserFieldByID(id, map[string]string{"Nickname": nickname})
-}
-
-// UpdateUserInviterByID 更新用户邀请码
-func UpdateUserInviterByID(id, inviter uint64) error {
-	return updataUserFieldByID(id, map[string]string{"Inviter": strconv.FormatUint(inviter, 10)})
-}
-
-// UpdateUserPasswordByID 更新用户密码
-func UpdateUserPasswordByID(id uint64, password string) error {
-	// 加密
-	encryptPassword := crypto.MD5Encrypt(password, config.MustGet("encrypt-password"))
-	return updataUserFieldByID(id, map[string]string{"Password": encryptPassword})
-}
-
-// 根据 ID 更新用户指定字段
-func updataUserFieldByID(id uint64, field map[string]string) error {
+// UpdataUserFieldByID 根据 ID 更新用户指定字段
+func UpdataUserFieldByID(id uint64, field map[string]string) error {
 	conn := easysql.GetConn()
 	defer conn.Close()
 
 	cond := map[string]string{"ID": strconv.FormatUint(id, 10)}
 	_, err := conn.Where(cond).Update(userTableName, field)
 	return err
+}
+
+// UpdateUserClassByID 更新用户类型
+func UpdateUserClassByID(id uint64, class string) error {
+	return UpdataUserFieldByID(id, map[string]string{"Class": class})
+}
+
+// UpdateUserAvatarByID 更新用户头像
+func UpdateUserAvatarByID(id uint64, avatar string) error {
+	return UpdataUserFieldByID(id, map[string]string{"Avatar": avatar})
+}
+
+// UpdateUserNicknameByID 更新用户昵称
+func UpdateUserNicknameByID(id uint64, nickname string) error {
+	return UpdataUserFieldByID(id, map[string]string{"Nickname": nickname})
+}
+
+// UpdateUserInviterByID 更新用户邀请码
+func UpdateUserInviterByID(id, inviter uint64) error {
+	return UpdataUserFieldByID(id, map[string]string{"Inviter": strconv.FormatUint(inviter, 10)})
+}
+
+// UpdateUserPasswordByID 更新用户密码
+func UpdateUserPasswordByID(id uint64, password string) error {
+	// 加密
+	encryptPassword := crypto.MD5Encrypt(password, config.MustGet("encrypt-password"))
+	return UpdataUserFieldByID(id, map[string]string{"Password": encryptPassword})
+}
+
+// VerifyUserPasswordByID 验证用户密码
+func VerifyUserPasswordByID(id uint64, password string) (bool, error) {
+	conn := easysql.GetConn()
+	defer conn.Close()
+
+	idstr := strconv.FormatUint(id, 10)
+	cond := map[string]string{"ID": idstr}
+	result, err := conn.Select(userTableName, nil).Where(cond).QueryRow()
+	if err != nil {
+		return false, err
+	}
+
+	// 加密
+	encryptPassword := crypto.MD5Encrypt(password, config.MustGet("encrypt-password"))
+	if result["Password"] == encryptPassword {
+		return true, nil
+	}
+
+	return false, nil
 }

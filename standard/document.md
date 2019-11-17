@@ -95,7 +95,6 @@
 | ----- | ---- | ----- | ----------- |
 | State | [State](#standard.State) |  |  |
 | Message | [string](#string) |  |  |
-| Data | [bool](#bool) |  |  |
 
 
 
@@ -128,7 +127,6 @@
 | ----- | ---- | ----- | ----------- |
 | State | [State](#standard.State) |  |  |
 | Message | [string](#string) |  |  |
-| Data | [bool](#bool) |  |  |
 
 
 
@@ -195,7 +193,6 @@
 | ----- | ---- | ----- | ----------- |
 | State | [State](#standard.State) |  |  |
 | Message | [string](#string) |  |  |
-| Data | [bool](#bool) |  |  |
 
 
 
@@ -227,7 +224,6 @@
 | ----- | ---- | ----- | ----------- |
 | State | [State](#standard.State) |  |  |
 | Message | [string](#string) |  |  |
-| Data | [bool](#bool) |  |  |
 
 
 
@@ -333,7 +329,6 @@ Label 标签
 | ----- | ---- | ----- | ----------- |
 | State | [State](#standard.State) |  |  |
 | Message | [string](#string) |  |  |
-| Data | [bool](#bool) |  |  |
 
 
 
@@ -462,7 +457,6 @@ Label 标签
 | ----- | ---- | ----- | ----------- |
 | State | [State](#standard.State) |  |  |
 | Message | [string](#string) |  |  |
-| Data | [bool](#bool) |  |  |
 
 
 
@@ -495,7 +489,6 @@ Label 标签
 | ----- | ---- | ----- | ----------- |
 | State | [State](#standard.State) |  |  |
 | Message | [string](#string) |  |  |
-| Data | [bool](#bool) |  |  |
 
 
 
@@ -528,7 +521,6 @@ Label 标签
 | ----- | ---- | ----- | ----------- |
 | State | [State](#standard.State) |  |  |
 | Message | [string](#string) |  |  |
-| Data | [bool](#bool) |  |  |
 
 
 
@@ -561,7 +553,6 @@ Label 标签
 | ----- | ---- | ----- | ----------- |
 | State | [State](#standard.State) |  |  |
 | Message | [string](#string) |  |  |
-| Data | [bool](#bool) |  |  |
 
 
 
@@ -594,7 +585,6 @@ Label 标签
 | ----- | ---- | ----- | ----------- |
 | State | [State](#standard.State) |  |  |
 | Message | [string](#string) |  |  |
-| Data | [bool](#bool) |  |  |
 
 
 
@@ -627,7 +617,6 @@ Label 标签
 | ----- | ---- | ----- | ----------- |
 | State | [State](#standard.State) |  |  |
 | Message | [string](#string) |  |  |
-| Data | [bool](#bool) |  |  |
 
 
 
@@ -660,7 +649,6 @@ Label 标签
 | ----- | ---- | ----- | ----------- |
 | State | [State](#standard.State) |  |  |
 | Message | [string](#string) |  |  |
-| Data | [bool](#bool) |  |  |
 
 
 
@@ -693,7 +681,6 @@ Label 标签
 | ----- | ---- | ----- | ----------- |
 | State | [State](#standard.State) |  |  |
 | Message | [string](#string) |  |  |
-| Data | [bool](#bool) |  |  |
 
 
 
@@ -726,7 +713,6 @@ Label 标签
 | ----- | ---- | ----- | ----------- |
 | State | [State](#standard.State) |  |  |
 | Message | [string](#string) |  |  |
-| Data | [bool](#bool) |  |  |
 
 
 
@@ -815,7 +801,6 @@ User 用户
 | ----- | ---- | ----- | ----------- |
 | State | [State](#standard.State) |  |  |
 | Message | [string](#string) |  |  |
-| Data | [bool](#bool) |  |  |
 
 
 
@@ -848,7 +833,6 @@ User 用户
 | ----- | ---- | ----- | ----------- |
 | State | [State](#standard.State) |  |  |
 | Message | [string](#string) |  |  |
-| Data | [bool](#bool) |  |  |
 
 
 
@@ -871,11 +855,12 @@ User 用户
 | PARAMS_INVALID | 4 | 参数不合法 |
 | ILLEGAL_REQUEST | 5 | 非法请求 |
 | LABEL_NOT_EXIST | 6 | 标签不存在 |
-| USER_NOT_EXIST | 7 | 用户不存在 |
-| USER_ALREADY_EXISTS | 8 | 用户已经存在 |
-| USER_VERIFY_FAILURE | 9 | 用户验证失败 |
-| LABEL_ALREADY_EXISTS | 10 | 标签已经存在 |
-| DB_OPERATION_FATLURE | 11 | 数据库操作失败 |
+| GROUP_NOT_EXIST | 7 | 分组不存在 |
+| USER_NOT_EXIST | 8 | 用户不存在 |
+| USER_ALREADY_EXISTS | 9 | 用户已经存在 |
+| USER_VERIFY_FAILURE | 10 | 用户验证失败 |
+| LABEL_ALREADY_EXISTS | 11 | 标签已经存在 |
+| DB_OPERATION_FATLURE | 12 | 数据库操作失败 |
 
 
  

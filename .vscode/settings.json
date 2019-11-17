@@ -1,6 +1,5 @@
 {
   "files.exclude": {
-    ".deploy": true,
-    ".vscode": true
+    ".deploy": true
   }
 }
