@@ -25,7 +25,6 @@ func TestMain(m *testing.M) {
 }
 
 func TestService_CreateUser(t *testing.T) {
-	fmt.Println("213123")
 	srv := NewService()
 	tests := []struct {
 		name      string
@@ -64,6 +63,95 @@ func TestService_CreateUser(t *testing.T) {
 			}
 			if gotResp.State.String() != tt.wantState.String() {
 				t.Errorf("Service.CreateUser() = %v, want %v", gotResp, tt.wantState)
+				return
+			}
+		})
+	}
+}
+
+func TestService_QueryUserByID(t *testing.T) {
+	srv := NewService()
+	tests := []struct {
+		name         string
+		args         *standard.QueryUserByIDRequest
+		wantUsername string
+		wantState    standard.State
+		wantErr      bool
+	}{
+		{"测试正常查询", &standard.QueryUserByIDRequest{ID: 1},
+			"Username", standard.State_SUCCESS, false},
+		{"测试正常查询", &standard.QueryUserByIDRequest{ID: 2},
+			"Username1", standard.State_SUCCESS, false},
+		{"测试正常查询", &standard.QueryUserByIDRequest{ID: 3},
+			"Username2", standard.State_SUCCESS, false},
+		{"测试空的 ID", &standard.QueryUserByIDRequest{ID: 0},
+			"ignore", standard.State_PARAMS_INVALID, false},
+		{"测试不存在的 ID", &standard.QueryUserByIDRequest{ID: 999},
+			"ignore", standard.State_USER_NOT_EXIST, false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotResp, err := srv.QueryUserByID(context.Background(), tt.args)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Service.CreateUser() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+
+			if gotResp.State.String() != tt.wantState.String() {
+				t.Errorf("Service.CreateUser() = %v, want %v", gotResp, tt.wantState)
+				return
+			}
+
+			if tt.wantUsername != "ignore" {
+				if gotResp.Data.Username != tt.wantUsername {
+					t.Errorf("Service.CreateUser() = %v, want %v", gotResp, tt.wantUsername)
+					return
+				}
+			}
+		})
+	}
+}
+
+func TestService_QueryUserByUsername(t *testing.T) {
+	srv := NewService()
+	tests := []struct {
+		name         string
+		args         *standard.QueryUserByUsernameRequest
+		wantUsername string
+		wantState    standard.State
+		wantErr      bool
+	}{
+		{"测试正常查询", &standard.QueryUserByUsernameRequest{Username: "Username"},
+			"Username", standard.State_SUCCESS, false},
+		{"测试正常查询", &standard.QueryUserByUsernameRequest{Username: "Username1"},
+			"Username1", standard.State_SUCCESS, false},
+		{"测试正常查询", &standard.QueryUserByUsernameRequest{Username: "Username2"},
+			"Username2", standard.State_SUCCESS, false},
+		{"测试空的 Username", &standard.QueryUserByUsernameRequest{Username: ""},
+			"ignore", standard.State_PARAMS_INVALID, false},
+		{"测试不存在的 Username", &standard.QueryUserByUsernameRequest{Username: "TESTNAME"},
+			"ignore", standard.State_USER_NOT_EXIST, false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotResp, err := srv.QueryUserByUsername(context.Background(), tt.args)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Service.CreateUser() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+
+			if gotResp.State.String() != tt.wantState.String() {
+				t.Errorf("Service.CreateUser() = %v, want %v", gotResp, tt.wantState)
+				return
+			}
+
+			if tt.wantUsername != "ignore" {
+				if gotResp.Data.Username != tt.wantUsername {
+					t.Errorf("Service.CreateUser() = %v, want %v", gotResp, tt.wantUsername)
+					return
+				}
 			}
 		})
 	}
