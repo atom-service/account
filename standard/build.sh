@@ -14,7 +14,6 @@ cd $BasePath
 
 protoc --go_out=plugins=grpc:. *.proto
 
-protoc --letmegrpc_out=. *.proto
 protoc --ts_out=service=grpc-node:.  *.proto
 protoc --doc_out=. --doc_opt=html,document.html *.proto
 protoc --doc_out=. --doc_opt=markdown,document.md *.proto
