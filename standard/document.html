@@ -195,6 +195,22 @@
                 </li>
               
                 <li>
+                  <a href="#standard.CreateGroupRequest"><span class="badge">M</span>CreateGroupRequest</a>
+                </li>
+              
+                <li>
+                  <a href="#standard.CreateGroupResponse"><span class="badge">M</span>CreateGroupResponse</a>
+                </li>
+              
+                <li>
+                  <a href="#standard.CreateLabelRequest"><span class="badge">M</span>CreateLabelRequest</a>
+                </li>
+              
+                <li>
+                  <a href="#standard.CreateLabelResponse"><span class="badge">M</span>CreateLabelResponse</a>
+                </li>
+              
+                <li>
                   <a href="#standard.CreateUserRequest"><span class="badge">M</span>CreateUserRequest</a>
                 </li>
               
@@ -486,6 +502,151 @@
         
       
         <h3 id="standard.AddUserToGroupByIDResponse">AddUserToGroupByIDResponse</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>State</td>
+                  <td><a href="#standard.State">State</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Message</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="standard.CreateGroupRequest">CreateGroupRequest</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>Name</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Class</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>State</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Description</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="standard.CreateGroupResponse">CreateGroupResponse</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>State</td>
+                  <td><a href="#standard.State">State</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Message</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="standard.CreateLabelRequest">CreateLabelRequest</h3>
+        <p>标签操作</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>Class</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>State</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Value</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="standard.CreateLabelResponse">CreateLabelResponse</h3>
         <p></p>
 
         
@@ -904,7 +1065,7 @@
         
       
         <h3 id="standard.QueryGroupByIDRequest">QueryGroupByIDRequest</h3>
-        <p>组操作</p>
+        <p></p>
 
         
           <table class="field-table">
@@ -966,7 +1127,7 @@
         
       
         <h3 id="standard.QueryLabelByIDRequest">QueryLabelByIDRequest</h3>
-        <p>标签操作</p>
+        <p></p>
 
         
           <table class="field-table">
@@ -2135,10 +2296,17 @@
               </tr>
             
               <tr>
+                <td>CreateLabel</td>
+                <td><a href="#standard.CreateLabelRequest">CreateLabelRequest</a></td>
+                <td><a href="#standard.CreateLabelResponse">CreateLabelResponse</a></td>
+                <td><p>标签操作</p></td>
+              </tr>
+            
+              <tr>
                 <td>QueryLabelByID</td>
                 <td><a href="#standard.QueryLabelByIDRequest">QueryLabelByIDRequest</a></td>
                 <td><a href="#standard.QueryLabelByIDResponse">QueryLabelByIDResponse</a></td>
-                <td><p>标签操作</p></td>
+                <td><p></p></td>
               </tr>
             
               <tr>
@@ -2184,10 +2352,17 @@
               </tr>
             
               <tr>
+                <td>CreateGroup</td>
+                <td><a href="#standard.CreateGroupRequest">CreateGroupRequest</a></td>
+                <td><a href="#standard.CreateGroupResponse">CreateGroupResponse</a></td>
+                <td><p>组操作</p></td>
+              </tr>
+            
+              <tr>
                 <td>QueryGroupByID</td>
                 <td><a href="#standard.QueryGroupByIDRequest">QueryGroupByIDRequest</a></td>
                 <td><a href="#standard.QueryGroupByIDResponse">QueryGroupByIDResponse</a></td>
-                <td><p>组操作</p></td>
+                <td><p></p></td>
               </tr>
             
               <tr>

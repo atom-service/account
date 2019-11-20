@@ -94,18 +94,18 @@ func TestService_QueryUserByID(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			gotResp, err := srv.QueryUserByID(context.Background(), tt.args)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("Service.CreateUser() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("Service.QueryUserByID() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 
 			if gotResp.State.String() != tt.wantState.String() {
-				t.Errorf("Service.CreateUser() = %v, want %v", gotResp, tt.wantState)
+				t.Errorf("Service.QueryUserByID() = %v, want %v", gotResp, tt.wantState)
 				return
 			}
 
 			if tt.wantUsername != "ignore" {
 				if gotResp.Data.Username != tt.wantUsername {
-					t.Errorf("Service.CreateUser() = %v, want %v", gotResp, tt.wantUsername)
+					t.Errorf("Service.QueryUserByID() = %v, want %v", gotResp, tt.wantUsername)
 					return
 				}
 			}
@@ -138,20 +138,172 @@ func TestService_QueryUserByUsername(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			gotResp, err := srv.QueryUserByUsername(context.Background(), tt.args)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("Service.CreateUser() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("Service.QueryUserByUsername() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 
 			if gotResp.State.String() != tt.wantState.String() {
-				t.Errorf("Service.CreateUser() = %v, want %v", gotResp, tt.wantState)
+				t.Errorf("Service.QueryUserByUsername() = %v, want %v", gotResp, tt.wantState)
 				return
 			}
 
 			if tt.wantUsername != "ignore" {
 				if gotResp.Data.Username != tt.wantUsername {
-					t.Errorf("Service.CreateUser() = %v, want %v", gotResp, tt.wantUsername)
+					t.Errorf("Service.QueryUserByUsername() = %v, want %v", gotResp, tt.wantUsername)
 					return
 				}
+			}
+		})
+	}
+}
+
+func TestService_DeleteUserByID(t *testing.T) {
+	srv := NewService()
+	tests := []struct {
+		name      string
+		args      *standard.DeleteUserByIDRequest
+		wantState standard.State
+		wantErr   bool
+	}{
+		{"测试正常删除", &standard.DeleteUserByIDRequest{ID: 1},
+			standard.State_SUCCESS, false},
+		{"测试正常删除", &standard.DeleteUserByIDRequest{ID: 2},
+			standard.State_SUCCESS, false},
+		{"测试正常删除", &standard.DeleteUserByIDRequest{ID: 3},
+			standard.State_SUCCESS, false},
+		{"测试不存在的 ID", &standard.DeleteUserByIDRequest{ID: 4},
+			standard.State_USER_NOT_EXIST, false},
+		{"测试已删除的 ID", &standard.DeleteUserByIDRequest{ID: 1},
+			standard.State_SUCCESS, false},
+		{"测试空的 ID", &standard.DeleteUserByIDRequest{ID: 0},
+			standard.State_PARAMS_INVALID, false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotResp, err := srv.DeleteUserByID(context.Background(), tt.args)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Service.DeleteUserByID() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+
+			if gotResp.State.String() != tt.wantState.String() {
+				t.Errorf("Service.DeleteUserByID() = %v, want %v", gotResp, tt.wantState)
+				return
+			}
+		})
+	}
+}
+
+func TestService_UpdateUserPasswordByID(t *testing.T) {
+	srv := NewService()
+	tests := []struct {
+		name      string
+		args      *standard.UpdateUserPasswordByIDRequest
+		wantState standard.State
+		wantErr   bool
+	}{
+		{"测试正常更新", &standard.UpdateUserPasswordByIDRequest{ID: 1, Password: "password1"},
+			standard.State_SUCCESS, false},
+		{"测试正常更新", &standard.UpdateUserPasswordByIDRequest{ID: 2, Password: "password2"},
+			standard.State_SUCCESS, false},
+		{"测试正常更新", &standard.UpdateUserPasswordByIDRequest{ID: 3, Password: "password3"},
+			standard.State_SUCCESS, false},
+		{"测试对不存在的用户 ID 更新", &standard.UpdateUserPasswordByIDRequest{ID: 4, Password: "password4"},
+			standard.State_USER_NOT_EXIST, false},
+		{"测试对存在的用户使用空密码更新", &standard.UpdateUserPasswordByIDRequest{ID: 1, Password: ""},
+			standard.State_PARAMS_INVALID, false},
+		// TODO: 测试密码正则
+
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotResp, err := srv.UpdateUserPasswordByID(context.Background(), tt.args)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Service.UpdateUserPasswordByID() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+
+			if gotResp.State.String() != tt.wantState.String() {
+				t.Errorf("Service.UpdateUserPasswordByID() = %v, want %v", gotResp, tt.wantState)
+				return
+			}
+		})
+	}
+}
+
+func TestService_VerifyUserPasswordByID(t *testing.T) {
+	srv := NewService()
+	tests := []struct {
+		name      string
+		args      *standard.VerifyUserPasswordByIDRequest
+		wantState standard.State
+		wantErr   bool
+	}{
+		{"测试正常验证密码1", &standard.VerifyUserPasswordByIDRequest{ID: 1, Password: "password1"},
+			standard.State_SUCCESS, false},
+		{"测试正常验证密码2", &standard.VerifyUserPasswordByIDRequest{ID: 2, Password: "password2"},
+			standard.State_SUCCESS, false},
+		{"测试正常验证密码3", &standard.VerifyUserPasswordByIDRequest{ID: 3, Password: "password3"},
+			standard.State_SUCCESS, false},
+		{"测试正常验证错误密码", &standard.VerifyUserPasswordByIDRequest{ID: 1, Password: "password-error"},
+			standard.State_USER_VERIFY_FAILURE, false},
+		{"测试对不存在的用户验证密码", &standard.VerifyUserPasswordByIDRequest{ID: 4, Password: "password4"},
+			standard.State_USER_NOT_EXIST, false},
+		{"测试对存在的用户使用空密码更新", &standard.VerifyUserPasswordByIDRequest{ID: 1, Password: ""},
+			standard.State_PARAMS_INVALID, false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotResp, err := srv.VerifyUserPasswordByID(context.Background(), tt.args)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Service.VerifyUserPasswordByID() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+
+			if gotResp.State.String() != tt.wantState.String() {
+				t.Errorf("Service.VerifyUserPasswordByID() = %v, want %v", gotResp, tt.wantState)
+				return
+			}
+		})
+	}
+}
+
+func TestService_VerifyUserPasswordByUsername(t *testing.T) {
+	srv := NewService()
+	tests := []struct {
+		name      string
+		args      *standard.VerifyUserPasswordByUsernameRequest
+		wantState standard.State
+		wantErr   bool
+	}{
+		{"测试正常验证密码1", &standard.VerifyUserPasswordByUsernameRequest{Username: "Username", Password: "password1"},
+			standard.State_SUCCESS, false},
+		{"测试正常验证密码2", &standard.VerifyUserPasswordByUsernameRequest{Username: "Username1", Password: "password2"},
+			standard.State_SUCCESS, false},
+		{"测试正常验证密码3", &standard.VerifyUserPasswordByUsernameRequest{Username: "Username2", Password: "password3"},
+			standard.State_SUCCESS, false},
+		{"测试正常验证错误密码", &standard.VerifyUserPasswordByUsernameRequest{Username: "Username", Password: "password-error"},
+			standard.State_USER_VERIFY_FAILURE, false},
+		{"测试对不存在的用户验证密码", &standard.VerifyUserPasswordByUsernameRequest{Username: "NullUsername", Password: "password4"},
+			standard.State_USER_NOT_EXIST, false},
+		{"测试对存在的用户使用空密码验证", &standard.VerifyUserPasswordByUsernameRequest{Username: "Username", Password: ""},
+			standard.State_PARAMS_INVALID, false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotResp, err := srv.VerifyUserPasswordByUsername(context.Background(), tt.args)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Service.VerifyUserPasswordByUsername() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+
+			if gotResp.State.String() != tt.wantState.String() {
+				t.Errorf("Service.VerifyUserPasswordByUsername() = %v, want %v", gotResp, tt.wantState)
+				return
 			}
 		})
 	}

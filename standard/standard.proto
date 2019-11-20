@@ -130,6 +130,17 @@ message VerifyUserPasswordByUsernameResponse {
 }
 
 // 标签操作
+message CreateLabelRequest {
+	string Class = 1 ;
+	string State = 2 ;
+  string Value = 3 ;
+}
+
+message CreateLabelResponse {
+  State  State = 1 ;
+  string Message = 2 ;
+}
+
 message QueryLabelByIDRequest {
   uint64 ID = 1 ;
 }
@@ -200,6 +211,19 @@ message RemoveLabelFromUserByIDResponse {
 }
 
 // 组操作
+
+message CreateGroupRequest {
+  string Name = 1 ;
+	string Class = 2 ;
+  string State = 3 ;
+  string Description = 4 ;
+}
+
+message CreateGroupResponse {
+  State  State = 1 ;
+  string Message = 2 ;
+}
+
 message QueryGroupByIDRequest {
   uint64 ID = 1 ;
 }
@@ -290,6 +314,7 @@ service Account {
   rpc VerifyUserPasswordByUsername(VerifyUserPasswordByUsernameRequest)returns(VerifyUserPasswordByUsernameResponse){} // 验证密码
 
   // 标签操作
+  rpc CreateLabel(CreateLabelRequest)returns(CreateLabelResponse){} // 根据 ID 查询标签
   rpc QueryLabelByID(QueryLabelByIDRequest)returns(QueryLabelByIDResponse){} // 根据 ID 查询标签
   rpc DeleteLabelByID(DeleteLabelByIDRequest)returns(DeleteLabelByIDResponse){} // 根据 ID 删除标签
   rpc UpdateLabelClassByID(UpdateLabelClassByIDRequest)returns(UpdateLabelClassByIDResponse){} // 根据 ID 更新标签类别
@@ -301,6 +326,7 @@ service Account {
   rpc RemoveLabelFromUserByID(RemoveLabelFromUserByIDRequest)returns(RemoveLabelFromUserByIDResponse){} // 通过 ID 从指定 ID 用户身上移除标签
 
   // 组操作
+  rpc CreateGroup(CreateGroupRequest)returns(CreateGroupResponse){} // 根据 ID 查询组
   rpc QueryGroupByID(QueryGroupByIDRequest)returns(QueryGroupByIDResponse){} // 根据 ID 查询组
   rpc DeleteGroupByID(DeleteGroupByIDRequest)returns(DeleteGroupByIDResponse){} // 根据 ID 删除组
   rpc UpdateGroupNameByID(UpdateGroupNameByIDRequest)returns(UpdateGroupNameByIDResponse){} // 根据 ID 更新组

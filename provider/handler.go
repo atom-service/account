@@ -180,6 +180,12 @@ func (srv *Service) UpdateUserPasswordByID(ctx context.Context, req *standard.Up
 		return resp, nil
 	}
 
+	if !passwordPattern.MatchString(req.Password) {
+		resp.State = standard.State_PARAMS_INVALID
+		resp.Message = "请检查密码格式"
+		return resp, nil
+	}
+
 	count, err := dao.CountUserByID(req.ID)
 	if err != nil {
 		resp.State = standard.State_DB_OPERATION_FATLURE
@@ -211,6 +217,12 @@ func (srv *Service) VerifyUserPasswordByID(ctx context.Context, req *standard.Ve
 	if req.ID == 0 {
 		resp.State = standard.State_PARAMS_INVALID
 		resp.Message = "无效的 ID"
+		return resp, nil
+	}
+
+	if req.Password == "" {
+		resp.State = standard.State_PARAMS_INVALID
+		resp.Message = "无效的密码"
 		return resp, nil
 	}
 
@@ -251,6 +263,12 @@ func (srv *Service) VerifyUserPasswordByUsername(ctx context.Context, req *stand
 	if req.Username == "" {
 		resp.State = standard.State_PARAMS_INVALID
 		resp.Message = "无效的 Username"
+		return resp, nil
+	}
+
+	if req.Password == "" {
+		resp.State = standard.State_PARAMS_INVALID
+		resp.Message = "无效的密码"
 		return resp, nil
 	}
 
