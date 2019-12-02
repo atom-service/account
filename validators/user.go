@@ -1,4 +1,4 @@
-package provider
+package validators
 
 import "regexp"
 
@@ -18,6 +18,20 @@ var (
 )
 
 func nicknameValidator(value string) (pass bool, msg string) {
+	if !nicknamePattern.MatchString(value) {
+		return false, "仅支持大小写字母、数字，长度 2- 128 位"
+	}
+	return true, ""
+}
+
+func usernameValidator(value string) (pass bool, msg string) {
+	if !nicknamePattern.MatchString(value) {
+		return false, "仅支持大小写字母、数字，长度 2- 128 位"
+	}
+	return true, ""
+}
+
+func passwordValidator(value string) (pass bool, msg string) {
 	if !nicknamePattern.MatchString(value) {
 		return false, "仅支持大小写字母、数字，长度 2- 128 位"
 	}
