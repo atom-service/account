@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/grpcbrick/account/model"
+	"github.com/grpcbrick/account/models"
 	"github.com/yinxulai/goutils/config"
 	"github.com/yinxulai/goutils/crypto"
 	"github.com/yinxulai/goutils/easysql"
@@ -64,7 +64,7 @@ func CountUserByID(id uint64) (int, error) {
 }
 
 // QueryUserByID 根据 id 查询
-func QueryUserByID(id uint64) (*model.User, error) {
+func QueryUserByID(id uint64) (*models.User, error) {
 	conn := easysql.GetConn()
 
 	idstr := strconv.FormatUint(id, 10)
@@ -74,13 +74,13 @@ func QueryUserByID(id uint64) (*model.User, error) {
 		return nil, err
 	}
 
-	user := new(model.User)
+	user := new(models.User)
 	user.LoadStringMap(result)
 	return user, nil
 }
 
 // QueryUserByUsername 根据 id 查询
-func QueryUserByUsername(username string) (*model.User, error) {
+func QueryUserByUsername(username string) (*models.User, error) {
 	conn := easysql.GetConn()
 
 	cond := map[string]string{"Username": username}
@@ -89,7 +89,7 @@ func QueryUserByUsername(username string) (*model.User, error) {
 		return nil, err
 	}
 
-	user := new(model.User)
+	user := new(models.User)
 	user.LoadStringMap(result)
 	return user, nil
 }

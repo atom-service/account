@@ -5,33 +5,34 @@ import (
 
 	"github.com/grpcbrick/account/dao"
 	"github.com/grpcbrick/account/standard"
+	validators "github.com/grpcbrick/account/validators"
 )
 
 // CreateGroup 创建分组
 func (srv *Service) CreateGroup(ctx context.Context, req *standard.CreateGroupRequest) (resp *standard.CreateGroupResponse, err error) {
 	resp = new(standard.CreateGroupResponse)
 
-	if !groupNamePattern.MatchString(req.Name) {
+	if ok, msg := validators.GroupName(req.Name); ok != true {
 		resp.State = standard.State_PARAMS_INVALID
-		resp.Message = "请检查参数格式"
+		resp.Message = msg
 		return resp, nil
 	}
 
-	if !groupClassPattern.MatchString(req.Class) {
+	if ok, msg := validators.GroupClass(req.Class); ok != true {
 		resp.State = standard.State_PARAMS_INVALID
-		resp.Message = "请检查参数格式"
+		resp.Message = msg
 		return resp, nil
 	}
 
-	if !groupStatePattern.MatchString(req.State) {
+	if ok, msg := validators.GroupState(req.State); ok != true {
 		resp.State = standard.State_PARAMS_INVALID
-		resp.Message = "请检查参数格式"
+		resp.Message = msg
 		return resp, nil
 	}
 
-	if !groupDescriptionPattern.MatchString(req.Description) {
+	if ok, msg := validators.GroupDescription(req.Description); ok != true {
 		resp.State = standard.State_PARAMS_INVALID
-		resp.Message = "请检查参数格式"
+		resp.Message = msg
 		return resp, nil
 	}
 

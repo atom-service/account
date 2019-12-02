@@ -5,26 +5,37 @@ import (
 
 	"github.com/grpcbrick/account/dao"
 	"github.com/grpcbrick/account/standard"
+	validators "github.com/grpcbrick/account/validators"
 )
+
+// NewService NewService
+func NewService() *Service {
+	service := new(Service)
+	return service
+}
+
+// Service Service
+type Service struct {
+}
 
 // CreateUser 创建用户
 func (srv *Service) CreateUser(ctx context.Context, req *standard.CreateUserRequest) (resp *standard.CreateUserResponse, err error) {
 	resp = new(standard.CreateUserResponse)
-	if !usernamePattern.MatchString(req.Username) {
+	if ok, msg := validators.Username(req.Username); ok != true {
 		resp.State = standard.State_PARAMS_INVALID
-		resp.Message = "请检查用户名格式"
+		resp.Message = msg
 		return resp, nil
 	}
 
-	if !nicknamePattern.MatchString(req.Nickname) {
+	if ok, msg := validators.Nickname(req.Nickname); ok != true {
 		resp.State = standard.State_PARAMS_INVALID
-		resp.Message = "请检查昵称格式"
+		resp.Message = msg
 		return resp, nil
 	}
 
-	if !passwordPattern.MatchString(req.Password) {
+	if ok, msg := validators.Password(req.Password); ok != true {
 		resp.State = standard.State_PARAMS_INVALID
-		resp.Message = "请检查密码格式"
+		resp.Message = msg
 		return resp, nil
 	}
 
@@ -94,9 +105,9 @@ func (srv *Service) QueryUserByID(ctx context.Context, req *standard.QueryUserBy
 func (srv *Service) QueryUserByUsername(ctx context.Context, req *standard.QueryUserByUsernameRequest) (resp *standard.QueryUserByUsernameResponse, err error) {
 	resp = new(standard.QueryUserByUsernameResponse)
 
-	if !usernamePattern.MatchString(req.Username) {
+	if ok, msg := validators.Username(req.Username); ok != true {
 		resp.State = standard.State_PARAMS_INVALID
-		resp.Message = "请检查用户名格式"
+		resp.Message = msg
 		return resp, nil
 	}
 
@@ -170,9 +181,9 @@ func (srv *Service) UpdateUserPasswordByID(ctx context.Context, req *standard.Up
 		return resp, nil
 	}
 
-	if !passwordPattern.MatchString(req.Password) {
+	if ok, msg := validators.Password(req.Password); ok != true {
 		resp.State = standard.State_PARAMS_INVALID
-		resp.Message = "请检查密码格式"
+		resp.Message = msg
 		return resp, nil
 	}
 

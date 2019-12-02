@@ -5,32 +5,33 @@ import (
 
 	"github.com/grpcbrick/account/dao"
 	"github.com/grpcbrick/account/standard"
+	validators "github.com/grpcbrick/account/validators"
 )
 
 // CreateLabel 创建标签
 func (srv *Service) CreateLabel(ctx context.Context, req *standard.CreateLabelRequest) (resp *standard.CreateLabelResponse, err error) {
 	resp = new(standard.CreateLabelResponse)
-	if !labelNamePattern.MatchString(req.Name) {
+	if ok, msg := validators.LabelName(req.Name); ok != true {
 		resp.State = standard.State_PARAMS_INVALID
-		resp.Message = "请检查参数格式"
+		resp.Message = msg
 		return resp, nil
 	}
 
-	if !labelClassPattern.MatchString(req.Class) {
+	if ok, msg := validators.LabelClass(req.Class); ok != true {
 		resp.State = standard.State_PARAMS_INVALID
-		resp.Message = "请检查参数格式"
+		resp.Message = msg
 		return resp, nil
 	}
 
-	if !labelStatePattern.MatchString(req.State) {
+	if ok, msg := validators.LabelState(req.State); ok != true {
 		resp.State = standard.State_PARAMS_INVALID
-		resp.Message = "请检查参数格式"
+		resp.Message = msg
 		return resp, nil
 	}
 
-	if !labelValuePattern.MatchString(req.Value) {
+	if ok, msg := validators.LabelValue(req.Value); ok != true {
 		resp.State = standard.State_PARAMS_INVALID
-		resp.Message = "请检查参数格式"
+		resp.Message = msg
 		return resp, nil
 	}
 

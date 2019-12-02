@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/grpcbrick/account/model"
+	"github.com/grpcbrick/account/models"
 	"github.com/yinxulai/goutils/easysql"
 )
 
@@ -75,7 +75,7 @@ func CountGroupByID(id uint64) (int, error) {
 }
 
 // QueryGroupByID 根据 id 查询
-func QueryGroupByID(id uint64) (*model.Group, error) {
+func QueryGroupByID(id uint64) (*models.Group, error) {
 	conn := easysql.GetConn()
 
 	idstr := strconv.FormatUint(id, 10)
@@ -85,7 +85,7 @@ func QueryGroupByID(id uint64) (*model.Group, error) {
 		return nil, err
 	}
 
-	group := new(model.Group)
+	group := new(models.Group)
 	group.LoadStringMap(result)
 	return group, nil
 }

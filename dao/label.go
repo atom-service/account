@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/grpcbrick/account/model"
+	"github.com/grpcbrick/account/models"
 	"github.com/yinxulai/goutils/easysql"
 )
 
@@ -75,7 +75,7 @@ func CountLabelByID(id uint64) (int, error) {
 }
 
 // QueryLabelByID 根据 id 查询
-func QueryLabelByID(id uint64) (*model.Label, error) {
+func QueryLabelByID(id uint64) (*models.Label, error) {
 	conn := easysql.GetConn()
 
 	idstr := strconv.FormatUint(id, 10)
@@ -85,7 +85,7 @@ func QueryLabelByID(id uint64) (*model.Label, error) {
 		return nil, err
 	}
 
-	lable := new(model.Label)
+	lable := new(models.Label)
 	lable.LoadStringMap(result)
 	return lable, nil
 }
