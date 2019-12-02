@@ -34,10 +34,11 @@ message Group {
 
 // Label 标签
 message Label {
-	uint64 ID = 1 ;
-	string Class = 2 ;
-	string State = 3 ;
-  string Value = 4 ;
+  uint64 ID = 1 ;
+  string Name = 2 ;
+	string Class = 3 ;
+	string State = 4 ;
+  string Value = 5 ;
   string CreatedTime = 6 ;
   string UpdatedTime = 7 ;
   string DeletedTime = 8 ;
@@ -131,9 +132,10 @@ message VerifyUserPasswordByUsernameResponse {
 
 // 标签操作
 message CreateLabelRequest {
-	string Class = 1 ;
-	string State = 2 ;
-  string Value = 3 ;
+  string Name = 1 ;
+	string Class = 2 ;
+	string State = 3 ;
+  string Value = 4 ;
 }
 
 message CreateLabelResponse {

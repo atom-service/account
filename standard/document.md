@@ -179,6 +179,7 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
+| Name | [string](#string) |  |  |
 | Class | [string](#string) |  |  |
 | State | [string](#string) |  |  |
 | Value | [string](#string) |  |  |
@@ -363,6 +364,7 @@ Label 标签
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | ID | [uint64](#uint64) |  |  |
+| Name | [string](#string) |  |  |
 | Class | [string](#string) |  |  |
 | State | [string](#string) |  |  |
 | Value | [string](#string) |  |  |

@@ -9,6 +9,7 @@ import (
 // Label 标签
 type Label struct {
 	ID          uint64 `db:"ID"`
+	Name        string `db:"Name"`
 	Class       string `db:"Class"`
 	State       string `db:"State"`
 	Value       string `db:"Value"`
@@ -20,6 +21,7 @@ type Label struct {
 // LoadProtoStruct LoadProtoStruct
 func (srv *Label) LoadProtoStruct(label *standard.Label) {
 	srv.ID = label.ID
+	srv.Name = label.Name
 	srv.Class = label.Class
 	srv.State = label.State
 	srv.Value = label.Value
@@ -30,6 +32,7 @@ func (srv *Label) LoadProtoStruct(label *standard.Label) {
 
 // LoadStringMap 从 string map 中加载数据
 func (srv *Label) LoadStringMap(data map[string]string) {
+	srv.Name = data["Name"]
 	srv.Class = data["Class"]
 	srv.State = data["State"]
 	srv.Value = data["Value"]
@@ -43,6 +46,7 @@ func (srv *Label) LoadStringMap(data map[string]string) {
 func (srv *Label) OutProtoStruct() *standard.Label {
 	lable := new(standard.Label)
 	lable.ID = srv.ID
+	lable.Name = srv.Name
 	lable.Class = srv.Class
 	lable.State = srv.State
 	lable.Value = srv.Value

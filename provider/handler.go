@@ -310,6 +310,45 @@ func (srv *Service) VerifyUserPasswordByUsername(ctx context.Context, req *stand
 	return resp, nil
 }
 
+// CreateLabel 创建标签
+func (srv *Service) CreateLabel(ctx context.Context, req *standard.CreateLabelRequest) (resp *standard.CreateLabelResponse, err error) {
+	resp = new(standard.CreateLabelResponse)
+	if !labelNamePattern.MatchString(req.Name) {
+		resp.State = standard.State_PARAMS_INVALID
+		resp.Message = "请检查参数格式"
+		return resp, nil
+	}
+
+	if !labelClassPattern.MatchString(req.Class) {
+		resp.State = standard.State_PARAMS_INVALID
+		resp.Message = "请检查参数格式"
+		return resp, nil
+	}
+
+	if !labelStatePattern.MatchString(req.State) {
+		resp.State = standard.State_PARAMS_INVALID
+		resp.Message = "请检查参数格式"
+		return resp, nil
+	}
+
+	if !labelValuePattern.MatchString(req.Value) {
+		resp.State = standard.State_PARAMS_INVALID
+		resp.Message = "请检查参数格式"
+		return resp, nil
+	}
+
+	err = dao.CreateLabel(req.Name, req.Class, req.State, req.Value)
+	if err != nil {
+		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.Message = err.Error()
+		return resp, nil
+	}
+
+	resp.State = standard.State_SUCCESS
+	resp.Message = "创建成功"
+	return resp, nil
+}
+
 // QueryLabelByID 通过 ID 查询
 func (srv *Service) QueryLabelByID(ctx context.Context, req *standard.QueryLabelByIDRequest) (resp *standard.QueryLabelByIDResponse, err error) {
 	resp = new(standard.QueryLabelByIDResponse)
@@ -507,6 +546,46 @@ func (srv *Service) RemoveLabelFromUserByID(ctx context.Context, req *standard.R
 
 	resp.State = standard.State_SUCCESS
 	resp.Message = "移除成功"
+	return resp, nil
+}
+
+// CreateGroup 创建分组
+func (srv *Service) CreateGroup(ctx context.Context, req *standard.CreateGroupRequest) (resp *standard.CreateGroupResponse, err error) {
+	resp = new(standard.CreateGroupResponse)
+
+	if !groupNamePattern.MatchString(req.Name) {
+		resp.State = standard.State_PARAMS_INVALID
+		resp.Message = "请检查参数格式"
+		return resp, nil
+	}
+
+	if !groupClassPattern.MatchString(req.Class) {
+		resp.State = standard.State_PARAMS_INVALID
+		resp.Message = "请检查参数格式"
+		return resp, nil
+	}
+
+	if !groupStatePattern.MatchString(req.State) {
+		resp.State = standard.State_PARAMS_INVALID
+		resp.Message = "请检查参数格式"
+		return resp, nil
+	}
+
+	if !groupDescriptionPattern.MatchString(req.Description) {
+		resp.State = standard.State_PARAMS_INVALID
+		resp.Message = "请检查参数格式"
+		return resp, nil
+	}
+
+	err = dao.CreateLabel(req.Name, req.Class, req.State, req.Description)
+	if err != nil {
+		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.Message = err.Error()
+		return resp, nil
+	}
+
+	resp.State = standard.State_SUCCESS
+	resp.Message = "创建成功"
 	return resp, nil
 }
 

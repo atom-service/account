@@ -42,7 +42,7 @@ func createGroupTable() error {
 }
 
 // CreateGroup 创建组
-func createGroup(name, class, state, value string) error {
+func CreateGroup(name, class, state, value string) error {
 	conn := easysql.GetConn()
 
 	data := map[string]string{

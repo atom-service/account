@@ -42,7 +42,7 @@ func createLabelTable() error {
 }
 
 // CreateLabel 创建标签
-func createLabel(name, class, state, value string) error {
+func CreateLabel(name, class, state, value string) error {
 	conn := easysql.GetConn()
 
 	data := map[string]string{
