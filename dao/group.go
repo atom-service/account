@@ -195,3 +195,29 @@ func AddUserToGroupByID(group, user uint64) error {
 	_, err := conn.Insert(groupMappingUserTableName, data)
 	return err
 }
+
+// IsAlreadyInGroup 是否已存在关联
+func IsAlreadyInGroup(group, user uint64) (bool, error) {
+	conn := easysql.GetConn()
+
+	cond := map[string]string{
+		"Owner": strconv.FormatUint(user, 10),
+		"Group": strconv.FormatUint(group, 10),
+	}
+	queryField := []string{"count(*) as count"}
+	result, err := conn.Select(groupTableName, queryField).Where(cond).QueryRow()
+	if err != nil {
+		return false, err
+	}
+	count, err := strconv.Atoi(result["count"])
+	if err != nil {
+		return false, err
+	}
+
+	if count <= 0 {
+		return false, nil
+	}
+
+	return true, nil
+
+}

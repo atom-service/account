@@ -139,6 +139,12 @@ func (srv *Service) UpdateGroupNameByID(ctx context.Context, req *standard.Updat
 		return resp, nil
 	}
 
+	if ok, msg := validators.GroupName(req.Name); ok != true {
+		resp.State = standard.State_PARAMS_INVALID
+		resp.Message = msg
+		return resp, nil
+	}
+
 	count, err := dao.CountGroupByID(req.ID)
 	if err != nil {
 		resp.State = standard.State_DB_OPERATION_FATLURE
@@ -170,6 +176,12 @@ func (srv *Service) UpdateGroupClassByID(ctx context.Context, req *standard.Upda
 	if req.ID == 0 {
 		resp.State = standard.State_PARAMS_INVALID
 		resp.Message = "无效的 ID"
+		return resp, nil
+	}
+
+	if ok, msg := validators.GroupClass(req.Class); ok != true {
+		resp.State = standard.State_PARAMS_INVALID
+		resp.Message = msg
 		return resp, nil
 	}
 
@@ -207,6 +219,12 @@ func (srv *Service) UpdateGroupStateByID(ctx context.Context, req *standard.Upda
 		return resp, nil
 	}
 
+	if ok, msg := validators.GroupState(req.State); ok != true {
+		resp.State = standard.State_PARAMS_INVALID
+		resp.Message = msg
+		return resp, nil
+	}
+
 	count, err := dao.CountGroupByID(req.ID)
 	if err != nil {
 		resp.State = standard.State_DB_OPERATION_FATLURE
@@ -241,6 +259,12 @@ func (srv *Service) UpdateGroupDescriptionByID(ctx context.Context, req *standar
 		return resp, nil
 	}
 
+	if ok, msg := validators.GroupDescription(req.Description); ok != true {
+		resp.State = standard.State_PARAMS_INVALID
+		resp.Message = msg
+		return resp, nil
+	}
+
 	count, err := dao.CountGroupByID(req.ID)
 	if err != nil {
 		resp.State = standard.State_DB_OPERATION_FATLURE
@@ -271,10 +295,51 @@ func (srv *Service) AddUserToGroupByID(ctx context.Context, req *standard.AddUse
 	resp = new(standard.AddUserToGroupByIDResponse)
 	if req.ID == 0 || req.GroupID == 0 {
 		resp.State = standard.State_PARAMS_INVALID
-		resp.Message = "无效的 ID"
+		resp.Message = "无效的分组 ID"
 		return resp, nil
 	}
 
+	groupCount, err := dao.CountGroupByID(req.GroupID)
+	if err != nil {
+		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.Message = err.Error()
+		return resp, nil
+	}
+
+	if groupCount <= 0 { // 没有找到
+		resp.State = standard.State_GROUP_NOT_EXIST
+		resp.Message = "该分组不存在"
+		return resp, nil
+	}
+
+	userCount, err := dao.CountUserByID(req.ID)
+	if err != nil {
+		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.Message = err.Error()
+		return resp, nil
+	}
+
+	if userCount <= 0 { // 没有找到用户
+		resp.State = standard.State_USER_NOT_EXIST
+		resp.Message = "该用户不存在"
+		return resp, nil
+	}
+
+	already, err := dao.IsAlreadyInGroup(req.GroupID, req.ID)
+	if err != nil {
+		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.Message = err.Error()
+		return resp, nil
+	}
+
+	// 已经在组里了
+	if already == true {
+		resp.State = standard.State_SUCCESS
+		resp.Message = "添加成功"
+		return resp, nil
+	}
+
+	// 是否已在该组
 	err = dao.AddUserToGroupByID(req.GroupID, req.ID)
 	if err != nil {
 		resp.State = standard.State_DB_OPERATION_FATLURE
@@ -293,6 +358,46 @@ func (srv *Service) RemoveUserFromGroupByID(ctx context.Context, req *standard.R
 	if req.ID == 0 || req.UserID == 0 {
 		resp.State = standard.State_PARAMS_INVALID
 		resp.Message = "无效的 ID"
+		return resp, nil
+	}
+
+	groupCount, err := dao.CountGroupByID(req.ID)
+	if err != nil {
+		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.Message = err.Error()
+		return resp, nil
+	}
+
+	if groupCount <= 0 { // 没有找到
+		resp.State = standard.State_GROUP_NOT_EXIST
+		resp.Message = "该分组不存在"
+		return resp, nil
+	}
+
+	userCount, err := dao.CountUserByID(req.UserID)
+	if err != nil {
+		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.Message = err.Error()
+		return resp, nil
+	}
+
+	if userCount <= 0 { // 没有找到用户
+		resp.State = standard.State_USER_NOT_EXIST
+		resp.Message = "该用户不存在"
+		return resp, nil
+	}
+
+	already, err := dao.IsAlreadyInGroup(req.ID, req.UserID)
+	if err != nil {
+		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.Message = err.Error()
+		return resp, nil
+	}
+
+	// 不存在
+	if already == false {
+		resp.State = standard.State_SUCCESS
+		resp.Message = "移除成功"
 		return resp, nil
 	}
 
