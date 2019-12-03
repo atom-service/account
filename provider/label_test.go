@@ -2,36 +2,31 @@ package provider
 
 import (
 	"context"
-	"reflect"
 	"testing"
 
 	"github.com/grpcbrick/account/standard"
 )
 
 func TestService_CreateLabel(t *testing.T) {
-	type args struct {
-		ctx context.Context
-		req *standard.CreateLabelRequest
-	}
+	srv := NewService()
 	tests := []struct {
-		name     string
-		srv      *Service
-		args     args
-		wantResp *standard.CreateLabelResponse
-		wantErr  bool
+		name      string
+		wantErr   bool
+		wantState standard.State
+		args      *standard.CreateLabelRequest
 	}{
-		// TODO: Add test cases.
+		{"测试正常创建", false, standard.State_SUCCESS, &standard.CreateLabelRequest{Name: "TEST", Class: "Class", State: "Nickname", Value: "Username"}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			srv := &Service{}
-			gotResp, err := srv.CreateLabel(tt.args.ctx, tt.args.req)
+			gotResp, err := srv.CreateLabel(context.Background(), tt.args)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Service.CreateLabel() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(gotResp, tt.wantResp) {
-				t.Errorf("Service.CreateLabel() = %v, want %v", gotResp, tt.wantResp)
+			if gotResp.State.String() != tt.wantState.String() {
+				t.Errorf("Service.CreateLabel() = %s, want %v", gotResp.Message, tt.wantState)
+				return
 			}
 		})
 	}
