@@ -2240,8 +2240,14 @@
               </tr>
             
               <tr>
-                <td>DB_OPERATION_FATLURE</td>
+                <td>GROUP_ALREADY_EXISTS</td>
                 <td>12</td>
+                <td><p>标签已经存在</p></td>
+              </tr>
+            
+              <tr>
+                <td>DB_OPERATION_FATLURE</td>
+                <td>13</td>
                 <td><p>数据库操作失败</p></td>
               </tr>
             
@@ -2313,7 +2319,8 @@
                 <td>CreateLabel</td>
                 <td><a href="#standard.CreateLabelRequest">CreateLabelRequest</a></td>
                 <td><a href="#standard.CreateLabelResponse">CreateLabelResponse</a></td>
-                <td><p>标签操作</p></td>
+                <td><p>标签操作 标签用来处理其他额外的用户数据、例如一些地址 手机 邮箱等信息
+创建一个标签 然后分配给一个用户 多个用户可以共享同一个标签（共有数据）</p></td>
               </tr>
             
               <tr>

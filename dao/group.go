@@ -33,7 +33,8 @@ func createGroupTable() error {
 			" `DeletedTime` datetime DEFAULT NULL COMMENT '删除时间',",
 			" `CreatedTime` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',",
 			" `UpdatedTime` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',",
-			" PRIMARY KEY (`ID`,`Class`,`State`)",
+			" PRIMARY KEY (`ID`,`Name`,`Class`,`State`),",
+			" UNIQUE KEY `Name` (`Name`)",
 			" )ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4;",
 		}, "",
 		),
@@ -42,18 +43,35 @@ func createGroupTable() error {
 }
 
 // CreateGroup 创建组
-func CreateGroup(name, class, state, value string) error {
+func CreateGroup(name, class, state, description string) error {
 	conn := easysql.GetConn()
 
 	data := map[string]string{
-		"Name":  name,
-		"Class": class,
-		"State": state,
-		"Value": value,
+		"Name":        name,
+		"Class":       class,
+		"State":       state,
+		"Description": description,
 	}
 
 	_, err := conn.Insert(groupTableName, data)
 	return err
+}
+
+// CountGroupByName 根据 name 统计
+func CountGroupByName(name string) (int, error) {
+	conn := easysql.GetConn()
+
+	cond := map[string]string{"Name": name}
+	queryField := []string{"count(*) as count"}
+	result, err := conn.Select(groupTableName, queryField).Where(cond).QueryRow()
+	if err != nil {
+		return 0, err
+	}
+	count, err := strconv.Atoi(result["count"])
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
 }
 
 // CountGroupByID 根据 id 统计

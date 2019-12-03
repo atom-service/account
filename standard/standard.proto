@@ -16,7 +16,8 @@ enum State {
   USER_ALREADY_EXISTS = 9 ;   // 用户已经存在
   USER_VERIFY_FAILURE = 10 ;   // 用户验证失败
   LABEL_ALREADY_EXISTS = 11 ;   // 标签已经存在
-  DB_OPERATION_FATLURE = 12 ;    // 数据库操作失败
+  GROUP_ALREADY_EXISTS = 12 ;   // 标签已经存在
+  DB_OPERATION_FATLURE = 13 ;    // 数据库操作失败
 }
 
 

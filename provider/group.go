@@ -36,7 +36,21 @@ func (srv *Service) CreateGroup(ctx context.Context, req *standard.CreateGroupRe
 		return resp, nil
 	}
 
-	err = dao.CreateLabel(req.Name, req.Class, req.State, req.Description)
+	// 查询 用户名是否已经存在
+	count, err := dao.CountGroupByName(req.Name)
+	if err != nil {
+		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.Message = err.Error()
+		return resp, nil
+	}
+
+	if count > 0 {
+		resp.State = standard.State_GROUP_ALREADY_EXISTS
+		resp.Message = "该分组已存在"
+		return resp, nil
+	}
+
+	err = dao.CreateGroup(req.Name, req.Class, req.State, req.Description)
 	if err != nil {
 		resp.State = standard.State_DB_OPERATION_FATLURE
 		resp.Message = err.Error()

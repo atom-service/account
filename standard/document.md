@@ -934,7 +934,8 @@ User 用户
 | USER_ALREADY_EXISTS | 9 | 用户已经存在 |
 | USER_VERIFY_FAILURE | 10 | 用户验证失败 |
 | LABEL_ALREADY_EXISTS | 11 | 标签已经存在 |
-| DB_OPERATION_FATLURE | 12 | 数据库操作失败 |
+| GROUP_ALREADY_EXISTS | 12 | 标签已经存在 |
+| DB_OPERATION_FATLURE | 13 | 数据库操作失败 |
 
 
  
@@ -956,7 +957,7 @@ User 用户
 | UpdateUserPasswordByID | [UpdateUserPasswordByIDRequest](#standard.UpdateUserPasswordByIDRequest) | [UpdateUserPasswordByIDResponse](#standard.UpdateUserPasswordByIDResponse) |  |
 | VerifyUserPasswordByID | [VerifyUserPasswordByIDRequest](#standard.VerifyUserPasswordByIDRequest) | [VerifyUserPasswordByIDResponse](#standard.VerifyUserPasswordByIDResponse) |  |
 | VerifyUserPasswordByUsername | [VerifyUserPasswordByUsernameRequest](#standard.VerifyUserPasswordByUsernameRequest) | [VerifyUserPasswordByUsernameResponse](#standard.VerifyUserPasswordByUsernameResponse) |  |
-| CreateLabel | [CreateLabelRequest](#standard.CreateLabelRequest) | [CreateLabelResponse](#standard.CreateLabelResponse) | 标签操作 |
+| CreateLabel | [CreateLabelRequest](#standard.CreateLabelRequest) | [CreateLabelResponse](#standard.CreateLabelResponse) | 标签操作 标签用来处理其他额外的用户数据、例如一些地址 手机 邮箱等信息 创建一个标签 然后分配给一个用户 多个用户可以共享同一个标签（共有数据） |
 | QueryLabelByID | [QueryLabelByIDRequest](#standard.QueryLabelByIDRequest) | [QueryLabelByIDResponse](#standard.QueryLabelByIDResponse) |  |
 | DeleteLabelByID | [DeleteLabelByIDRequest](#standard.DeleteLabelByIDRequest) | [DeleteLabelByIDResponse](#standard.DeleteLabelByIDResponse) |  |
 | UpdateLabelClassByID | [UpdateLabelClassByIDRequest](#standard.UpdateLabelClassByIDRequest) | [UpdateLabelClassByIDResponse](#standard.UpdateLabelClassByIDResponse) |  |
