@@ -340,6 +340,10 @@ service Account {
   rpc AddLabelToUserByID(AddLabelToUserByIDRequest)returns(AddLabelToUserByIDResponse){} // 根据 ID 给指定用户添加标签
   rpc RemoveLabelFromUserByID(RemoveLabelFromUserByIDRequest)returns(RemoveLabelFromUserByIDResponse){} // 通过 ID 从指定 ID 用户身上移除标签
 
+  // 标签优化操作
+  rpc CreateLabelInUser(CreateLabelRequest)returns(CreateLabelResponse){} // 给指定用户创建标签
+  rpc DisassociateAndRemoveLabel(CreateLabelRequest)returns(CreateLabelResponse){} // 删除一个标签以及所有所有的关系
+
   // 组操作
   rpc CreateGroup(CreateGroupRequest)returns(CreateGroupResponse){} // 根据 ID 查询组
   rpc QueryGroupByID(QueryGroupByIDRequest)returns(QueryGroupByIDResponse){} // 根据 ID 查询组
