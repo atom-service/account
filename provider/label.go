@@ -47,6 +47,12 @@ func (srv *Service) CreateLabel(ctx context.Context, req *standard.CreateLabelRe
 	return resp, nil
 }
 
+// TODO: 待实现
+func (srv *Service) CreateLabelForUser(ctx context.Context, req *standard.CreateLabelForUserRequest) (resp *standard.CreateLabelForUserResponse, err error) {
+	resp = new(standard.CreateLabelForUserResponse)
+	return nil, nil
+}
+
 // QueryLabelByID 通过 ID 查询
 func (srv *Service) QueryLabelByID(ctx context.Context, req *standard.QueryLabelByIDRequest) (resp *standard.QueryLabelByIDResponse, err error) {
 	resp = new(standard.QueryLabelByIDResponse)

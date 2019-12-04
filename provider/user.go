@@ -101,6 +101,18 @@ func (srv *Service) QueryUserByID(ctx context.Context, req *standard.QueryUserBy
 	return resp, nil
 }
 
+// TODO:
+func (srv *Service) QueryUsers(ctx context.Context, req *standard.QueryUsersRequest) (resp *standard.QueryUsersResponse, err error) {
+	resp = new(standard.QueryUsersResponse)
+	return nil, nil
+}
+
+// TODO:
+func (srv *Service) QueryUsersByInviter(ctx context.Context, req *standard.QueryUsersByInviterRequest) (resp *standard.QueryUsersByInviterResponse, err error) {
+	resp = new(standard.QueryUsersByInviterResponse)
+	return nil, nil
+}
+
 // QueryUserByUsername 通过 用户名 查询用户
 func (srv *Service) QueryUserByUsername(ctx context.Context, req *standard.QueryUserByUsernameRequest) (resp *standard.QueryUserByUsernameResponse, err error) {
 	resp = new(standard.QueryUserByUsernameResponse)

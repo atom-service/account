@@ -62,6 +62,12 @@ func (srv *Service) CreateGroup(ctx context.Context, req *standard.CreateGroupRe
 	return resp, nil
 }
 
+// TODO: 待实现
+func (srv *Service) QueryGroups(ctx context.Context, req *standard.QueryGroupsRequest) (resp *standard.QueryGroupsResponse, err error) {
+	resp = new(standard.QueryGroupsResponse)
+	return nil, nil
+}
+
 // QueryGroupByID 通过 ID 查询组信息
 func (srv *Service) QueryGroupByID(ctx context.Context, req *standard.QueryGroupByIDRequest) (resp *standard.QueryGroupByIDResponse, err error) {
 	resp = new(standard.QueryGroupByIDResponse)
