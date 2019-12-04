@@ -8,11 +8,11 @@ func TestLabelName(t *testing.T) {
 		wantPass bool
 		args     string
 	}{
-		{"标签名格式测试：太短情况", false, "min"},
-		{"标签名格式测试：正常情况", true, "yinxulai"},
-		{"标签名格式测试：特殊字符", false, "yinxulai123A@"},
-		{"标签名格式测试：特殊字符", false, "yinxulai123A@*&"},
-		{"标签名格式测试：太长情况", false, "yinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinlaiyxulaiyinlaiyinxulxulaiyinlaiyinxulinxulaiyinxulai"},
+		{"太短情况", false, "min"},
+		{"正常情况", true, "yinxulai"},
+		{"特殊字符", false, "yinxulai123A@"},
+		{"特殊字符", false, "yinxulai123A@*&"},
+		{"太长情况", false, "yinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinlaiyxulaiyinlaiyinxulxulaiyinlaiyinxulinxulaiyinxulai"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -31,12 +31,12 @@ func TestLabelClass(t *testing.T) {
 		wantPass bool
 		args     string
 	}{
-		{"标签类别格式测试：太短情况", false, "min"},
-		{"标签类别格式测试：正常情况", true, "yinxulai123A"},
-		{"标签类别格式测试：特殊字符", true, "yinxulai123A"},
-		{"标签类别格式测试：特殊字符", false, "yinxulai123A@"},
-		{"标签类别格式测试：特殊字符", false, "yinxulai123A@*&"},
-		{"标签类别格式测试：太长情况", false, "yinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinlaiyxulaiyinlaiyinxulxulaiyinlaiyinxulinxulaiyinxulai"},
+		{"太短情况", false, "min"},
+		{"正常情况", true, "yinxulai123A"},
+		{"特殊字符", true, "yinxulai123A"},
+		{"特殊字符", false, "yinxulai123A@"},
+		{"特殊字符", false, "yinxulai123A@*&"},
+		{"太长情况", false, "yinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinlaiyxulaiyinlaiyinxulxulaiyinlaiyinxulinxulaiyinxulai"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -55,12 +55,12 @@ func TestLabelState(t *testing.T) {
 		wantPass bool
 		args     string
 	}{
-		{"标签类别格式测试：太短情况", false, "min"},
-		{"标签类别格式测试：正常情况", true, "yinxulai123A"},
-		{"标签类别格式测试：特殊字符", true, "yinxulai123A"},
-		{"标签类别格式测试：特殊字符", false, "yinxulai123A@"},
-		{"标签类别格式测试：特殊字符", false, "yinxulai123A@*&"},
-		{"标签状态格式测试：太长情况", false, "yinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinlaiyxulaiyinlaiyinxulxulaiyinlaiyinxulinxulaiyinxulai"},
+		{"太短情况", false, "min"},
+		{"正常情况", true, "yinxulai123A"},
+		{"特殊字符", true, "yinxulai123A"},
+		{"特殊字符", false, "yinxulai123A@"},
+		{"特殊字符", false, "yinxulai123A@*&"},
+		{"太长情况", false, "yinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinlaiyxulaiyinlaiyinxulxulaiyinlaiyinxulinxulaiyinxulai"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -79,9 +79,9 @@ func TestLabelValue(t *testing.T) {
 		wantPass bool
 		args     string
 	}{
-		{"标签值格式测试：太短情况", false, "min"},
-		{"标签值格式测试：正常情况", true, "yinxulai"},
-		{"标签值格式测试：太长情况", false, "yinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxuyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinlaiyxulaiyinlaiyinxulxulaiyinlaiyinxulinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinlaiyxulaiyinlaiyinxulxulaiyinlaiyinxulinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinlaiyxulaiyinlaiyinxulxulaiyinlaiyinxulinxulaiyinxulailaiyinxulaiyinxulaiyinxulaiyinlaiyxulaiyinlaiyinxulxulaiyinlaiyinxulinxulaiyinxulai"},
+		{"太短情况", false, "min"},
+		{"正常情况", true, "yinxulai"},
+		{"太长情况", false, "yinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxuyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinlaiyxulaiyinlaiyinxulxulaiyinlaiyinxulinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinlaiyxulaiyinlaiyinxulxulaiyinlaiyinxulinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinlaiyxulaiyinlaiyinxulxulaiyinlaiyinxulinxulaiyinxulailaiyinxulaiyinxulaiyinxulaiyinlaiyxulaiyinlaiyinxulxulaiyinlaiyinxulinxulaiyinxulai"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

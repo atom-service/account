@@ -44,6 +44,8 @@
     - [UpdateGroupStateByIDResponse](#standard.UpdateGroupStateByIDResponse)
     - [UpdateLabelClassByIDRequest](#standard.UpdateLabelClassByIDRequest)
     - [UpdateLabelClassByIDResponse](#standard.UpdateLabelClassByIDResponse)
+    - [UpdateLabelNameByIDRequest](#standard.UpdateLabelNameByIDRequest)
+    - [UpdateLabelNameByIDResponse](#standard.UpdateLabelNameByIDResponse)
     - [UpdateLabelStateByIDRequest](#standard.UpdateLabelStateByIDRequest)
     - [UpdateLabelStateByIDResponse](#standard.UpdateLabelStateByIDResponse)
     - [UpdateLabelValueByIDRequest](#standard.UpdateLabelValueByIDRequest)
@@ -729,6 +731,38 @@ Label 标签
 
 
 
+<a name="standard.UpdateLabelNameByIDRequest"></a>
+
+### UpdateLabelNameByIDRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| ID | [uint64](#uint64) |  |  |
+| Name | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="standard.UpdateLabelNameByIDResponse"></a>
+
+### UpdateLabelNameByIDResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| State | [State](#standard.State) |  |  |
+| Message | [string](#string) |  |  |
+
+
+
+
+
+
 <a name="standard.UpdateLabelStateByIDRequest"></a>
 
 ### UpdateLabelStateByIDRequest
@@ -960,6 +994,7 @@ User 用户
 | CreateLabel | [CreateLabelRequest](#standard.CreateLabelRequest) | [CreateLabelResponse](#standard.CreateLabelResponse) | 标签操作 标签用来处理其他额外的用户数据、例如一些地址 手机 邮箱等信息 创建一个标签 然后分配给一个用户 多个用户可以共享同一个标签（共有数据） |
 | QueryLabelByID | [QueryLabelByIDRequest](#standard.QueryLabelByIDRequest) | [QueryLabelByIDResponse](#standard.QueryLabelByIDResponse) |  |
 | DeleteLabelByID | [DeleteLabelByIDRequest](#standard.DeleteLabelByIDRequest) | [DeleteLabelByIDResponse](#standard.DeleteLabelByIDResponse) |  |
+| UpdateLabelNameByID | [UpdateLabelNameByIDRequest](#standard.UpdateLabelNameByIDRequest) | [UpdateLabelNameByIDResponse](#standard.UpdateLabelNameByIDResponse) |  |
 | UpdateLabelClassByID | [UpdateLabelClassByIDRequest](#standard.UpdateLabelClassByIDRequest) | [UpdateLabelClassByIDResponse](#standard.UpdateLabelClassByIDResponse) |  |
 | UpdateLabelStateByID | [UpdateLabelStateByIDRequest](#standard.UpdateLabelStateByIDRequest) | [UpdateLabelStateByIDResponse](#standard.UpdateLabelStateByIDResponse) |  |
 | UpdateLabelValueByID | [UpdateLabelValueByIDRequest](#standard.UpdateLabelValueByIDRequest) | [UpdateLabelValueByIDResponse](#standard.UpdateLabelValueByIDResponse) |  |

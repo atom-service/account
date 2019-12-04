@@ -154,6 +154,16 @@ message QueryLabelByIDResponse {
   Label Data = 3 ;
 }
 
+message UpdateLabelNameByIDRequest {
+  uint64 ID = 1 ;
+	string Name = 2 ;
+}
+
+message UpdateLabelNameByIDResponse {
+  State  State = 1 ;
+  string Message = 2 ;
+}
+
 message UpdateLabelClassByIDRequest {
   uint64 ID = 1 ;
 	string Class = 2 ;
@@ -321,6 +331,7 @@ service Account {
   rpc CreateLabel(CreateLabelRequest)returns(CreateLabelResponse){} // 根据 ID 查询标签
   rpc QueryLabelByID(QueryLabelByIDRequest)returns(QueryLabelByIDResponse){} // 根据 ID 查询标签
   rpc DeleteLabelByID(DeleteLabelByIDRequest)returns(DeleteLabelByIDResponse){} // 根据 ID 删除标签
+  rpc UpdateLabelNameByID(UpdateLabelNameByIDRequest)returns(UpdateLabelNameByIDResponse){} // 根据 ID 更新标签类别
   rpc UpdateLabelClassByID(UpdateLabelClassByIDRequest)returns(UpdateLabelClassByIDResponse){} // 根据 ID 更新标签类别
   rpc UpdateLabelStateByID(UpdateLabelStateByIDRequest)returns(UpdateLabelStateByIDResponse){} // 根据 ID 更新标签状态
   rpc UpdateLabelValueByID(UpdateLabelValueByIDRequest)returns(UpdateLabelValueByIDResponse){} // 根据 ID 更新标签值

@@ -32,25 +32,25 @@ func TestService_CreateUser(t *testing.T) {
 		wantState standard.State
 		wantErr   bool
 	}{
-		{"测试正常创建", &standard.CreateUserRequest{Class: "TEST", Inviter: 1, Nickname: "Nickname", Username: "Username", Password: "Password"},
+		{"正常创建", &standard.CreateUserRequest{Class: "TEST", Inviter: 1, Nickname: "Nickname", Username: "Username", Password: "Password"},
 			standard.State_SUCCESS, false},
 
 		{"重复的 Username", &standard.CreateUserRequest{Class: "TEST", Inviter: 1, Nickname: "Nickname", Username: "Username", Password: "Password"},
 			standard.State_USER_ALREADY_EXISTS, false},
 
-		{"测试空的 Class", &standard.CreateUserRequest{Class: "TEST", Inviter: 1, Nickname: "Nickname", Username: "Username1", Password: "Password"},
+		{"空的 Class", &standard.CreateUserRequest{Class: "TEST", Inviter: 1, Nickname: "Nickname", Username: "Username1", Password: "Password"},
 			standard.State_SUCCESS, false},
 
-		{"测试空的 Inviter", &standard.CreateUserRequest{Class: "TEST", Nickname: "Nickname", Username: "Username2", Password: "Password"},
+		{"空的 Inviter", &standard.CreateUserRequest{Class: "TEST", Nickname: "Nickname", Username: "Username2", Password: "Password"},
 			standard.State_SUCCESS, false},
 
-		{"测试空的 Nickname", &standard.CreateUserRequest{Class: "TEST", Inviter: 1, Username: "Username3", Password: "Password"},
+		{"空的 Nickname", &standard.CreateUserRequest{Class: "TEST", Inviter: 1, Username: "Username3", Password: "Password"},
 			standard.State_PARAMS_INVALID, false},
 
-		{"测试空的 Username", &standard.CreateUserRequest{Class: "TEST", Inviter: 1, Nickname: "Nickname", Password: "Username4"},
+		{"空的 Username", &standard.CreateUserRequest{Class: "TEST", Inviter: 1, Nickname: "Nickname", Password: "Username4"},
 			standard.State_PARAMS_INVALID, false},
 
-		{"测试空的 Password", &standard.CreateUserRequest{Class: "TEST", Inviter: 1, Nickname: "Nickname", Username: "Username5"},
+		{"空的 Password", &standard.CreateUserRequest{Class: "TEST", Inviter: 1, Nickname: "Nickname", Username: "Username5"},
 			standard.State_PARAMS_INVALID, false},
 	}
 
@@ -78,15 +78,15 @@ func TestService_QueryUserByID(t *testing.T) {
 		wantState    standard.State
 		wantErr      bool
 	}{
-		{"测试正常查询", &standard.QueryUserByIDRequest{ID: 1},
+		{"正常查询", &standard.QueryUserByIDRequest{ID: 1},
 			"Username", standard.State_SUCCESS, false},
-		{"测试正常查询", &standard.QueryUserByIDRequest{ID: 2},
+		{"正常查询", &standard.QueryUserByIDRequest{ID: 2},
 			"Username1", standard.State_SUCCESS, false},
-		{"测试正常查询", &standard.QueryUserByIDRequest{ID: 3},
+		{"正常查询", &standard.QueryUserByIDRequest{ID: 3},
 			"Username2", standard.State_SUCCESS, false},
-		{"测试空的 ID", &standard.QueryUserByIDRequest{ID: 0},
+		{"空的 ID", &standard.QueryUserByIDRequest{ID: 0},
 			"ignore", standard.State_PARAMS_INVALID, false},
-		{"测试不存在的 ID", &standard.QueryUserByIDRequest{ID: 999},
+		{"不存在的 ID", &standard.QueryUserByIDRequest{ID: 999},
 			"ignore", standard.State_USER_NOT_EXIST, false},
 	}
 
@@ -122,15 +122,15 @@ func TestService_QueryUserByUsername(t *testing.T) {
 		wantState    standard.State
 		wantErr      bool
 	}{
-		{"测试正常查询", &standard.QueryUserByUsernameRequest{Username: "Username"},
+		{"正常查询", &standard.QueryUserByUsernameRequest{Username: "Username"},
 			"Username", standard.State_SUCCESS, false},
-		{"测试正常查询", &standard.QueryUserByUsernameRequest{Username: "Username1"},
+		{"正常查询", &standard.QueryUserByUsernameRequest{Username: "Username1"},
 			"Username1", standard.State_SUCCESS, false},
-		{"测试正常查询", &standard.QueryUserByUsernameRequest{Username: "Username2"},
+		{"正常查询", &standard.QueryUserByUsernameRequest{Username: "Username2"},
 			"Username2", standard.State_SUCCESS, false},
-		{"测试空的 Username", &standard.QueryUserByUsernameRequest{Username: ""},
+		{"空的 Username", &standard.QueryUserByUsernameRequest{Username: ""},
 			"ignore", standard.State_PARAMS_INVALID, false},
-		{"测试不存在的 Username", &standard.QueryUserByUsernameRequest{Username: "TESTNAME"},
+		{"不存在的 Username", &standard.QueryUserByUsernameRequest{Username: "TESTNAME"},
 			"ignore", standard.State_USER_NOT_EXIST, false},
 	}
 
@@ -165,17 +165,17 @@ func TestService_DeleteUserByID(t *testing.T) {
 		wantState standard.State
 		wantErr   bool
 	}{
-		{"测试正常删除", &standard.DeleteUserByIDRequest{ID: 1},
+		{"正常删除", &standard.DeleteUserByIDRequest{ID: 1},
 			standard.State_SUCCESS, false},
-		{"测试正常删除", &standard.DeleteUserByIDRequest{ID: 2},
+		{"正常删除", &standard.DeleteUserByIDRequest{ID: 2},
 			standard.State_SUCCESS, false},
-		{"测试正常删除", &standard.DeleteUserByIDRequest{ID: 3},
+		{"正常删除", &standard.DeleteUserByIDRequest{ID: 3},
 			standard.State_SUCCESS, false},
-		{"测试不存在的 ID", &standard.DeleteUserByIDRequest{ID: 4},
+		{"不存在的 ID", &standard.DeleteUserByIDRequest{ID: 4},
 			standard.State_USER_NOT_EXIST, false},
-		{"测试已删除的 ID", &standard.DeleteUserByIDRequest{ID: 1},
+		{"已删除的 ID", &standard.DeleteUserByIDRequest{ID: 1},
 			standard.State_SUCCESS, false},
-		{"测试空的 ID", &standard.DeleteUserByIDRequest{ID: 0},
+		{"空的 ID", &standard.DeleteUserByIDRequest{ID: 0},
 			standard.State_PARAMS_INVALID, false},
 	}
 
@@ -203,15 +203,15 @@ func TestService_UpdateUserPasswordByID(t *testing.T) {
 		wantState standard.State
 		wantErr   bool
 	}{
-		{"测试正常更新", &standard.UpdateUserPasswordByIDRequest{ID: 1, Password: "password1"},
+		{"正常更新", &standard.UpdateUserPasswordByIDRequest{ID: 1, Password: "password1"},
 			standard.State_SUCCESS, false},
-		{"测试正常更新", &standard.UpdateUserPasswordByIDRequest{ID: 2, Password: "password2"},
+		{"正常更新", &standard.UpdateUserPasswordByIDRequest{ID: 2, Password: "password2"},
 			standard.State_SUCCESS, false},
-		{"测试正常更新", &standard.UpdateUserPasswordByIDRequest{ID: 3, Password: "password3"},
+		{"正常更新", &standard.UpdateUserPasswordByIDRequest{ID: 3, Password: "password3"},
 			standard.State_SUCCESS, false},
-		{"测试对不存在的用户 ID 更新", &standard.UpdateUserPasswordByIDRequest{ID: 4, Password: "password4"},
+		{"对不存在的用户 ID 更新", &standard.UpdateUserPasswordByIDRequest{ID: 4, Password: "password4"},
 			standard.State_USER_NOT_EXIST, false},
-		{"测试对存在的用户使用空密码更新", &standard.UpdateUserPasswordByIDRequest{ID: 1, Password: ""},
+		{"对存在的用户使用空密码更新", &standard.UpdateUserPasswordByIDRequest{ID: 1, Password: ""},
 			standard.State_PARAMS_INVALID, false},
 		// TODO: 测试密码正则
 
@@ -241,17 +241,17 @@ func TestService_VerifyUserPasswordByID(t *testing.T) {
 		wantState standard.State
 		wantErr   bool
 	}{
-		{"测试正常验证密码1", &standard.VerifyUserPasswordByIDRequest{ID: 1, Password: "password1"},
+		{"正常验证密码1", &standard.VerifyUserPasswordByIDRequest{ID: 1, Password: "password1"},
 			standard.State_SUCCESS, false},
-		{"测试正常验证密码2", &standard.VerifyUserPasswordByIDRequest{ID: 2, Password: "password2"},
+		{"正常验证密码2", &standard.VerifyUserPasswordByIDRequest{ID: 2, Password: "password2"},
 			standard.State_SUCCESS, false},
-		{"测试正常验证密码3", &standard.VerifyUserPasswordByIDRequest{ID: 3, Password: "password3"},
+		{"正常验证密码3", &standard.VerifyUserPasswordByIDRequest{ID: 3, Password: "password3"},
 			standard.State_SUCCESS, false},
-		{"测试正常验证错误密码", &standard.VerifyUserPasswordByIDRequest{ID: 1, Password: "password-error"},
+		{"正常验证错误密码", &standard.VerifyUserPasswordByIDRequest{ID: 1, Password: "password-error"},
 			standard.State_USER_VERIFY_FAILURE, false},
-		{"测试对不存在的用户验证密码", &standard.VerifyUserPasswordByIDRequest{ID: 4, Password: "password4"},
+		{"对不存在的用户验证密码", &standard.VerifyUserPasswordByIDRequest{ID: 4, Password: "password4"},
 			standard.State_USER_NOT_EXIST, false},
-		{"测试对存在的用户使用空密码更新", &standard.VerifyUserPasswordByIDRequest{ID: 1, Password: ""},
+		{"对存在的用户使用空密码更新", &standard.VerifyUserPasswordByIDRequest{ID: 1, Password: ""},
 			standard.State_PARAMS_INVALID, false},
 	}
 
@@ -279,17 +279,17 @@ func TestService_VerifyUserPasswordByUsername(t *testing.T) {
 		wantState standard.State
 		wantErr   bool
 	}{
-		{"测试正常验证密码1", &standard.VerifyUserPasswordByUsernameRequest{Username: "Username", Password: "password1"},
+		{"正常验证密码1", &standard.VerifyUserPasswordByUsernameRequest{Username: "Username", Password: "password1"},
 			standard.State_SUCCESS, false},
-		{"测试正常验证密码2", &standard.VerifyUserPasswordByUsernameRequest{Username: "Username1", Password: "password2"},
+		{"正常验证密码2", &standard.VerifyUserPasswordByUsernameRequest{Username: "Username1", Password: "password2"},
 			standard.State_SUCCESS, false},
-		{"测试正常验证密码3", &standard.VerifyUserPasswordByUsernameRequest{Username: "Username2", Password: "password3"},
+		{"正常验证密码3", &standard.VerifyUserPasswordByUsernameRequest{Username: "Username2", Password: "password3"},
 			standard.State_SUCCESS, false},
-		{"测试正常验证错误密码", &standard.VerifyUserPasswordByUsernameRequest{Username: "Username", Password: "password-error"},
+		{"正常验证错误密码", &standard.VerifyUserPasswordByUsernameRequest{Username: "Username", Password: "password-error"},
 			standard.State_USER_VERIFY_FAILURE, false},
-		{"测试对不存在的用户验证密码", &standard.VerifyUserPasswordByUsernameRequest{Username: "NullUsername", Password: "password4"},
+		{"对不存在的用户验证密码", &standard.VerifyUserPasswordByUsernameRequest{Username: "NullUsername", Password: "password4"},
 			standard.State_USER_NOT_EXIST, false},
-		{"测试对存在的用户使用空密码验证", &standard.VerifyUserPasswordByUsernameRequest{Username: "Username", Password: ""},
+		{"对存在的用户使用空密码验证", &standard.VerifyUserPasswordByUsernameRequest{Username: "Username", Password: ""},
 			standard.State_PARAMS_INVALID, false},
 	}
 

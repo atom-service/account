@@ -96,6 +96,11 @@ func DeleteLabelByID(id uint64) error {
 	return updataLabelFieldByID(id, map[string]string{"DeletedTime": nowTime})
 }
 
+// UpdateLabelNameByID 更新标签类型
+func UpdateLabelNameByID(id uint64, name string) error {
+	return updataLabelFieldByID(id, map[string]string{"Name": name})
+}
+
 // UpdateLabelClassByID 更新标签类型
 func UpdateLabelClassByID(id uint64, class string) error {
 	return updataLabelFieldByID(id, map[string]string{"Class": class})
@@ -172,4 +177,29 @@ func AddLabelToUserByID(label, user uint64) error {
 
 	_, err := conn.Insert(labelMappingUserTableName, data)
 	return err
+}
+
+// IsAlreadyOwnLabel 是否已存在关联
+func IsAlreadyOwnLabel(label, user uint64) (bool, error) {
+	conn := easysql.GetConn()
+
+	cond := map[string]string{
+		"Owner": strconv.FormatUint(user, 10),
+		"label": strconv.FormatUint(label, 10),
+	}
+	queryField := []string{"count(*) as count"}
+	result, err := conn.Select(labelMappingUserTableName, queryField).Where(cond).QueryRow()
+	if err != nil {
+		return false, err
+	}
+	count, err := strconv.Atoi(result["count"])
+	if err != nil {
+		return false, err
+	}
+
+	if count <= 0 {
+		return false, nil
+	}
+
+	return true, nil
 }

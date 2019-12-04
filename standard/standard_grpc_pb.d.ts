@@ -17,6 +17,7 @@ interface IAccountService extends grpc.ServiceDefinition<grpc.UntypedServiceImpl
     createLabel: IAccountService_ICreateLabel;
     queryLabelByID: IAccountService_IQueryLabelByID;
     deleteLabelByID: IAccountService_IDeleteLabelByID;
+    updateLabelNameByID: IAccountService_IUpdateLabelNameByID;
     updateLabelClassByID: IAccountService_IUpdateLabelClassByID;
     updateLabelStateByID: IAccountService_IUpdateLabelStateByID;
     updateLabelValueByID: IAccountService_IUpdateLabelValueByID;
@@ -122,6 +123,15 @@ interface IAccountService_IDeleteLabelByID extends grpc.MethodDefinition<standar
     requestDeserialize: grpc.deserialize<standard_pb.DeleteLabelByIDRequest>;
     responseSerialize: grpc.serialize<standard_pb.DeleteLabelByIDResponse>;
     responseDeserialize: grpc.deserialize<standard_pb.DeleteLabelByIDResponse>;
+}
+interface IAccountService_IUpdateLabelNameByID extends grpc.MethodDefinition<standard_pb.UpdateLabelNameByIDRequest, standard_pb.UpdateLabelNameByIDResponse> {
+    path: string; // "/standard.Account/UpdateLabelNameByID"
+    requestStream: boolean; // false
+    responseStream: boolean; // false
+    requestSerialize: grpc.serialize<standard_pb.UpdateLabelNameByIDRequest>;
+    requestDeserialize: grpc.deserialize<standard_pb.UpdateLabelNameByIDRequest>;
+    responseSerialize: grpc.serialize<standard_pb.UpdateLabelNameByIDResponse>;
+    responseDeserialize: grpc.deserialize<standard_pb.UpdateLabelNameByIDResponse>;
 }
 interface IAccountService_IUpdateLabelClassByID extends grpc.MethodDefinition<standard_pb.UpdateLabelClassByIDRequest, standard_pb.UpdateLabelClassByIDResponse> {
     path: string; // "/standard.Account/UpdateLabelClassByID"
@@ -263,6 +273,7 @@ export interface IAccountServer {
     createLabel: grpc.handleUnaryCall<standard_pb.CreateLabelRequest, standard_pb.CreateLabelResponse>;
     queryLabelByID: grpc.handleUnaryCall<standard_pb.QueryLabelByIDRequest, standard_pb.QueryLabelByIDResponse>;
     deleteLabelByID: grpc.handleUnaryCall<standard_pb.DeleteLabelByIDRequest, standard_pb.DeleteLabelByIDResponse>;
+    updateLabelNameByID: grpc.handleUnaryCall<standard_pb.UpdateLabelNameByIDRequest, standard_pb.UpdateLabelNameByIDResponse>;
     updateLabelClassByID: grpc.handleUnaryCall<standard_pb.UpdateLabelClassByIDRequest, standard_pb.UpdateLabelClassByIDResponse>;
     updateLabelStateByID: grpc.handleUnaryCall<standard_pb.UpdateLabelStateByIDRequest, standard_pb.UpdateLabelStateByIDResponse>;
     updateLabelValueByID: grpc.handleUnaryCall<standard_pb.UpdateLabelValueByIDRequest, standard_pb.UpdateLabelValueByIDResponse>;
@@ -310,6 +321,9 @@ export interface IAccountClient {
     deleteLabelByID(request: standard_pb.DeleteLabelByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.DeleteLabelByIDResponse) => void): grpc.ClientUnaryCall;
     deleteLabelByID(request: standard_pb.DeleteLabelByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.DeleteLabelByIDResponse) => void): grpc.ClientUnaryCall;
     deleteLabelByID(request: standard_pb.DeleteLabelByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.DeleteLabelByIDResponse) => void): grpc.ClientUnaryCall;
+    updateLabelNameByID(request: standard_pb.UpdateLabelNameByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateLabelNameByIDResponse) => void): grpc.ClientUnaryCall;
+    updateLabelNameByID(request: standard_pb.UpdateLabelNameByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateLabelNameByIDResponse) => void): grpc.ClientUnaryCall;
+    updateLabelNameByID(request: standard_pb.UpdateLabelNameByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateLabelNameByIDResponse) => void): grpc.ClientUnaryCall;
     updateLabelClassByID(request: standard_pb.UpdateLabelClassByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateLabelClassByIDResponse) => void): grpc.ClientUnaryCall;
     updateLabelClassByID(request: standard_pb.UpdateLabelClassByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateLabelClassByIDResponse) => void): grpc.ClientUnaryCall;
     updateLabelClassByID(request: standard_pb.UpdateLabelClassByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateLabelClassByIDResponse) => void): grpc.ClientUnaryCall;
@@ -386,6 +400,9 @@ export class AccountClient extends grpc.Client implements IAccountClient {
     public deleteLabelByID(request: standard_pb.DeleteLabelByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.DeleteLabelByIDResponse) => void): grpc.ClientUnaryCall;
     public deleteLabelByID(request: standard_pb.DeleteLabelByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.DeleteLabelByIDResponse) => void): grpc.ClientUnaryCall;
     public deleteLabelByID(request: standard_pb.DeleteLabelByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.DeleteLabelByIDResponse) => void): grpc.ClientUnaryCall;
+    public updateLabelNameByID(request: standard_pb.UpdateLabelNameByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateLabelNameByIDResponse) => void): grpc.ClientUnaryCall;
+    public updateLabelNameByID(request: standard_pb.UpdateLabelNameByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateLabelNameByIDResponse) => void): grpc.ClientUnaryCall;
+    public updateLabelNameByID(request: standard_pb.UpdateLabelNameByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateLabelNameByIDResponse) => void): grpc.ClientUnaryCall;
     public updateLabelClassByID(request: standard_pb.UpdateLabelClassByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateLabelClassByIDResponse) => void): grpc.ClientUnaryCall;
     public updateLabelClassByID(request: standard_pb.UpdateLabelClassByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateLabelClassByIDResponse) => void): grpc.ClientUnaryCall;
     public updateLabelClassByID(request: standard_pb.UpdateLabelClassByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateLabelClassByIDResponse) => void): grpc.ClientUnaryCall;

@@ -8,11 +8,11 @@ func TestGroupName(t *testing.T) {
 		wantPass bool
 		args     string
 	}{
-		{"组名格式测试：太短情况", false, "min"},
-		{"组名格式测试：正常情况", true, "yinxulai"},
-		{"组名格式测试：特殊字符", false, "yinxulai123A@"},
-		{"组名格式测试：特殊字符", false, "yinxulai123A@*&"},
-		{"组名格式测试：太长情况", false, "yinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinlaiyxulaiyinlaiyinxulxulaiyinlaiyinxulinxulaiyinxulai"},
+		{"太短情况", false, "min"},
+		{"正常情况", true, "yinxulai"},
+		{"特殊字符", false, "yinxulai123A@"},
+		{"特殊字符", false, "yinxulai123A@*&"},
+		{"太长情况", false, "yinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinlaiyxulaiyinlaiyinxulxulaiyinlaiyinxulinxulaiyinxulai"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -31,12 +31,12 @@ func TestGroupClass(t *testing.T) {
 		wantPass bool
 		args     string
 	}{
-		{"组类别格式测试：太短情况", false, "min"},
-		{"组类别格式测试：正常情况", true, "yinxulai123A"},
-		{"组类别格式测试：特殊字符", true, "yinxulai123A"},
-		{"组类别格式测试：特殊字符", false, "yinxulai123A@"},
-		{"组类别格式测试：特殊字符", false, "yinxulai123A@*&"},
-		{"组类别格式测试：太长情况", false, "yinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinlaiyxulaiyinlaiyinxulxulaiyinlaiyinxulinxulaiyinxulai"},
+		{"太短情况", false, "min"},
+		{"正常情况", true, "yinxulai123A"},
+		{"特殊字符", true, "yinxulai123A"},
+		{"特殊字符", false, "yinxulai123A@"},
+		{"特殊字符", false, "yinxulai123A@*&"},
+		{"太长情况", false, "yinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinlaiyxulaiyinlaiyinxulxulaiyinlaiyinxulinxulaiyinxulai"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -55,12 +55,12 @@ func TestGroupState(t *testing.T) {
 		wantPass bool
 		args     string
 	}{
-		{"组状态格式测试：太短情况", false, "min"},
-		{"组状态格式测试：正常情况", true, "yinxulai123A"},
-		{"组状态格式测试：特殊字符", true, "yinxulai123A"},
-		{"组状态格式测试：特殊字符", false, "yinxulai123A@"},
-		{"组状态格式测试：特殊字符", false, "yinxulai123A@*&"},
-		{"组状态格式测试：太长情况", false, "yinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinlaiyxulaiyinlaiyinxulxulaiyinlaiyinxulinxulaiyinxulai"},
+		{"太短情况", false, "min"},
+		{"正常情况", true, "yinxulai123A"},
+		{"特殊字符", true, "yinxulai123A"},
+		{"特殊字符", false, "yinxulai123A@"},
+		{"特殊字符", false, "yinxulai123A@*&"},
+		{"太长情况", false, "yinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinlaiyxulaiyinlaiyinxulxulaiyinlaiyinxulinxulaiyinxulai"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -79,9 +79,9 @@ func TestGroupDescription(t *testing.T) {
 		wantPass bool
 		args     string
 	}{
-		{"组说明格式测试：太短情况", false, "min"},
-		{"组说明格式测试：正常情况", true, "yinxulai"},
-		{"组说明格式测试：太长情况", false, "yinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxuyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinlaiyxulaiyinlaiyinxulxulaiyinlaiyinxulinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinlaiyxulaiyinlaiyinxulxulaiyinlaiyinxulinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinlaiyxulaiyinlaiyinxulxulaiyinlaiyinxulinxulaiyinxulailaiyinxulaiyinxulaiyinxulaiyinlaiyxulaiyinlaiyinxulxulaiyinlaiyinxulinxulaiyinxulai"},
+		{"太短情况", false, "min"},
+		{"正常情况", true, "yinxulai"},
+		{"太长情况", false, "yinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxuyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinlaiyxulaiyinlaiyinxulxulaiyinlaiyinxulinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinlaiyxulaiyinlaiyinxulxulaiyinlaiyinxulinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinxulaiyinlaiyxulaiyinlaiyinxulxulaiyinlaiyinxulinxulaiyinxulailaiyinxulaiyinxulaiyinxulaiyinlaiyxulaiyinlaiyinxulxulaiyinlaiyinxulinxulaiyinxulai"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

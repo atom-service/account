@@ -635,6 +635,56 @@ export namespace QueryLabelByIDResponse {
     }
 }
 
+export class UpdateLabelNameByIDRequest extends jspb.Message { 
+    getId(): number;
+    setId(value: number): void;
+
+    getName(): string;
+    setName(value: string): void;
+
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): UpdateLabelNameByIDRequest.AsObject;
+    static toObject(includeInstance: boolean, msg: UpdateLabelNameByIDRequest): UpdateLabelNameByIDRequest.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: UpdateLabelNameByIDRequest, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): UpdateLabelNameByIDRequest;
+    static deserializeBinaryFromReader(message: UpdateLabelNameByIDRequest, reader: jspb.BinaryReader): UpdateLabelNameByIDRequest;
+}
+
+export namespace UpdateLabelNameByIDRequest {
+    export type AsObject = {
+        id: number,
+        name: string,
+    }
+}
+
+export class UpdateLabelNameByIDResponse extends jspb.Message { 
+    getState(): State;
+    setState(value: State): void;
+
+    getMessage(): string;
+    setMessage(value: string): void;
+
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): UpdateLabelNameByIDResponse.AsObject;
+    static toObject(includeInstance: boolean, msg: UpdateLabelNameByIDResponse): UpdateLabelNameByIDResponse.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: UpdateLabelNameByIDResponse, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): UpdateLabelNameByIDResponse;
+    static deserializeBinaryFromReader(message: UpdateLabelNameByIDResponse, reader: jspb.BinaryReader): UpdateLabelNameByIDResponse;
+}
+
+export namespace UpdateLabelNameByIDResponse {
+    export type AsObject = {
+        state: State,
+        message: string,
+    }
+}
+
 export class UpdateLabelClassByIDRequest extends jspb.Message { 
     getId(): number;
     setId(value: number): void;

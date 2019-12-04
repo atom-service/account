@@ -339,6 +339,14 @@
                 </li>
               
                 <li>
+                  <a href="#standard.UpdateLabelNameByIDRequest"><span class="badge">M</span>UpdateLabelNameByIDRequest</a>
+                </li>
+              
+                <li>
+                  <a href="#standard.UpdateLabelNameByIDResponse"><span class="badge">M</span>UpdateLabelNameByIDResponse</a>
+                </li>
+              
+                <li>
                   <a href="#standard.UpdateLabelStateByIDRequest"><span class="badge">M</span>UpdateLabelStateByIDRequest</a>
                 </li>
               
@@ -1760,6 +1768,68 @@
 
         
       
+        <h3 id="standard.UpdateLabelNameByIDRequest">UpdateLabelNameByIDRequest</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>ID</td>
+                  <td><a href="#uint64">uint64</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Name</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="standard.UpdateLabelNameByIDResponse">UpdateLabelNameByIDResponse</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>State</td>
+                  <td><a href="#standard.State">State</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Message</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
         <h3 id="standard.UpdateLabelStateByIDRequest">UpdateLabelStateByIDRequest</h3>
         <p></p>
 
@@ -2334,6 +2404,13 @@
                 <td>DeleteLabelByID</td>
                 <td><a href="#standard.DeleteLabelByIDRequest">DeleteLabelByIDRequest</a></td>
                 <td><a href="#standard.DeleteLabelByIDResponse">DeleteLabelByIDResponse</a></td>
+                <td><p></p></td>
+              </tr>
+            
+              <tr>
+                <td>UpdateLabelNameByID</td>
+                <td><a href="#standard.UpdateLabelNameByIDRequest">UpdateLabelNameByIDRequest</a></td>
+                <td><a href="#standard.UpdateLabelNameByIDResponse">UpdateLabelNameByIDResponse</a></td>
                 <td><p></p></td>
               </tr>
             

@@ -205,7 +205,7 @@ func IsAlreadyInGroup(group, user uint64) (bool, error) {
 		"Group": strconv.FormatUint(group, 10),
 	}
 	queryField := []string{"count(*) as count"}
-	result, err := conn.Select(groupTableName, queryField).Where(cond).QueryRow()
+	result, err := conn.Select(groupMappingUserTableName, queryField).Where(cond).QueryRow()
 	if err != nil {
 		return false, err
 	}
@@ -219,5 +219,4 @@ func IsAlreadyInGroup(group, user uint64) (bool, error) {
 	}
 
 	return true, nil
-
 }

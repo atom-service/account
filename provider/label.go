@@ -56,6 +56,19 @@ func (srv *Service) QueryLabelByID(ctx context.Context, req *standard.QueryLabel
 		return resp, nil
 	}
 
+	count, err := dao.CountLabelByID(req.ID)
+	if err != nil {
+		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.Message = err.Error()
+		return resp, nil
+	}
+
+	if count <= 0 { // 没有找到
+		resp.State = standard.State_LABEL_NOT_EXIST
+		resp.Message = "该标签不存在"
+		return resp, nil
+	}
+
 	label, err := dao.QueryLabelByID(req.ID)
 	if err != nil {
 		resp.State = standard.State_DB_OPERATION_FATLURE
@@ -103,12 +116,58 @@ func (srv *Service) DeleteLabelByID(ctx context.Context, req *standard.DeleteLab
 	return resp, nil
 }
 
+// UpdateLabelNameByID 通过 ID 更新分类
+func (srv *Service) UpdateLabelNameByID(ctx context.Context, req *standard.UpdateLabelNameByIDRequest) (resp *standard.UpdateLabelNameByIDResponse, err error) {
+	resp = new(standard.UpdateLabelNameByIDResponse)
+	if req.ID == 0 {
+		resp.State = standard.State_PARAMS_INVALID
+		resp.Message = "无效的 ID"
+		return resp, nil
+	}
+
+	if ok, msg := validators.LabelName(req.Name); ok != true {
+		resp.State = standard.State_PARAMS_INVALID
+		resp.Message = msg
+		return resp, nil
+	}
+
+	count, err := dao.CountLabelByID(req.ID)
+	if err != nil {
+		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.Message = err.Error()
+		return resp, nil
+	}
+
+	if count <= 0 { // 没有找到
+		resp.State = standard.State_LABEL_NOT_EXIST
+		resp.Message = "该标签不存在"
+		return resp, nil
+	}
+
+	err = dao.UpdateLabelNameByID(req.ID, req.Name)
+	if err != nil {
+		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.Message = err.Error()
+		return resp, nil
+	}
+
+	resp.State = standard.State_SUCCESS
+	resp.Message = "更新成功"
+	return resp, nil
+}
+
 // UpdateLabelClassByID 通过 ID 更新分类
 func (srv *Service) UpdateLabelClassByID(ctx context.Context, req *standard.UpdateLabelClassByIDRequest) (resp *standard.UpdateLabelClassByIDResponse, err error) {
 	resp = new(standard.UpdateLabelClassByIDResponse)
 	if req.ID == 0 {
 		resp.State = standard.State_PARAMS_INVALID
 		resp.Message = "无效的 ID"
+		return resp, nil
+	}
+
+	if ok, msg := validators.LabelClass(req.Class); ok != true {
+		resp.State = standard.State_PARAMS_INVALID
+		resp.Message = msg
 		return resp, nil
 	}
 
@@ -146,6 +205,12 @@ func (srv *Service) UpdateLabelStateByID(ctx context.Context, req *standard.Upda
 		return resp, nil
 	}
 
+	if ok, msg := validators.LabelState(req.State); ok != true {
+		resp.State = standard.State_PARAMS_INVALID
+		resp.Message = msg
+		return resp, nil
+	}
+
 	count, err := dao.CountLabelByID(req.ID)
 	if err != nil {
 		resp.State = standard.State_DB_OPERATION_FATLURE
@@ -177,6 +242,12 @@ func (srv *Service) UpdateLabelValueByID(ctx context.Context, req *standard.Upda
 	if req.ID == 0 {
 		resp.State = standard.State_PARAMS_INVALID
 		resp.Message = "无效的 ID"
+		return resp, nil
+	}
+
+	if ok, msg := validators.LabelValue(req.Value); ok != true {
+		resp.State = standard.State_PARAMS_INVALID
+		resp.Message = msg
 		return resp, nil
 	}
 
@@ -214,6 +285,46 @@ func (srv *Service) AddLabelToUserByID(ctx context.Context, req *standard.AddLab
 		return resp, nil
 	}
 
+	labelCount, err := dao.CountLabelByID(req.ID)
+	if err != nil {
+		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.Message = err.Error()
+		return resp, nil
+	}
+
+	if labelCount <= 0 { // 没有找到
+		resp.State = standard.State_LABEL_NOT_EXIST
+		resp.Message = "该标签不存在"
+		return resp, nil
+	}
+
+	userCount, err := dao.CountUserByID(req.UserID)
+	if err != nil {
+		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.Message = err.Error()
+		return resp, nil
+	}
+
+	if userCount <= 0 { // 没有找到用户
+		resp.State = standard.State_USER_NOT_EXIST
+		resp.Message = "该用户不存在"
+		return resp, nil
+	}
+
+	already, err := dao.IsAlreadyInGroup(req.ID, req.UserID)
+	if err != nil {
+		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.Message = err.Error()
+		return resp, nil
+	}
+
+	// 已经在组里了
+	if already == true {
+		resp.State = standard.State_SUCCESS
+		resp.Message = "添加成功"
+		return resp, nil
+	}
+
 	err = dao.AddLabelToUserByID(req.ID, req.UserID)
 	if err != nil {
 		resp.State = standard.State_DB_OPERATION_FATLURE
@@ -232,6 +343,46 @@ func (srv *Service) RemoveLabelFromUserByID(ctx context.Context, req *standard.R
 	if req.ID == 0 || req.LabelID == 0 {
 		resp.State = standard.State_PARAMS_INVALID
 		resp.Message = "无效的 ID"
+		return resp, nil
+	}
+
+	labelCount, err := dao.CountLabelByID(req.LabelID)
+	if err != nil {
+		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.Message = err.Error()
+		return resp, nil
+	}
+
+	if labelCount <= 0 { // 没有找到
+		resp.State = standard.State_LABEL_NOT_EXIST
+		resp.Message = "该标签不存在"
+		return resp, nil
+	}
+
+	userCount, err := dao.CountUserByID(req.ID)
+	if err != nil {
+		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.Message = err.Error()
+		return resp, nil
+	}
+
+	if userCount <= 0 { // 没有找到用户
+		resp.State = standard.State_USER_NOT_EXIST
+		resp.Message = "该用户不存在"
+		return resp, nil
+	}
+
+	already, err := dao.IsAlreadyOwnLabel(req.LabelID, req.ID)
+	if err != nil {
+		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.Message = err.Error()
+		return resp, nil
+	}
+
+	// 不存在
+	if already == false {
+		resp.State = standard.State_SUCCESS
+		resp.Message = "移除成功"
 		return resp, nil
 	}
 
