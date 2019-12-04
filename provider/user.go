@@ -248,7 +248,7 @@ func (srv *Service) VerifyUserPasswordByID(ctx context.Context, req *standard.Ve
 	}
 
 	if pass == false {
-		resp.State = standard.State_USER_VERIFY_FAILURE
+		resp.State = standard.State_FAILURE
 		resp.Message = "账户或密码错误"
 		return
 	}
@@ -301,7 +301,7 @@ func (srv *Service) VerifyUserPasswordByUsername(ctx context.Context, req *stand
 	}
 
 	if pass == false {
-		resp.State = standard.State_USER_VERIFY_FAILURE
+		resp.State = standard.State_FAILURE
 		resp.Message = "账户或密码错误"
 		return
 	}

@@ -10,6 +10,8 @@
     - [AddUserToGroupByIDResponse](#standard.AddUserToGroupByIDResponse)
     - [CreateGroupRequest](#standard.CreateGroupRequest)
     - [CreateGroupResponse](#standard.CreateGroupResponse)
+    - [CreateLabelForUserRequest](#standard.CreateLabelForUserRequest)
+    - [CreateLabelForUserResponse](#standard.CreateLabelForUserResponse)
     - [CreateLabelRequest](#standard.CreateLabelRequest)
     - [CreateLabelResponse](#standard.CreateLabelResponse)
     - [CreateUserRequest](#standard.CreateUserRequest)
@@ -24,12 +26,18 @@
     - [Label](#standard.Label)
     - [QueryGroupByIDRequest](#standard.QueryGroupByIDRequest)
     - [QueryGroupByIDResponse](#standard.QueryGroupByIDResponse)
+    - [QueryGroupsRequest](#standard.QueryGroupsRequest)
+    - [QueryGroupsResponse](#standard.QueryGroupsResponse)
     - [QueryLabelByIDRequest](#standard.QueryLabelByIDRequest)
     - [QueryLabelByIDResponse](#standard.QueryLabelByIDResponse)
     - [QueryUserByIDRequest](#standard.QueryUserByIDRequest)
     - [QueryUserByIDResponse](#standard.QueryUserByIDResponse)
     - [QueryUserByUsernameRequest](#standard.QueryUserByUsernameRequest)
     - [QueryUserByUsernameResponse](#standard.QueryUserByUsernameResponse)
+    - [QueryUsersByInviterRequest](#standard.QueryUsersByInviterRequest)
+    - [QueryUsersByInviterResponse](#standard.QueryUsersByInviterResponse)
+    - [QueryUsersRequest](#standard.QueryUsersRequest)
+    - [QueryUsersResponse](#standard.QueryUsersResponse)
     - [RemoveLabelFromUserByIDRequest](#standard.RemoveLabelFromUserByIDRequest)
     - [RemoveLabelFromUserByIDResponse](#standard.RemoveLabelFromUserByIDResponse)
     - [RemoveUserFromGroupByIDRequest](#standard.RemoveUserFromGroupByIDRequest)
@@ -142,7 +150,7 @@
 <a name="standard.CreateGroupRequest"></a>
 
 ### CreateGroupRequest
-
+组操作
 
 
 | Field | Type | Label | Description |
@@ -160,6 +168,41 @@
 <a name="standard.CreateGroupResponse"></a>
 
 ### CreateGroupResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| State | [State](#standard.State) |  |  |
+| Message | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="standard.CreateLabelForUserRequest"></a>
+
+### CreateLabelForUserRequest
+给指定用户创建标签
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| UserID | [uint64](#uint64) |  |  |
+| Name | [string](#string) |  |  |
+| Class | [string](#string) |  |  |
+| State | [string](#string) |  |  |
+| Value | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="standard.CreateLabelForUserResponse"></a>
+
+### CreateLabelForUserResponse
 
 
 
@@ -411,6 +454,40 @@ Label 标签
 
 
 
+<a name="standard.QueryGroupsRequest"></a>
+
+### QueryGroupsRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| Limit | [uint64](#uint64) |  |  |
+| Offset | [uint64](#uint64) |  |  |
+
+
+
+
+
+
+<a name="standard.QueryGroupsResponse"></a>
+
+### QueryGroupsResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| State | [State](#standard.State) |  |  |
+| Message | [string](#string) |  |  |
+| Total | [uint64](#uint64) |  |  |
+| Data | [User](#standard.User) | repeated |  |
+
+
+
+
+
+
 <a name="standard.QueryLabelByIDRequest"></a>
 
 ### QueryLabelByIDRequest
@@ -501,6 +578,75 @@ Label 标签
 | State | [State](#standard.State) |  |  |
 | Message | [string](#string) |  |  |
 | Data | [User](#standard.User) |  |  |
+
+
+
+
+
+
+<a name="standard.QueryUsersByInviterRequest"></a>
+
+### QueryUsersByInviterRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| Inviter | [uint64](#uint64) |  |  |
+| Limit | [uint64](#uint64) |  |  |
+| Offset | [uint64](#uint64) |  |  |
+
+
+
+
+
+
+<a name="standard.QueryUsersByInviterResponse"></a>
+
+### QueryUsersByInviterResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| State | [State](#standard.State) |  |  |
+| Message | [string](#string) |  |  |
+| Total | [uint64](#uint64) |  |  |
+| Data | [User](#standard.User) | repeated |  |
+
+
+
+
+
+
+<a name="standard.QueryUsersRequest"></a>
+
+### QueryUsersRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| Limit | [uint64](#uint64) |  |  |
+| Offset | [uint64](#uint64) |  |  |
+
+
+
+
+
+
+<a name="standard.QueryUsersResponse"></a>
+
+### QueryUsersResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| State | [State](#standard.State) |  |  |
+| Message | [string](#string) |  |  |
+| Total | [uint64](#uint64) |  |  |
+| Data | [User](#standard.User) | repeated |  |
 
 
 
@@ -962,13 +1108,15 @@ User 用户
 | SERVICE_ERROR | 3 | 服务错误 |
 | PARAMS_INVALID | 4 | 参数不合法 |
 | ILLEGAL_REQUEST | 5 | 非法请求 |
+| USER_NOT_EXIST | 8 | 用户不存在 |
 | LABEL_NOT_EXIST | 6 | 标签不存在 |
 | GROUP_NOT_EXIST | 7 | 分组不存在 |
-| USER_NOT_EXIST | 8 | 用户不存在 |
 | USER_ALREADY_EXISTS | 9 | 用户已经存在 |
-| USER_VERIFY_FAILURE | 10 | 用户验证失败 |
 | LABEL_ALREADY_EXISTS | 11 | 标签已经存在 |
-| GROUP_ALREADY_EXISTS | 12 | 标签已经存在 |
+| GROUP_ALREADY_EXISTS | 12 | 分组已经存在 |
+| USER_ALREADY_DELETE | 14 | 用户已经删除 |
+| LABEL_ALREADY_DELETE | 15 | 标签已经删除 |
+| GROUP_ALREADY_DELETE | 16 | 分组已经删除 |
 | DB_OPERATION_FATLURE | 13 | 数据库操作失败 |
 
 
@@ -985,22 +1133,26 @@ User 用户
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
 | CreateUser | [CreateUserRequest](#standard.CreateUserRequest) | [CreateUserResponse](#standard.CreateUserResponse) | 用户操作 |
+| QueryUsers | [QueryUsersRequest](#standard.QueryUsersRequest) | [QueryUsersResponse](#standard.QueryUsersResponse) |  |
 | QueryUserByID | [QueryUserByIDRequest](#standard.QueryUserByIDRequest) | [QueryUserByIDResponse](#standard.QueryUserByIDResponse) |  |
+| QueryUsersByInviter | [QueryUsersByInviterRequest](#standard.QueryUsersByInviterRequest) | [QueryUsersByInviterResponse](#standard.QueryUsersByInviterResponse) |  |
 | DeleteUserByID | [DeleteUserByIDRequest](#standard.DeleteUserByIDRequest) | [DeleteUserByIDResponse](#standard.DeleteUserByIDResponse) |  |
 | QueryUserByUsername | [QueryUserByUsernameRequest](#standard.QueryUserByUsernameRequest) | [QueryUserByUsernameResponse](#standard.QueryUserByUsernameResponse) |  |
 | UpdateUserPasswordByID | [UpdateUserPasswordByIDRequest](#standard.UpdateUserPasswordByIDRequest) | [UpdateUserPasswordByIDResponse](#standard.UpdateUserPasswordByIDResponse) |  |
 | VerifyUserPasswordByID | [VerifyUserPasswordByIDRequest](#standard.VerifyUserPasswordByIDRequest) | [VerifyUserPasswordByIDResponse](#standard.VerifyUserPasswordByIDResponse) |  |
 | VerifyUserPasswordByUsername | [VerifyUserPasswordByUsernameRequest](#standard.VerifyUserPasswordByUsernameRequest) | [VerifyUserPasswordByUsernameResponse](#standard.VerifyUserPasswordByUsernameResponse) |  |
 | CreateLabel | [CreateLabelRequest](#standard.CreateLabelRequest) | [CreateLabelResponse](#standard.CreateLabelResponse) | 标签操作 标签用来处理其他额外的用户数据、例如一些地址 手机 邮箱等信息 创建一个标签 然后分配给一个用户 多个用户可以共享同一个标签（共有数据） |
+| CreateLabelForUser | [CreateLabelForUserRequest](#standard.CreateLabelForUserRequest) | [CreateLabelForUserResponse](#standard.CreateLabelForUserResponse) |  |
 | QueryLabelByID | [QueryLabelByIDRequest](#standard.QueryLabelByIDRequest) | [QueryLabelByIDResponse](#standard.QueryLabelByIDResponse) |  |
 | DeleteLabelByID | [DeleteLabelByIDRequest](#standard.DeleteLabelByIDRequest) | [DeleteLabelByIDResponse](#standard.DeleteLabelByIDResponse) |  |
 | UpdateLabelNameByID | [UpdateLabelNameByIDRequest](#standard.UpdateLabelNameByIDRequest) | [UpdateLabelNameByIDResponse](#standard.UpdateLabelNameByIDResponse) |  |
 | UpdateLabelClassByID | [UpdateLabelClassByIDRequest](#standard.UpdateLabelClassByIDRequest) | [UpdateLabelClassByIDResponse](#standard.UpdateLabelClassByIDResponse) |  |
 | UpdateLabelStateByID | [UpdateLabelStateByIDRequest](#standard.UpdateLabelStateByIDRequest) | [UpdateLabelStateByIDResponse](#standard.UpdateLabelStateByIDResponse) |  |
 | UpdateLabelValueByID | [UpdateLabelValueByIDRequest](#standard.UpdateLabelValueByIDRequest) | [UpdateLabelValueByIDResponse](#standard.UpdateLabelValueByIDResponse) |  |
-| AddLabelToUserByID | [AddLabelToUserByIDRequest](#standard.AddLabelToUserByIDRequest) | [AddLabelToUserByIDResponse](#standard.AddLabelToUserByIDResponse) | 标签关系操作 |
+| AddLabelToUserByID | [AddLabelToUserByIDRequest](#standard.AddLabelToUserByIDRequest) | [AddLabelToUserByIDResponse](#standard.AddLabelToUserByIDResponse) |  |
 | RemoveLabelFromUserByID | [RemoveLabelFromUserByIDRequest](#standard.RemoveLabelFromUserByIDRequest) | [RemoveLabelFromUserByIDResponse](#standard.RemoveLabelFromUserByIDResponse) |  |
-| CreateGroup | [CreateGroupRequest](#standard.CreateGroupRequest) | [CreateGroupResponse](#standard.CreateGroupResponse) | 组操作 |
+| CreateGroup | [CreateGroupRequest](#standard.CreateGroupRequest) | [CreateGroupResponse](#standard.CreateGroupResponse) | 组操作 同一个用户可以存在于多个组里 |
+| QueryGroups | [QueryGroupsRequest](#standard.QueryGroupsRequest) | [QueryGroupsResponse](#standard.QueryGroupsResponse) |  |
 | QueryGroupByID | [QueryGroupByIDRequest](#standard.QueryGroupByIDRequest) | [QueryGroupByIDResponse](#standard.QueryGroupByIDResponse) |  |
 | DeleteGroupByID | [DeleteGroupByIDRequest](#standard.DeleteGroupByIDRequest) | [DeleteGroupByIDResponse](#standard.DeleteGroupByIDResponse) |  |
 | UpdateGroupNameByID | [UpdateGroupNameByIDRequest](#standard.UpdateGroupNameByIDRequest) | [UpdateGroupNameByIDResponse](#standard.UpdateGroupNameByIDResponse) |  |

@@ -8,13 +8,16 @@ import * as standard_pb from "./standard_pb";
 
 interface IAccountService extends grpc.ServiceDefinition<grpc.UntypedServiceImplementation> {
     createUser: IAccountService_ICreateUser;
+    queryUsers: IAccountService_IQueryUsers;
     queryUserByID: IAccountService_IQueryUserByID;
+    queryUsersByInviter: IAccountService_IQueryUsersByInviter;
     deleteUserByID: IAccountService_IDeleteUserByID;
     queryUserByUsername: IAccountService_IQueryUserByUsername;
     updateUserPasswordByID: IAccountService_IUpdateUserPasswordByID;
     verifyUserPasswordByID: IAccountService_IVerifyUserPasswordByID;
     verifyUserPasswordByUsername: IAccountService_IVerifyUserPasswordByUsername;
     createLabel: IAccountService_ICreateLabel;
+    createLabelForUser: IAccountService_ICreateLabelForUser;
     queryLabelByID: IAccountService_IQueryLabelByID;
     deleteLabelByID: IAccountService_IDeleteLabelByID;
     updateLabelNameByID: IAccountService_IUpdateLabelNameByID;
@@ -24,6 +27,7 @@ interface IAccountService extends grpc.ServiceDefinition<grpc.UntypedServiceImpl
     addLabelToUserByID: IAccountService_IAddLabelToUserByID;
     removeLabelFromUserByID: IAccountService_IRemoveLabelFromUserByID;
     createGroup: IAccountService_ICreateGroup;
+    queryGroups: IAccountService_IQueryGroups;
     queryGroupByID: IAccountService_IQueryGroupByID;
     deleteGroupByID: IAccountService_IDeleteGroupByID;
     updateGroupNameByID: IAccountService_IUpdateGroupNameByID;
@@ -43,6 +47,15 @@ interface IAccountService_ICreateUser extends grpc.MethodDefinition<standard_pb.
     responseSerialize: grpc.serialize<standard_pb.CreateUserResponse>;
     responseDeserialize: grpc.deserialize<standard_pb.CreateUserResponse>;
 }
+interface IAccountService_IQueryUsers extends grpc.MethodDefinition<standard_pb.QueryUsersRequest, standard_pb.QueryUsersResponse> {
+    path: string; // "/standard.Account/QueryUsers"
+    requestStream: boolean; // false
+    responseStream: boolean; // false
+    requestSerialize: grpc.serialize<standard_pb.QueryUsersRequest>;
+    requestDeserialize: grpc.deserialize<standard_pb.QueryUsersRequest>;
+    responseSerialize: grpc.serialize<standard_pb.QueryUsersResponse>;
+    responseDeserialize: grpc.deserialize<standard_pb.QueryUsersResponse>;
+}
 interface IAccountService_IQueryUserByID extends grpc.MethodDefinition<standard_pb.QueryUserByIDRequest, standard_pb.QueryUserByIDResponse> {
     path: string; // "/standard.Account/QueryUserByID"
     requestStream: boolean; // false
@@ -51,6 +64,15 @@ interface IAccountService_IQueryUserByID extends grpc.MethodDefinition<standard_
     requestDeserialize: grpc.deserialize<standard_pb.QueryUserByIDRequest>;
     responseSerialize: grpc.serialize<standard_pb.QueryUserByIDResponse>;
     responseDeserialize: grpc.deserialize<standard_pb.QueryUserByIDResponse>;
+}
+interface IAccountService_IQueryUsersByInviter extends grpc.MethodDefinition<standard_pb.QueryUsersByInviterRequest, standard_pb.QueryUsersByInviterResponse> {
+    path: string; // "/standard.Account/QueryUsersByInviter"
+    requestStream: boolean; // false
+    responseStream: boolean; // false
+    requestSerialize: grpc.serialize<standard_pb.QueryUsersByInviterRequest>;
+    requestDeserialize: grpc.deserialize<standard_pb.QueryUsersByInviterRequest>;
+    responseSerialize: grpc.serialize<standard_pb.QueryUsersByInviterResponse>;
+    responseDeserialize: grpc.deserialize<standard_pb.QueryUsersByInviterResponse>;
 }
 interface IAccountService_IDeleteUserByID extends grpc.MethodDefinition<standard_pb.DeleteUserByIDRequest, standard_pb.DeleteUserByIDResponse> {
     path: string; // "/standard.Account/DeleteUserByID"
@@ -105,6 +127,15 @@ interface IAccountService_ICreateLabel extends grpc.MethodDefinition<standard_pb
     requestDeserialize: grpc.deserialize<standard_pb.CreateLabelRequest>;
     responseSerialize: grpc.serialize<standard_pb.CreateLabelResponse>;
     responseDeserialize: grpc.deserialize<standard_pb.CreateLabelResponse>;
+}
+interface IAccountService_ICreateLabelForUser extends grpc.MethodDefinition<standard_pb.CreateLabelForUserRequest, standard_pb.CreateLabelForUserResponse> {
+    path: string; // "/standard.Account/CreateLabelForUser"
+    requestStream: boolean; // false
+    responseStream: boolean; // false
+    requestSerialize: grpc.serialize<standard_pb.CreateLabelForUserRequest>;
+    requestDeserialize: grpc.deserialize<standard_pb.CreateLabelForUserRequest>;
+    responseSerialize: grpc.serialize<standard_pb.CreateLabelForUserResponse>;
+    responseDeserialize: grpc.deserialize<standard_pb.CreateLabelForUserResponse>;
 }
 interface IAccountService_IQueryLabelByID extends grpc.MethodDefinition<standard_pb.QueryLabelByIDRequest, standard_pb.QueryLabelByIDResponse> {
     path: string; // "/standard.Account/QueryLabelByID"
@@ -187,6 +218,15 @@ interface IAccountService_ICreateGroup extends grpc.MethodDefinition<standard_pb
     responseSerialize: grpc.serialize<standard_pb.CreateGroupResponse>;
     responseDeserialize: grpc.deserialize<standard_pb.CreateGroupResponse>;
 }
+interface IAccountService_IQueryGroups extends grpc.MethodDefinition<standard_pb.QueryGroupsRequest, standard_pb.QueryGroupsResponse> {
+    path: string; // "/standard.Account/QueryGroups"
+    requestStream: boolean; // false
+    responseStream: boolean; // false
+    requestSerialize: grpc.serialize<standard_pb.QueryGroupsRequest>;
+    requestDeserialize: grpc.deserialize<standard_pb.QueryGroupsRequest>;
+    responseSerialize: grpc.serialize<standard_pb.QueryGroupsResponse>;
+    responseDeserialize: grpc.deserialize<standard_pb.QueryGroupsResponse>;
+}
 interface IAccountService_IQueryGroupByID extends grpc.MethodDefinition<standard_pb.QueryGroupByIDRequest, standard_pb.QueryGroupByIDResponse> {
     path: string; // "/standard.Account/QueryGroupByID"
     requestStream: boolean; // false
@@ -264,13 +304,16 @@ export const AccountService: IAccountService;
 
 export interface IAccountServer {
     createUser: grpc.handleUnaryCall<standard_pb.CreateUserRequest, standard_pb.CreateUserResponse>;
+    queryUsers: grpc.handleUnaryCall<standard_pb.QueryUsersRequest, standard_pb.QueryUsersResponse>;
     queryUserByID: grpc.handleUnaryCall<standard_pb.QueryUserByIDRequest, standard_pb.QueryUserByIDResponse>;
+    queryUsersByInviter: grpc.handleUnaryCall<standard_pb.QueryUsersByInviterRequest, standard_pb.QueryUsersByInviterResponse>;
     deleteUserByID: grpc.handleUnaryCall<standard_pb.DeleteUserByIDRequest, standard_pb.DeleteUserByIDResponse>;
     queryUserByUsername: grpc.handleUnaryCall<standard_pb.QueryUserByUsernameRequest, standard_pb.QueryUserByUsernameResponse>;
     updateUserPasswordByID: grpc.handleUnaryCall<standard_pb.UpdateUserPasswordByIDRequest, standard_pb.UpdateUserPasswordByIDResponse>;
     verifyUserPasswordByID: grpc.handleUnaryCall<standard_pb.VerifyUserPasswordByIDRequest, standard_pb.VerifyUserPasswordByIDResponse>;
     verifyUserPasswordByUsername: grpc.handleUnaryCall<standard_pb.VerifyUserPasswordByUsernameRequest, standard_pb.VerifyUserPasswordByUsernameResponse>;
     createLabel: grpc.handleUnaryCall<standard_pb.CreateLabelRequest, standard_pb.CreateLabelResponse>;
+    createLabelForUser: grpc.handleUnaryCall<standard_pb.CreateLabelForUserRequest, standard_pb.CreateLabelForUserResponse>;
     queryLabelByID: grpc.handleUnaryCall<standard_pb.QueryLabelByIDRequest, standard_pb.QueryLabelByIDResponse>;
     deleteLabelByID: grpc.handleUnaryCall<standard_pb.DeleteLabelByIDRequest, standard_pb.DeleteLabelByIDResponse>;
     updateLabelNameByID: grpc.handleUnaryCall<standard_pb.UpdateLabelNameByIDRequest, standard_pb.UpdateLabelNameByIDResponse>;
@@ -280,6 +323,7 @@ export interface IAccountServer {
     addLabelToUserByID: grpc.handleUnaryCall<standard_pb.AddLabelToUserByIDRequest, standard_pb.AddLabelToUserByIDResponse>;
     removeLabelFromUserByID: grpc.handleUnaryCall<standard_pb.RemoveLabelFromUserByIDRequest, standard_pb.RemoveLabelFromUserByIDResponse>;
     createGroup: grpc.handleUnaryCall<standard_pb.CreateGroupRequest, standard_pb.CreateGroupResponse>;
+    queryGroups: grpc.handleUnaryCall<standard_pb.QueryGroupsRequest, standard_pb.QueryGroupsResponse>;
     queryGroupByID: grpc.handleUnaryCall<standard_pb.QueryGroupByIDRequest, standard_pb.QueryGroupByIDResponse>;
     deleteGroupByID: grpc.handleUnaryCall<standard_pb.DeleteGroupByIDRequest, standard_pb.DeleteGroupByIDResponse>;
     updateGroupNameByID: grpc.handleUnaryCall<standard_pb.UpdateGroupNameByIDRequest, standard_pb.UpdateGroupNameByIDResponse>;
@@ -294,9 +338,15 @@ export interface IAccountClient {
     createUser(request: standard_pb.CreateUserRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateUserResponse) => void): grpc.ClientUnaryCall;
     createUser(request: standard_pb.CreateUserRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateUserResponse) => void): grpc.ClientUnaryCall;
     createUser(request: standard_pb.CreateUserRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateUserResponse) => void): grpc.ClientUnaryCall;
+    queryUsers(request: standard_pb.QueryUsersRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryUsersResponse) => void): grpc.ClientUnaryCall;
+    queryUsers(request: standard_pb.QueryUsersRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryUsersResponse) => void): grpc.ClientUnaryCall;
+    queryUsers(request: standard_pb.QueryUsersRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryUsersResponse) => void): grpc.ClientUnaryCall;
     queryUserByID(request: standard_pb.QueryUserByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryUserByIDResponse) => void): grpc.ClientUnaryCall;
     queryUserByID(request: standard_pb.QueryUserByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryUserByIDResponse) => void): grpc.ClientUnaryCall;
     queryUserByID(request: standard_pb.QueryUserByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryUserByIDResponse) => void): grpc.ClientUnaryCall;
+    queryUsersByInviter(request: standard_pb.QueryUsersByInviterRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryUsersByInviterResponse) => void): grpc.ClientUnaryCall;
+    queryUsersByInviter(request: standard_pb.QueryUsersByInviterRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryUsersByInviterResponse) => void): grpc.ClientUnaryCall;
+    queryUsersByInviter(request: standard_pb.QueryUsersByInviterRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryUsersByInviterResponse) => void): grpc.ClientUnaryCall;
     deleteUserByID(request: standard_pb.DeleteUserByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.DeleteUserByIDResponse) => void): grpc.ClientUnaryCall;
     deleteUserByID(request: standard_pb.DeleteUserByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.DeleteUserByIDResponse) => void): grpc.ClientUnaryCall;
     deleteUserByID(request: standard_pb.DeleteUserByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.DeleteUserByIDResponse) => void): grpc.ClientUnaryCall;
@@ -315,6 +365,9 @@ export interface IAccountClient {
     createLabel(request: standard_pb.CreateLabelRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateLabelResponse) => void): grpc.ClientUnaryCall;
     createLabel(request: standard_pb.CreateLabelRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateLabelResponse) => void): grpc.ClientUnaryCall;
     createLabel(request: standard_pb.CreateLabelRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateLabelResponse) => void): grpc.ClientUnaryCall;
+    createLabelForUser(request: standard_pb.CreateLabelForUserRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateLabelForUserResponse) => void): grpc.ClientUnaryCall;
+    createLabelForUser(request: standard_pb.CreateLabelForUserRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateLabelForUserResponse) => void): grpc.ClientUnaryCall;
+    createLabelForUser(request: standard_pb.CreateLabelForUserRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateLabelForUserResponse) => void): grpc.ClientUnaryCall;
     queryLabelByID(request: standard_pb.QueryLabelByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryLabelByIDResponse) => void): grpc.ClientUnaryCall;
     queryLabelByID(request: standard_pb.QueryLabelByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryLabelByIDResponse) => void): grpc.ClientUnaryCall;
     queryLabelByID(request: standard_pb.QueryLabelByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryLabelByIDResponse) => void): grpc.ClientUnaryCall;
@@ -342,6 +395,9 @@ export interface IAccountClient {
     createGroup(request: standard_pb.CreateGroupRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateGroupResponse) => void): grpc.ClientUnaryCall;
     createGroup(request: standard_pb.CreateGroupRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateGroupResponse) => void): grpc.ClientUnaryCall;
     createGroup(request: standard_pb.CreateGroupRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateGroupResponse) => void): grpc.ClientUnaryCall;
+    queryGroups(request: standard_pb.QueryGroupsRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryGroupsResponse) => void): grpc.ClientUnaryCall;
+    queryGroups(request: standard_pb.QueryGroupsRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryGroupsResponse) => void): grpc.ClientUnaryCall;
+    queryGroups(request: standard_pb.QueryGroupsRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryGroupsResponse) => void): grpc.ClientUnaryCall;
     queryGroupByID(request: standard_pb.QueryGroupByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryGroupByIDResponse) => void): grpc.ClientUnaryCall;
     queryGroupByID(request: standard_pb.QueryGroupByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryGroupByIDResponse) => void): grpc.ClientUnaryCall;
     queryGroupByID(request: standard_pb.QueryGroupByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryGroupByIDResponse) => void): grpc.ClientUnaryCall;
@@ -373,9 +429,15 @@ export class AccountClient extends grpc.Client implements IAccountClient {
     public createUser(request: standard_pb.CreateUserRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateUserResponse) => void): grpc.ClientUnaryCall;
     public createUser(request: standard_pb.CreateUserRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateUserResponse) => void): grpc.ClientUnaryCall;
     public createUser(request: standard_pb.CreateUserRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateUserResponse) => void): grpc.ClientUnaryCall;
+    public queryUsers(request: standard_pb.QueryUsersRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryUsersResponse) => void): grpc.ClientUnaryCall;
+    public queryUsers(request: standard_pb.QueryUsersRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryUsersResponse) => void): grpc.ClientUnaryCall;
+    public queryUsers(request: standard_pb.QueryUsersRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryUsersResponse) => void): grpc.ClientUnaryCall;
     public queryUserByID(request: standard_pb.QueryUserByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryUserByIDResponse) => void): grpc.ClientUnaryCall;
     public queryUserByID(request: standard_pb.QueryUserByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryUserByIDResponse) => void): grpc.ClientUnaryCall;
     public queryUserByID(request: standard_pb.QueryUserByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryUserByIDResponse) => void): grpc.ClientUnaryCall;
+    public queryUsersByInviter(request: standard_pb.QueryUsersByInviterRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryUsersByInviterResponse) => void): grpc.ClientUnaryCall;
+    public queryUsersByInviter(request: standard_pb.QueryUsersByInviterRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryUsersByInviterResponse) => void): grpc.ClientUnaryCall;
+    public queryUsersByInviter(request: standard_pb.QueryUsersByInviterRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryUsersByInviterResponse) => void): grpc.ClientUnaryCall;
     public deleteUserByID(request: standard_pb.DeleteUserByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.DeleteUserByIDResponse) => void): grpc.ClientUnaryCall;
     public deleteUserByID(request: standard_pb.DeleteUserByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.DeleteUserByIDResponse) => void): grpc.ClientUnaryCall;
     public deleteUserByID(request: standard_pb.DeleteUserByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.DeleteUserByIDResponse) => void): grpc.ClientUnaryCall;
@@ -394,6 +456,9 @@ export class AccountClient extends grpc.Client implements IAccountClient {
     public createLabel(request: standard_pb.CreateLabelRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateLabelResponse) => void): grpc.ClientUnaryCall;
     public createLabel(request: standard_pb.CreateLabelRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateLabelResponse) => void): grpc.ClientUnaryCall;
     public createLabel(request: standard_pb.CreateLabelRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateLabelResponse) => void): grpc.ClientUnaryCall;
+    public createLabelForUser(request: standard_pb.CreateLabelForUserRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateLabelForUserResponse) => void): grpc.ClientUnaryCall;
+    public createLabelForUser(request: standard_pb.CreateLabelForUserRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateLabelForUserResponse) => void): grpc.ClientUnaryCall;
+    public createLabelForUser(request: standard_pb.CreateLabelForUserRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateLabelForUserResponse) => void): grpc.ClientUnaryCall;
     public queryLabelByID(request: standard_pb.QueryLabelByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryLabelByIDResponse) => void): grpc.ClientUnaryCall;
     public queryLabelByID(request: standard_pb.QueryLabelByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryLabelByIDResponse) => void): grpc.ClientUnaryCall;
     public queryLabelByID(request: standard_pb.QueryLabelByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryLabelByIDResponse) => void): grpc.ClientUnaryCall;
@@ -421,6 +486,9 @@ export class AccountClient extends grpc.Client implements IAccountClient {
     public createGroup(request: standard_pb.CreateGroupRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateGroupResponse) => void): grpc.ClientUnaryCall;
     public createGroup(request: standard_pb.CreateGroupRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateGroupResponse) => void): grpc.ClientUnaryCall;
     public createGroup(request: standard_pb.CreateGroupRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateGroupResponse) => void): grpc.ClientUnaryCall;
+    public queryGroups(request: standard_pb.QueryGroupsRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryGroupsResponse) => void): grpc.ClientUnaryCall;
+    public queryGroups(request: standard_pb.QueryGroupsRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryGroupsResponse) => void): grpc.ClientUnaryCall;
+    public queryGroups(request: standard_pb.QueryGroupsRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryGroupsResponse) => void): grpc.ClientUnaryCall;
     public queryGroupByID(request: standard_pb.QueryGroupByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryGroupByIDResponse) => void): grpc.ClientUnaryCall;
     public queryGroupByID(request: standard_pb.QueryGroupByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryGroupByIDResponse) => void): grpc.ClientUnaryCall;
     public queryGroupByID(request: standard_pb.QueryGroupByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryGroupByIDResponse) => void): grpc.ClientUnaryCall;

@@ -203,6 +203,14 @@
                 </li>
               
                 <li>
+                  <a href="#standard.CreateLabelForUserRequest"><span class="badge">M</span>CreateLabelForUserRequest</a>
+                </li>
+              
+                <li>
+                  <a href="#standard.CreateLabelForUserResponse"><span class="badge">M</span>CreateLabelForUserResponse</a>
+                </li>
+              
+                <li>
                   <a href="#standard.CreateLabelRequest"><span class="badge">M</span>CreateLabelRequest</a>
                 </li>
               
@@ -259,6 +267,14 @@
                 </li>
               
                 <li>
+                  <a href="#standard.QueryGroupsRequest"><span class="badge">M</span>QueryGroupsRequest</a>
+                </li>
+              
+                <li>
+                  <a href="#standard.QueryGroupsResponse"><span class="badge">M</span>QueryGroupsResponse</a>
+                </li>
+              
+                <li>
                   <a href="#standard.QueryLabelByIDRequest"><span class="badge">M</span>QueryLabelByIDRequest</a>
                 </li>
               
@@ -280,6 +296,22 @@
               
                 <li>
                   <a href="#standard.QueryUserByUsernameResponse"><span class="badge">M</span>QueryUserByUsernameResponse</a>
+                </li>
+              
+                <li>
+                  <a href="#standard.QueryUsersByInviterRequest"><span class="badge">M</span>QueryUsersByInviterRequest</a>
+                </li>
+              
+                <li>
+                  <a href="#standard.QueryUsersByInviterResponse"><span class="badge">M</span>QueryUsersByInviterResponse</a>
+                </li>
+              
+                <li>
+                  <a href="#standard.QueryUsersRequest"><span class="badge">M</span>QueryUsersRequest</a>
+                </li>
+              
+                <li>
+                  <a href="#standard.QueryUsersResponse"><span class="badge">M</span>QueryUsersResponse</a>
                 </li>
               
                 <li>
@@ -541,7 +573,7 @@
         
       
         <h3 id="standard.CreateGroupRequest">CreateGroupRequest</h3>
-        <p></p>
+        <p>组操作</p>
 
         
           <table class="field-table">
@@ -586,6 +618,89 @@
         
       
         <h3 id="standard.CreateGroupResponse">CreateGroupResponse</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>State</td>
+                  <td><a href="#standard.State">State</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Message</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="standard.CreateLabelForUserRequest">CreateLabelForUserRequest</h3>
+        <p>给指定用户创建标签</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>UserID</td>
+                  <td><a href="#uint64">uint64</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Name</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Class</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>State</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Value</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="standard.CreateLabelForUserResponse">CreateLabelForUserResponse</h3>
         <p></p>
 
         
@@ -1148,6 +1263,82 @@
 
         
       
+        <h3 id="standard.QueryGroupsRequest">QueryGroupsRequest</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>Limit</td>
+                  <td><a href="#uint64">uint64</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Offset</td>
+                  <td><a href="#uint64">uint64</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="standard.QueryGroupsResponse">QueryGroupsResponse</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>State</td>
+                  <td><a href="#standard.State">State</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Message</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Total</td>
+                  <td><a href="#uint64">uint64</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Data</td>
+                  <td><a href="#standard.User">User</a></td>
+                  <td>repeated</td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
         <h3 id="standard.QueryLabelByIDRequest">QueryLabelByIDRequest</h3>
         <p></p>
 
@@ -1324,6 +1515,165 @@
                   <td>Data</td>
                   <td><a href="#standard.User">User</a></td>
                   <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="standard.QueryUsersByInviterRequest">QueryUsersByInviterRequest</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>Inviter</td>
+                  <td><a href="#uint64">uint64</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Limit</td>
+                  <td><a href="#uint64">uint64</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Offset</td>
+                  <td><a href="#uint64">uint64</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="standard.QueryUsersByInviterResponse">QueryUsersByInviterResponse</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>State</td>
+                  <td><a href="#standard.State">State</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Message</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Total</td>
+                  <td><a href="#uint64">uint64</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Data</td>
+                  <td><a href="#standard.User">User</a></td>
+                  <td>repeated</td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="standard.QueryUsersRequest">QueryUsersRequest</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>Limit</td>
+                  <td><a href="#uint64">uint64</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Offset</td>
+                  <td><a href="#uint64">uint64</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="standard.QueryUsersResponse">QueryUsersResponse</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>State</td>
+                  <td><a href="#standard.State">State</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Message</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Total</td>
+                  <td><a href="#uint64">uint64</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Data</td>
+                  <td><a href="#standard.User">User</a></td>
+                  <td>repeated</td>
                   <td><p> </p></td>
                 </tr>
               
@@ -2274,6 +2624,12 @@
               </tr>
             
               <tr>
+                <td>USER_NOT_EXIST</td>
+                <td>8</td>
+                <td><p>用户不存在</p></td>
+              </tr>
+            
+              <tr>
                 <td>LABEL_NOT_EXIST</td>
                 <td>6</td>
                 <td><p>标签不存在</p></td>
@@ -2286,21 +2642,9 @@
               </tr>
             
               <tr>
-                <td>USER_NOT_EXIST</td>
-                <td>8</td>
-                <td><p>用户不存在</p></td>
-              </tr>
-            
-              <tr>
                 <td>USER_ALREADY_EXISTS</td>
                 <td>9</td>
                 <td><p>用户已经存在</p></td>
-              </tr>
-            
-              <tr>
-                <td>USER_VERIFY_FAILURE</td>
-                <td>10</td>
-                <td><p>用户验证失败</p></td>
               </tr>
             
               <tr>
@@ -2312,7 +2656,25 @@
               <tr>
                 <td>GROUP_ALREADY_EXISTS</td>
                 <td>12</td>
-                <td><p>标签已经存在</p></td>
+                <td><p>分组已经存在</p></td>
+              </tr>
+            
+              <tr>
+                <td>USER_ALREADY_DELETE</td>
+                <td>14</td>
+                <td><p>用户已经删除</p></td>
+              </tr>
+            
+              <tr>
+                <td>LABEL_ALREADY_DELETE</td>
+                <td>15</td>
+                <td><p>标签已经删除</p></td>
+              </tr>
+            
+              <tr>
+                <td>GROUP_ALREADY_DELETE</td>
+                <td>16</td>
+                <td><p>分组已经删除</p></td>
               </tr>
             
               <tr>
@@ -2344,9 +2706,23 @@
               </tr>
             
               <tr>
+                <td>QueryUsers</td>
+                <td><a href="#standard.QueryUsersRequest">QueryUsersRequest</a></td>
+                <td><a href="#standard.QueryUsersResponse">QueryUsersResponse</a></td>
+                <td><p></p></td>
+              </tr>
+            
+              <tr>
                 <td>QueryUserByID</td>
                 <td><a href="#standard.QueryUserByIDRequest">QueryUserByIDRequest</a></td>
                 <td><a href="#standard.QueryUserByIDResponse">QueryUserByIDResponse</a></td>
+                <td><p></p></td>
+              </tr>
+            
+              <tr>
+                <td>QueryUsersByInviter</td>
+                <td><a href="#standard.QueryUsersByInviterRequest">QueryUsersByInviterRequest</a></td>
+                <td><a href="#standard.QueryUsersByInviterResponse">QueryUsersByInviterResponse</a></td>
                 <td><p></p></td>
               </tr>
             
@@ -2391,6 +2767,13 @@
                 <td><a href="#standard.CreateLabelResponse">CreateLabelResponse</a></td>
                 <td><p>标签操作 标签用来处理其他额外的用户数据、例如一些地址 手机 邮箱等信息
 创建一个标签 然后分配给一个用户 多个用户可以共享同一个标签（共有数据）</p></td>
+              </tr>
+            
+              <tr>
+                <td>CreateLabelForUser</td>
+                <td><a href="#standard.CreateLabelForUserRequest">CreateLabelForUserRequest</a></td>
+                <td><a href="#standard.CreateLabelForUserResponse">CreateLabelForUserResponse</a></td>
+                <td><p></p></td>
               </tr>
             
               <tr>
@@ -2439,7 +2822,7 @@
                 <td>AddLabelToUserByID</td>
                 <td><a href="#standard.AddLabelToUserByIDRequest">AddLabelToUserByIDRequest</a></td>
                 <td><a href="#standard.AddLabelToUserByIDResponse">AddLabelToUserByIDResponse</a></td>
-                <td><p>标签关系操作</p></td>
+                <td><p></p></td>
               </tr>
             
               <tr>
@@ -2453,7 +2836,15 @@
                 <td>CreateGroup</td>
                 <td><a href="#standard.CreateGroupRequest">CreateGroupRequest</a></td>
                 <td><a href="#standard.CreateGroupResponse">CreateGroupResponse</a></td>
-                <td><p>组操作</p></td>
+                <td><p>组操作
+同一个用户可以存在于多个组里</p></td>
+              </tr>
+            
+              <tr>
+                <td>QueryGroups</td>
+                <td><a href="#standard.QueryGroupsRequest">QueryGroupsRequest</a></td>
+                <td><a href="#standard.QueryGroupsResponse">QueryGroupsResponse</a></td>
+                <td><p></p></td>
               </tr>
             
               <tr>

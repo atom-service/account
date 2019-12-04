@@ -34,13 +34,15 @@ const (
 	State_SERVICE_ERROR        State = 3
 	State_PARAMS_INVALID       State = 4
 	State_ILLEGAL_REQUEST      State = 5
+	State_USER_NOT_EXIST       State = 8
 	State_LABEL_NOT_EXIST      State = 6
 	State_GROUP_NOT_EXIST      State = 7
-	State_USER_NOT_EXIST       State = 8
 	State_USER_ALREADY_EXISTS  State = 9
-	State_USER_VERIFY_FAILURE  State = 10
 	State_LABEL_ALREADY_EXISTS State = 11
 	State_GROUP_ALREADY_EXISTS State = 12
+	State_USER_ALREADY_DELETE  State = 14
+	State_LABEL_ALREADY_DELETE State = 15
+	State_GROUP_ALREADY_DELETE State = 16
 	State_DB_OPERATION_FATLURE State = 13
 )
 
@@ -51,13 +53,15 @@ var State_name = map[int32]string{
 	3:  "SERVICE_ERROR",
 	4:  "PARAMS_INVALID",
 	5:  "ILLEGAL_REQUEST",
+	8:  "USER_NOT_EXIST",
 	6:  "LABEL_NOT_EXIST",
 	7:  "GROUP_NOT_EXIST",
-	8:  "USER_NOT_EXIST",
 	9:  "USER_ALREADY_EXISTS",
-	10: "USER_VERIFY_FAILURE",
 	11: "LABEL_ALREADY_EXISTS",
 	12: "GROUP_ALREADY_EXISTS",
+	14: "USER_ALREADY_DELETE",
+	15: "LABEL_ALREADY_DELETE",
+	16: "GROUP_ALREADY_DELETE",
 	13: "DB_OPERATION_FATLURE",
 }
 
@@ -68,13 +72,15 @@ var State_value = map[string]int32{
 	"SERVICE_ERROR":        3,
 	"PARAMS_INVALID":       4,
 	"ILLEGAL_REQUEST":      5,
+	"USER_NOT_EXIST":       8,
 	"LABEL_NOT_EXIST":      6,
 	"GROUP_NOT_EXIST":      7,
-	"USER_NOT_EXIST":       8,
 	"USER_ALREADY_EXISTS":  9,
-	"USER_VERIFY_FAILURE":  10,
 	"LABEL_ALREADY_EXISTS": 11,
 	"GROUP_ALREADY_EXISTS": 12,
+	"USER_ALREADY_DELETE":  14,
+	"LABEL_ALREADY_DELETE": 15,
+	"GROUP_ALREADY_DELETE": 16,
 	"DB_OPERATION_FATLURE": 13,
 }
 
@@ -508,6 +514,116 @@ func (m *CreateUserResponse) GetMessage() string {
 	return ""
 }
 
+type QueryUsersRequest struct {
+	Limit                uint64   `protobuf:"varint,1,opt,name=Limit,proto3" json:"Limit,omitempty"`
+	Offset               uint64   `protobuf:"varint,2,opt,name=Offset,proto3" json:"Offset,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *QueryUsersRequest) Reset()         { *m = QueryUsersRequest{} }
+func (m *QueryUsersRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryUsersRequest) ProtoMessage()    {}
+func (*QueryUsersRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_0b3e239150a6a10f, []int{5}
+}
+
+func (m *QueryUsersRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_QueryUsersRequest.Unmarshal(m, b)
+}
+func (m *QueryUsersRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_QueryUsersRequest.Marshal(b, m, deterministic)
+}
+func (m *QueryUsersRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryUsersRequest.Merge(m, src)
+}
+func (m *QueryUsersRequest) XXX_Size() int {
+	return xxx_messageInfo_QueryUsersRequest.Size(m)
+}
+func (m *QueryUsersRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryUsersRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryUsersRequest proto.InternalMessageInfo
+
+func (m *QueryUsersRequest) GetLimit() uint64 {
+	if m != nil {
+		return m.Limit
+	}
+	return 0
+}
+
+func (m *QueryUsersRequest) GetOffset() uint64 {
+	if m != nil {
+		return m.Offset
+	}
+	return 0
+}
+
+type QueryUsersResponse struct {
+	State                State    `protobuf:"varint,1,opt,name=State,proto3,enum=standard.State" json:"State,omitempty"`
+	Message              string   `protobuf:"bytes,2,opt,name=Message,proto3" json:"Message,omitempty"`
+	Total                uint64   `protobuf:"varint,3,opt,name=Total,proto3" json:"Total,omitempty"`
+	Data                 []*User  `protobuf:"bytes,4,rep,name=Data,proto3" json:"Data,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *QueryUsersResponse) Reset()         { *m = QueryUsersResponse{} }
+func (m *QueryUsersResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryUsersResponse) ProtoMessage()    {}
+func (*QueryUsersResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_0b3e239150a6a10f, []int{6}
+}
+
+func (m *QueryUsersResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_QueryUsersResponse.Unmarshal(m, b)
+}
+func (m *QueryUsersResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_QueryUsersResponse.Marshal(b, m, deterministic)
+}
+func (m *QueryUsersResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryUsersResponse.Merge(m, src)
+}
+func (m *QueryUsersResponse) XXX_Size() int {
+	return xxx_messageInfo_QueryUsersResponse.Size(m)
+}
+func (m *QueryUsersResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryUsersResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryUsersResponse proto.InternalMessageInfo
+
+func (m *QueryUsersResponse) GetState() State {
+	if m != nil {
+		return m.State
+	}
+	return State_UNKNOWN
+}
+
+func (m *QueryUsersResponse) GetMessage() string {
+	if m != nil {
+		return m.Message
+	}
+	return ""
+}
+
+func (m *QueryUsersResponse) GetTotal() uint64 {
+	if m != nil {
+		return m.Total
+	}
+	return 0
+}
+
+func (m *QueryUsersResponse) GetData() []*User {
+	if m != nil {
+		return m.Data
+	}
+	return nil
+}
+
 type QueryUserByIDRequest struct {
 	ID                   uint64   `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -519,7 +635,7 @@ func (m *QueryUserByIDRequest) Reset()         { *m = QueryUserByIDRequest{} }
 func (m *QueryUserByIDRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryUserByIDRequest) ProtoMessage()    {}
 func (*QueryUserByIDRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{5}
+	return fileDescriptor_0b3e239150a6a10f, []int{7}
 }
 
 func (m *QueryUserByIDRequest) XXX_Unmarshal(b []byte) error {
@@ -560,7 +676,7 @@ func (m *QueryUserByIDResponse) Reset()         { *m = QueryUserByIDResponse{} }
 func (m *QueryUserByIDResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryUserByIDResponse) ProtoMessage()    {}
 func (*QueryUserByIDResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{6}
+	return fileDescriptor_0b3e239150a6a10f, []int{8}
 }
 
 func (m *QueryUserByIDResponse) XXX_Unmarshal(b []byte) error {
@@ -602,6 +718,124 @@ func (m *QueryUserByIDResponse) GetData() *User {
 	return nil
 }
 
+type QueryUsersByInviterRequest struct {
+	Inviter              uint64   `protobuf:"varint,1,opt,name=Inviter,proto3" json:"Inviter,omitempty"`
+	Limit                uint64   `protobuf:"varint,2,opt,name=Limit,proto3" json:"Limit,omitempty"`
+	Offset               uint64   `protobuf:"varint,3,opt,name=Offset,proto3" json:"Offset,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *QueryUsersByInviterRequest) Reset()         { *m = QueryUsersByInviterRequest{} }
+func (m *QueryUsersByInviterRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryUsersByInviterRequest) ProtoMessage()    {}
+func (*QueryUsersByInviterRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_0b3e239150a6a10f, []int{9}
+}
+
+func (m *QueryUsersByInviterRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_QueryUsersByInviterRequest.Unmarshal(m, b)
+}
+func (m *QueryUsersByInviterRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_QueryUsersByInviterRequest.Marshal(b, m, deterministic)
+}
+func (m *QueryUsersByInviterRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryUsersByInviterRequest.Merge(m, src)
+}
+func (m *QueryUsersByInviterRequest) XXX_Size() int {
+	return xxx_messageInfo_QueryUsersByInviterRequest.Size(m)
+}
+func (m *QueryUsersByInviterRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryUsersByInviterRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryUsersByInviterRequest proto.InternalMessageInfo
+
+func (m *QueryUsersByInviterRequest) GetInviter() uint64 {
+	if m != nil {
+		return m.Inviter
+	}
+	return 0
+}
+
+func (m *QueryUsersByInviterRequest) GetLimit() uint64 {
+	if m != nil {
+		return m.Limit
+	}
+	return 0
+}
+
+func (m *QueryUsersByInviterRequest) GetOffset() uint64 {
+	if m != nil {
+		return m.Offset
+	}
+	return 0
+}
+
+type QueryUsersByInviterResponse struct {
+	State                State    `protobuf:"varint,1,opt,name=State,proto3,enum=standard.State" json:"State,omitempty"`
+	Message              string   `protobuf:"bytes,2,opt,name=Message,proto3" json:"Message,omitempty"`
+	Total                uint64   `protobuf:"varint,3,opt,name=Total,proto3" json:"Total,omitempty"`
+	Data                 []*User  `protobuf:"bytes,4,rep,name=Data,proto3" json:"Data,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *QueryUsersByInviterResponse) Reset()         { *m = QueryUsersByInviterResponse{} }
+func (m *QueryUsersByInviterResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryUsersByInviterResponse) ProtoMessage()    {}
+func (*QueryUsersByInviterResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_0b3e239150a6a10f, []int{10}
+}
+
+func (m *QueryUsersByInviterResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_QueryUsersByInviterResponse.Unmarshal(m, b)
+}
+func (m *QueryUsersByInviterResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_QueryUsersByInviterResponse.Marshal(b, m, deterministic)
+}
+func (m *QueryUsersByInviterResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryUsersByInviterResponse.Merge(m, src)
+}
+func (m *QueryUsersByInviterResponse) XXX_Size() int {
+	return xxx_messageInfo_QueryUsersByInviterResponse.Size(m)
+}
+func (m *QueryUsersByInviterResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryUsersByInviterResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryUsersByInviterResponse proto.InternalMessageInfo
+
+func (m *QueryUsersByInviterResponse) GetState() State {
+	if m != nil {
+		return m.State
+	}
+	return State_UNKNOWN
+}
+
+func (m *QueryUsersByInviterResponse) GetMessage() string {
+	if m != nil {
+		return m.Message
+	}
+	return ""
+}
+
+func (m *QueryUsersByInviterResponse) GetTotal() uint64 {
+	if m != nil {
+		return m.Total
+	}
+	return 0
+}
+
+func (m *QueryUsersByInviterResponse) GetData() []*User {
+	if m != nil {
+		return m.Data
+	}
+	return nil
+}
+
 type QueryUserByUsernameRequest struct {
 	Username             string   `protobuf:"bytes,1,opt,name=Username,proto3" json:"Username,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -613,7 +847,7 @@ func (m *QueryUserByUsernameRequest) Reset()         { *m = QueryUserByUsernameR
 func (m *QueryUserByUsernameRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryUserByUsernameRequest) ProtoMessage()    {}
 func (*QueryUserByUsernameRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{7}
+	return fileDescriptor_0b3e239150a6a10f, []int{11}
 }
 
 func (m *QueryUserByUsernameRequest) XXX_Unmarshal(b []byte) error {
@@ -654,7 +888,7 @@ func (m *QueryUserByUsernameResponse) Reset()         { *m = QueryUserByUsername
 func (m *QueryUserByUsernameResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryUserByUsernameResponse) ProtoMessage()    {}
 func (*QueryUserByUsernameResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{8}
+	return fileDescriptor_0b3e239150a6a10f, []int{12}
 }
 
 func (m *QueryUserByUsernameResponse) XXX_Unmarshal(b []byte) error {
@@ -707,7 +941,7 @@ func (m *DeleteUserByIDRequest) Reset()         { *m = DeleteUserByIDRequest{} }
 func (m *DeleteUserByIDRequest) String() string { return proto.CompactTextString(m) }
 func (*DeleteUserByIDRequest) ProtoMessage()    {}
 func (*DeleteUserByIDRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{9}
+	return fileDescriptor_0b3e239150a6a10f, []int{13}
 }
 
 func (m *DeleteUserByIDRequest) XXX_Unmarshal(b []byte) error {
@@ -747,7 +981,7 @@ func (m *DeleteUserByIDResponse) Reset()         { *m = DeleteUserByIDResponse{}
 func (m *DeleteUserByIDResponse) String() string { return proto.CompactTextString(m) }
 func (*DeleteUserByIDResponse) ProtoMessage()    {}
 func (*DeleteUserByIDResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{10}
+	return fileDescriptor_0b3e239150a6a10f, []int{14}
 }
 
 func (m *DeleteUserByIDResponse) XXX_Unmarshal(b []byte) error {
@@ -794,7 +1028,7 @@ func (m *UpdateUserPasswordByIDRequest) Reset()         { *m = UpdateUserPasswor
 func (m *UpdateUserPasswordByIDRequest) String() string { return proto.CompactTextString(m) }
 func (*UpdateUserPasswordByIDRequest) ProtoMessage()    {}
 func (*UpdateUserPasswordByIDRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{11}
+	return fileDescriptor_0b3e239150a6a10f, []int{15}
 }
 
 func (m *UpdateUserPasswordByIDRequest) XXX_Unmarshal(b []byte) error {
@@ -841,7 +1075,7 @@ func (m *UpdateUserPasswordByIDResponse) Reset()         { *m = UpdateUserPasswo
 func (m *UpdateUserPasswordByIDResponse) String() string { return proto.CompactTextString(m) }
 func (*UpdateUserPasswordByIDResponse) ProtoMessage()    {}
 func (*UpdateUserPasswordByIDResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{12}
+	return fileDescriptor_0b3e239150a6a10f, []int{16}
 }
 
 func (m *UpdateUserPasswordByIDResponse) XXX_Unmarshal(b []byte) error {
@@ -888,7 +1122,7 @@ func (m *VerifyUserPasswordByIDRequest) Reset()         { *m = VerifyUserPasswor
 func (m *VerifyUserPasswordByIDRequest) String() string { return proto.CompactTextString(m) }
 func (*VerifyUserPasswordByIDRequest) ProtoMessage()    {}
 func (*VerifyUserPasswordByIDRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{13}
+	return fileDescriptor_0b3e239150a6a10f, []int{17}
 }
 
 func (m *VerifyUserPasswordByIDRequest) XXX_Unmarshal(b []byte) error {
@@ -935,7 +1169,7 @@ func (m *VerifyUserPasswordByIDResponse) Reset()         { *m = VerifyUserPasswo
 func (m *VerifyUserPasswordByIDResponse) String() string { return proto.CompactTextString(m) }
 func (*VerifyUserPasswordByIDResponse) ProtoMessage()    {}
 func (*VerifyUserPasswordByIDResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{14}
+	return fileDescriptor_0b3e239150a6a10f, []int{18}
 }
 
 func (m *VerifyUserPasswordByIDResponse) XXX_Unmarshal(b []byte) error {
@@ -982,7 +1216,7 @@ func (m *VerifyUserPasswordByUsernameRequest) Reset()         { *m = VerifyUserP
 func (m *VerifyUserPasswordByUsernameRequest) String() string { return proto.CompactTextString(m) }
 func (*VerifyUserPasswordByUsernameRequest) ProtoMessage()    {}
 func (*VerifyUserPasswordByUsernameRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{15}
+	return fileDescriptor_0b3e239150a6a10f, []int{19}
 }
 
 func (m *VerifyUserPasswordByUsernameRequest) XXX_Unmarshal(b []byte) error {
@@ -1029,7 +1263,7 @@ func (m *VerifyUserPasswordByUsernameResponse) Reset()         { *m = VerifyUser
 func (m *VerifyUserPasswordByUsernameResponse) String() string { return proto.CompactTextString(m) }
 func (*VerifyUserPasswordByUsernameResponse) ProtoMessage()    {}
 func (*VerifyUserPasswordByUsernameResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{16}
+	return fileDescriptor_0b3e239150a6a10f, []int{20}
 }
 
 func (m *VerifyUserPasswordByUsernameResponse) XXX_Unmarshal(b []byte) error {
@@ -1079,7 +1313,7 @@ func (m *CreateLabelRequest) Reset()         { *m = CreateLabelRequest{} }
 func (m *CreateLabelRequest) String() string { return proto.CompactTextString(m) }
 func (*CreateLabelRequest) ProtoMessage()    {}
 func (*CreateLabelRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{17}
+	return fileDescriptor_0b3e239150a6a10f, []int{21}
 }
 
 func (m *CreateLabelRequest) XXX_Unmarshal(b []byte) error {
@@ -1140,7 +1374,7 @@ func (m *CreateLabelResponse) Reset()         { *m = CreateLabelResponse{} }
 func (m *CreateLabelResponse) String() string { return proto.CompactTextString(m) }
 func (*CreateLabelResponse) ProtoMessage()    {}
 func (*CreateLabelResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{18}
+	return fileDescriptor_0b3e239150a6a10f, []int{22}
 }
 
 func (m *CreateLabelResponse) XXX_Unmarshal(b []byte) error {
@@ -1175,6 +1409,125 @@ func (m *CreateLabelResponse) GetMessage() string {
 	return ""
 }
 
+// 给指定用户创建标签
+type CreateLabelForUserRequest struct {
+	UserID               uint64   `protobuf:"varint,1,opt,name=UserID,proto3" json:"UserID,omitempty"`
+	Name                 string   `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name,omitempty"`
+	Class                string   `protobuf:"bytes,3,opt,name=Class,proto3" json:"Class,omitempty"`
+	State                string   `protobuf:"bytes,4,opt,name=State,proto3" json:"State,omitempty"`
+	Value                string   `protobuf:"bytes,5,opt,name=Value,proto3" json:"Value,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *CreateLabelForUserRequest) Reset()         { *m = CreateLabelForUserRequest{} }
+func (m *CreateLabelForUserRequest) String() string { return proto.CompactTextString(m) }
+func (*CreateLabelForUserRequest) ProtoMessage()    {}
+func (*CreateLabelForUserRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_0b3e239150a6a10f, []int{23}
+}
+
+func (m *CreateLabelForUserRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CreateLabelForUserRequest.Unmarshal(m, b)
+}
+func (m *CreateLabelForUserRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CreateLabelForUserRequest.Marshal(b, m, deterministic)
+}
+func (m *CreateLabelForUserRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CreateLabelForUserRequest.Merge(m, src)
+}
+func (m *CreateLabelForUserRequest) XXX_Size() int {
+	return xxx_messageInfo_CreateLabelForUserRequest.Size(m)
+}
+func (m *CreateLabelForUserRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_CreateLabelForUserRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CreateLabelForUserRequest proto.InternalMessageInfo
+
+func (m *CreateLabelForUserRequest) GetUserID() uint64 {
+	if m != nil {
+		return m.UserID
+	}
+	return 0
+}
+
+func (m *CreateLabelForUserRequest) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *CreateLabelForUserRequest) GetClass() string {
+	if m != nil {
+		return m.Class
+	}
+	return ""
+}
+
+func (m *CreateLabelForUserRequest) GetState() string {
+	if m != nil {
+		return m.State
+	}
+	return ""
+}
+
+func (m *CreateLabelForUserRequest) GetValue() string {
+	if m != nil {
+		return m.Value
+	}
+	return ""
+}
+
+type CreateLabelForUserResponse struct {
+	State                State    `protobuf:"varint,1,opt,name=State,proto3,enum=standard.State" json:"State,omitempty"`
+	Message              string   `protobuf:"bytes,2,opt,name=Message,proto3" json:"Message,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *CreateLabelForUserResponse) Reset()         { *m = CreateLabelForUserResponse{} }
+func (m *CreateLabelForUserResponse) String() string { return proto.CompactTextString(m) }
+func (*CreateLabelForUserResponse) ProtoMessage()    {}
+func (*CreateLabelForUserResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_0b3e239150a6a10f, []int{24}
+}
+
+func (m *CreateLabelForUserResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CreateLabelForUserResponse.Unmarshal(m, b)
+}
+func (m *CreateLabelForUserResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CreateLabelForUserResponse.Marshal(b, m, deterministic)
+}
+func (m *CreateLabelForUserResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CreateLabelForUserResponse.Merge(m, src)
+}
+func (m *CreateLabelForUserResponse) XXX_Size() int {
+	return xxx_messageInfo_CreateLabelForUserResponse.Size(m)
+}
+func (m *CreateLabelForUserResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_CreateLabelForUserResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CreateLabelForUserResponse proto.InternalMessageInfo
+
+func (m *CreateLabelForUserResponse) GetState() State {
+	if m != nil {
+		return m.State
+	}
+	return State_UNKNOWN
+}
+
+func (m *CreateLabelForUserResponse) GetMessage() string {
+	if m != nil {
+		return m.Message
+	}
+	return ""
+}
+
 type QueryLabelByIDRequest struct {
 	ID                   uint64   `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -1186,7 +1539,7 @@ func (m *QueryLabelByIDRequest) Reset()         { *m = QueryLabelByIDRequest{} }
 func (m *QueryLabelByIDRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryLabelByIDRequest) ProtoMessage()    {}
 func (*QueryLabelByIDRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{19}
+	return fileDescriptor_0b3e239150a6a10f, []int{25}
 }
 
 func (m *QueryLabelByIDRequest) XXX_Unmarshal(b []byte) error {
@@ -1227,7 +1580,7 @@ func (m *QueryLabelByIDResponse) Reset()         { *m = QueryLabelByIDResponse{}
 func (m *QueryLabelByIDResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryLabelByIDResponse) ProtoMessage()    {}
 func (*QueryLabelByIDResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{20}
+	return fileDescriptor_0b3e239150a6a10f, []int{26}
 }
 
 func (m *QueryLabelByIDResponse) XXX_Unmarshal(b []byte) error {
@@ -1281,7 +1634,7 @@ func (m *UpdateLabelNameByIDRequest) Reset()         { *m = UpdateLabelNameByIDR
 func (m *UpdateLabelNameByIDRequest) String() string { return proto.CompactTextString(m) }
 func (*UpdateLabelNameByIDRequest) ProtoMessage()    {}
 func (*UpdateLabelNameByIDRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{21}
+	return fileDescriptor_0b3e239150a6a10f, []int{27}
 }
 
 func (m *UpdateLabelNameByIDRequest) XXX_Unmarshal(b []byte) error {
@@ -1328,7 +1681,7 @@ func (m *UpdateLabelNameByIDResponse) Reset()         { *m = UpdateLabelNameByID
 func (m *UpdateLabelNameByIDResponse) String() string { return proto.CompactTextString(m) }
 func (*UpdateLabelNameByIDResponse) ProtoMessage()    {}
 func (*UpdateLabelNameByIDResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{22}
+	return fileDescriptor_0b3e239150a6a10f, []int{28}
 }
 
 func (m *UpdateLabelNameByIDResponse) XXX_Unmarshal(b []byte) error {
@@ -1375,7 +1728,7 @@ func (m *UpdateLabelClassByIDRequest) Reset()         { *m = UpdateLabelClassByI
 func (m *UpdateLabelClassByIDRequest) String() string { return proto.CompactTextString(m) }
 func (*UpdateLabelClassByIDRequest) ProtoMessage()    {}
 func (*UpdateLabelClassByIDRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{23}
+	return fileDescriptor_0b3e239150a6a10f, []int{29}
 }
 
 func (m *UpdateLabelClassByIDRequest) XXX_Unmarshal(b []byte) error {
@@ -1422,7 +1775,7 @@ func (m *UpdateLabelClassByIDResponse) Reset()         { *m = UpdateLabelClassBy
 func (m *UpdateLabelClassByIDResponse) String() string { return proto.CompactTextString(m) }
 func (*UpdateLabelClassByIDResponse) ProtoMessage()    {}
 func (*UpdateLabelClassByIDResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{24}
+	return fileDescriptor_0b3e239150a6a10f, []int{30}
 }
 
 func (m *UpdateLabelClassByIDResponse) XXX_Unmarshal(b []byte) error {
@@ -1469,7 +1822,7 @@ func (m *UpdateLabelStateByIDRequest) Reset()         { *m = UpdateLabelStateByI
 func (m *UpdateLabelStateByIDRequest) String() string { return proto.CompactTextString(m) }
 func (*UpdateLabelStateByIDRequest) ProtoMessage()    {}
 func (*UpdateLabelStateByIDRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{25}
+	return fileDescriptor_0b3e239150a6a10f, []int{31}
 }
 
 func (m *UpdateLabelStateByIDRequest) XXX_Unmarshal(b []byte) error {
@@ -1516,7 +1869,7 @@ func (m *UpdateLabelStateByIDResponse) Reset()         { *m = UpdateLabelStateBy
 func (m *UpdateLabelStateByIDResponse) String() string { return proto.CompactTextString(m) }
 func (*UpdateLabelStateByIDResponse) ProtoMessage()    {}
 func (*UpdateLabelStateByIDResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{26}
+	return fileDescriptor_0b3e239150a6a10f, []int{32}
 }
 
 func (m *UpdateLabelStateByIDResponse) XXX_Unmarshal(b []byte) error {
@@ -1563,7 +1916,7 @@ func (m *UpdateLabelValueByIDRequest) Reset()         { *m = UpdateLabelValueByI
 func (m *UpdateLabelValueByIDRequest) String() string { return proto.CompactTextString(m) }
 func (*UpdateLabelValueByIDRequest) ProtoMessage()    {}
 func (*UpdateLabelValueByIDRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{27}
+	return fileDescriptor_0b3e239150a6a10f, []int{33}
 }
 
 func (m *UpdateLabelValueByIDRequest) XXX_Unmarshal(b []byte) error {
@@ -1610,7 +1963,7 @@ func (m *UpdateLabelValueByIDResponse) Reset()         { *m = UpdateLabelValueBy
 func (m *UpdateLabelValueByIDResponse) String() string { return proto.CompactTextString(m) }
 func (*UpdateLabelValueByIDResponse) ProtoMessage()    {}
 func (*UpdateLabelValueByIDResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{28}
+	return fileDescriptor_0b3e239150a6a10f, []int{34}
 }
 
 func (m *UpdateLabelValueByIDResponse) XXX_Unmarshal(b []byte) error {
@@ -1656,7 +2009,7 @@ func (m *DeleteLabelByIDRequest) Reset()         { *m = DeleteLabelByIDRequest{}
 func (m *DeleteLabelByIDRequest) String() string { return proto.CompactTextString(m) }
 func (*DeleteLabelByIDRequest) ProtoMessage()    {}
 func (*DeleteLabelByIDRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{29}
+	return fileDescriptor_0b3e239150a6a10f, []int{35}
 }
 
 func (m *DeleteLabelByIDRequest) XXX_Unmarshal(b []byte) error {
@@ -1696,7 +2049,7 @@ func (m *DeleteLabelByIDResponse) Reset()         { *m = DeleteLabelByIDResponse
 func (m *DeleteLabelByIDResponse) String() string { return proto.CompactTextString(m) }
 func (*DeleteLabelByIDResponse) ProtoMessage()    {}
 func (*DeleteLabelByIDResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{30}
+	return fileDescriptor_0b3e239150a6a10f, []int{36}
 }
 
 func (m *DeleteLabelByIDResponse) XXX_Unmarshal(b []byte) error {
@@ -1743,7 +2096,7 @@ func (m *AddLabelToUserByIDRequest) Reset()         { *m = AddLabelToUserByIDReq
 func (m *AddLabelToUserByIDRequest) String() string { return proto.CompactTextString(m) }
 func (*AddLabelToUserByIDRequest) ProtoMessage()    {}
 func (*AddLabelToUserByIDRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{31}
+	return fileDescriptor_0b3e239150a6a10f, []int{37}
 }
 
 func (m *AddLabelToUserByIDRequest) XXX_Unmarshal(b []byte) error {
@@ -1790,7 +2143,7 @@ func (m *AddLabelToUserByIDResponse) Reset()         { *m = AddLabelToUserByIDRe
 func (m *AddLabelToUserByIDResponse) String() string { return proto.CompactTextString(m) }
 func (*AddLabelToUserByIDResponse) ProtoMessage()    {}
 func (*AddLabelToUserByIDResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{32}
+	return fileDescriptor_0b3e239150a6a10f, []int{38}
 }
 
 func (m *AddLabelToUserByIDResponse) XXX_Unmarshal(b []byte) error {
@@ -1837,7 +2190,7 @@ func (m *RemoveLabelFromUserByIDRequest) Reset()         { *m = RemoveLabelFromU
 func (m *RemoveLabelFromUserByIDRequest) String() string { return proto.CompactTextString(m) }
 func (*RemoveLabelFromUserByIDRequest) ProtoMessage()    {}
 func (*RemoveLabelFromUserByIDRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{33}
+	return fileDescriptor_0b3e239150a6a10f, []int{39}
 }
 
 func (m *RemoveLabelFromUserByIDRequest) XXX_Unmarshal(b []byte) error {
@@ -1884,7 +2237,7 @@ func (m *RemoveLabelFromUserByIDResponse) Reset()         { *m = RemoveLabelFrom
 func (m *RemoveLabelFromUserByIDResponse) String() string { return proto.CompactTextString(m) }
 func (*RemoveLabelFromUserByIDResponse) ProtoMessage()    {}
 func (*RemoveLabelFromUserByIDResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{34}
+	return fileDescriptor_0b3e239150a6a10f, []int{40}
 }
 
 func (m *RemoveLabelFromUserByIDResponse) XXX_Unmarshal(b []byte) error {
@@ -1919,6 +2272,7 @@ func (m *RemoveLabelFromUserByIDResponse) GetMessage() string {
 	return ""
 }
 
+// 组操作
 type CreateGroupRequest struct {
 	Name                 string   `protobuf:"bytes,1,opt,name=Name,proto3" json:"Name,omitempty"`
 	Class                string   `protobuf:"bytes,2,opt,name=Class,proto3" json:"Class,omitempty"`
@@ -1933,7 +2287,7 @@ func (m *CreateGroupRequest) Reset()         { *m = CreateGroupRequest{} }
 func (m *CreateGroupRequest) String() string { return proto.CompactTextString(m) }
 func (*CreateGroupRequest) ProtoMessage()    {}
 func (*CreateGroupRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{35}
+	return fileDescriptor_0b3e239150a6a10f, []int{41}
 }
 
 func (m *CreateGroupRequest) XXX_Unmarshal(b []byte) error {
@@ -1994,7 +2348,7 @@ func (m *CreateGroupResponse) Reset()         { *m = CreateGroupResponse{} }
 func (m *CreateGroupResponse) String() string { return proto.CompactTextString(m) }
 func (*CreateGroupResponse) ProtoMessage()    {}
 func (*CreateGroupResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{36}
+	return fileDescriptor_0b3e239150a6a10f, []int{42}
 }
 
 func (m *CreateGroupResponse) XXX_Unmarshal(b []byte) error {
@@ -2029,6 +2383,116 @@ func (m *CreateGroupResponse) GetMessage() string {
 	return ""
 }
 
+type QueryGroupsRequest struct {
+	Limit                uint64   `protobuf:"varint,1,opt,name=Limit,proto3" json:"Limit,omitempty"`
+	Offset               uint64   `protobuf:"varint,2,opt,name=Offset,proto3" json:"Offset,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *QueryGroupsRequest) Reset()         { *m = QueryGroupsRequest{} }
+func (m *QueryGroupsRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryGroupsRequest) ProtoMessage()    {}
+func (*QueryGroupsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_0b3e239150a6a10f, []int{43}
+}
+
+func (m *QueryGroupsRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_QueryGroupsRequest.Unmarshal(m, b)
+}
+func (m *QueryGroupsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_QueryGroupsRequest.Marshal(b, m, deterministic)
+}
+func (m *QueryGroupsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryGroupsRequest.Merge(m, src)
+}
+func (m *QueryGroupsRequest) XXX_Size() int {
+	return xxx_messageInfo_QueryGroupsRequest.Size(m)
+}
+func (m *QueryGroupsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryGroupsRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryGroupsRequest proto.InternalMessageInfo
+
+func (m *QueryGroupsRequest) GetLimit() uint64 {
+	if m != nil {
+		return m.Limit
+	}
+	return 0
+}
+
+func (m *QueryGroupsRequest) GetOffset() uint64 {
+	if m != nil {
+		return m.Offset
+	}
+	return 0
+}
+
+type QueryGroupsResponse struct {
+	State                State    `protobuf:"varint,1,opt,name=State,proto3,enum=standard.State" json:"State,omitempty"`
+	Message              string   `protobuf:"bytes,2,opt,name=Message,proto3" json:"Message,omitempty"`
+	Total                uint64   `protobuf:"varint,3,opt,name=Total,proto3" json:"Total,omitempty"`
+	Data                 []*User  `protobuf:"bytes,4,rep,name=Data,proto3" json:"Data,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *QueryGroupsResponse) Reset()         { *m = QueryGroupsResponse{} }
+func (m *QueryGroupsResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryGroupsResponse) ProtoMessage()    {}
+func (*QueryGroupsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_0b3e239150a6a10f, []int{44}
+}
+
+func (m *QueryGroupsResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_QueryGroupsResponse.Unmarshal(m, b)
+}
+func (m *QueryGroupsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_QueryGroupsResponse.Marshal(b, m, deterministic)
+}
+func (m *QueryGroupsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryGroupsResponse.Merge(m, src)
+}
+func (m *QueryGroupsResponse) XXX_Size() int {
+	return xxx_messageInfo_QueryGroupsResponse.Size(m)
+}
+func (m *QueryGroupsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryGroupsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryGroupsResponse proto.InternalMessageInfo
+
+func (m *QueryGroupsResponse) GetState() State {
+	if m != nil {
+		return m.State
+	}
+	return State_UNKNOWN
+}
+
+func (m *QueryGroupsResponse) GetMessage() string {
+	if m != nil {
+		return m.Message
+	}
+	return ""
+}
+
+func (m *QueryGroupsResponse) GetTotal() uint64 {
+	if m != nil {
+		return m.Total
+	}
+	return 0
+}
+
+func (m *QueryGroupsResponse) GetData() []*User {
+	if m != nil {
+		return m.Data
+	}
+	return nil
+}
+
 type QueryGroupByIDRequest struct {
 	ID                   uint64   `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -2040,7 +2504,7 @@ func (m *QueryGroupByIDRequest) Reset()         { *m = QueryGroupByIDRequest{} }
 func (m *QueryGroupByIDRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryGroupByIDRequest) ProtoMessage()    {}
 func (*QueryGroupByIDRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{37}
+	return fileDescriptor_0b3e239150a6a10f, []int{45}
 }
 
 func (m *QueryGroupByIDRequest) XXX_Unmarshal(b []byte) error {
@@ -2081,7 +2545,7 @@ func (m *QueryGroupByIDResponse) Reset()         { *m = QueryGroupByIDResponse{}
 func (m *QueryGroupByIDResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryGroupByIDResponse) ProtoMessage()    {}
 func (*QueryGroupByIDResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{38}
+	return fileDescriptor_0b3e239150a6a10f, []int{46}
 }
 
 func (m *QueryGroupByIDResponse) XXX_Unmarshal(b []byte) error {
@@ -2135,7 +2599,7 @@ func (m *UpdateGroupNameByIDRequest) Reset()         { *m = UpdateGroupNameByIDR
 func (m *UpdateGroupNameByIDRequest) String() string { return proto.CompactTextString(m) }
 func (*UpdateGroupNameByIDRequest) ProtoMessage()    {}
 func (*UpdateGroupNameByIDRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{39}
+	return fileDescriptor_0b3e239150a6a10f, []int{47}
 }
 
 func (m *UpdateGroupNameByIDRequest) XXX_Unmarshal(b []byte) error {
@@ -2182,7 +2646,7 @@ func (m *UpdateGroupNameByIDResponse) Reset()         { *m = UpdateGroupNameByID
 func (m *UpdateGroupNameByIDResponse) String() string { return proto.CompactTextString(m) }
 func (*UpdateGroupNameByIDResponse) ProtoMessage()    {}
 func (*UpdateGroupNameByIDResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{40}
+	return fileDescriptor_0b3e239150a6a10f, []int{48}
 }
 
 func (m *UpdateGroupNameByIDResponse) XXX_Unmarshal(b []byte) error {
@@ -2229,7 +2693,7 @@ func (m *UpdateGroupClassByIDRequest) Reset()         { *m = UpdateGroupClassByI
 func (m *UpdateGroupClassByIDRequest) String() string { return proto.CompactTextString(m) }
 func (*UpdateGroupClassByIDRequest) ProtoMessage()    {}
 func (*UpdateGroupClassByIDRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{41}
+	return fileDescriptor_0b3e239150a6a10f, []int{49}
 }
 
 func (m *UpdateGroupClassByIDRequest) XXX_Unmarshal(b []byte) error {
@@ -2276,7 +2740,7 @@ func (m *UpdateGroupClassByIDResponse) Reset()         { *m = UpdateGroupClassBy
 func (m *UpdateGroupClassByIDResponse) String() string { return proto.CompactTextString(m) }
 func (*UpdateGroupClassByIDResponse) ProtoMessage()    {}
 func (*UpdateGroupClassByIDResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{42}
+	return fileDescriptor_0b3e239150a6a10f, []int{50}
 }
 
 func (m *UpdateGroupClassByIDResponse) XXX_Unmarshal(b []byte) error {
@@ -2323,7 +2787,7 @@ func (m *UpdateGroupStateByIDRequest) Reset()         { *m = UpdateGroupStateByI
 func (m *UpdateGroupStateByIDRequest) String() string { return proto.CompactTextString(m) }
 func (*UpdateGroupStateByIDRequest) ProtoMessage()    {}
 func (*UpdateGroupStateByIDRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{43}
+	return fileDescriptor_0b3e239150a6a10f, []int{51}
 }
 
 func (m *UpdateGroupStateByIDRequest) XXX_Unmarshal(b []byte) error {
@@ -2370,7 +2834,7 @@ func (m *UpdateGroupStateByIDResponse) Reset()         { *m = UpdateGroupStateBy
 func (m *UpdateGroupStateByIDResponse) String() string { return proto.CompactTextString(m) }
 func (*UpdateGroupStateByIDResponse) ProtoMessage()    {}
 func (*UpdateGroupStateByIDResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{44}
+	return fileDescriptor_0b3e239150a6a10f, []int{52}
 }
 
 func (m *UpdateGroupStateByIDResponse) XXX_Unmarshal(b []byte) error {
@@ -2417,7 +2881,7 @@ func (m *UpdateGroupDescriptionByIDRequest) Reset()         { *m = UpdateGroupDe
 func (m *UpdateGroupDescriptionByIDRequest) String() string { return proto.CompactTextString(m) }
 func (*UpdateGroupDescriptionByIDRequest) ProtoMessage()    {}
 func (*UpdateGroupDescriptionByIDRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{45}
+	return fileDescriptor_0b3e239150a6a10f, []int{53}
 }
 
 func (m *UpdateGroupDescriptionByIDRequest) XXX_Unmarshal(b []byte) error {
@@ -2464,7 +2928,7 @@ func (m *UpdateGroupDescriptionByIDResponse) Reset()         { *m = UpdateGroupD
 func (m *UpdateGroupDescriptionByIDResponse) String() string { return proto.CompactTextString(m) }
 func (*UpdateGroupDescriptionByIDResponse) ProtoMessage()    {}
 func (*UpdateGroupDescriptionByIDResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{46}
+	return fileDescriptor_0b3e239150a6a10f, []int{54}
 }
 
 func (m *UpdateGroupDescriptionByIDResponse) XXX_Unmarshal(b []byte) error {
@@ -2510,7 +2974,7 @@ func (m *DeleteGroupByIDRequest) Reset()         { *m = DeleteGroupByIDRequest{}
 func (m *DeleteGroupByIDRequest) String() string { return proto.CompactTextString(m) }
 func (*DeleteGroupByIDRequest) ProtoMessage()    {}
 func (*DeleteGroupByIDRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{47}
+	return fileDescriptor_0b3e239150a6a10f, []int{55}
 }
 
 func (m *DeleteGroupByIDRequest) XXX_Unmarshal(b []byte) error {
@@ -2550,7 +3014,7 @@ func (m *DeleteGroupByIDResponse) Reset()         { *m = DeleteGroupByIDResponse
 func (m *DeleteGroupByIDResponse) String() string { return proto.CompactTextString(m) }
 func (*DeleteGroupByIDResponse) ProtoMessage()    {}
 func (*DeleteGroupByIDResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{48}
+	return fileDescriptor_0b3e239150a6a10f, []int{56}
 }
 
 func (m *DeleteGroupByIDResponse) XXX_Unmarshal(b []byte) error {
@@ -2597,7 +3061,7 @@ func (m *AddUserToGroupByIDRequest) Reset()         { *m = AddUserToGroupByIDReq
 func (m *AddUserToGroupByIDRequest) String() string { return proto.CompactTextString(m) }
 func (*AddUserToGroupByIDRequest) ProtoMessage()    {}
 func (*AddUserToGroupByIDRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{49}
+	return fileDescriptor_0b3e239150a6a10f, []int{57}
 }
 
 func (m *AddUserToGroupByIDRequest) XXX_Unmarshal(b []byte) error {
@@ -2644,7 +3108,7 @@ func (m *AddUserToGroupByIDResponse) Reset()         { *m = AddUserToGroupByIDRe
 func (m *AddUserToGroupByIDResponse) String() string { return proto.CompactTextString(m) }
 func (*AddUserToGroupByIDResponse) ProtoMessage()    {}
 func (*AddUserToGroupByIDResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{50}
+	return fileDescriptor_0b3e239150a6a10f, []int{58}
 }
 
 func (m *AddUserToGroupByIDResponse) XXX_Unmarshal(b []byte) error {
@@ -2691,7 +3155,7 @@ func (m *RemoveUserFromGroupByIDRequest) Reset()         { *m = RemoveUserFromGr
 func (m *RemoveUserFromGroupByIDRequest) String() string { return proto.CompactTextString(m) }
 func (*RemoveUserFromGroupByIDRequest) ProtoMessage()    {}
 func (*RemoveUserFromGroupByIDRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{51}
+	return fileDescriptor_0b3e239150a6a10f, []int{59}
 }
 
 func (m *RemoveUserFromGroupByIDRequest) XXX_Unmarshal(b []byte) error {
@@ -2738,7 +3202,7 @@ func (m *RemoveUserFromGroupByIDResponse) Reset()         { *m = RemoveUserFromG
 func (m *RemoveUserFromGroupByIDResponse) String() string { return proto.CompactTextString(m) }
 func (*RemoveUserFromGroupByIDResponse) ProtoMessage()    {}
 func (*RemoveUserFromGroupByIDResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0b3e239150a6a10f, []int{52}
+	return fileDescriptor_0b3e239150a6a10f, []int{60}
 }
 
 func (m *RemoveUserFromGroupByIDResponse) XXX_Unmarshal(b []byte) error {
@@ -2780,8 +3244,12 @@ func init() {
 	proto.RegisterType((*User)(nil), "standard.User")
 	proto.RegisterType((*CreateUserRequest)(nil), "standard.CreateUserRequest")
 	proto.RegisterType((*CreateUserResponse)(nil), "standard.CreateUserResponse")
+	proto.RegisterType((*QueryUsersRequest)(nil), "standard.QueryUsersRequest")
+	proto.RegisterType((*QueryUsersResponse)(nil), "standard.QueryUsersResponse")
 	proto.RegisterType((*QueryUserByIDRequest)(nil), "standard.QueryUserByIDRequest")
 	proto.RegisterType((*QueryUserByIDResponse)(nil), "standard.QueryUserByIDResponse")
+	proto.RegisterType((*QueryUsersByInviterRequest)(nil), "standard.QueryUsersByInviterRequest")
+	proto.RegisterType((*QueryUsersByInviterResponse)(nil), "standard.QueryUsersByInviterResponse")
 	proto.RegisterType((*QueryUserByUsernameRequest)(nil), "standard.QueryUserByUsernameRequest")
 	proto.RegisterType((*QueryUserByUsernameResponse)(nil), "standard.QueryUserByUsernameResponse")
 	proto.RegisterType((*DeleteUserByIDRequest)(nil), "standard.DeleteUserByIDRequest")
@@ -2794,6 +3262,8 @@ func init() {
 	proto.RegisterType((*VerifyUserPasswordByUsernameResponse)(nil), "standard.VerifyUserPasswordByUsernameResponse")
 	proto.RegisterType((*CreateLabelRequest)(nil), "standard.CreateLabelRequest")
 	proto.RegisterType((*CreateLabelResponse)(nil), "standard.CreateLabelResponse")
+	proto.RegisterType((*CreateLabelForUserRequest)(nil), "standard.CreateLabelForUserRequest")
+	proto.RegisterType((*CreateLabelForUserResponse)(nil), "standard.CreateLabelForUserResponse")
 	proto.RegisterType((*QueryLabelByIDRequest)(nil), "standard.QueryLabelByIDRequest")
 	proto.RegisterType((*QueryLabelByIDResponse)(nil), "standard.QueryLabelByIDResponse")
 	proto.RegisterType((*UpdateLabelNameByIDRequest)(nil), "standard.UpdateLabelNameByIDRequest")
@@ -2812,6 +3282,8 @@ func init() {
 	proto.RegisterType((*RemoveLabelFromUserByIDResponse)(nil), "standard.RemoveLabelFromUserByIDResponse")
 	proto.RegisterType((*CreateGroupRequest)(nil), "standard.CreateGroupRequest")
 	proto.RegisterType((*CreateGroupResponse)(nil), "standard.CreateGroupResponse")
+	proto.RegisterType((*QueryGroupsRequest)(nil), "standard.QueryGroupsRequest")
+	proto.RegisterType((*QueryGroupsResponse)(nil), "standard.QueryGroupsResponse")
 	proto.RegisterType((*QueryGroupByIDRequest)(nil), "standard.QueryGroupByIDRequest")
 	proto.RegisterType((*QueryGroupByIDResponse)(nil), "standard.QueryGroupByIDResponse")
 	proto.RegisterType((*UpdateGroupNameByIDRequest)(nil), "standard.UpdateGroupNameByIDRequest")
@@ -2833,98 +3305,111 @@ func init() {
 func init() { proto.RegisterFile("standard.proto", fileDescriptor_0b3e239150a6a10f) }
 
 var fileDescriptor_0b3e239150a6a10f = []byte{
-	// 1451 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x59, 0xdd, 0x52, 0xe3, 0x36,
-	0x14, 0x4e, 0x4c, 0x42, 0xe0, 0x50, 0x42, 0x56, 0xb0, 0x90, 0x1a, 0x96, 0x05, 0xc3, 0x2e, 0xf4,
-	0x8f, 0x0b, 0x7a, 0xd3, 0xcb, 0x9a, 0xc4, 0x50, 0x77, 0xb3, 0x09, 0xeb, 0xfc, 0x74, 0xe9, 0xcc,
-	0x36, 0x63, 0x88, 0xcb, 0xa4, 0x85, 0x24, 0xb5, 0x03, 0x1d, 0x66, 0x3a, 0xed, 0x4c, 0x5f, 0xa2,
-	0x7d, 0x84, 0x3e, 0x46, 0xdf, 0xa1, 0x0f, 0xd0, 0x57, 0xe9, 0x48, 0x8a, 0x1d, 0x59, 0x92, 0x6d,
-	0x3a, 0x98, 0xbd, 0x43, 0xd2, 0xf1, 0x77, 0xbe, 0xa3, 0x9c, 0xef, 0x48, 0x47, 0x40, 0xd1, 0x1b,
-	0xdb, 0x83, 0x9e, 0xed, 0xf6, 0x0e, 0x46, 0xee, 0x70, 0x3c, 0x44, 0x73, 0xfe, 0x58, 0xfb, 0x37,
-	0x0b, 0xf9, 0x13, 0x77, 0x78, 0x33, 0x42, 0x45, 0x50, 0xcc, 0x6a, 0x39, 0xbb, 0x95, 0xdd, 0xcf,
-	0x59, 0x8a, 0x59, 0x45, 0x08, 0x72, 0x75, 0xfb, 0xda, 0x29, 0x2b, 0x5b, 0xd9, 0xfd, 0x79, 0x8b,
-	0xfc, 0x8d, 0x56, 0x20, 0x5f, 0xb9, 0xb2, 0x3d, 0xaf, 0x3c, 0x43, 0x26, 0xe9, 0x00, 0xcf, 0x36,
-	0xc7, 0xf6, 0xd8, 0x29, 0xe7, 0xe8, 0x2c, 0x19, 0xa0, 0x2d, 0x58, 0xa8, 0x3a, 0xde, 0x85, 0xdb,
-	0x1f, 0x8d, 0xfb, 0xc3, 0x41, 0x39, 0x4f, 0xd6, 0xd8, 0x29, 0x6c, 0x51, 0x71, 0x1d, 0x7b, 0xec,
-	0xf4, 0x5a, 0xfd, 0x6b, 0xa7, 0x3c, 0x4b, 0x2d, 0x98, 0x29, 0x6c, 0xd1, 0x1e, 0xf5, 0x02, 0x8b,
-	0x02, 0xb5, 0x60, 0xa6, 0xa8, 0x97, 0x2b, 0xc7, 0xb7, 0x98, 0xf3, 0xbd, 0x04, 0x53, 0xda, 0x3f,
-	0x59, 0xc8, 0xd7, 0xec, 0x73, 0xe7, 0x2a, 0xf5, 0x08, 0x57, 0x20, 0xdf, 0xb1, 0xaf, 0x6e, 0x9c,
-	0x49, 0x6c, 0x74, 0xf0, 0x9e, 0xa2, 0xfa, 0x53, 0x81, 0x5c, 0xdb, 0x73, 0x5c, 0x21, 0xa8, 0x20,
-	0x00, 0x85, 0x0d, 0x60, 0x15, 0x66, 0xf5, 0x5b, 0x7b, 0x6c, 0xbb, 0x93, 0xb8, 0x26, 0x23, 0x54,
-	0x86, 0x82, 0x39, 0xb8, 0xed, 0x8f, 0x1d, 0x97, 0x84, 0x96, 0xb3, 0xfc, 0x21, 0x52, 0x61, 0xae,
-	0xde, 0xbf, 0xf8, 0x71, 0x80, 0x37, 0x88, 0xc6, 0x17, 0x8c, 0xf1, 0x1a, 0xf6, 0x4d, 0xd6, 0x68,
-	0x7c, 0xc1, 0x18, 0xaf, 0x9d, 0xda, 0x9e, 0xf7, 0xf3, 0xd0, 0xed, 0x4d, 0x22, 0x0b, 0xc6, 0xfc,
-	0xd6, 0xcc, 0x25, 0x6e, 0xcd, 0x7c, 0xe2, 0xd6, 0x80, 0xb8, 0x35, 0x7f, 0x64, 0xe1, 0x09, 0xc5,
-	0xc4, 0xa4, 0x2c, 0xe7, 0xa7, 0x1b, 0xc7, 0x1b, 0x4f, 0xf7, 0x25, 0xcb, 0xee, 0x0b, 0x13, 0xff,
-	0x4c, 0x74, 0xfc, 0xb9, 0x98, 0xf8, 0xf3, 0x31, 0xf1, 0xcf, 0x86, 0xe3, 0xd7, 0xda, 0x80, 0x58,
-	0x62, 0xde, 0x68, 0x38, 0xf0, 0x1c, 0xf4, 0xc2, 0x4f, 0x2e, 0xcc, 0xac, 0x78, 0xb8, 0x74, 0x10,
-	0x88, 0x95, 0x4c, 0xfb, 0xd9, 0x56, 0x86, 0xc2, 0x6b, 0xc7, 0xf3, 0xec, 0x4b, 0x3f, 0x61, 0xfd,
-	0xa1, 0xf6, 0x12, 0x56, 0xde, 0xdc, 0x38, 0xee, 0x1d, 0x46, 0x3d, 0xba, 0x33, 0xab, 0x7e, 0xc8,
-	0x5c, 0x6a, 0x68, 0xbf, 0xc0, 0x53, 0xce, 0x2e, 0x25, 0x06, 0x48, 0x83, 0x5c, 0xd5, 0x1e, 0xdb,
-	0x64, 0x0f, 0x17, 0x0e, 0x8b, 0xd3, 0xef, 0x49, 0xa0, 0x64, 0x4d, 0xfb, 0x02, 0x54, 0xc6, 0xbb,
-	0xbf, 0x5f, 0x3e, 0x57, 0x76, 0x4b, 0xb3, 0xe1, 0x2d, 0xd5, 0x7e, 0xcf, 0xc2, 0xba, 0xf4, 0xd3,
-	0xf7, 0x49, 0x7f, 0x0f, 0x9e, 0xd2, 0x24, 0x4b, 0xda, 0xe5, 0x33, 0x58, 0xe5, 0x0d, 0xd3, 0xfa,
-	0xa1, 0x5f, 0xc1, 0x33, 0x2a, 0x05, 0x0c, 0xed, 0x67, 0x55, 0x0c, 0x97, 0x50, 0x32, 0x2a, 0x5c,
-	0x32, 0xda, 0xb0, 0x19, 0x05, 0x96, 0x22, 0xdf, 0x8e, 0xe3, 0xf6, 0xbf, 0xbf, 0x4b, 0x89, 0x6f,
-	0x14, 0x58, 0x5a, 0x7c, 0xdf, 0xc1, 0x8e, 0xcc, 0xc5, 0xff, 0xc8, 0xd5, 0xd8, 0x08, 0x2e, 0x61,
-	0x37, 0x1e, 0x3e, 0xad, 0x38, 0x7e, 0xf0, 0xeb, 0x0c, 0x39, 0xf7, 0x7c, 0xda, 0xfe, 0x71, 0x97,
-	0x95, 0x1d, 0x77, 0x8a, 0xf4, 0xb8, 0x9b, 0x91, 0x1e, 0x77, 0x39, 0xe6, 0xb8, 0xd3, 0x3a, 0xb0,
-	0x1c, 0xf2, 0x95, 0x56, 0x0c, 0x7b, 0x93, 0x62, 0x45, 0x60, 0xe3, 0xf4, 0xf6, 0x2b, 0xac, 0xf2,
-	0x86, 0x69, 0xd5, 0x85, 0x9d, 0x50, 0x5d, 0x60, 0xbe, 0xa7, 0xb1, 0xd2, 0xc2, 0xf0, 0x25, 0xa8,
-	0x54, 0x47, 0x64, 0x12, 0xef, 0x6a, 0x5c, 0x86, 0x4b, 0xee, 0x1c, 0xda, 0x77, 0xb0, 0x2e, 0x45,
-	0x48, 0x6b, 0x2b, 0x2b, 0x21, 0x7c, 0xf2, 0x13, 0xc7, 0x51, 0x94, 0xe6, 0x84, 0xd6, 0x85, 0x0d,
-	0x39, 0xc8, 0xe3, 0xb0, 0x24, 0xd6, 0x09, 0x2c, 0xa9, 0x3f, 0x85, 0xc9, 0x51, 0x8e, 0x25, 0x03,
-	0xf2, 0x38, 0x2c, 0x89, 0x04, 0x12, 0x58, 0x52, 0xcd, 0x28, 0xac, 0x66, 0xc2, 0x2c, 0x19, 0x90,
-	0xb4, 0x58, 0xee, 0xfb, 0x67, 0x50, 0xa2, 0x7a, 0xbe, 0x85, 0x35, 0xc1, 0x32, 0xbd, 0xbd, 0xfa,
-	0x50, 0xef, 0xf5, 0x08, 0x70, 0x6b, 0x98, 0x70, 0x6c, 0xe2, 0x1b, 0x2a, 0x36, 0x31, 0xab, 0x04,
-	0x25, 0x67, 0x4d, 0x46, 0xda, 0x3b, 0x50, 0x65, 0x20, 0x69, 0x71, 0xfc, 0x1a, 0x36, 0x2d, 0xe7,
-	0x7a, 0x78, 0x4b, 0xe3, 0x3f, 0x76, 0x87, 0xd7, 0x49, 0x44, 0xcb, 0x50, 0x20, 0xb6, 0x01, 0x53,
-	0x7f, 0xa8, 0x9d, 0xc3, 0xf3, 0x48, 0xac, 0xb4, 0xf8, 0xde, 0xfa, 0xa5, 0x9d, 0x34, 0x6d, 0x69,
-	0x95, 0x76, 0xae, 0x57, 0xcb, 0x09, 0xbd, 0xda, 0xb4, 0xcc, 0x4f, 0xfc, 0xa6, 0x5d, 0xe6, 0x09,
-	0xec, 0x7d, 0xca, 0x3c, 0x63, 0xf8, 0xe8, 0x65, 0x9e, 0xc6, 0xca, 0x95, 0x79, 0x32, 0xf9, 0xa0,
-	0x32, 0xcf, 0x21, 0xa4, 0x5e, 0x9a, 0x08, 0xfe, 0x43, 0xcb, 0x3c, 0x0f, 0xf2, 0x38, 0x2c, 0x1f,
-	0x5a, 0xe6, 0x79, 0x90, 0xb4, 0x58, 0xb6, 0x61, 0x9b, 0x71, 0xc0, 0x08, 0x21, 0x8e, 0x2b, 0xa7,
-	0x22, 0x45, 0x54, 0x91, 0x03, 0x5a, 0x1c, 0x6c, 0xea, 0xe5, 0x3f, 0x51, 0x55, 0x41, 0xf9, 0x4f,
-	0x5f, 0x56, 0x9a, 0x41, 0xca, 0x3f, 0x2e, 0x81, 0xad, 0x61, 0x12, 0x11, 0x0c, 0x43, 0x6c, 0xa6,
-	0x55, 0x75, 0x32, 0x9c, 0x1c, 0x00, 0x02, 0x4c, 0x5a, 0x2c, 0xbf, 0xf2, 0x0f, 0x00, 0xec, 0x01,
-	0xd7, 0xec, 0x44, 0xaa, 0x51, 0x27, 0x55, 0x50, 0xfe, 0x25, 0x48, 0x29, 0xb1, 0xfd, 0xf8, 0x2f,
-	0x65, 0x82, 0x80, 0x16, 0xa0, 0xd0, 0xae, 0xbf, 0xaa, 0x37, 0xbe, 0xa9, 0x97, 0x32, 0x78, 0xd0,
-	0x6c, 0x57, 0x2a, 0x46, 0xb3, 0x59, 0xca, 0xe2, 0xc1, 0xb1, 0x6e, 0xd6, 0xda, 0x96, 0x51, 0x52,
-	0xd0, 0x13, 0x58, 0x6c, 0x1a, 0x56, 0xc7, 0xac, 0x18, 0x5d, 0xc3, 0xb2, 0x1a, 0x56, 0x69, 0x06,
-	0x21, 0x28, 0x9e, 0xea, 0x96, 0xfe, 0xba, 0xd9, 0x35, 0xeb, 0x1d, 0xbd, 0x66, 0x56, 0x4b, 0x39,
-	0xb4, 0x0c, 0x4b, 0x66, 0xad, 0x66, 0x9c, 0xe8, 0xb5, 0xae, 0x65, 0xbc, 0x69, 0x1b, 0xcd, 0x56,
-	0x29, 0x8f, 0x27, 0x6b, 0xfa, 0x91, 0x51, 0xeb, 0xd6, 0x1b, 0xad, 0xae, 0xf1, 0xd6, 0x6c, 0xb6,
-	0x4a, 0xb3, 0x78, 0xf2, 0xc4, 0x6a, 0xb4, 0x4f, 0x99, 0xc9, 0x02, 0x86, 0x6c, 0x37, 0x0d, 0x8b,
-	0x99, 0x9b, 0x43, 0x6b, 0xb0, 0x4c, 0xe6, 0xf4, 0x9a, 0x65, 0xe8, 0xd5, 0x33, 0x3a, 0xdf, 0x2c,
-	0xcd, 0x07, 0x0b, 0x1d, 0xc3, 0x32, 0x8f, 0xcf, 0xba, 0x3e, 0x57, 0x40, 0x65, 0x58, 0xa1, 0xfe,
-	0xb8, 0x4f, 0x16, 0xf0, 0x0a, 0x75, 0xca, 0xad, 0x7c, 0x80, 0x57, 0xaa, 0x47, 0xdd, 0xc6, 0xa9,
-	0x61, 0xe9, 0x2d, 0xb3, 0x51, 0xef, 0x1e, 0xeb, 0x2d, 0x82, 0xb6, 0x78, 0xf8, 0xf7, 0x32, 0x14,
-	0xf4, 0x8b, 0x8b, 0xe1, 0xcd, 0x60, 0x8c, 0x4c, 0x80, 0xe9, 0xc3, 0x0b, 0x5a, 0x9f, 0x6e, 0xbb,
-	0xf0, 0x4e, 0xa4, 0x6e, 0xc8, 0x17, 0xe9, 0x0f, 0xa8, 0x65, 0x90, 0x05, 0x8b, 0xa1, 0x47, 0x14,
-	0xb4, 0x39, 0xfd, 0x40, 0xf6, 0x0a, 0xa3, 0x3e, 0x8f, 0x5c, 0x0f, 0x30, 0xdb, 0x50, 0x0c, 0x3f,
-	0x19, 0x20, 0xe6, 0x23, 0xe9, 0xab, 0x83, 0xba, 0x15, 0x6d, 0x10, 0xc0, 0xf6, 0x60, 0x59, 0xf2,
-	0x6c, 0x82, 0x76, 0xa5, 0x84, 0xb8, 0x26, 0x57, 0x7d, 0x91, 0x60, 0x15, 0x78, 0xb9, 0x86, 0x55,
-	0xf9, 0x3b, 0x02, 0xda, 0x63, 0x1e, 0x52, 0xe2, 0x9e, 0x2d, 0xd4, 0xfd, 0x64, 0x43, 0xd6, 0x9d,
-	0xfc, 0x19, 0x80, 0x75, 0x17, 0xfb, 0xea, 0xc0, 0xba, 0x8b, 0x7f, 0x51, 0xd0, 0x32, 0xe8, 0x37,
-	0xd8, 0x88, 0xeb, 0xd9, 0xd1, 0x67, 0xf1, 0x58, 0xfc, 0xae, 0x1e, 0xdc, 0xd7, 0x3c, 0x20, 0x50,
-	0xf3, 0xdf, 0x4c, 0xe9, 0x1b, 0xb6, 0x90, 0x9e, 0x6c, 0x8b, 0xaf, 0x3e, 0x8b, 0x58, 0x65, 0x33,
-	0x2d, 0xdc, 0x2c, 0x23, 0x3e, 0x3d, 0xf9, 0x8e, 0x81, 0xcd, 0x34, 0x79, 0x9f, 0xad, 0x65, 0xd0,
-	0x5b, 0x58, 0xe2, 0xba, 0x08, 0x24, 0x24, 0xa8, 0x00, 0xbc, 0x1d, 0x63, 0xc1, 0xe6, 0xb0, 0xa4,
-	0x37, 0x66, 0x73, 0x38, 0xba, 0xf9, 0x66, 0x73, 0x38, 0xa6, 0xc1, 0xd6, 0x32, 0xe8, 0x12, 0x56,
-	0x64, 0xcd, 0x2d, 0x92, 0x03, 0xf0, 0x57, 0x2b, 0xf5, 0x65, 0x92, 0x59, 0x84, 0xa3, 0xe0, 0xe2,
-	0x12, 0xe1, 0x88, 0xbf, 0x1d, 0x45, 0x38, 0x12, 0xee, 0x3f, 0x82, 0xa3, 0xa0, 0xc5, 0x8c, 0x70,
-	0xc4, 0xf7, 0xb1, 0x11, 0x8e, 0x84, 0x4e, 0x55, 0xcb, 0x20, 0x1b, 0x90, 0xd8, 0x9f, 0xa1, 0x9d,
-	0xe9, 0xf7, 0x91, 0x2d, 0xa0, 0xba, 0x1b, 0x6f, 0x14, 0xb8, 0x18, 0xc1, 0x5a, 0x44, 0x5f, 0x85,
-	0x18, 0x29, 0xc7, 0xb7, 0x71, 0xea, 0x47, 0xf7, 0xb0, 0x14, 0x45, 0x47, 0xff, 0x35, 0x26, 0x88,
-	0x8e, 0x6d, 0xbe, 0x44, 0xd1, 0x85, 0x5a, 0x24, 0x46, 0x74, 0xc1, 0x7d, 0x40, 0x10, 0x1d, 0x7f,
-	0xe7, 0x10, 0x44, 0x27, 0x5c, 0x25, 0x58, 0xd1, 0x4d, 0x71, 0x05, 0xd1, 0x09, 0xc0, 0xdb, 0x31,
-	0x16, 0xa2, 0xe8, 0x42, 0x9d, 0x8a, 0x28, 0x3a, 0x59, 0x2b, 0x24, 0x8a, 0x4e, 0xda, 0xee, 0xb0,
-	0x29, 0x1a, 0x6e, 0x35, 0x90, 0x1c, 0x20, 0x59, 0x74, 0xf2, 0x8e, 0x45, 0x70, 0x14, 0x23, 0x3a,
-	0x69, 0x4b, 0x12, 0xe1, 0x48, 0x26, 0xba, 0xbb, 0x50, 0x8f, 0xc8, 0x5d, 0xef, 0xd1, 0x27, 0x52,
-	0x1c, 0x79, 0x6f, 0xa1, 0x7e, 0x7a, 0x3f, 0x63, 0x4e, 0x86, 0xdc, 0x2d, 0x99, 0x93, 0xa1, 0xfc,
-	0x2a, 0xce, 0xc9, 0x30, 0xe2, 0xa2, 0xcd, 0xca, 0x50, 0xb8, 0xdf, 0x8a, 0x32, 0x8c, 0xba, 0x4c,
-	0x8b, 0x32, 0x8c, 0xbc, 0x2c, 0x6b, 0x99, 0xf3, 0x59, 0xf2, 0xdf, 0xea, 0xcf, 0xff, 0x0b, 0x00,
-	0x00, 0xff, 0xff, 0x16, 0x10, 0xff, 0xca, 0xbf, 0x1e, 0x00, 0x00,
+	// 1662 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x5a, 0x4d, 0x73, 0xdb, 0x36,
+	0x13, 0x16, 0x69, 0xd9, 0x72, 0xd6, 0x6f, 0x64, 0x05, 0x76, 0x1c, 0x85, 0xf9, 0x72, 0x98, 0x2f,
+	0xbf, 0xfd, 0xc8, 0x21, 0xbd, 0xf4, 0x58, 0xda, 0x62, 0x52, 0x35, 0x8a, 0xe4, 0x50, 0x92, 0x9b,
+	0x74, 0x26, 0xd5, 0x30, 0x16, 0x93, 0x51, 0x6b, 0x5b, 0x2e, 0x49, 0xbb, 0xe3, 0x99, 0x4e, 0x3b,
+	0xd3, 0x5b, 0x4f, 0xed, 0xad, 0x39, 0xf7, 0x2f, 0xf5, 0xda, 0x99, 0xfe, 0x95, 0x0e, 0x00, 0x92,
+	0x5a, 0x02, 0x20, 0xe9, 0x36, 0x74, 0x72, 0x33, 0x80, 0xe5, 0xb3, 0xcf, 0x02, 0xbb, 0x58, 0xec,
+	0xca, 0x50, 0x0f, 0x42, 0xf7, 0x60, 0xec, 0xfa, 0xe3, 0xfb, 0x87, 0xfe, 0x34, 0x9c, 0x92, 0xc5,
+	0x78, 0x6c, 0xfe, 0xad, 0xc1, 0xfc, 0x23, 0x7f, 0x7a, 0x74, 0x48, 0xea, 0xa0, 0xb7, 0x5b, 0x4d,
+	0x6d, 0x5d, 0xdb, 0xa8, 0x3a, 0x7a, 0xbb, 0x45, 0x08, 0x54, 0xbb, 0xee, 0xbe, 0xd7, 0xd4, 0xd7,
+	0xb5, 0x8d, 0x73, 0x0e, 0xfb, 0x9b, 0xac, 0xc2, 0xfc, 0xd6, 0x9e, 0x1b, 0x04, 0xcd, 0x39, 0x36,
+	0xc9, 0x07, 0x74, 0xb6, 0x1f, 0xba, 0xa1, 0xd7, 0xac, 0xf2, 0x59, 0x36, 0x20, 0xeb, 0xb0, 0xd4,
+	0xf2, 0x82, 0x5d, 0x7f, 0x72, 0x18, 0x4e, 0xa6, 0x07, 0xcd, 0x79, 0xb6, 0x86, 0xa7, 0xa8, 0xc4,
+	0x96, 0xef, 0xb9, 0xa1, 0x37, 0x1e, 0x4c, 0xf6, 0xbd, 0xe6, 0x02, 0x97, 0x40, 0x53, 0x54, 0x62,
+	0x78, 0x38, 0x4e, 0x24, 0x6a, 0x5c, 0x02, 0x4d, 0x71, 0x2d, 0x7b, 0x5e, 0x2c, 0xb1, 0x18, 0x6b,
+	0x49, 0xa6, 0xcc, 0x3f, 0x35, 0x98, 0xef, 0xb8, 0x2f, 0xbd, 0xbd, 0xd2, 0x2d, 0x5c, 0x85, 0xf9,
+	0x1d, 0x77, 0xef, 0xc8, 0x8b, 0x6c, 0xe3, 0x83, 0x77, 0x64, 0xd5, 0x1b, 0x1d, 0xaa, 0xc3, 0xc0,
+	0xf3, 0x25, 0xa3, 0x12, 0x03, 0x74, 0x6c, 0xc0, 0x1a, 0x2c, 0x58, 0xc7, 0x6e, 0xe8, 0xfa, 0x91,
+	0x5d, 0xd1, 0x88, 0x34, 0xa1, 0xd6, 0x3e, 0x38, 0x9e, 0x84, 0x9e, 0xcf, 0x4c, 0xab, 0x3a, 0xf1,
+	0x90, 0x18, 0xb0, 0xd8, 0x9d, 0xec, 0x7e, 0x7b, 0x40, 0x37, 0x88, 0xdb, 0x97, 0x8c, 0xe9, 0x1a,
+	0xd5, 0xcd, 0xd6, 0xb8, 0x7d, 0xc9, 0x98, 0xae, 0x6d, 0xbb, 0x41, 0xf0, 0xfd, 0xd4, 0x1f, 0x47,
+	0x96, 0x25, 0x63, 0x71, 0x6b, 0x16, 0x0b, 0xb7, 0xe6, 0x5c, 0xe1, 0xd6, 0x80, 0xbc, 0x35, 0xbf,
+	0x6b, 0x70, 0x81, 0x63, 0x52, 0x52, 0x8e, 0xf7, 0xdd, 0x91, 0x17, 0x84, 0xb3, 0x7d, 0xd1, 0xf0,
+	0xbe, 0x20, 0xfb, 0xe7, 0xb2, 0xed, 0xaf, 0xe6, 0xd8, 0x3f, 0x9f, 0x63, 0xff, 0x42, 0xda, 0x7e,
+	0x73, 0x08, 0x04, 0x13, 0x0b, 0x0e, 0xa7, 0x07, 0x81, 0x47, 0xee, 0xc4, 0xce, 0x45, 0x99, 0xd5,
+	0x1f, 0x2c, 0xdf, 0x4f, 0x82, 0x95, 0x4d, 0xc7, 0xde, 0xd6, 0x84, 0xda, 0x13, 0x2f, 0x08, 0xdc,
+	0xd7, 0xb1, 0xc3, 0xc6, 0x43, 0xd3, 0x82, 0x0b, 0x4f, 0x8f, 0x3c, 0xff, 0x84, 0xa2, 0x06, 0xc8,
+	0xde, 0xce, 0x64, 0x7f, 0x12, 0x46, 0xae, 0xc1, 0x07, 0xd4, 0x0f, 0x7a, 0xaf, 0x5e, 0x05, 0x5e,
+	0xc8, 0x30, 0xaa, 0x4e, 0x34, 0x32, 0x7f, 0xd5, 0x80, 0x60, 0x8c, 0x92, 0xa8, 0x51, 0x16, 0x83,
+	0x69, 0xe8, 0xee, 0x45, 0xbb, 0xcb, 0x07, 0xc4, 0x84, 0x6a, 0xcb, 0x0d, 0xdd, 0x66, 0x75, 0x7d,
+	0x6e, 0x63, 0xe9, 0x41, 0x7d, 0x86, 0xca, 0xf6, 0x85, 0xad, 0x99, 0x77, 0x61, 0x35, 0x21, 0xb4,
+	0x79, 0xd2, 0x6e, 0xc5, 0x76, 0x09, 0xfe, 0x6e, 0xfe, 0x00, 0x17, 0x05, 0xb9, 0xb2, 0xb8, 0xc7,
+	0x2c, 0x29, 0xf5, 0x2c, 0x96, 0x63, 0x30, 0x66, 0xdb, 0xb6, 0x79, 0x12, 0x39, 0x4f, 0xcc, 0x15,
+	0x79, 0x97, 0x96, 0xf6, 0xae, 0xe4, 0x74, 0x74, 0xf5, 0xe9, 0xcc, 0xa5, 0x4e, 0xe7, 0x8d, 0x06,
+	0x57, 0x94, 0x6a, 0xde, 0xff, 0x31, 0x7d, 0x8a, 0x36, 0x60, 0xf3, 0x24, 0x8e, 0x82, 0x78, 0x03,
+	0x70, 0xa0, 0x68, 0xe9, 0x40, 0x31, 0x7f, 0xc6, 0x46, 0xe1, 0x4f, 0xdf, 0xe5, 0xf9, 0xdd, 0x83,
+	0x8b, 0xfc, 0xea, 0x28, 0x72, 0xb3, 0xe7, 0xb0, 0x26, 0x0a, 0x96, 0x15, 0xbe, 0x8f, 0xe1, 0x1a,
+	0xbf, 0xe0, 0x28, 0x74, 0x7c, 0x57, 0xe4, 0x70, 0x49, 0x5d, 0x31, 0xba, 0x70, 0xc5, 0xb8, 0x70,
+	0x3d, 0x0b, 0xac, 0x44, 0xbe, 0x3b, 0x9e, 0x3f, 0x79, 0x75, 0x52, 0x12, 0xdf, 0x2c, 0xb0, 0xb2,
+	0xf8, 0xbe, 0x80, 0x5b, 0x2a, 0x15, 0xff, 0xc2, 0x57, 0x73, 0x2d, 0x78, 0x0d, 0xb7, 0xf3, 0xe1,
+	0xcb, 0xb2, 0xe3, 0x9b, 0x38, 0x7b, 0xb0, 0xd7, 0x4c, 0x4c, 0x3b, 0x7e, 0xc4, 0x68, 0xaa, 0x47,
+	0x8c, 0xae, 0x7c, 0xc4, 0xcc, 0x29, 0x1f, 0x31, 0x55, 0xf4, 0x88, 0x31, 0x77, 0x60, 0x25, 0xa5,
+	0xab, 0x2c, 0x1b, 0x7e, 0xd1, 0xe0, 0x32, 0x02, 0x7e, 0x38, 0xf5, 0x71, 0x8e, 0x5e, 0x83, 0x05,
+	0x3a, 0x4c, 0x9c, 0x27, 0x1a, 0x9d, 0xcd, 0x43, 0xcd, 0x7c, 0x01, 0x86, 0x8a, 0x4a, 0x59, 0xa6,
+	0xde, 0x8b, 0x12, 0x13, 0x43, 0xcf, 0xbb, 0x5a, 0x7e, 0x84, 0x35, 0x51, 0xb0, 0xac, 0x2b, 0xf0,
+	0x56, 0xea, 0x0a, 0x44, 0xdf, 0xf3, 0x63, 0xe5, 0x77, 0xe0, 0x67, 0x60, 0xf0, 0x2b, 0x83, 0x4d,
+	0xd2, 0xcd, 0xcd, 0x0b, 0x66, 0xc5, 0x59, 0x98, 0x5f, 0xc3, 0x15, 0x25, 0x42, 0x59, 0x5b, 0xb9,
+	0x95, 0xc2, 0x67, 0x27, 0x9d, 0x47, 0x51, 0xe9, 0xfe, 0xe6, 0x08, 0xae, 0xaa, 0x41, 0xce, 0x86,
+	0x25, 0x93, 0x2e, 0x60, 0xc9, 0xf5, 0xe9, 0xc8, 0x55, 0x05, 0x96, 0x08, 0xe4, 0x6c, 0x58, 0xb2,
+	0x48, 0x28, 0x60, 0xc9, 0x43, 0x47, 0xc7, 0xa1, 0x93, 0x66, 0x89, 0x40, 0xca, 0x62, 0xb9, 0x11,
+	0xa7, 0xdb, 0xc2, 0xe8, 0xf9, 0x0a, 0x2e, 0x49, 0x92, 0xe5, 0xed, 0xd5, 0x65, 0x6b, 0x3c, 0x66,
+	0xc0, 0x83, 0x69, 0xc1, 0x0b, 0x01, 0x5d, 0x5e, 0x3a, 0xbe, 0xbc, 0xe8, 0x35, 0xa3, 0x02, 0x29,
+	0x8b, 0xe3, 0x17, 0x70, 0xdd, 0xf1, 0xf6, 0xa7, 0xc7, 0xd1, 0x2d, 0xe6, 0x4f, 0xf7, 0x8b, 0x88,
+	0x36, 0xa1, 0xc6, 0x64, 0x13, 0xa6, 0xf1, 0xd0, 0x7c, 0x09, 0x37, 0x32, 0xb1, 0xca, 0xe2, 0x7b,
+	0x1c, 0x67, 0x31, 0xd6, 0x75, 0x28, 0x2b, 0x8b, 0x09, 0xcd, 0x86, 0xaa, 0xd4, 0x6c, 0x98, 0x65,
+	0xb4, 0x48, 0x6f, 0x59, 0xf6, 0x6c, 0x46, 0x85, 0x13, 0x83, 0xfd, 0x8f, 0xd5, 0xd7, 0x6f, 0x1a,
+	0xac, 0xa4, 0x40, 0xde, 0xff, 0xbb, 0x3e, 0xce, 0x5e, 0x8c, 0xd1, 0x69, 0xb2, 0x17, 0x12, 0x3c,
+	0xf3, 0xec, 0xc5, 0x8f, 0x50, 0xc8, 0x5e, 0x6c, 0xf2, 0xad, 0xb2, 0x97, 0x80, 0x50, 0xfa, 0x8d,
+	0xcb, 0xf0, 0xdf, 0x36, 0x7b, 0x89, 0x20, 0x67, 0xc3, 0xf2, 0x6d, 0xb3, 0x97, 0x08, 0x52, 0x16,
+	0xcb, 0x21, 0xdc, 0x44, 0x0a, 0x50, 0x7c, 0xe7, 0x71, 0x15, 0x2e, 0x07, 0x5d, 0xbe, 0x1c, 0x3c,
+	0x30, 0xf3, 0x60, 0x4b, 0xcf, 0x6a, 0x85, 0x51, 0x95, 0x64, 0xb5, 0xf2, 0xc3, 0xca, 0xb4, 0x59,
+	0x56, 0xa3, 0xb1, 0x3e, 0x98, 0x16, 0x11, 0xa1, 0x30, 0x4c, 0x66, 0x96, 0x2c, 0xa2, 0x61, 0x94,
+	0xd7, 0x24, 0x98, 0xb2, 0x58, 0x7e, 0x1e, 0xe7, 0x35, 0xaa, 0x81, 0xa6, 0xa2, 0x42, 0xaa, 0x59,
+	0x09, 0x38, 0xc9, 0x6a, 0x0a, 0xa4, 0x92, 0xd8, 0x7e, 0xf0, 0x97, 0x1e, 0x21, 0x90, 0x25, 0xa8,
+	0x0d, 0xbb, 0x8f, 0xbb, 0xbd, 0x2f, 0xbb, 0x8d, 0x0a, 0x1d, 0xf4, 0x87, 0x5b, 0x5b, 0x76, 0xbf,
+	0xdf, 0xd0, 0xe8, 0xe0, 0xa1, 0xd5, 0xee, 0x0c, 0x1d, 0xbb, 0xa1, 0x93, 0x0b, 0x70, 0xbe, 0x6f,
+	0x3b, 0x3b, 0xed, 0x2d, 0x7b, 0x64, 0x3b, 0x4e, 0xcf, 0x69, 0xcc, 0x11, 0x02, 0xf5, 0x6d, 0xcb,
+	0xb1, 0x9e, 0xf4, 0x47, 0xed, 0xee, 0x8e, 0xd5, 0x69, 0xb7, 0x1a, 0x55, 0xb2, 0x02, 0xcb, 0xed,
+	0x4e, 0xc7, 0x7e, 0x64, 0x75, 0x46, 0x8e, 0xfd, 0x74, 0x68, 0xf7, 0x07, 0x8d, 0x79, 0x2a, 0x38,
+	0xec, 0xdb, 0xce, 0xa8, 0xdb, 0x1b, 0x8c, 0xec, 0x67, 0xed, 0xfe, 0xa0, 0xb1, 0x48, 0x05, 0x3b,
+	0xd6, 0xa6, 0xdd, 0x41, 0x93, 0x0b, 0x74, 0xf2, 0x91, 0xd3, 0x1b, 0x6e, 0xa3, 0xc9, 0x1a, 0xb9,
+	0x04, 0x2b, 0xec, 0x6b, 0xab, 0xe3, 0xd8, 0x56, 0xeb, 0x39, 0x9f, 0xef, 0x37, 0xce, 0x91, 0x26,
+	0xac, 0x72, 0x08, 0x61, 0x65, 0x89, 0xae, 0x70, 0x1c, 0x61, 0xe5, 0x7f, 0x12, 0x58, 0xcb, 0xee,
+	0xd8, 0x03, 0xbb, 0x51, 0x97, 0xc1, 0xa2, 0x95, 0x65, 0x19, 0x2c, 0x5a, 0x69, 0xd0, 0x95, 0xd6,
+	0xe6, 0xa8, 0xb7, 0x6d, 0x3b, 0xd6, 0xa0, 0xdd, 0xeb, 0x8e, 0x1e, 0x5a, 0x03, 0xb6, 0x5b, 0xe7,
+	0x1f, 0xfc, 0xb1, 0x06, 0x35, 0x6b, 0x77, 0x77, 0x7a, 0x74, 0x10, 0x92, 0x36, 0xc0, 0xac, 0x89,
+	0x4a, 0xae, 0xcc, 0x8e, 0x4a, 0xea, 0xf9, 0x1a, 0x57, 0xd5, 0x8b, 0xfc, 0xd0, 0xcd, 0x0a, 0x85,
+	0x9a, 0xb5, 0xd5, 0x30, 0x94, 0xd4, 0x4e, 0xc5, 0x50, 0x72, 0x9f, 0xd4, 0xac, 0x10, 0x07, 0xce,
+	0xa7, 0xda, 0x90, 0xe4, 0xba, 0xe2, 0x03, 0xe4, 0xbd, 0xc6, 0x8d, 0xcc, 0xf5, 0x04, 0x73, 0x1c,
+	0xbd, 0x0a, 0xd2, 0x5d, 0x3f, 0x72, 0x5b, 0x45, 0x45, 0xec, 0x3d, 0x1a, 0x77, 0x0a, 0xa4, 0x12,
+	0x2d, 0x43, 0xa8, 0xa7, 0x3b, 0x5b, 0x04, 0x51, 0x53, 0x36, 0xc7, 0x8c, 0xf5, 0x6c, 0x01, 0x25,
+	0xf9, 0x59, 0x37, 0x44, 0x49, 0x5e, 0xea, 0xc5, 0x28, 0xc9, 0xcb, 0x2d, 0x15, 0xb3, 0x42, 0xf6,
+	0x61, 0x4d, 0xdd, 0xee, 0x22, 0xf7, 0xd0, 0xb3, 0x26, 0xaf, 0xbb, 0x66, 0x6c, 0x14, 0x0b, 0x62,
+	0x75, 0xea, 0x6e, 0x15, 0x56, 0x97, 0xdb, 0x1c, 0xc3, 0xea, 0xf2, 0x1b, 0x5f, 0x66, 0x85, 0xfc,
+	0x04, 0x57, 0xf3, 0x5a, 0x4b, 0xe4, 0xe3, 0x7c, 0x2c, 0x71, 0x57, 0xef, 0x9f, 0x56, 0x3c, 0x21,
+	0xd0, 0x89, 0x7f, 0xb0, 0xe1, 0x3f, 0xa0, 0x49, 0xf1, 0x84, 0x3b, 0x51, 0xc6, 0xb5, 0x8c, 0xd5,
+	0x04, 0xcd, 0x4d, 0x35, 0xb0, 0xa2, 0x86, 0x0b, 0xb9, 0xa5, 0xfc, 0x2c, 0xdd, 0x19, 0x32, 0x6e,
+	0xe7, 0x0b, 0x61, 0x67, 0x4e, 0xf7, 0x52, 0x88, 0x18, 0x67, 0x62, 0x41, 0x89, 0x9d, 0x59, 0xdd,
+	0x86, 0x31, 0x2b, 0xe4, 0x19, 0x2c, 0x0b, 0x45, 0x26, 0x91, 0x62, 0x40, 0x02, 0xbe, 0x99, 0x23,
+	0x81, 0xc3, 0x44, 0xd1, 0x3a, 0xc1, 0x61, 0x92, 0xdd, 0x9b, 0xc1, 0x61, 0x92, 0xd3, 0x7f, 0x31,
+	0x2b, 0xe4, 0x35, 0xac, 0xaa, 0x7a, 0x1f, 0x44, 0x0d, 0x20, 0x3e, 0x51, 0x8d, 0xbb, 0x45, 0x62,
+	0x19, 0x8a, 0x92, 0x07, 0x60, 0x86, 0x22, 0xf1, 0x95, 0x99, 0xa1, 0x48, 0x7a, 0x47, 0x4a, 0x8a,
+	0x92, 0x0e, 0x44, 0x86, 0x22, 0xb1, 0xcd, 0x91, 0xa1, 0x48, 0x6a, 0x64, 0x70, 0xa7, 0x95, 0xcb,
+	0x77, 0xec, 0xb4, 0x99, 0x1d, 0x02, 0xec, 0xb4, 0xd9, 0x1d, 0x00, 0xb3, 0x42, 0x0e, 0xe1, 0x52,
+	0x46, 0xd9, 0x4d, 0xd0, 0x6d, 0x91, 0x5f, 0xe5, 0x1b, 0xff, 0x3f, 0x85, 0xa4, 0x1c, 0xd7, 0xfc,
+	0xa7, 0x7f, 0x29, 0xae, 0x71, 0x6d, 0x2e, 0xc7, 0x75, 0xaa, 0x82, 0xe6, 0x68, 0xa8, 0x7a, 0x25,
+	0x62, 0xaa, 0x4c, 0x55, 0xc6, 0x18, 0x4d, 0x51, 0xf2, 0xa2, 0x10, 0x4e, 0x5e, 0x69, 0x52, 0x08,
+	0x8b, 0x2f, 0x41, 0x29, 0x84, 0xa5, 0x07, 0x1e, 0x0e, 0xe1, 0x19, 0xae, 0x14, 0xc2, 0x12, 0xf0,
+	0xcd, 0x1c, 0x09, 0x39, 0x84, 0x53, 0xf5, 0xa3, 0x1c, 0xc2, 0xaa, 0x02, 0x55, 0x0e, 0x61, 0x65,
+	0x11, 0x8a, 0x1d, 0x3e, 0x5d, 0x00, 0x12, 0x35, 0x40, 0x71, 0x08, 0xab, 0xeb, 0x48, 0x49, 0x51,
+	0x4e, 0x08, 0x2b, 0x0b, 0xc5, 0x0c, 0x45, 0xaa, 0x10, 0x3e, 0x49, 0x55, 0xee, 0x42, 0xd1, 0x45,
+	0x3e, 0x54, 0xe2, 0xa8, 0x2b, 0x3e, 0xe3, 0xa3, 0xd3, 0x09, 0x0b, 0x41, 0x2d, 0xd4, 0x2e, 0x42,
+	0x50, 0xab, 0x0b, 0x24, 0x21, 0xa8, 0x33, 0xca, 0x1f, 0x1c, 0xd4, 0x52, 0xd5, 0x21, 0x07, 0x75,
+	0x56, 0x89, 0x23, 0x07, 0x75, 0x66, 0x09, 0x63, 0x56, 0x5e, 0x2e, 0xb0, 0xff, 0xed, 0xf9, 0xe4,
+	0x9f, 0x00, 0x00, 0x00, 0xff, 0xff, 0x0e, 0x72, 0x66, 0x56, 0xed, 0x23, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -2941,7 +3426,9 @@ const _ = grpc.SupportPackageIsVersion4
 type AccountClient interface {
 	// 用户操作
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error)
+	QueryUsers(ctx context.Context, in *QueryUsersRequest, opts ...grpc.CallOption) (*QueryUsersResponse, error)
 	QueryUserByID(ctx context.Context, in *QueryUserByIDRequest, opts ...grpc.CallOption) (*QueryUserByIDResponse, error)
+	QueryUsersByInviter(ctx context.Context, in *QueryUsersByInviterRequest, opts ...grpc.CallOption) (*QueryUsersByInviterResponse, error)
 	DeleteUserByID(ctx context.Context, in *DeleteUserByIDRequest, opts ...grpc.CallOption) (*DeleteUserByIDResponse, error)
 	QueryUserByUsername(ctx context.Context, in *QueryUserByUsernameRequest, opts ...grpc.CallOption) (*QueryUserByUsernameResponse, error)
 	UpdateUserPasswordByID(ctx context.Context, in *UpdateUserPasswordByIDRequest, opts ...grpc.CallOption) (*UpdateUserPasswordByIDResponse, error)
@@ -2950,17 +3437,19 @@ type AccountClient interface {
 	// 标签操作 标签用来处理其他额外的用户数据、例如一些地址 手机 邮箱等信息
 	// 创建一个标签 然后分配给一个用户 多个用户可以共享同一个标签（共有数据）
 	CreateLabel(ctx context.Context, in *CreateLabelRequest, opts ...grpc.CallOption) (*CreateLabelResponse, error)
+	CreateLabelForUser(ctx context.Context, in *CreateLabelForUserRequest, opts ...grpc.CallOption) (*CreateLabelForUserResponse, error)
 	QueryLabelByID(ctx context.Context, in *QueryLabelByIDRequest, opts ...grpc.CallOption) (*QueryLabelByIDResponse, error)
 	DeleteLabelByID(ctx context.Context, in *DeleteLabelByIDRequest, opts ...grpc.CallOption) (*DeleteLabelByIDResponse, error)
 	UpdateLabelNameByID(ctx context.Context, in *UpdateLabelNameByIDRequest, opts ...grpc.CallOption) (*UpdateLabelNameByIDResponse, error)
 	UpdateLabelClassByID(ctx context.Context, in *UpdateLabelClassByIDRequest, opts ...grpc.CallOption) (*UpdateLabelClassByIDResponse, error)
 	UpdateLabelStateByID(ctx context.Context, in *UpdateLabelStateByIDRequest, opts ...grpc.CallOption) (*UpdateLabelStateByIDResponse, error)
 	UpdateLabelValueByID(ctx context.Context, in *UpdateLabelValueByIDRequest, opts ...grpc.CallOption) (*UpdateLabelValueByIDResponse, error)
-	// 标签关系操作
 	AddLabelToUserByID(ctx context.Context, in *AddLabelToUserByIDRequest, opts ...grpc.CallOption) (*AddLabelToUserByIDResponse, error)
 	RemoveLabelFromUserByID(ctx context.Context, in *RemoveLabelFromUserByIDRequest, opts ...grpc.CallOption) (*RemoveLabelFromUserByIDResponse, error)
 	// 组操作
+	// 同一个用户可以存在于多个组里
 	CreateGroup(ctx context.Context, in *CreateGroupRequest, opts ...grpc.CallOption) (*CreateGroupResponse, error)
+	QueryGroups(ctx context.Context, in *QueryGroupsRequest, opts ...grpc.CallOption) (*QueryGroupsResponse, error)
 	QueryGroupByID(ctx context.Context, in *QueryGroupByIDRequest, opts ...grpc.CallOption) (*QueryGroupByIDResponse, error)
 	DeleteGroupByID(ctx context.Context, in *DeleteGroupByIDRequest, opts ...grpc.CallOption) (*DeleteGroupByIDResponse, error)
 	UpdateGroupNameByID(ctx context.Context, in *UpdateGroupNameByIDRequest, opts ...grpc.CallOption) (*UpdateGroupNameByIDResponse, error)
@@ -2989,9 +3478,27 @@ func (c *accountClient) CreateUser(ctx context.Context, in *CreateUserRequest, o
 	return out, nil
 }
 
+func (c *accountClient) QueryUsers(ctx context.Context, in *QueryUsersRequest, opts ...grpc.CallOption) (*QueryUsersResponse, error) {
+	out := new(QueryUsersResponse)
+	err := c.cc.Invoke(ctx, "/standard.Account/QueryUsers", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *accountClient) QueryUserByID(ctx context.Context, in *QueryUserByIDRequest, opts ...grpc.CallOption) (*QueryUserByIDResponse, error) {
 	out := new(QueryUserByIDResponse)
 	err := c.cc.Invoke(ctx, "/standard.Account/QueryUserByID", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accountClient) QueryUsersByInviter(ctx context.Context, in *QueryUsersByInviterRequest, opts ...grpc.CallOption) (*QueryUsersByInviterResponse, error) {
+	out := new(QueryUsersByInviterResponse)
+	err := c.cc.Invoke(ctx, "/standard.Account/QueryUsersByInviter", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -3046,6 +3553,15 @@ func (c *accountClient) VerifyUserPasswordByUsername(ctx context.Context, in *Ve
 func (c *accountClient) CreateLabel(ctx context.Context, in *CreateLabelRequest, opts ...grpc.CallOption) (*CreateLabelResponse, error) {
 	out := new(CreateLabelResponse)
 	err := c.cc.Invoke(ctx, "/standard.Account/CreateLabel", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accountClient) CreateLabelForUser(ctx context.Context, in *CreateLabelForUserRequest, opts ...grpc.CallOption) (*CreateLabelForUserResponse, error) {
+	out := new(CreateLabelForUserResponse)
+	err := c.cc.Invoke(ctx, "/standard.Account/CreateLabelForUser", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -3133,6 +3649,15 @@ func (c *accountClient) CreateGroup(ctx context.Context, in *CreateGroupRequest,
 	return out, nil
 }
 
+func (c *accountClient) QueryGroups(ctx context.Context, in *QueryGroupsRequest, opts ...grpc.CallOption) (*QueryGroupsResponse, error) {
+	out := new(QueryGroupsResponse)
+	err := c.cc.Invoke(ctx, "/standard.Account/QueryGroups", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *accountClient) QueryGroupByID(ctx context.Context, in *QueryGroupByIDRequest, opts ...grpc.CallOption) (*QueryGroupByIDResponse, error) {
 	out := new(QueryGroupByIDResponse)
 	err := c.cc.Invoke(ctx, "/standard.Account/QueryGroupByID", in, out, opts...)
@@ -3209,7 +3734,9 @@ func (c *accountClient) RemoveUserFromGroupByID(ctx context.Context, in *RemoveU
 type AccountServer interface {
 	// 用户操作
 	CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error)
+	QueryUsers(context.Context, *QueryUsersRequest) (*QueryUsersResponse, error)
 	QueryUserByID(context.Context, *QueryUserByIDRequest) (*QueryUserByIDResponse, error)
+	QueryUsersByInviter(context.Context, *QueryUsersByInviterRequest) (*QueryUsersByInviterResponse, error)
 	DeleteUserByID(context.Context, *DeleteUserByIDRequest) (*DeleteUserByIDResponse, error)
 	QueryUserByUsername(context.Context, *QueryUserByUsernameRequest) (*QueryUserByUsernameResponse, error)
 	UpdateUserPasswordByID(context.Context, *UpdateUserPasswordByIDRequest) (*UpdateUserPasswordByIDResponse, error)
@@ -3218,17 +3745,19 @@ type AccountServer interface {
 	// 标签操作 标签用来处理其他额外的用户数据、例如一些地址 手机 邮箱等信息
 	// 创建一个标签 然后分配给一个用户 多个用户可以共享同一个标签（共有数据）
 	CreateLabel(context.Context, *CreateLabelRequest) (*CreateLabelResponse, error)
+	CreateLabelForUser(context.Context, *CreateLabelForUserRequest) (*CreateLabelForUserResponse, error)
 	QueryLabelByID(context.Context, *QueryLabelByIDRequest) (*QueryLabelByIDResponse, error)
 	DeleteLabelByID(context.Context, *DeleteLabelByIDRequest) (*DeleteLabelByIDResponse, error)
 	UpdateLabelNameByID(context.Context, *UpdateLabelNameByIDRequest) (*UpdateLabelNameByIDResponse, error)
 	UpdateLabelClassByID(context.Context, *UpdateLabelClassByIDRequest) (*UpdateLabelClassByIDResponse, error)
 	UpdateLabelStateByID(context.Context, *UpdateLabelStateByIDRequest) (*UpdateLabelStateByIDResponse, error)
 	UpdateLabelValueByID(context.Context, *UpdateLabelValueByIDRequest) (*UpdateLabelValueByIDResponse, error)
-	// 标签关系操作
 	AddLabelToUserByID(context.Context, *AddLabelToUserByIDRequest) (*AddLabelToUserByIDResponse, error)
 	RemoveLabelFromUserByID(context.Context, *RemoveLabelFromUserByIDRequest) (*RemoveLabelFromUserByIDResponse, error)
 	// 组操作
+	// 同一个用户可以存在于多个组里
 	CreateGroup(context.Context, *CreateGroupRequest) (*CreateGroupResponse, error)
+	QueryGroups(context.Context, *QueryGroupsRequest) (*QueryGroupsResponse, error)
 	QueryGroupByID(context.Context, *QueryGroupByIDRequest) (*QueryGroupByIDResponse, error)
 	DeleteGroupByID(context.Context, *DeleteGroupByIDRequest) (*DeleteGroupByIDResponse, error)
 	UpdateGroupNameByID(context.Context, *UpdateGroupNameByIDRequest) (*UpdateGroupNameByIDResponse, error)
@@ -3247,8 +3776,14 @@ type UnimplementedAccountServer struct {
 func (*UnimplementedAccountServer) CreateUser(ctx context.Context, req *CreateUserRequest) (*CreateUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
 }
+func (*UnimplementedAccountServer) QueryUsers(ctx context.Context, req *QueryUsersRequest) (*QueryUsersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryUsers not implemented")
+}
 func (*UnimplementedAccountServer) QueryUserByID(ctx context.Context, req *QueryUserByIDRequest) (*QueryUserByIDResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryUserByID not implemented")
+}
+func (*UnimplementedAccountServer) QueryUsersByInviter(ctx context.Context, req *QueryUsersByInviterRequest) (*QueryUsersByInviterResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryUsersByInviter not implemented")
 }
 func (*UnimplementedAccountServer) DeleteUserByID(ctx context.Context, req *DeleteUserByIDRequest) (*DeleteUserByIDResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteUserByID not implemented")
@@ -3267,6 +3802,9 @@ func (*UnimplementedAccountServer) VerifyUserPasswordByUsername(ctx context.Cont
 }
 func (*UnimplementedAccountServer) CreateLabel(ctx context.Context, req *CreateLabelRequest) (*CreateLabelResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateLabel not implemented")
+}
+func (*UnimplementedAccountServer) CreateLabelForUser(ctx context.Context, req *CreateLabelForUserRequest) (*CreateLabelForUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateLabelForUser not implemented")
 }
 func (*UnimplementedAccountServer) QueryLabelByID(ctx context.Context, req *QueryLabelByIDRequest) (*QueryLabelByIDResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryLabelByID not implemented")
@@ -3294,6 +3832,9 @@ func (*UnimplementedAccountServer) RemoveLabelFromUserByID(ctx context.Context, 
 }
 func (*UnimplementedAccountServer) CreateGroup(ctx context.Context, req *CreateGroupRequest) (*CreateGroupResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateGroup not implemented")
+}
+func (*UnimplementedAccountServer) QueryGroups(ctx context.Context, req *QueryGroupsRequest) (*QueryGroupsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryGroups not implemented")
 }
 func (*UnimplementedAccountServer) QueryGroupByID(ctx context.Context, req *QueryGroupByIDRequest) (*QueryGroupByIDResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryGroupByID not implemented")
@@ -3342,6 +3883,24 @@ func _Account_CreateUser_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Account_QueryUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryUsersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServer).QueryUsers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/standard.Account/QueryUsers",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServer).QueryUsers(ctx, req.(*QueryUsersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Account_QueryUserByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryUserByIDRequest)
 	if err := dec(in); err != nil {
@@ -3356,6 +3915,24 @@ func _Account_QueryUserByID_Handler(srv interface{}, ctx context.Context, dec fu
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AccountServer).QueryUserByID(ctx, req.(*QueryUserByIDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Account_QueryUsersByInviter_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryUsersByInviterRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServer).QueryUsersByInviter(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/standard.Account/QueryUsersByInviter",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServer).QueryUsersByInviter(ctx, req.(*QueryUsersByInviterRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -3464,6 +4041,24 @@ func _Account_CreateLabel_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AccountServer).CreateLabel(ctx, req.(*CreateLabelRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Account_CreateLabelForUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateLabelForUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServer).CreateLabelForUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/standard.Account/CreateLabelForUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServer).CreateLabelForUser(ctx, req.(*CreateLabelForUserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -3630,6 +4225,24 @@ func _Account_CreateGroup_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Account_QueryGroups_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGroupsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServer).QueryGroups(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/standard.Account/QueryGroups",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServer).QueryGroups(ctx, req.(*QueryGroupsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Account_QueryGroupByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryGroupByIDRequest)
 	if err := dec(in); err != nil {
@@ -3783,8 +4396,16 @@ var _Account_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Account_CreateUser_Handler,
 		},
 		{
+			MethodName: "QueryUsers",
+			Handler:    _Account_QueryUsers_Handler,
+		},
+		{
 			MethodName: "QueryUserByID",
 			Handler:    _Account_QueryUserByID_Handler,
+		},
+		{
+			MethodName: "QueryUsersByInviter",
+			Handler:    _Account_QueryUsersByInviter_Handler,
 		},
 		{
 			MethodName: "DeleteUserByID",
@@ -3809,6 +4430,10 @@ var _Account_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateLabel",
 			Handler:    _Account_CreateLabel_Handler,
+		},
+		{
+			MethodName: "CreateLabelForUser",
+			Handler:    _Account_CreateLabelForUser_Handler,
 		},
 		{
 			MethodName: "QueryLabelByID",
@@ -3845,6 +4470,10 @@ var _Account_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateGroup",
 			Handler:    _Account_CreateGroup_Handler,
+		},
+		{
+			MethodName: "QueryGroups",
+			Handler:    _Account_QueryGroups_Handler,
 		},
 		{
 			MethodName: "QueryGroupByID",

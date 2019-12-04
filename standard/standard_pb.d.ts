@@ -222,6 +222,66 @@ export namespace CreateUserResponse {
     }
 }
 
+export class QueryUsersRequest extends jspb.Message { 
+    getLimit(): number;
+    setLimit(value: number): void;
+
+    getOffset(): number;
+    setOffset(value: number): void;
+
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): QueryUsersRequest.AsObject;
+    static toObject(includeInstance: boolean, msg: QueryUsersRequest): QueryUsersRequest.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: QueryUsersRequest, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): QueryUsersRequest;
+    static deserializeBinaryFromReader(message: QueryUsersRequest, reader: jspb.BinaryReader): QueryUsersRequest;
+}
+
+export namespace QueryUsersRequest {
+    export type AsObject = {
+        limit: number,
+        offset: number,
+    }
+}
+
+export class QueryUsersResponse extends jspb.Message { 
+    getState(): State;
+    setState(value: State): void;
+
+    getMessage(): string;
+    setMessage(value: string): void;
+
+    getTotal(): number;
+    setTotal(value: number): void;
+
+    clearDataList(): void;
+    getDataList(): Array<User>;
+    setDataList(value: Array<User>): void;
+    addData(value?: User, index?: number): User;
+
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): QueryUsersResponse.AsObject;
+    static toObject(includeInstance: boolean, msg: QueryUsersResponse): QueryUsersResponse.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: QueryUsersResponse, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): QueryUsersResponse;
+    static deserializeBinaryFromReader(message: QueryUsersResponse, reader: jspb.BinaryReader): QueryUsersResponse;
+}
+
+export namespace QueryUsersResponse {
+    export type AsObject = {
+        state: State,
+        message: string,
+        total: number,
+        dataList: Array<User.AsObject>,
+    }
+}
+
 export class QueryUserByIDRequest extends jspb.Message { 
     getId(): number;
     setId(value: number): void;
@@ -272,6 +332,70 @@ export namespace QueryUserByIDResponse {
         state: State,
         message: string,
         data?: User.AsObject,
+    }
+}
+
+export class QueryUsersByInviterRequest extends jspb.Message { 
+    getInviter(): number;
+    setInviter(value: number): void;
+
+    getLimit(): number;
+    setLimit(value: number): void;
+
+    getOffset(): number;
+    setOffset(value: number): void;
+
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): QueryUsersByInviterRequest.AsObject;
+    static toObject(includeInstance: boolean, msg: QueryUsersByInviterRequest): QueryUsersByInviterRequest.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: QueryUsersByInviterRequest, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): QueryUsersByInviterRequest;
+    static deserializeBinaryFromReader(message: QueryUsersByInviterRequest, reader: jspb.BinaryReader): QueryUsersByInviterRequest;
+}
+
+export namespace QueryUsersByInviterRequest {
+    export type AsObject = {
+        inviter: number,
+        limit: number,
+        offset: number,
+    }
+}
+
+export class QueryUsersByInviterResponse extends jspb.Message { 
+    getState(): State;
+    setState(value: State): void;
+
+    getMessage(): string;
+    setMessage(value: string): void;
+
+    getTotal(): number;
+    setTotal(value: number): void;
+
+    clearDataList(): void;
+    getDataList(): Array<User>;
+    setDataList(value: Array<User>): void;
+    addData(value?: User, index?: number): User;
+
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): QueryUsersByInviterResponse.AsObject;
+    static toObject(includeInstance: boolean, msg: QueryUsersByInviterResponse): QueryUsersByInviterResponse.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: QueryUsersByInviterResponse, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): QueryUsersByInviterResponse;
+    static deserializeBinaryFromReader(message: QueryUsersByInviterResponse, reader: jspb.BinaryReader): QueryUsersByInviterResponse;
+}
+
+export namespace QueryUsersByInviterResponse {
+    export type AsObject = {
+        state: State,
+        message: string,
+        total: number,
+        dataList: Array<User.AsObject>,
     }
 }
 
@@ -576,6 +700,68 @@ export class CreateLabelResponse extends jspb.Message {
 }
 
 export namespace CreateLabelResponse {
+    export type AsObject = {
+        state: State,
+        message: string,
+    }
+}
+
+export class CreateLabelForUserRequest extends jspb.Message { 
+    getUserid(): number;
+    setUserid(value: number): void;
+
+    getName(): string;
+    setName(value: string): void;
+
+    getClass(): string;
+    setClass(value: string): void;
+
+    getState(): string;
+    setState(value: string): void;
+
+    getValue(): string;
+    setValue(value: string): void;
+
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): CreateLabelForUserRequest.AsObject;
+    static toObject(includeInstance: boolean, msg: CreateLabelForUserRequest): CreateLabelForUserRequest.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: CreateLabelForUserRequest, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): CreateLabelForUserRequest;
+    static deserializeBinaryFromReader(message: CreateLabelForUserRequest, reader: jspb.BinaryReader): CreateLabelForUserRequest;
+}
+
+export namespace CreateLabelForUserRequest {
+    export type AsObject = {
+        userid: number,
+        name: string,
+        pb_class: string,
+        state: string,
+        value: string,
+    }
+}
+
+export class CreateLabelForUserResponse extends jspb.Message { 
+    getState(): State;
+    setState(value: State): void;
+
+    getMessage(): string;
+    setMessage(value: string): void;
+
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): CreateLabelForUserResponse.AsObject;
+    static toObject(includeInstance: boolean, msg: CreateLabelForUserResponse): CreateLabelForUserResponse.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: CreateLabelForUserResponse, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): CreateLabelForUserResponse;
+    static deserializeBinaryFromReader(message: CreateLabelForUserResponse, reader: jspb.BinaryReader): CreateLabelForUserResponse;
+}
+
+export namespace CreateLabelForUserResponse {
     export type AsObject = {
         state: State,
         message: string,
@@ -1039,6 +1225,66 @@ export namespace CreateGroupResponse {
     }
 }
 
+export class QueryGroupsRequest extends jspb.Message { 
+    getLimit(): number;
+    setLimit(value: number): void;
+
+    getOffset(): number;
+    setOffset(value: number): void;
+
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): QueryGroupsRequest.AsObject;
+    static toObject(includeInstance: boolean, msg: QueryGroupsRequest): QueryGroupsRequest.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: QueryGroupsRequest, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): QueryGroupsRequest;
+    static deserializeBinaryFromReader(message: QueryGroupsRequest, reader: jspb.BinaryReader): QueryGroupsRequest;
+}
+
+export namespace QueryGroupsRequest {
+    export type AsObject = {
+        limit: number,
+        offset: number,
+    }
+}
+
+export class QueryGroupsResponse extends jspb.Message { 
+    getState(): State;
+    setState(value: State): void;
+
+    getMessage(): string;
+    setMessage(value: string): void;
+
+    getTotal(): number;
+    setTotal(value: number): void;
+
+    clearDataList(): void;
+    getDataList(): Array<User>;
+    setDataList(value: Array<User>): void;
+    addData(value?: User, index?: number): User;
+
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): QueryGroupsResponse.AsObject;
+    static toObject(includeInstance: boolean, msg: QueryGroupsResponse): QueryGroupsResponse.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: QueryGroupsResponse, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): QueryGroupsResponse;
+    static deserializeBinaryFromReader(message: QueryGroupsResponse, reader: jspb.BinaryReader): QueryGroupsResponse;
+}
+
+export namespace QueryGroupsResponse {
+    export type AsObject = {
+        state: State,
+        message: string,
+        total: number,
+        dataList: Array<User.AsObject>,
+    }
+}
+
 export class QueryGroupByIDRequest extends jspb.Message { 
     getId(): number;
     setId(value: number): void;
@@ -1445,12 +1691,14 @@ export enum State {
     SERVICE_ERROR = 3,
     PARAMS_INVALID = 4,
     ILLEGAL_REQUEST = 5,
+    USER_NOT_EXIST = 8,
     LABEL_NOT_EXIST = 6,
     GROUP_NOT_EXIST = 7,
-    USER_NOT_EXIST = 8,
     USER_ALREADY_EXISTS = 9,
-    USER_VERIFY_FAILURE = 10,
     LABEL_ALREADY_EXISTS = 11,
     GROUP_ALREADY_EXISTS = 12,
+    USER_ALREADY_DELETE = 14,
+    LABEL_ALREADY_DELETE = 15,
+    GROUP_ALREADY_DELETE = 16,
     DB_OPERATION_FATLURE = 13,
 }
