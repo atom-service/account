@@ -205,6 +205,12 @@ export class CreateUserResponse extends jspb.Message {
     setMessage(value: string): void;
 
 
+    hasData(): boolean;
+    clearData(): void;
+    getData(): User | undefined;
+    setData(value?: User): void;
+
+
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): CreateUserResponse.AsObject;
     static toObject(includeInstance: boolean, msg: CreateUserResponse): CreateUserResponse.AsObject;
@@ -219,6 +225,7 @@ export namespace CreateUserResponse {
     export type AsObject = {
         state: State,
         message: string,
+        data?: User.AsObject,
     }
 }
 
@@ -689,6 +696,12 @@ export class CreateLabelResponse extends jspb.Message {
     setMessage(value: string): void;
 
 
+    hasData(): boolean;
+    clearData(): void;
+    getData(): Label | undefined;
+    setData(value?: Label): void;
+
+
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): CreateLabelResponse.AsObject;
     static toObject(includeInstance: boolean, msg: CreateLabelResponse): CreateLabelResponse.AsObject;
@@ -703,6 +716,7 @@ export namespace CreateLabelResponse {
     export type AsObject = {
         state: State,
         message: string,
+        data?: Label.AsObject,
     }
 }
 
@@ -751,6 +765,12 @@ export class CreateLabelForUserResponse extends jspb.Message {
     setMessage(value: string): void;
 
 
+    hasData(): boolean;
+    clearData(): void;
+    getData(): Label | undefined;
+    setData(value?: Label): void;
+
+
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): CreateLabelForUserResponse.AsObject;
     static toObject(includeInstance: boolean, msg: CreateLabelForUserResponse): CreateLabelForUserResponse.AsObject;
@@ -765,6 +785,7 @@ export namespace CreateLabelForUserResponse {
     export type AsObject = {
         state: State,
         message: string,
+        data?: Label.AsObject,
     }
 }
 
@@ -1208,6 +1229,12 @@ export class CreateGroupResponse extends jspb.Message {
     setMessage(value: string): void;
 
 
+    hasData(): boolean;
+    clearData(): void;
+    getData(): Group | undefined;
+    setData(value?: Group): void;
+
+
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): CreateGroupResponse.AsObject;
     static toObject(includeInstance: boolean, msg: CreateGroupResponse): CreateGroupResponse.AsObject;
@@ -1222,6 +1249,7 @@ export namespace CreateGroupResponse {
     export type AsObject = {
         state: State,
         message: string,
+        data?: Group.AsObject,
     }
 }
 

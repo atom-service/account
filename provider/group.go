@@ -50,14 +50,30 @@ func (srv *Service) CreateGroup(ctx context.Context, req *standard.CreateGroupRe
 		return resp, nil
 	}
 
-	err = dao.CreateGroup(req.Name, req.Class, req.State, req.Description)
+	id, err := dao.CreateGroup(req.Name, req.Class, req.State, req.Description)
 	if err != nil {
 		resp.State = standard.State_DB_OPERATION_FATLURE
 		resp.Message = err.Error()
 		return resp, nil
 	}
 
+	// 查询数据
+	queryResult, err := srv.QueryGroupByID(ctx, &standard.QueryGroupByIDRequest{ID: uint64(id)})
+	if err != nil {
+		resp.State = standard.State_SERVICE_ERROR
+		resp.Message = err.Error()
+		return resp, nil
+	}
+
+	// 查询失败了
+	if queryResult.State != standard.State_SUCCESS {
+		resp.State = queryResult.State
+		resp.Message = queryResult.Message
+		return resp, nil
+	}
+
 	resp.State = standard.State_SUCCESS
+	resp.Data = queryResult.Data
 	resp.Message = "创建成功"
 	return resp, nil
 }

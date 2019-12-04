@@ -42,7 +42,7 @@ func createLabelTable() error {
 }
 
 // CreateLabel 创建标签
-func CreateLabel(name, class, state, value string) error {
+func CreateLabel(name, class, state, value string) (int64, error) {
 	conn := easysql.GetConn()
 
 	data := map[string]string{
@@ -52,8 +52,8 @@ func CreateLabel(name, class, state, value string) error {
 		"Value": value,
 	}
 
-	_, err := conn.Insert(labelTableName, data)
-	return err
+	id, err := conn.Insert(labelTableName, data)
+	return id, err
 }
 
 // CountLabelByID 根据 id 统计

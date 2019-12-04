@@ -77,6 +77,7 @@ message CreateUserRequest {
 message CreateUserResponse {
   State  State = 1 ;
   string Message = 2 ;
+  User Data = 3;
 }
 
 message QueryUsersRequest {
@@ -174,6 +175,7 @@ message CreateLabelRequest {
 message CreateLabelResponse {
   State  State = 1 ;
   string Message = 2 ;
+  Label Data = 3;
 }
 
 // 给指定用户创建标签
@@ -188,6 +190,7 @@ message CreateLabelForUserRequest {
 message CreateLabelForUserResponse {
   State  State = 1 ;
   string Message = 2 ;
+  Label Data = 3;
 }
 
 message QueryLabelByIDRequest {
@@ -280,6 +283,7 @@ message CreateGroupRequest {
 message CreateGroupResponse {
   State  State = 1 ;
   string Message = 2 ;
+  Group Data = 3;
 }
 
 message QueryGroupsRequest {

@@ -35,22 +35,70 @@ func (srv *Service) CreateLabel(ctx context.Context, req *standard.CreateLabelRe
 		return resp, nil
 	}
 
-	err = dao.CreateLabel(req.Name, req.Class, req.State, req.Value)
+	id, err := dao.CreateLabel(req.Name, req.Class, req.State, req.Value)
 	if err != nil {
 		resp.State = standard.State_DB_OPERATION_FATLURE
 		resp.Message = err.Error()
 		return resp, nil
 	}
 
-	resp.State = standard.State_SUCCESS
+	// 查询数据
+	queryResult, err := srv.QueryLabelByID(ctx, &standard.QueryLabelByIDRequest{ID: uint64(id)})
+	if err != nil {
+		resp.State = standard.State_SERVICE_ERROR
+		resp.Message = err.Error()
+		return resp, nil
+	}
+
+	// 查询失败了
+	if queryResult.State != standard.State_SUCCESS {
+		resp.State = queryResult.State
+		resp.Message = queryResult.Message
+		return resp, nil
+	}
+
+	resp.State = queryResult.State
+	resp.Data = queryResult.Data
 	resp.Message = "创建成功"
 	return resp, nil
 }
 
-// TODO: 待实现
+// CreateLabelForUser 给指定用户创建标签
 func (srv *Service) CreateLabelForUser(ctx context.Context, req *standard.CreateLabelForUserRequest) (resp *standard.CreateLabelForUserResponse, err error) {
 	resp = new(standard.CreateLabelForUserResponse)
-	return nil, nil
+
+	createResult, err := srv.CreateLabel(ctx, &standard.CreateLabelRequest{Name: req.Name, Class: req.Class, State: req.State, Value: req.Value})
+	if err != nil {
+		resp.State = standard.State_SERVICE_ERROR
+		resp.Message = err.Error()
+		return resp, nil
+	}
+
+	// 创建失败了
+	if createResult.State != standard.State_SUCCESS {
+		resp.State = createResult.State
+		resp.Message = createResult.Message
+		return resp, nil
+	}
+
+	addResult, err := srv.AddLabelToUserByID(ctx, &standard.AddLabelToUserByIDRequest{ID: createResult.Data.ID, UserID: req.UserID})
+	if err != nil {
+		resp.State = standard.State_SERVICE_ERROR
+		resp.Message = err.Error()
+		return resp, nil
+	}
+
+	// 添加失败了
+	if addResult.State != standard.State_SUCCESS {
+		resp.State = addResult.State
+		resp.Message = addResult.Message
+		return resp, nil
+	}
+
+	resp.State = addResult.State
+	resp.Data = createResult.Data
+	resp.Message = "创建成功"
+	return resp, nil
 }
 
 // QueryLabelByID 通过 ID 查询

@@ -175,6 +175,7 @@
 | ----- | ---- | ----- | ----------- |
 | State | [State](#standard.State) |  |  |
 | Message | [string](#string) |  |  |
+| Data | [Group](#standard.Group) |  |  |
 
 
 
@@ -210,6 +211,7 @@
 | ----- | ---- | ----- | ----------- |
 | State | [State](#standard.State) |  |  |
 | Message | [string](#string) |  |  |
+| Data | [Label](#standard.Label) |  |  |
 
 
 
@@ -244,6 +246,7 @@
 | ----- | ---- | ----- | ----------- |
 | State | [State](#standard.State) |  |  |
 | Message | [string](#string) |  |  |
+| Data | [Label](#standard.Label) |  |  |
 
 
 
@@ -279,6 +282,7 @@
 | ----- | ---- | ----- | ----------- |
 | State | [State](#standard.State) |  |  |
 | Message | [string](#string) |  |  |
+| Data | [User](#standard.User) |  |  |
 
 
 

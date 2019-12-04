@@ -112,7 +112,7 @@ func CountUserByUsername(username string) (int, error) {
 }
 
 // CreateUser 创建用户
-func CreateUser(class, nickname, username, password string, inviter uint64) error {
+func CreateUser(class, nickname, username, password string, inviter uint64) (int64, error) {
 	conn := easysql.GetConn()
 
 	cond := map[string]string{
@@ -123,11 +123,11 @@ func CreateUser(class, nickname, username, password string, inviter uint64) erro
 		"Password": crypto.MD5Encrypt(password, config.MustGet("encrypt-password")),
 	}
 
-	_, err := conn.Insert("users", cond)
+	id, err := conn.Insert("users", cond)
 	if err != nil {
-		return err
+		return id, err
 	}
-	return nil
+	return id, nil
 }
 
 // DeleteUserByID 删除用户

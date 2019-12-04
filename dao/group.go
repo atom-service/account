@@ -43,7 +43,7 @@ func createGroupTable() error {
 }
 
 // CreateGroup 创建组
-func CreateGroup(name, class, state, description string) error {
+func CreateGroup(name, class, state, description string) (int64, error) {
 	conn := easysql.GetConn()
 
 	data := map[string]string{
@@ -53,8 +53,8 @@ func CreateGroup(name, class, state, description string) error {
 		"Description": description,
 	}
 
-	_, err := conn.Insert(groupTableName, data)
-	return err
+	id, err := conn.Insert(groupTableName, data)
+	return id, err
 }
 
 // CountGroupByName 根据 name 统计
