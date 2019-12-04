@@ -53,7 +53,7 @@ install() {
 
 # 安装服务文件
 installUnitService() {
-	echo "安装 UnitService"
+  echo "安装 UnitService"
   echo "[Unit]"                                                      > $SERVICE_PATH/$SERVICE_NAME.service ;
   echo "Description=$SERVICE_NAME service"                          >> $SERVICE_PATH/$SERVICE_NAME.service ;
   echo "[Service]"                                                  >> $SERVICE_PATH/$SERVICE_NAME.service ;
