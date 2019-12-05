@@ -61,7 +61,7 @@ func CreateGroup(name, class, state, description string) (int64, error) {
 func CountGroupByName(name string) (int, error) {
 	conn := easysql.GetConn()
 
-	cond := map[string]string{"Name": name}
+	cond := map[string]string{"Name": "'" + name + "'"}
 	queryField := []string{"count(*) as count"}
 	result, err := conn.Select(groupTableName, queryField).Where(cond).QueryRow()
 	if err != nil {

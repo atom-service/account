@@ -124,7 +124,7 @@ func QueryUserByID(id uint32) (*models.User, error) {
 func QueryUserByUsername(username string) (*models.User, error) {
 	conn := easysql.GetConn()
 
-	cond := map[string]string{"Username": username}
+	cond := map[string]string{"Username": "'" + username + "'"}
 	result, err := conn.Select(userTableName, nil).Where(cond).QueryRow()
 	if err != nil {
 		return nil, err
@@ -140,7 +140,7 @@ func CountUserByUsername(username string) (int, error) {
 	conn := easysql.GetConn()
 
 	queryField := []string{"count(*) as count"}
-	cond := map[string]string{"Username": username}
+	cond := map[string]string{"Username": "'" + username + "'"}
 	result, err := conn.Select(userTableName, queryField).Where(cond).QueryRow()
 	if err != nil {
 		return 0, err
