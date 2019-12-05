@@ -9,7 +9,7 @@ import (
 // Group 用户可以属于某个组
 // 组管理员可以查看管理组内的成员
 type Group struct {
-	ID          uint64 `db:"ID"`    // ID
+	ID          uint32 `db:"ID"`    // ID
 	Name        string `db:"State"` // Name
 	Class       string `db:"Class"` // 分类
 	State       string `db:"State"`
@@ -40,7 +40,8 @@ func (srv *Group) LoadStringMap(data map[string]string) {
 	srv.DeletedTime = data["DeletedTime"]
 	srv.CreatedTime = data["CreatedTime"]
 	srv.UpdatedTime = data["UpdatedTime"]
-	srv.ID, _ = strconv.ParseUint(data["ID"], 10, 64)
+	id, _ := strconv.ParseUint(data["ID"], 10, 32)
+	srv.ID = uint32(id)
 }
 
 // OutProtoStruct OutProtoStruct

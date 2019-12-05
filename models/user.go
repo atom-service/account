@@ -8,10 +8,10 @@ import (
 
 // User 用户
 type User struct {
-	ID          uint64 `db:"ID"`
+	ID          uint32 `db:"ID"`
 	Class       string `db:"Class"`
 	Avatar      string `db:"Avatar"`
-	Inviter     uint64 `db:"Inviter"`
+	Inviter     uint32 `db:"Inviter"`
 	Nickname    string `db:"Nickname"`
 	Username    string `db:"Username"`
 	Password    string `db:"Password"`
@@ -39,8 +39,10 @@ func (srv *User) LoadStringMap(data map[string]string) {
 	srv.DeletedTime = data["DeletedTime"]
 	srv.CreatedTime = data["CreatedTime"]
 	srv.UpdatedTime = data["UpdatedTime"]
-	srv.ID, _ = strconv.ParseUint(data["ID"], 10, 64)
-	srv.Inviter, _ = strconv.ParseUint(data["Inviter"], 10, 64)
+	id, _ := strconv.ParseUint(data["ID"], 10, 64)
+	inviter, _ := strconv.ParseUint(data["Inviter"], 10, 64)
+	srv.ID = uint32(id)
+	srv.Inviter = uint32(inviter)
 }
 
 // LoadProtoStruct LoadProtoStruct

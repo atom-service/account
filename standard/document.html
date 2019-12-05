@@ -460,14 +460,14 @@
               
                 <tr>
                   <td>ID</td>
-                  <td><a href="#uint64">uint64</a></td>
+                  <td><a href="#uint32">uint32</a></td>
                   <td></td>
                   <td><p> </p></td>
                 </tr>
               
                 <tr>
                   <td>UserID</td>
-                  <td><a href="#uint64">uint64</a></td>
+                  <td><a href="#uint32">uint32</a></td>
                   <td></td>
                   <td><p>添加标签给用户 谓语是用户 </p></td>
                 </tr>
@@ -522,14 +522,14 @@
               
                 <tr>
                   <td>ID</td>
-                  <td><a href="#uint64">uint64</a></td>
+                  <td><a href="#uint32">uint32</a></td>
                   <td></td>
                   <td><p> </p></td>
                 </tr>
               
                 <tr>
                   <td>GroupID</td>
-                  <td><a href="#uint64">uint64</a></td>
+                  <td><a href="#uint32">uint32</a></td>
                   <td></td>
                   <td><p>添加用户到组 组是谓语 </p></td>
                 </tr>
@@ -667,7 +667,7 @@
               
                 <tr>
                   <td>UserID</td>
-                  <td><a href="#uint64">uint64</a></td>
+                  <td><a href="#uint32">uint32</a></td>
                   <td></td>
                   <td><p> </p></td>
                 </tr>
@@ -847,7 +847,7 @@
               
                 <tr>
                   <td>Inviter</td>
-                  <td><a href="#uint64">uint64</a></td>
+                  <td><a href="#uint32">uint32</a></td>
                   <td></td>
                   <td><p> </p></td>
                 </tr>
@@ -930,7 +930,7 @@
               
                 <tr>
                   <td>ID</td>
-                  <td><a href="#uint64">uint64</a></td>
+                  <td><a href="#uint32">uint32</a></td>
                   <td></td>
                   <td><p> </p></td>
                 </tr>
@@ -985,7 +985,7 @@
               
                 <tr>
                   <td>ID</td>
-                  <td><a href="#uint64">uint64</a></td>
+                  <td><a href="#uint32">uint32</a></td>
                   <td></td>
                   <td><p> </p></td>
                 </tr>
@@ -1040,7 +1040,7 @@
               
                 <tr>
                   <td>ID</td>
-                  <td><a href="#uint64">uint64</a></td>
+                  <td><a href="#uint32">uint32</a></td>
                   <td></td>
                   <td><p> </p></td>
                 </tr>
@@ -1095,7 +1095,7 @@
               
                 <tr>
                   <td>ID</td>
-                  <td><a href="#uint64">uint64</a></td>
+                  <td><a href="#uint32">uint32</a></td>
                   <td></td>
                   <td><p> </p></td>
                 </tr>
@@ -1168,7 +1168,7 @@
               
                 <tr>
                   <td>ID</td>
-                  <td><a href="#uint64">uint64</a></td>
+                  <td><a href="#uint32">uint32</a></td>
                   <td></td>
                   <td><p> </p></td>
                 </tr>
@@ -1241,7 +1241,7 @@
               
                 <tr>
                   <td>ID</td>
-                  <td><a href="#uint64">uint64</a></td>
+                  <td><a href="#uint32">uint32</a></td>
                   <td></td>
                   <td><p> </p></td>
                 </tr>
@@ -1302,15 +1302,15 @@
             <tbody>
               
                 <tr>
-                  <td>Limit</td>
-                  <td><a href="#uint64">uint64</a></td>
+                  <td>Page</td>
+                  <td><a href="#uint32">uint32</a></td>
                   <td></td>
                   <td><p> </p></td>
                 </tr>
               
                 <tr>
-                  <td>Offset</td>
-                  <td><a href="#uint64">uint64</a></td>
+                  <td>Limit</td>
+                  <td><a href="#uint32">uint32</a></td>
                   <td></td>
                   <td><p> </p></td>
                 </tr>
@@ -1347,15 +1347,22 @@
                 </tr>
               
                 <tr>
-                  <td>Total</td>
-                  <td><a href="#uint64">uint64</a></td>
+                  <td>totalPage</td>
+                  <td><a href="#uint32">uint32</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>currentPage</td>
+                  <td><a href="#uint32">uint32</a></td>
                   <td></td>
                   <td><p> </p></td>
                 </tr>
               
                 <tr>
                   <td>Data</td>
-                  <td><a href="#standard.User">User</a></td>
+                  <td><a href="#standard.Group">Group</a></td>
                   <td>repeated</td>
                   <td><p> </p></td>
                 </tr>
@@ -1379,7 +1386,7 @@
               
                 <tr>
                   <td>ID</td>
-                  <td><a href="#uint64">uint64</a></td>
+                  <td><a href="#uint32">uint32</a></td>
                   <td></td>
                   <td><p> </p></td>
                 </tr>
@@ -1441,7 +1448,7 @@
               
                 <tr>
                   <td>ID</td>
-                  <td><a href="#uint64">uint64</a></td>
+                  <td><a href="#uint32">uint32</a></td>
                   <td></td>
                   <td><p> </p></td>
                 </tr>
@@ -1565,21 +1572,21 @@
               
                 <tr>
                   <td>Inviter</td>
-                  <td><a href="#uint64">uint64</a></td>
+                  <td><a href="#uint32">uint32</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>Page</td>
+                  <td><a href="#uint32">uint32</a></td>
                   <td></td>
                   <td><p> </p></td>
                 </tr>
               
                 <tr>
                   <td>Limit</td>
-                  <td><a href="#uint64">uint64</a></td>
-                  <td></td>
-                  <td><p> </p></td>
-                </tr>
-              
-                <tr>
-                  <td>Offset</td>
-                  <td><a href="#uint64">uint64</a></td>
+                  <td><a href="#uint32">uint32</a></td>
                   <td></td>
                   <td><p> </p></td>
                 </tr>
@@ -1616,8 +1623,15 @@
                 </tr>
               
                 <tr>
-                  <td>Total</td>
-                  <td><a href="#uint64">uint64</a></td>
+                  <td>totalPage</td>
+                  <td><a href="#uint32">uint32</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>currentPage</td>
+                  <td><a href="#uint32">uint32</a></td>
                   <td></td>
                   <td><p> </p></td>
                 </tr>
@@ -1647,15 +1661,15 @@
             <tbody>
               
                 <tr>
-                  <td>Limit</td>
-                  <td><a href="#uint64">uint64</a></td>
+                  <td>Page</td>
+                  <td><a href="#uint32">uint32</a></td>
                   <td></td>
                   <td><p> </p></td>
                 </tr>
               
                 <tr>
-                  <td>Offset</td>
-                  <td><a href="#uint64">uint64</a></td>
+                  <td>Limit</td>
+                  <td><a href="#uint32">uint32</a></td>
                   <td></td>
                   <td><p> </p></td>
                 </tr>
@@ -1692,8 +1706,15 @@
                 </tr>
               
                 <tr>
-                  <td>Total</td>
-                  <td><a href="#uint64">uint64</a></td>
+                  <td>totalPage</td>
+                  <td><a href="#uint32">uint32</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>currentPage</td>
+                  <td><a href="#uint32">uint32</a></td>
                   <td></td>
                   <td><p> </p></td>
                 </tr>
@@ -1724,14 +1745,14 @@
               
                 <tr>
                   <td>ID</td>
-                  <td><a href="#uint64">uint64</a></td>
+                  <td><a href="#uint32">uint32</a></td>
                   <td></td>
                   <td><p> </p></td>
                 </tr>
               
                 <tr>
                   <td>LabelID</td>
-                  <td><a href="#uint64">uint64</a></td>
+                  <td><a href="#uint32">uint32</a></td>
                   <td></td>
                   <td><p>从用户身上撕下标签 所以谓语是标签 </p></td>
                 </tr>
@@ -1786,14 +1807,14 @@
               
                 <tr>
                   <td>ID</td>
-                  <td><a href="#uint64">uint64</a></td>
+                  <td><a href="#uint32">uint32</a></td>
                   <td></td>
                   <td><p> </p></td>
                 </tr>
               
                 <tr>
                   <td>UserID</td>
-                  <td><a href="#uint64">uint64</a></td>
+                  <td><a href="#uint32">uint32</a></td>
                   <td></td>
                   <td><p>从组里移除用户 用户是谓语 </p></td>
                 </tr>
@@ -1848,7 +1869,7 @@
               
                 <tr>
                   <td>ID</td>
-                  <td><a href="#uint64">uint64</a></td>
+                  <td><a href="#uint32">uint32</a></td>
                   <td></td>
                   <td><p> </p></td>
                 </tr>
@@ -1910,7 +1931,7 @@
               
                 <tr>
                   <td>ID</td>
-                  <td><a href="#uint64">uint64</a></td>
+                  <td><a href="#uint32">uint32</a></td>
                   <td></td>
                   <td><p> </p></td>
                 </tr>
@@ -1972,7 +1993,7 @@
               
                 <tr>
                   <td>ID</td>
-                  <td><a href="#uint64">uint64</a></td>
+                  <td><a href="#uint32">uint32</a></td>
                   <td></td>
                   <td><p> </p></td>
                 </tr>
@@ -2034,7 +2055,7 @@
               
                 <tr>
                   <td>ID</td>
-                  <td><a href="#uint64">uint64</a></td>
+                  <td><a href="#uint32">uint32</a></td>
                   <td></td>
                   <td><p> </p></td>
                 </tr>
@@ -2096,7 +2117,7 @@
               
                 <tr>
                   <td>ID</td>
-                  <td><a href="#uint64">uint64</a></td>
+                  <td><a href="#uint32">uint32</a></td>
                   <td></td>
                   <td><p> </p></td>
                 </tr>
@@ -2158,7 +2179,7 @@
               
                 <tr>
                   <td>ID</td>
-                  <td><a href="#uint64">uint64</a></td>
+                  <td><a href="#uint32">uint32</a></td>
                   <td></td>
                   <td><p> </p></td>
                 </tr>
@@ -2220,7 +2241,7 @@
               
                 <tr>
                   <td>ID</td>
-                  <td><a href="#uint64">uint64</a></td>
+                  <td><a href="#uint32">uint32</a></td>
                   <td></td>
                   <td><p> </p></td>
                 </tr>
@@ -2282,7 +2303,7 @@
               
                 <tr>
                   <td>ID</td>
-                  <td><a href="#uint64">uint64</a></td>
+                  <td><a href="#uint32">uint32</a></td>
                   <td></td>
                   <td><p> </p></td>
                 </tr>
@@ -2344,7 +2365,7 @@
               
                 <tr>
                   <td>ID</td>
-                  <td><a href="#uint64">uint64</a></td>
+                  <td><a href="#uint32">uint32</a></td>
                   <td></td>
                   <td><p> </p></td>
                 </tr>
@@ -2406,7 +2427,7 @@
               
                 <tr>
                   <td>ID</td>
-                  <td><a href="#uint64">uint64</a></td>
+                  <td><a href="#uint32">uint32</a></td>
                   <td></td>
                   <td><p> </p></td>
                 </tr>
@@ -2427,7 +2448,7 @@
               
                 <tr>
                   <td>Inviter</td>
-                  <td><a href="#uint64">uint64</a></td>
+                  <td><a href="#uint32">uint32</a></td>
                   <td></td>
                   <td><p> </p></td>
                 </tr>
@@ -2493,7 +2514,7 @@
               
                 <tr>
                   <td>ID</td>
-                  <td><a href="#uint64">uint64</a></td>
+                  <td><a href="#uint32">uint32</a></td>
                   <td></td>
                   <td><p> </p></td>
                 </tr>

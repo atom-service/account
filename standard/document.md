@@ -91,8 +91,8 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| ID | [uint64](#uint64) |  |  |
-| UserID | [uint64](#uint64) |  | 添加标签给用户 谓语是用户 |
+| ID | [uint32](#uint32) |  |  |
+| UserID | [uint32](#uint32) |  | 添加标签给用户 谓语是用户 |
 
 
 
@@ -123,8 +123,8 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| ID | [uint64](#uint64) |  |  |
-| GroupID | [uint64](#uint64) |  | 添加用户到组 组是谓语 |
+| ID | [uint32](#uint32) |  |  |
+| GroupID | [uint32](#uint32) |  | 添加用户到组 组是谓语 |
 
 
 
@@ -190,7 +190,7 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| UserID | [uint64](#uint64) |  |  |
+| UserID | [uint32](#uint32) |  |  |
 | Name | [string](#string) |  |  |
 | Class | [string](#string) |  |  |
 | State | [string](#string) |  |  |
@@ -262,7 +262,7 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | Class | [string](#string) |  |  |
-| Inviter | [uint64](#uint64) |  |  |
+| Inviter | [uint32](#uint32) |  |  |
 | Nickname | [string](#string) |  |  |
 | Username | [string](#string) |  |  |
 | Password | [string](#string) |  |  |
@@ -297,7 +297,7 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| ID | [uint64](#uint64) |  |  |
+| ID | [uint32](#uint32) |  |  |
 
 
 
@@ -328,7 +328,7 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| ID | [uint64](#uint64) |  |  |
+| ID | [uint32](#uint32) |  |  |
 
 
 
@@ -359,7 +359,7 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| ID | [uint64](#uint64) |  |  |
+| ID | [uint32](#uint32) |  |  |
 
 
 
@@ -390,7 +390,7 @@ Group 组
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| ID | [uint64](#uint64) |  |  |
+| ID | [uint32](#uint32) |  |  |
 | Name | [string](#string) |  |  |
 | Class | [string](#string) |  |  |
 | State | [string](#string) |  |  |
@@ -412,7 +412,7 @@ Label 标签
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| ID | [uint64](#uint64) |  |  |
+| ID | [uint32](#uint32) |  |  |
 | Name | [string](#string) |  |  |
 | Class | [string](#string) |  |  |
 | State | [string](#string) |  |  |
@@ -434,7 +434,7 @@ Label 标签
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| ID | [uint64](#uint64) |  |  |
+| ID | [uint32](#uint32) |  |  |
 
 
 
@@ -466,8 +466,8 @@ Label 标签
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| Limit | [uint64](#uint64) |  |  |
-| Offset | [uint64](#uint64) |  |  |
+| Page | [uint32](#uint32) |  |  |
+| Limit | [uint32](#uint32) |  |  |
 
 
 
@@ -484,8 +484,9 @@ Label 标签
 | ----- | ---- | ----- | ----------- |
 | State | [State](#standard.State) |  |  |
 | Message | [string](#string) |  |  |
-| Total | [uint64](#uint64) |  |  |
-| Data | [User](#standard.User) | repeated |  |
+| totalPage | [uint32](#uint32) |  |  |
+| currentPage | [uint32](#uint32) |  |  |
+| Data | [Group](#standard.Group) | repeated |  |
 
 
 
@@ -500,7 +501,7 @@ Label 标签
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| ID | [uint64](#uint64) |  |  |
+| ID | [uint32](#uint32) |  |  |
 
 
 
@@ -532,7 +533,7 @@ Label 标签
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| ID | [uint64](#uint64) |  |  |
+| ID | [uint32](#uint32) |  |  |
 
 
 
@@ -596,9 +597,9 @@ Label 标签
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| Inviter | [uint64](#uint64) |  |  |
-| Limit | [uint64](#uint64) |  |  |
-| Offset | [uint64](#uint64) |  |  |
+| Inviter | [uint32](#uint32) |  |  |
+| Page | [uint32](#uint32) |  |  |
+| Limit | [uint32](#uint32) |  |  |
 
 
 
@@ -615,7 +616,8 @@ Label 标签
 | ----- | ---- | ----- | ----------- |
 | State | [State](#standard.State) |  |  |
 | Message | [string](#string) |  |  |
-| Total | [uint64](#uint64) |  |  |
+| totalPage | [uint32](#uint32) |  |  |
+| currentPage | [uint32](#uint32) |  |  |
 | Data | [User](#standard.User) | repeated |  |
 
 
@@ -631,8 +633,8 @@ Label 标签
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| Limit | [uint64](#uint64) |  |  |
-| Offset | [uint64](#uint64) |  |  |
+| Page | [uint32](#uint32) |  |  |
+| Limit | [uint32](#uint32) |  |  |
 
 
 
@@ -649,7 +651,8 @@ Label 标签
 | ----- | ---- | ----- | ----------- |
 | State | [State](#standard.State) |  |  |
 | Message | [string](#string) |  |  |
-| Total | [uint64](#uint64) |  |  |
+| totalPage | [uint32](#uint32) |  |  |
+| currentPage | [uint32](#uint32) |  |  |
 | Data | [User](#standard.User) | repeated |  |
 
 
@@ -665,8 +668,8 @@ Label 标签
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| ID | [uint64](#uint64) |  |  |
-| LabelID | [uint64](#uint64) |  | 从用户身上撕下标签 所以谓语是标签 |
+| ID | [uint32](#uint32) |  |  |
+| LabelID | [uint32](#uint32) |  | 从用户身上撕下标签 所以谓语是标签 |
 
 
 
@@ -697,8 +700,8 @@ Label 标签
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| ID | [uint64](#uint64) |  |  |
-| UserID | [uint64](#uint64) |  | 从组里移除用户 用户是谓语 |
+| ID | [uint32](#uint32) |  |  |
+| UserID | [uint32](#uint32) |  | 从组里移除用户 用户是谓语 |
 
 
 
@@ -729,7 +732,7 @@ Label 标签
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| ID | [uint64](#uint64) |  |  |
+| ID | [uint32](#uint32) |  |  |
 | Class | [string](#string) |  |  |
 
 
@@ -761,7 +764,7 @@ Label 标签
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| ID | [uint64](#uint64) |  |  |
+| ID | [uint32](#uint32) |  |  |
 | Description | [string](#string) |  |  |
 
 
@@ -793,7 +796,7 @@ Label 标签
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| ID | [uint64](#uint64) |  |  |
+| ID | [uint32](#uint32) |  |  |
 | Name | [string](#string) |  |  |
 
 
@@ -825,7 +828,7 @@ Label 标签
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| ID | [uint64](#uint64) |  |  |
+| ID | [uint32](#uint32) |  |  |
 | State | [string](#string) |  |  |
 
 
@@ -857,7 +860,7 @@ Label 标签
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| ID | [uint64](#uint64) |  |  |
+| ID | [uint32](#uint32) |  |  |
 | Class | [string](#string) |  |  |
 
 
@@ -889,7 +892,7 @@ Label 标签
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| ID | [uint64](#uint64) |  |  |
+| ID | [uint32](#uint32) |  |  |
 | Name | [string](#string) |  |  |
 
 
@@ -921,7 +924,7 @@ Label 标签
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| ID | [uint64](#uint64) |  |  |
+| ID | [uint32](#uint32) |  |  |
 | State | [string](#string) |  |  |
 
 
@@ -953,7 +956,7 @@ Label 标签
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| ID | [uint64](#uint64) |  |  |
+| ID | [uint32](#uint32) |  |  |
 | Value | [string](#string) |  |  |
 
 
@@ -985,7 +988,7 @@ Label 标签
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| ID | [uint64](#uint64) |  |  |
+| ID | [uint32](#uint32) |  |  |
 | Password | [string](#string) |  |  |
 
 
@@ -1017,10 +1020,10 @@ User 用户
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| ID | [uint64](#uint64) |  |  |
+| ID | [uint32](#uint32) |  |  |
 | Class | [string](#string) |  |  |
 | Avatar | [string](#string) |  |  |
-| Inviter | [uint64](#uint64) |  |  |
+| Inviter | [uint32](#uint32) |  |  |
 | Nickname | [string](#string) |  |  |
 | Username | [string](#string) |  |  |
 | Password | [string](#string) |  |  |
@@ -1041,7 +1044,7 @@ User 用户
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| ID | [uint64](#uint64) |  |  |
+| ID | [uint32](#uint32) |  |  |
 | Password | [string](#string) |  |  |
 
 

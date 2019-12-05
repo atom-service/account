@@ -57,10 +57,10 @@ func CreateLabel(name, class, state, value string) (int64, error) {
 }
 
 // CountLabelByID 根据 id 统计
-func CountLabelByID(id uint64) (int, error) {
+func CountLabelByID(id uint32) (int, error) {
 	conn := easysql.GetConn()
 
-	idstr := strconv.FormatUint(id, 10)
+	idstr := strconv.FormatUint(uint64(id), 10)
 	cond := map[string]string{"ID": idstr}
 	queryField := []string{"count(*) as count"}
 	result, err := conn.Select(labelTableName, queryField).Where(cond).QueryRow()
@@ -74,11 +74,31 @@ func CountLabelByID(id uint64) (int, error) {
 	return count, nil
 }
 
+// QueryLabels 查询标签
+func QueryLabels(page, limit int) (totalPage, currentPage int, labels []*models.Label, err error) {
+	conn := easysql.GetConn()
+	result, err := conn.Select(labelTableName, nil).Pagination(page, limit)
+	if err != nil {
+		return 0, 0, nil, err
+	}
+
+	labels = []*models.Label{}
+	totalPage = result["totalPage"].(int)
+	currentPage = result["currentPage"].(int)
+	for _, mapData := range result["rows"].([]interface{}) {
+		label := new(models.Label)
+		label.LoadStringMap(mapData.(map[string]string))
+		labels = append(labels, label)
+	}
+
+	return totalPage, currentPage, labels, err
+}
+
 // QueryLabelByID 根据 id 查询
-func QueryLabelByID(id uint64) (*models.Label, error) {
+func QueryLabelByID(id uint32) (*models.Label, error) {
 	conn := easysql.GetConn()
 
-	idstr := strconv.FormatUint(id, 10)
+	idstr := strconv.FormatUint(uint64(id), 10)
 	cond := map[string]string{"ID": idstr}
 	result, err := conn.Select(labelTableName, nil).Where(cond).QueryRow()
 	if err != nil {
@@ -91,36 +111,36 @@ func QueryLabelByID(id uint64) (*models.Label, error) {
 }
 
 // DeleteLabelByID 删除标签
-func DeleteLabelByID(id uint64) error {
+func DeleteLabelByID(id uint32) error {
 	nowTime := time.Now().Format("2006-01-02 15:04:05")
 	return updataLabelFieldByID(id, map[string]string{"DeletedTime": nowTime})
 }
 
 // UpdateLabelNameByID 更新标签类型
-func UpdateLabelNameByID(id uint64, name string) error {
+func UpdateLabelNameByID(id uint32, name string) error {
 	return updataLabelFieldByID(id, map[string]string{"Name": name})
 }
 
 // UpdateLabelClassByID 更新标签类型
-func UpdateLabelClassByID(id uint64, class string) error {
+func UpdateLabelClassByID(id uint32, class string) error {
 	return updataLabelFieldByID(id, map[string]string{"Class": class})
 }
 
 // UpdateLabelStateByID 更新标签状态
-func UpdateLabelStateByID(id uint64, class string) error {
+func UpdateLabelStateByID(id uint32, class string) error {
 	return updataLabelFieldByID(id, map[string]string{"State": class})
 }
 
 // UpdateLabelValueByID 更新标签值
-func UpdateLabelValueByID(id uint64, class string) error {
+func UpdateLabelValueByID(id uint32, class string) error {
 	return updataLabelFieldByID(id, map[string]string{"Value": class})
 }
 
 // 根据 ID 更新标签
-func updataLabelFieldByID(id uint64, field map[string]string) error {
+func updataLabelFieldByID(id uint32, field map[string]string) error {
 	conn := easysql.GetConn()
 
-	cond := map[string]string{"ID": strconv.FormatUint(id, 10)}
+	cond := map[string]string{"ID": strconv.FormatUint(uint64(id), 10)}
 	_, err := conn.Where(cond).Update(labelTableName, field)
 	return err
 }
@@ -153,12 +173,12 @@ func createLabelMappingTable() error {
 }
 
 // RemoveLabelFromUserByID 从用户身上移除标签
-func RemoveLabelFromUserByID(label, user uint64) error {
+func RemoveLabelFromUserByID(label, user uint32) error {
 	conn := easysql.GetConn()
 
 	cond := map[string]string{
-		"Owner": strconv.FormatUint(user, 10),
-		"label": strconv.FormatUint(label, 10),
+		"Owner": strconv.FormatUint(uint64(user), 10),
+		"label": strconv.FormatUint(uint64(label), 10),
 	}
 
 	nowTime := time.Now().Format("2006-01-02 15:04:05")
@@ -167,12 +187,12 @@ func RemoveLabelFromUserByID(label, user uint64) error {
 }
 
 // AddLabelToUserByID 添加标签给用户
-func AddLabelToUserByID(label, user uint64) error {
+func AddLabelToUserByID(label, user uint32) error {
 	conn := easysql.GetConn()
 
 	data := map[string]string{
-		"Owner": strconv.FormatUint(user, 10),
-		"label": strconv.FormatUint(label, 10),
+		"Owner": strconv.FormatUint(uint64(user), 10),
+		"label": strconv.FormatUint(uint64(label), 10),
 	}
 
 	_, err := conn.Insert(labelMappingUserTableName, data)
@@ -180,12 +200,12 @@ func AddLabelToUserByID(label, user uint64) error {
 }
 
 // IsAlreadyOwnLabel 是否已存在关联
-func IsAlreadyOwnLabel(label, user uint64) (bool, error) {
+func IsAlreadyOwnLabel(label, user uint32) (bool, error) {
 	conn := easysql.GetConn()
 
 	cond := map[string]string{
-		"Owner": strconv.FormatUint(user, 10),
-		"label": strconv.FormatUint(label, 10),
+		"Owner": strconv.FormatUint(uint64(user), 10),
+		"label": strconv.FormatUint(uint64(label), 10),
 	}
 	queryField := []string{"count(*) as count"}
 	result, err := conn.Select(labelMappingUserTableName, queryField).Where(cond).QueryRow()

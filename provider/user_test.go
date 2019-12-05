@@ -69,6 +69,60 @@ func TestService_CreateUser(t *testing.T) {
 	}
 }
 
+func TestService_QueryUsers(t *testing.T) {
+	srv := NewService()
+	tests := []struct {
+		name            string
+		args            *standard.QueryUsersRequest
+		wantState       standard.State
+		wantDataSize    uint32
+		wantCurrentPage uint32
+		wantTotalPage   uint32
+		wantErr         bool
+	}{
+		{"正常查询", &standard.QueryUsersRequest{Page: 1, Limit: 90},
+			standard.State_SUCCESS, 3, 1, 1, false},
+		{"只查一条", &standard.QueryUsersRequest{Page: 1, Limit: 1},
+			standard.State_SUCCESS, 1, 1, 3, false},
+		{"第二页", &standard.QueryUsersRequest{Page: 1, Limit: 2},
+			standard.State_SUCCESS, 2, 1, 2, false},
+		{"空的 ID", &standard.QueryUsersRequest{Page: 0, Limit: 0},
+			standard.State_PARAMS_INVALID, 0, 0, 0, false},
+		{"不存在的 ID", &standard.QueryUsersRequest{},
+			standard.State_PARAMS_INVALID, 0, 0, 0, false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotResp, err := srv.QueryUsers(context.Background(), tt.args)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Service.QueryUsers() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+
+			if gotResp.State.String() != tt.wantState.String() {
+				t.Errorf("Service.QueryUsers() = %v, want %v", gotResp, tt.wantState)
+				return
+			}
+
+			if tt.wantState == standard.State_SUCCESS {
+				if gotResp.TotalPage != tt.wantTotalPage {
+					t.Errorf("Service.QueryUsers() = %v, want %d", gotResp, tt.wantTotalPage)
+					return
+				}
+				if uint32(len(gotResp.Data)) != tt.wantDataSize {
+					t.Errorf("Service.QueryUsers() = %v, want %d", gotResp, tt.wantDataSize)
+					return
+				}
+				if gotResp.CurrentPage != tt.wantCurrentPage {
+					t.Errorf("Service.QueryUsers() = %v, want %d", gotResp, tt.wantCurrentPage)
+					return
+				}
+			}
+		})
+	}
+}
+
 func TestService_QueryUserByID(t *testing.T) {
 	srv := NewService()
 	tests := []struct {

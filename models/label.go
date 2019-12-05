@@ -8,7 +8,7 @@ import (
 
 // Label 标签
 type Label struct {
-	ID          uint64 `db:"ID"`
+	ID          uint32 `db:"ID"`
 	Name        string `db:"Name"`
 	Class       string `db:"Class"`
 	State       string `db:"State"`
@@ -39,7 +39,8 @@ func (srv *Label) LoadStringMap(data map[string]string) {
 	srv.DeletedTime = data["DeletedTime"]
 	srv.CreatedTime = data["CreatedTime"]
 	srv.UpdatedTime = data["UpdatedTime"]
-	srv.ID, _ = strconv.ParseUint(data["ID"], 10, 64)
+	id, _ := strconv.ParseUint(data["ID"], 10, 32)
+	srv.ID = uint32(id)
 }
 
 // OutProtoStruct OutProtoStruct

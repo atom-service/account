@@ -61,7 +61,7 @@ func (srv *Service) CreateUser(ctx context.Context, req *standard.CreateUserRequ
 	}
 
 	// 查询数据
-	queryResult, err := srv.QueryUserByID(ctx, &standard.QueryUserByIDRequest{ID: uint64(id)})
+	queryResult, err := srv.QueryUserByID(ctx, &standard.QueryUserByIDRequest{ID: uint32(id)})
 	if err != nil {
 		resp.State = standard.State_SERVICE_ERROR
 		resp.Message = err.Error()
@@ -117,16 +117,64 @@ func (srv *Service) QueryUserByID(ctx context.Context, req *standard.QueryUserBy
 	return resp, nil
 }
 
-// TODO:
+// QueryUsers 查询用户
 func (srv *Service) QueryUsers(ctx context.Context, req *standard.QueryUsersRequest) (resp *standard.QueryUsersResponse, err error) {
 	resp = new(standard.QueryUsersResponse)
-	return nil, nil
+
+	if req.Page == 0 || req.Limit == 0 {
+		resp.State = standard.State_PARAMS_INVALID
+		resp.Message = "无效的参数"
+		return resp, nil
+	}
+
+	totalPage, currentPage, users, err := dao.QueryUsers(int(req.Page), int(req.Limit))
+	if err != nil {
+		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.Message = err.Error()
+		return resp, nil
+	}
+
+	data := []*standard.User{}
+	for _, user := range users {
+		data = append(data, user.OutProtoStruct())
+	}
+
+	resp.State = standard.State_SUCCESS
+	resp.CurrentPage = uint32(currentPage)
+	resp.TotalPage = uint32(totalPage)
+	resp.Message = "查询成功"
+	resp.Data = data
+	return resp, nil
 }
 
-// TODO:
+// QueryUsersByInviter 根据邀请码查找用户
 func (srv *Service) QueryUsersByInviter(ctx context.Context, req *standard.QueryUsersByInviterRequest) (resp *standard.QueryUsersByInviterResponse, err error) {
 	resp = new(standard.QueryUsersByInviterResponse)
-	return nil, nil
+	if req.Inviter == 0 {
+		resp.State = standard.State_PARAMS_INVALID
+		resp.Message = "无效的 Inviter"
+		return resp, nil
+	}
+
+	totalPage, currentPage, users, err := dao.QueryUsersByInviter(req.Inviter, int(req.Page), int(req.Limit))
+	if err != nil {
+		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.Message = err.Error()
+		return resp, nil
+	}
+
+	data := []*standard.User{}
+	for _, user := range users {
+		data = append(data, user.OutProtoStruct())
+	}
+
+	resp.State = standard.State_SUCCESS
+	resp.CurrentPage = uint32(currentPage)
+	resp.TotalPage = uint32(totalPage)
+	resp.Message = "查询成功"
+	resp.Data = data
+
+	return resp, nil
 }
 
 // QueryUserByUsername 通过 用户名 查询用户

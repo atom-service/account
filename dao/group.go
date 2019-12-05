@@ -75,10 +75,10 @@ func CountGroupByName(name string) (int, error) {
 }
 
 // CountGroupByID 根据 id 统计
-func CountGroupByID(id uint64) (int, error) {
+func CountGroupByID(id uint32) (int, error) {
 	conn := easysql.GetConn()
 
-	idstr := strconv.FormatUint(id, 10)
+	idstr := strconv.FormatUint(uint64(id), 10)
 	cond := map[string]string{"ID": idstr}
 	queryField := []string{"count(*) as count"}
 	result, err := conn.Select(groupTableName, queryField).Where(cond).QueryRow()
@@ -92,11 +92,31 @@ func CountGroupByID(id uint64) (int, error) {
 	return count, nil
 }
 
+// QueryGroups 查询组
+func QueryGroups(page, limit int) (totalPage, currentPage int, groups []*models.Group, err error) {
+	conn := easysql.GetConn()
+	result, err := conn.Select(groupTableName, nil).Pagination(page, limit)
+	if err != nil {
+		return 0, 0, nil, err
+	}
+
+	groups = []*models.Group{}
+	totalPage = result["totalPage"].(int)
+	currentPage = result["currentPage"].(int)
+	for _, mapData := range result["rows"].([]interface{}) {
+		group := new(models.Group)
+		group.LoadStringMap(mapData.(map[string]string))
+		groups = append(groups, group)
+	}
+
+	return totalPage, currentPage, groups, err
+}
+
 // QueryGroupByID 根据 id 查询
-func QueryGroupByID(id uint64) (*models.Group, error) {
+func QueryGroupByID(id uint32) (*models.Group, error) {
 	conn := easysql.GetConn()
 
-	idstr := strconv.FormatUint(id, 10)
+	idstr := strconv.FormatUint(uint64(id), 10)
 	cond := map[string]string{"ID": idstr}
 	result, err := conn.Select(groupTableName, nil).Where(cond).QueryRow()
 	if err != nil {
@@ -109,36 +129,36 @@ func QueryGroupByID(id uint64) (*models.Group, error) {
 }
 
 // DeleteGroupByID 删除标签
-func DeleteGroupByID(id uint64) error {
+func DeleteGroupByID(id uint32) error {
 	nowTime := time.Now().Format("2006-01-02 15:04:05")
 	return updataGroupFieldByID(id, map[string]string{"DeletedTime": nowTime})
 }
 
 // UpdateGroupNameByID 更新标签类型
-func UpdateGroupNameByID(id uint64, name string) error {
+func UpdateGroupNameByID(id uint32, name string) error {
 	return updataGroupFieldByID(id, map[string]string{"Name": name})
 }
 
 // UpdateGroupClassByID 更新标签状态
-func UpdateGroupClassByID(id uint64, class string) error {
+func UpdateGroupClassByID(id uint32, class string) error {
 	return updataGroupFieldByID(id, map[string]string{"Class": class})
 }
 
 // UpdateGroupStateByID 更新标签值
-func UpdateGroupStateByID(id uint64, class string) error {
+func UpdateGroupStateByID(id uint32, class string) error {
 	return updataGroupFieldByID(id, map[string]string{"State": class})
 }
 
 // UpdateGroupDescriptionByID 更新标签值
-func UpdateGroupDescriptionByID(id uint64, description string) error {
+func UpdateGroupDescriptionByID(id uint32, description string) error {
 	return updataGroupFieldByID(id, map[string]string{"Description": description})
 }
 
 // 根据 ID 更新标签
-func updataGroupFieldByID(id uint64, field map[string]string) error {
+func updataGroupFieldByID(id uint32, field map[string]string) error {
 	conn := easysql.GetConn()
 
-	cond := map[string]string{"ID": strconv.FormatUint(id, 10)}
+	cond := map[string]string{"ID": strconv.FormatUint(uint64(id), 10)}
 	_, err := conn.Where(cond).Update(groupTableName, field)
 	return err
 }
@@ -170,12 +190,12 @@ func createGroupMappingTable() error {
 }
 
 // RemoveUserFromGroupByID 从组里移除用户
-func RemoveUserFromGroupByID(group, user uint64) error {
+func RemoveUserFromGroupByID(group, user uint32) error {
 	conn := easysql.GetConn()
 
 	cond := map[string]string{
-		"Owner": strconv.FormatUint(user, 10),
-		"Group": strconv.FormatUint(group, 10),
+		"Owner": strconv.FormatUint(uint64(user), 10),
+		"Group": strconv.FormatUint(uint64(group), 10),
 	}
 
 	nowTime := time.Now().Format("2006-01-02 15:04:05")
@@ -184,12 +204,12 @@ func RemoveUserFromGroupByID(group, user uint64) error {
 }
 
 // AddUserToGroupByID 添加用户进组
-func AddUserToGroupByID(group, user uint64) error {
+func AddUserToGroupByID(group, user uint32) error {
 	conn := easysql.GetConn()
 
 	data := map[string]string{
-		"Owner": strconv.FormatUint(user, 10),
-		"Group": strconv.FormatUint(group, 10),
+		"Owner": strconv.FormatUint(uint64(user), 10),
+		"Group": strconv.FormatUint(uint64(group), 10),
 	}
 
 	_, err := conn.Insert(groupMappingUserTableName, data)
@@ -197,12 +217,12 @@ func AddUserToGroupByID(group, user uint64) error {
 }
 
 // IsAlreadyInGroup 是否已存在关联
-func IsAlreadyInGroup(group, user uint64) (bool, error) {
+func IsAlreadyInGroup(group, user uint32) (bool, error) {
 	conn := easysql.GetConn()
 
 	cond := map[string]string{
-		"Owner": strconv.FormatUint(user, 10),
-		"Group": strconv.FormatUint(group, 10),
+		"Owner": strconv.FormatUint(uint64(user), 10),
+		"Group": strconv.FormatUint(uint64(group), 10),
 	}
 	queryField := []string{"count(*) as count"}
 	result, err := conn.Select(groupMappingUserTableName, queryField).Where(cond).QueryRow()

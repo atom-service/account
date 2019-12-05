@@ -58,7 +58,7 @@ func (srv *Service) CreateGroup(ctx context.Context, req *standard.CreateGroupRe
 	}
 
 	// 查询数据
-	queryResult, err := srv.QueryGroupByID(ctx, &standard.QueryGroupByIDRequest{ID: uint64(id)})
+	queryResult, err := srv.QueryGroupByID(ctx, &standard.QueryGroupByIDRequest{ID: uint32(id)})
 	if err != nil {
 		resp.State = standard.State_SERVICE_ERROR
 		resp.Message = err.Error()
@@ -78,10 +78,34 @@ func (srv *Service) CreateGroup(ctx context.Context, req *standard.CreateGroupRe
 	return resp, nil
 }
 
-// TODO: 待实现
+// QueryGroups 查询组
 func (srv *Service) QueryGroups(ctx context.Context, req *standard.QueryGroupsRequest) (resp *standard.QueryGroupsResponse, err error) {
 	resp = new(standard.QueryGroupsResponse)
-	return nil, nil
+
+	if req.Page == 0 || req.Limit == 0 {
+		resp.State = standard.State_PARAMS_INVALID
+		resp.Message = "无效的参数"
+		return resp, nil
+	}
+
+	totalPage, currentPage, groups, err := dao.QueryGroups(int(req.Page), int(req.Limit))
+	if err != nil {
+		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.Message = err.Error()
+		return resp, nil
+	}
+
+	data := []*standard.Group{}
+	for _, group := range groups {
+		data = append(data, group.OutProtoStruct())
+	}
+
+	resp.State = standard.State_SUCCESS
+	resp.CurrentPage = uint32(currentPage)
+	resp.TotalPage = uint32(totalPage)
+	resp.Message = "查询成功"
+	resp.Data = data
+	return resp, nil
 }
 
 // QueryGroupByID 通过 ID 查询组信息

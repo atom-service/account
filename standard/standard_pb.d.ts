@@ -230,11 +230,11 @@ export namespace CreateUserResponse {
 }
 
 export class QueryUsersRequest extends jspb.Message { 
+    getPage(): number;
+    setPage(value: number): void;
+
     getLimit(): number;
     setLimit(value: number): void;
-
-    getOffset(): number;
-    setOffset(value: number): void;
 
 
     serializeBinary(): Uint8Array;
@@ -249,8 +249,8 @@ export class QueryUsersRequest extends jspb.Message {
 
 export namespace QueryUsersRequest {
     export type AsObject = {
+        page: number,
         limit: number,
-        offset: number,
     }
 }
 
@@ -261,8 +261,11 @@ export class QueryUsersResponse extends jspb.Message {
     getMessage(): string;
     setMessage(value: string): void;
 
-    getTotal(): number;
-    setTotal(value: number): void;
+    getTotalpage(): number;
+    setTotalpage(value: number): void;
+
+    getCurrentpage(): number;
+    setCurrentpage(value: number): void;
 
     clearDataList(): void;
     getDataList(): Array<User>;
@@ -284,7 +287,8 @@ export namespace QueryUsersResponse {
     export type AsObject = {
         state: State,
         message: string,
-        total: number,
+        totalpage: number,
+        currentpage: number,
         dataList: Array<User.AsObject>,
     }
 }
@@ -346,11 +350,11 @@ export class QueryUsersByInviterRequest extends jspb.Message {
     getInviter(): number;
     setInviter(value: number): void;
 
+    getPage(): number;
+    setPage(value: number): void;
+
     getLimit(): number;
     setLimit(value: number): void;
-
-    getOffset(): number;
-    setOffset(value: number): void;
 
 
     serializeBinary(): Uint8Array;
@@ -366,8 +370,8 @@ export class QueryUsersByInviterRequest extends jspb.Message {
 export namespace QueryUsersByInviterRequest {
     export type AsObject = {
         inviter: number,
+        page: number,
         limit: number,
-        offset: number,
     }
 }
 
@@ -378,8 +382,11 @@ export class QueryUsersByInviterResponse extends jspb.Message {
     getMessage(): string;
     setMessage(value: string): void;
 
-    getTotal(): number;
-    setTotal(value: number): void;
+    getTotalpage(): number;
+    setTotalpage(value: number): void;
+
+    getCurrentpage(): number;
+    setCurrentpage(value: number): void;
 
     clearDataList(): void;
     getDataList(): Array<User>;
@@ -401,7 +408,8 @@ export namespace QueryUsersByInviterResponse {
     export type AsObject = {
         state: State,
         message: string,
-        total: number,
+        totalpage: number,
+        currentpage: number,
         dataList: Array<User.AsObject>,
     }
 }
@@ -1254,11 +1262,11 @@ export namespace CreateGroupResponse {
 }
 
 export class QueryGroupsRequest extends jspb.Message { 
+    getPage(): number;
+    setPage(value: number): void;
+
     getLimit(): number;
     setLimit(value: number): void;
-
-    getOffset(): number;
-    setOffset(value: number): void;
 
 
     serializeBinary(): Uint8Array;
@@ -1273,8 +1281,8 @@ export class QueryGroupsRequest extends jspb.Message {
 
 export namespace QueryGroupsRequest {
     export type AsObject = {
+        page: number,
         limit: number,
-        offset: number,
     }
 }
 
@@ -1285,13 +1293,16 @@ export class QueryGroupsResponse extends jspb.Message {
     getMessage(): string;
     setMessage(value: string): void;
 
-    getTotal(): number;
-    setTotal(value: number): void;
+    getTotalpage(): number;
+    setTotalpage(value: number): void;
+
+    getCurrentpage(): number;
+    setCurrentpage(value: number): void;
 
     clearDataList(): void;
-    getDataList(): Array<User>;
-    setDataList(value: Array<User>): void;
-    addData(value?: User, index?: number): User;
+    getDataList(): Array<Group>;
+    setDataList(value: Array<Group>): void;
+    addData(value?: Group, index?: number): Group;
 
 
     serializeBinary(): Uint8Array;
@@ -1308,8 +1319,9 @@ export namespace QueryGroupsResponse {
     export type AsObject = {
         state: State,
         message: string,
-        total: number,
-        dataList: Array<User.AsObject>,
+        totalpage: number,
+        currentpage: number,
+        dataList: Array<Group.AsObject>,
     }
 }
 

@@ -48,6 +48,60 @@ func TestService_CreateGroup(t *testing.T) {
 	}
 }
 
+func TestService_QueryGroups(t *testing.T) {
+	srv := NewService()
+	tests := []struct {
+		name            string
+		args            *standard.QueryGroupsRequest
+		wantState       standard.State
+		wantDataSize    uint32
+		wantCurrentPage uint32
+		wantTotalPage   uint32
+		wantErr         bool
+	}{
+		{"正常查询", &standard.QueryGroupsRequest{Page: 1, Limit: 90},
+			standard.State_SUCCESS, 3, 1, 1, false},
+		{"只查一条", &standard.QueryGroupsRequest{Page: 1, Limit: 1},
+			standard.State_SUCCESS, 1, 1, 3, false},
+		{"第二页", &standard.QueryGroupsRequest{Page: 1, Limit: 2},
+			standard.State_SUCCESS, 2, 1, 2, false},
+		{"空的 ID", &standard.QueryGroupsRequest{Page: 0, Limit: 0},
+			standard.State_PARAMS_INVALID, 0, 0, 0, false},
+		{"不存在的 ID", &standard.QueryGroupsRequest{},
+			standard.State_PARAMS_INVALID, 0, 0, 0, false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotResp, err := srv.QueryGroups(context.Background(), tt.args)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Service.QueryGroups() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+
+			if gotResp.State.String() != tt.wantState.String() {
+				t.Errorf("Service.QueryGroups() = %v, want %v", gotResp, tt.wantState)
+				return
+			}
+
+			if tt.wantState == standard.State_SUCCESS {
+				if gotResp.TotalPage != tt.wantTotalPage {
+					t.Errorf("Service.QueryGroups() = %v, want %d", gotResp, tt.wantTotalPage)
+					return
+				}
+				if uint32(len(gotResp.Data)) != tt.wantDataSize {
+					t.Errorf("Service.QueryGroups() = %v, want %d", gotResp, tt.wantDataSize)
+					return
+				}
+				if gotResp.CurrentPage != tt.wantCurrentPage {
+					t.Errorf("Service.QueryUsers() = %v, want %d", gotResp, tt.wantCurrentPage)
+					return
+				}
+			}
+		})
+	}
+}
+
 func TestService_QueryGroupByID(t *testing.T) {
 	srv := NewService()
 	tests := []struct {
@@ -265,7 +319,7 @@ func TestService_AddUserToGroupByID(t *testing.T) {
 		{"不存在的组 ID", &standard.AddUserToGroupByIDRequest{ID: 1, GroupID: 999999},
 			standard.State_GROUP_NOT_EXIST, false},
 		{"正常添加", &standard.AddUserToGroupByIDRequest{ID: 1, GroupID: 1},
-			standard.State_SUCCESS, false},
+			standard.State_USER_NOT_EXIST, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -300,7 +354,7 @@ func TestService_RemoveUserFromGroupByID(t *testing.T) {
 		{"不存在的组 ID", &standard.RemoveUserFromGroupByIDRequest{UserID: 1, ID: 999999},
 			standard.State_GROUP_NOT_EXIST, false},
 		{"正常添加", &standard.RemoveUserFromGroupByIDRequest{UserID: 1, ID: 1},
-			standard.State_SUCCESS, false},
+			standard.State_USER_NOT_EXIST, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
