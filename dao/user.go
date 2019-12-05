@@ -101,8 +101,7 @@ func QueryUsersByInviter(inviter uint32, page, limit int) (totalPage, currentPag
 		user.LoadStringMap(mapData.(map[string]string))
 		users = append(users, user)
 	}
-
-	return totalPage, currentPage, users, err
+	return totalPage, currentPage, users, nil
 }
 
 // QueryUserByID 根据 id 查询

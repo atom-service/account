@@ -167,6 +167,62 @@ func TestService_QueryUserByID(t *testing.T) {
 	}
 }
 
+func TestService_QueryUsersByInviter(t *testing.T) {
+	srv := NewService()
+	tests := []struct {
+		name            string
+		args            *standard.QueryUsersByInviterRequest
+		wantState       standard.State
+		wantDataSize    uint32
+		wantCurrentPage uint32
+		wantTotalPage   uint32
+		wantErr         bool
+	}{
+		{"正常查询", &standard.QueryUsersByInviterRequest{Inviter: 1, Page: 1, Limit: 90},
+			standard.State_SUCCESS, 2, 1, 1, false},
+		{"只查一条", &standard.QueryUsersByInviterRequest{Inviter: 1, Page: 1, Limit: 1},
+			standard.State_SUCCESS, 1, 1, 2, false},
+		{"第二页", &standard.QueryUsersByInviterRequest{Inviter: 1, Page: 1, Limit: 2},
+			standard.State_SUCCESS, 2, 1, 1, false},
+		{"无效的翻页数据", &standard.QueryUsersByInviterRequest{Inviter: 1, Page: 0, Limit: 0},
+			standard.State_PARAMS_INVALID, 0, 0, 0, false},
+		{"不存在的 ID", &standard.QueryUsersByInviterRequest{Inviter: 999, Page: 1, Limit: 90},
+			standard.State_SUCCESS, 0, 0, 0, false},
+		{"空的 ID", &standard.QueryUsersByInviterRequest{Page: 1, Limit: 90},
+			standard.State_PARAMS_INVALID, 0, 0, 0, false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotResp, err := srv.QueryUsersByInviter(context.Background(), tt.args)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Service.QueryUsersByInviter() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+
+			if gotResp.State.String() != tt.wantState.String() {
+				t.Errorf("Service.QueryUsersByInviter() = %v, want %v", gotResp, tt.wantState)
+				return
+			}
+
+			if tt.wantState == standard.State_SUCCESS {
+				if gotResp.TotalPage != tt.wantTotalPage {
+					t.Errorf("Service.QueryUsersByInviter() = %v, want %d", gotResp, tt.wantTotalPage)
+					return
+				}
+				if uint32(len(gotResp.Data)) != tt.wantDataSize {
+					t.Errorf("Service.QueryUsersByInviter() = %v, want %d", gotResp, tt.wantDataSize)
+					return
+				}
+				if gotResp.CurrentPage != tt.wantCurrentPage {
+					t.Errorf("Service.QueryUsersByInviter() = %v, want %d", gotResp, tt.wantCurrentPage)
+					return
+				}
+			}
+		})
+	}
+}
+
 func TestService_QueryUserByUsername(t *testing.T) {
 	srv := NewService()
 	tests := []struct {

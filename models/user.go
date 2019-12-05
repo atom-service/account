@@ -39,8 +39,8 @@ func (srv *User) LoadStringMap(data map[string]string) {
 	srv.DeletedTime = data["DeletedTime"]
 	srv.CreatedTime = data["CreatedTime"]
 	srv.UpdatedTime = data["UpdatedTime"]
-	id, _ := strconv.ParseUint(data["ID"], 10, 64)
-	inviter, _ := strconv.ParseUint(data["Inviter"], 10, 64)
+	id, _ := strconv.ParseUint(data["ID"], 10, 32)
+	inviter, _ := strconv.ParseUint(data["Inviter"], 10, 32)
 	srv.ID = uint32(id)
 	srv.Inviter = uint32(inviter)
 }
