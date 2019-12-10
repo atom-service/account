@@ -8,16 +8,16 @@ import (
 
 // User 用户
 type User struct {
-	ID          uint32 `db:"ID"`
-	Class       string `db:"Class"`
-	Avatar      string `db:"Avatar"`
-	Inviter     uint32 `db:"Inviter"`
-	Nickname    string `db:"Nickname"`
-	Username    string `db:"Username"`
-	Password    string `db:"Password"`
-	DeletedTime string `db:"DeletedTime"`
-	CreatedTime string `db:"CreatedTime"`
-	UpdatedTime string `db:"UpdatedTime"`
+	ID          uint32
+	Class       string
+	Avatar      string
+	Inviter     uint32
+	Nickname    string
+	Username    string
+	Password    string
+	DeletedTime string
+	CreatedTime string
+	UpdatedTime string
 }
 
 // SetPassword SetPassword

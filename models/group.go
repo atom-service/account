@@ -9,14 +9,14 @@ import (
 // Group 用户可以属于某个组
 // 组管理员可以查看管理组内的成员
 type Group struct {
-	ID          uint32 `db:"ID"`    // ID
-	Name        string `db:"Name"`  // Name
-	Class       string `db:"Class"` // 分类
-	State       string `db:"State"`
-	Description string `db:"Description"`
-	DeletedTime string `db:"DeletedTime"`
-	CreatedTime string `db:"CreatedTime"`
-	UpdatedTime string `db:"UpdatedTime"`
+	ID          uint32 // ID
+	Name        string // Name
+	Class       string // 分类
+	State       string
+	Description string
+	DeletedTime string
+	CreatedTime string
+	UpdatedTime string
 }
 
 // LoadProtoStruct LoadProtoStruct

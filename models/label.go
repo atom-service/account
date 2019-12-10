@@ -8,14 +8,14 @@ import (
 
 // Label 标签
 type Label struct {
-	ID          uint32 `db:"ID"`
-	Name        string `db:"Name"`
-	Class       string `db:"Class"`
-	State       string `db:"State"`
-	Value       string `db:"Value"`
-	DeletedTime string `db:"DeletedTime"`
-	CreatedTime string `db:"CreatedTime"`
-	UpdatedTime string `db:"UpdatedTime"`
+	ID          uint32
+	Name        string
+	Class       string
+	State       string
+	Value       string
+	DeletedTime string
+	CreatedTime string
+	UpdatedTime string
 }
 
 // LoadProtoStruct LoadProtoStruct
