@@ -65,42 +65,38 @@ func CountUserByID(id uint32) (int, error) {
 
 // QueryUsers 查询用户
 func QueryUsers(page, limit int) (totalPage, currentPage int, users []*models.User, err error) {
-	conn := easysql.GetConn()
-	result, err := conn.Select(userTableName, nil).Pagination(page, limit)
-	if err != nil {
-		return 0, 0, nil, err
-	}
+	// conn := easysql.GetConn()
+	// totalPage, currentPage, rows, err := conn.Select(userTableName, nil).Pagination(page, limit)
+	// if err != nil {
+	// 	return 0, 0, nil, err
+	// }
 
-	users = []*models.User{}
-	totalPage = result["totalPage"].(int)
-	currentPage = result["currentPage"].(int)
-	for _, mapData := range result["rows"].([]interface{}) {
-		user := new(models.User)
-		user.LoadStringMap(mapData.(map[string]string))
-		users = append(users, user)
-	}
+	// users = []*models.User{}
+	// for _, mapData := range rows {
+	// 	user := new(models.User)
+	// 	user.LoadStringMap(mapData.(map[string]string))
+	// 	users = append(users, user)
+	// }
 
 	return totalPage, currentPage, users, err
 }
 
 // QueryUsersByInviter 查询用户
 func QueryUsersByInviter(inviter uint32, page, limit int) (totalPage, currentPage int, users []*models.User, err error) {
-	conn := easysql.GetConn()
-	inviterstr := strconv.FormatUint(uint64(inviter), 10)
-	cond := map[string]string{"Inviter": inviterstr}
-	result, err := conn.Select(userTableName, nil).Where(cond).Pagination(page, limit)
-	if err != nil {
-		return 0, 0, nil, err
-	}
+	// conn := easysql.GetConn()
+	// inviterstr := strconv.FormatUint(uint64(inviter), 10)
+	// cond := map[string]string{"Inviter": inviterstr}
+	// totalPage, currentPage, result, err := conn.Select(userTableName, nil).Where(cond).Pagination(page, limit)
+	// if err != nil {
+	// 	return 0, 0, nil, err
+	// }
 
-	users = []*models.User{}
-	totalPage = result["totalPage"].(int)
-	currentPage = result["currentPage"].(int)
-	for _, mapData := range result["rows"].([]interface{}) {
-		user := new(models.User)
-		user.LoadStringMap(mapData.(map[string]string))
-		users = append(users, user)
-	}
+	// users = []*models.User{}
+	// for _, mapData := range result {
+	// 	user := new(models.User)
+	// 	user.LoadStringMap(mapData.(map[string]string))
+	// 	users = append(users, user)
+	// }
 	return totalPage, currentPage, users, nil
 }
 

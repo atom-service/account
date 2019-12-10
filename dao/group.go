@@ -1,112 +1,152 @@
 package dao
 
 import (
+	"math"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/grpcbrick/account/models"
 	"github.com/yinxulai/goutils/easysql"
+	"github.com/yinxulai/goutils/sqldb"
 )
 
 const groupTableName = "group"
 const groupMappingUserTableName = "group-mapping"
 
 func truncateGroupTable() error {
-	conn := easysql.GetConn()
-
-	_, err := conn.ExecSQL("truncate table `" + groupTableName + "`")
+	stmp := sqldb.CreateStmt("truncate table `?`")
+	_, err := stmp.Exec(groupTableName)
 	return err
 }
 
 func createGroupTable() error {
-	conn := easysql.GetConn()
-
-	_, err := conn.ExecSQL(
-		strings.Join([]string{
-			" CREATE TABLE IF NOT EXISTS `" + groupTableName + "` (",
-			" `ID` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID',",
-			" `Name` varchar(128) NOT NULL COMMENT '名称',",
-			" `Class` varchar(128) NOT NULL COMMENT '类型',",
-			" `State` varchar(128) DEFAULT '' COMMENT '状态',",
-			" `Description` varchar(512) DEFAULT '' COMMENT '简介',",
-			" `DeletedTime` datetime DEFAULT NULL COMMENT '删除时间',",
-			" `CreatedTime` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',",
-			" `UpdatedTime` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',",
-			" PRIMARY KEY (`ID`,`Name`,`Class`,`State`),",
-			" UNIQUE KEY `Name` (`Name`)",
-			" )ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4;",
-		}, "",
-		),
-	)
+	stmp := sqldb.CreateStmt(strings.Join([]string{
+		"CREATE TABLE IF NOT EXISTS",
+		"`" + groupTableName + "`",
+		"(",
+		"`ID` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID',",
+		"`Name` varchar(128) NOT NULL COMMENT '名称',",
+		"`Class` varchar(128) NOT NULL COMMENT '类型',",
+		"`State` varchar(128) DEFAULT '' COMMENT '状态',",
+		"`Description` varchar(512) DEFAULT '' COMMENT '简介',",
+		"`DeletedTime` datetime DEFAULT NULL COMMENT '删除时间',",
+		"`CreatedTime` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',",
+		"`UpdatedTime` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',",
+		"PRIMARY KEY (`ID`,`Name`,`Class`,`State`),",
+		"UNIQUE KEY `Name` (`Name`)",
+		")ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4;",
+	}, " ",
+	))
+	_, err := stmp.Exec()
 	return err
 }
 
 // CreateGroup 创建组
 func CreateGroup(name, class, state, description string) (int64, error) {
-	conn := easysql.GetConn()
+	stmp := sqldb.CreateNamedStmt(strings.Join([]string{
+		"INSERT INTO",
+		"`" + groupTableName + "`",
+		"(Name, Class, State, Description)",
+		"VALUES",
+		"(:Name, :Class, :State, :Description)",
+	}, " "))
 
-	data := map[string]string{
+	data := map[string]interface{}{
 		"Name":        name,
 		"Class":       class,
 		"State":       state,
 		"Description": description,
 	}
-
-	id, err := conn.Insert(groupTableName, data)
+	result, err := stmp.Exec(data)
+	if err != nil {
+		return 0, err
+	}
+	id, err := result.LastInsertId()
 	return id, err
 }
 
-// CountGroupByName 根据 name 统计
-func CountGroupByName(name string) (int, error) {
-	conn := easysql.GetConn()
+// CountGroupByName 根据 name 统计组的数量
+func CountGroupByName(name string) (int64, error) {
+	stmp := sqldb.CreateNamedStmt(strings.Join([]string{
+		"SELECT COUNT(*) as Count FROM",
+		"`" + groupTableName + "`",
+		"WHERE",
+		"Name=:Name",
+	}, " "))
 
-	cond := map[string]string{"Name": "'" + name + "'"}
-	queryField := []string{"count(*) as count"}
-	result, err := conn.Select(groupTableName, queryField).Where(cond).QueryRow()
+	result := struct{ Count int64 }{}
+	namedData := map[string]interface{}{
+		"Name": name,
+	}
+	err := stmp.Get(&result, namedData)
 	if err != nil {
 		return 0, err
 	}
-	count, err := strconv.Atoi(result["count"])
-	if err != nil {
-		return 0, err
-	}
-	return count, nil
+
+	return result.Count, nil
 }
 
 // CountGroupByID 根据 id 统计
-func CountGroupByID(id uint32) (int, error) {
-	conn := easysql.GetConn()
+func CountGroupByID(id uint32) (int64, error) {
+	stmp := sqldb.CreateNamedStmt(strings.Join([]string{
+		"SELECT COUNT(*) as Count FROM",
+		"`" + groupTableName + "`",
+		"WHERE",
+		"ID=:ID",
+	}, " "))
 
-	idstr := strconv.FormatUint(uint64(id), 10)
-	cond := map[string]string{"ID": idstr}
-	queryField := []string{"count(*) as count"}
-	result, err := conn.Select(groupTableName, queryField).Where(cond).QueryRow()
+	result := struct{ Count int64 }{}
+	namedData := map[string]interface{}{
+		"ID": id,
+	}
+	err := stmp.Get(&result, namedData)
 	if err != nil {
 		return 0, err
 	}
-	count, err := strconv.Atoi(result["count"])
-	if err != nil {
-		return 0, err
-	}
-	return count, nil
+	return result.Count, nil
 }
 
 // QueryGroups 查询组
-func QueryGroups(page, limit int) (totalPage, currentPage int, groups []*models.Group, err error) {
-	conn := easysql.GetConn()
-	result, err := conn.Select(groupTableName, nil).Pagination(page, limit)
+func QueryGroups(page, limit int64) (totalPage, currentPage int64, groups []*models.Group, err error) {
+	// 查询数据长度
+	countStmp := sqldb.CreateStmt(strings.Join([]string{
+		"SELECT COUNT(*) as Count FROM",
+		"`" + groupTableName + "`",
+	}, " "))
+
+	countResult := struct{ Count int64 }{}
+	err = countStmp.Get(&countResult)
 	if err != nil {
-		return 0, 0, nil, err
+		return totalPage, currentPage, groups, err
 	}
 
-	groups = []*models.Group{}
-	totalPage = result["totalPage"].(int)
-	currentPage = result["currentPage"].(int)
-	for _, mapData := range result["rows"].([]interface{}) {
-		group := new(models.Group)
-		group.LoadStringMap(mapData.(map[string]string))
-		groups = append(groups, group)
+	count := countResult.Count
+	// 计算总页码数
+	totalPage = int64(math.Ceil(float64(count) / float64(limit)))
+
+	// 超出数据总页数
+	if page > totalPage {
+		return totalPage, page, groups, err
+	}
+	// 计算偏移
+	offSet := (page - 1) * limit
+	stmp := sqldb.CreateNamedStmt(strings.Join([]string{
+		" SELECT * FROM",
+		"`" + groupTableName + "`",
+		" LIMIT :Limit",
+		" OFFSET :Offset",
+	}, ""))
+
+	result := []*models.Group{}
+	namedData := map[string]interface{}{
+		"Limit":  limit,
+		"Offset": offSet,
+	}
+
+	err = stmp.Select(&result, namedData)
+	if err != nil {
+		return totalPage, currentPage, groups, err
 	}
 
 	return totalPage, currentPage, groups, err
@@ -173,18 +213,16 @@ func truncateGroupMappingTable() error {
 func createGroupMappingTable() error {
 	conn := easysql.GetConn()
 
-	_, err := conn.ExecSQL(
-		strings.Join([]string{
-			" CREATE TABLE IF NOT EXISTS `" + groupMappingUserTableName + "` (",
-			" `Group` int(11) NOT NULL COMMENT '组 ID',",
-			" `Owner` int(11) NOT NULL COMMENT '所属者 ID',",
-			" `DeletedTime` datetime DEFAULT NULL COMMENT '删除时间',",
-			" `CreatedTime` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',",
-			" `UpdatedTime` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',",
-			" PRIMARY KEY (`Group`,`Owner`)",
-			" )ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4;",
-		}, "",
-		),
+	_, err := conn.ExecSQL(strings.Join([]string{
+		"CREATE TABLE IF NOT EXISTS `" + groupMappingUserTableName + "` (",
+		"`Group` int(11) NOT NULL COMMENT '组 ID',",
+		"`Owner` int(11) NOT NULL COMMENT '所属者 ID',",
+		"`DeletedTime` datetime DEFAULT NULL COMMENT '删除时间',",
+		"`CreatedTime` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',",
+		"`UpdatedTime` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',",
+		"PRIMARY KEY (`Group`,`Owner`)",
+		")ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4;",
+	}, " "),
 	)
 	return err
 }

@@ -40,7 +40,7 @@ func (srv *Service) CreateGroup(ctx context.Context, req *standard.CreateGroupRe
 	count, err := dao.CountGroupByName(req.Name)
 	if err != nil {
 		resp.State = standard.State_DB_OPERATION_FATLURE
-		resp.Message = err.Error()
+		resp.Message = err.Error() + "CountGroupByName"
 		return resp, nil
 	}
 
@@ -53,7 +53,7 @@ func (srv *Service) CreateGroup(ctx context.Context, req *standard.CreateGroupRe
 	id, err := dao.CreateGroup(req.Name, req.Class, req.State, req.Description)
 	if err != nil {
 		resp.State = standard.State_DB_OPERATION_FATLURE
-		resp.Message = err.Error()
+		resp.Message = err.Error() + "CreateGroup"
 		return resp, nil
 	}
 
@@ -88,7 +88,7 @@ func (srv *Service) QueryGroups(ctx context.Context, req *standard.QueryGroupsRe
 		return resp, nil
 	}
 
-	totalPage, currentPage, groups, err := dao.QueryGroups(int(req.Page), int(req.Limit))
+	totalPage, currentPage, groups, err := dao.QueryGroups(int64(req.Page), int64(req.Limit))
 	if err != nil {
 		resp.State = standard.State_DB_OPERATION_FATLURE
 		resp.Message = err.Error()

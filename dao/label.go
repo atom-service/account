@@ -76,20 +76,18 @@ func CountLabelByID(id uint32) (int, error) {
 
 // QueryLabels 查询标签
 func QueryLabels(page, limit int) (totalPage, currentPage int, labels []*models.Label, err error) {
-	conn := easysql.GetConn()
-	result, err := conn.Select(labelTableName, nil).Pagination(page, limit)
-	if err != nil {
-		return 0, 0, nil, err
-	}
+	// conn := easysql.GetConn()
+	// totalPage, currentPage, rows, err := conn.Select(labelTableName, nil).Pagination(page, limit)
+	// if err != nil {
+	// 	return 0, 0, nil, err
+	// }
 
-	labels = []*models.Label{}
-	totalPage = result["totalPage"].(int)
-	currentPage = result["currentPage"].(int)
-	for _, mapData := range result["rows"].([]interface{}) {
-		label := new(models.Label)
-		label.LoadStringMap(mapData.(map[string]string))
-		labels = append(labels, label)
-	}
+	// labels = []*models.Label{}
+	// for _, mapData := range rows {
+	// 	label := new(models.Label)
+	// 	label.LoadStringMap(mapData.(map[string]string))
+	// 	labels = append(labels, label)
+	// }
 
 	return totalPage, currentPage, labels, err
 }

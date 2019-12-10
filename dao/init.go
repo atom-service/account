@@ -13,10 +13,23 @@ func MustInitTables() {
 func InitTables() error {
 	var err error
 	err = createUserTable()
+	if err != nil {
+		return err
+	}
 	err = createLabelTable()
+	if err != nil {
+		return err
+	}
 	err = createLabelMappingTable()
+	if err != nil {
+		return err
+	}
 	err = createGroupTable()
+	if err != nil {
+		return err
+	}
 	err = createGroupMappingTable()
+
 	if err != nil {
 		return err
 	}
@@ -36,9 +49,21 @@ func MustTruncateTables() {
 func TruncateTables() error {
 	var err error
 	err = truncateUserTable()
+	if err != nil {
+		return err
+	}
 	err = truncateLabelTable()
+	if err != nil {
+		return err
+	}
 	err = truncateLabelMappingTable()
+	if err != nil {
+		return err
+	}
 	err = truncateGroupTable()
+	if err != nil {
+		return err
+	}
 	err = truncateGroupMappingTable()
 	if err != nil {
 		return err

@@ -9,6 +9,7 @@ import (
 	"github.com/yinxulai/goutils/config"
 	"github.com/yinxulai/goutils/easysql"
 	"github.com/yinxulai/goutils/grpc/interceptor"
+	"github.com/yinxulai/goutils/sqldb"
 	"google.golang.org/grpc"
 )
 
@@ -22,6 +23,7 @@ func init() {
 
 func main() {
 	var err error
+	sqldb.Init("mysql", config.MustGet("mysql-url"))
 	easysql.Init("mysql", config.MustGet("mysql-url"))
 	dao.MustInitTables()
 	lis, err := net.Listen("tcp", config.MustGet("rpc-port"))

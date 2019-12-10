@@ -10,7 +10,7 @@ import (
 // 组管理员可以查看管理组内的成员
 type Group struct {
 	ID          uint32 `db:"ID"`    // ID
-	Name        string `db:"State"` // Name
+	Name        string `db:"Name"`  // Name
 	Class       string `db:"Class"` // 分类
 	State       string `db:"State"`
 	Description string `db:"Description"`
