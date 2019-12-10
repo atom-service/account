@@ -61,7 +61,7 @@ func (srv *Service) CreateUser(ctx context.Context, req *standard.CreateUserRequ
 	}
 
 	// 查询数据
-	queryResult, err := srv.QueryUserByID(ctx, &standard.QueryUserByIDRequest{ID: uint32(id)})
+	queryResult, err := srv.QueryUserByID(ctx, &standard.QueryUserByIDRequest{ID: int64(id)})
 	if err != nil {
 		resp.State = standard.State_SERVICE_ERROR
 		resp.Message = err.Error()
@@ -140,8 +140,8 @@ func (srv *Service) QueryUsers(ctx context.Context, req *standard.QueryUsersRequ
 	}
 
 	resp.State = standard.State_SUCCESS
-	resp.CurrentPage = uint32(currentPage)
-	resp.TotalPage = uint32(totalPage)
+	resp.CurrentPage = int64(currentPage)
+	resp.TotalPage = int64(totalPage)
 	resp.Message = "查询成功"
 	resp.Data = data
 	return resp, nil
@@ -169,8 +169,8 @@ func (srv *Service) QueryUsersByInviter(ctx context.Context, req *standard.Query
 	}
 
 	resp.State = standard.State_SUCCESS
-	resp.CurrentPage = uint32(currentPage)
-	resp.TotalPage = uint32(totalPage)
+	resp.CurrentPage = int64(currentPage)
+	resp.TotalPage = int64(totalPage)
 	resp.Message = "查询成功"
 	resp.Data = data
 
@@ -369,7 +369,7 @@ func (srv *Service) VerifyUserPasswordByUsername(ctx context.Context, req *stand
 		return resp, nil
 	}
 
-	pass, err := dao.VerifyUserPasswordByID(user.ID, req.Password)
+	pass, err := dao.VerifyUserPasswordByID(user.ID.Int64, req.Password)
 	if err != nil {
 		resp.State = standard.State_DB_OPERATION_FATLURE
 		resp.Message = err.Error()

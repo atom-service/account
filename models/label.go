@@ -1,58 +1,57 @@
 package models
 
 import (
-	"strconv"
+	"database/sql"
 
 	"github.com/grpcbrick/account/standard"
 )
 
 // Label 标签
 type Label struct {
-	ID          uint32
-	Name        string
-	Class       string
-	State       string
-	Value       string
-	DeletedTime string
-	CreatedTime string
-	UpdatedTime string
+	ID          sql.NullInt64
+	Name        sql.NullString
+	Class       sql.NullString
+	State       sql.NullString
+	Value       sql.NullString
+	DeletedTime sql.NullTime
+	CreatedTime sql.NullTime
+	UpdatedTime sql.NullTime
 }
 
 // LoadProtoStruct LoadProtoStruct
 func (srv *Label) LoadProtoStruct(label *standard.Label) {
-	srv.ID = label.ID
-	srv.Name = label.Name
-	srv.Class = label.Class
-	srv.State = label.State
-	srv.Value = label.Value
-	srv.DeletedTime = label.DeletedTime
-	srv.CreatedTime = label.CreatedTime
-	srv.UpdatedTime = label.UpdatedTime
+	srv.ID.Scan(label.ID)
+	srv.Name.Scan(label.Name)
+	srv.Class.Scan(label.Class)
+	srv.State.Scan(label.State)
+	srv.Value.Scan(label.Value)
+	srv.DeletedTime.Scan(label.DeletedTime)
+	srv.CreatedTime.Scan(label.CreatedTime)
+	srv.UpdatedTime.Scan(label.UpdatedTime)
 }
 
 // LoadStringMap 从 string map 中加载数据
 func (srv *Label) LoadStringMap(data map[string]string) {
-	srv.Name = data["Name"]
-	srv.Class = data["Class"]
-	srv.State = data["State"]
-	srv.Value = data["Value"]
-	srv.DeletedTime = data["DeletedTime"]
-	srv.CreatedTime = data["CreatedTime"]
-	srv.UpdatedTime = data["UpdatedTime"]
-	id, _ := strconv.ParseUint(data["ID"], 10, 32)
-	srv.ID = uint32(id)
+	srv.Name.Scan(data["ID"])
+	srv.Name.Scan(data["Name"])
+	srv.Class.Scan(data["Class"])
+	srv.State.Scan(data["State"])
+	srv.Value.Scan(data["Value"])
+	srv.DeletedTime.Scan(data["DeletedTime"])
+	srv.CreatedTime.Scan(data["CreatedTime"])
+	srv.UpdatedTime.Scan(data["UpdatedTime"])
 }
 
 // OutProtoStruct OutProtoStruct
 func (srv *Label) OutProtoStruct() *standard.Label {
 	lable := new(standard.Label)
-	lable.ID = srv.ID
-	lable.Name = srv.Name
-	lable.Class = srv.Class
-	lable.State = srv.State
-	lable.Value = srv.Value
-	lable.DeletedTime = srv.DeletedTime
-	lable.CreatedTime = srv.CreatedTime
-	lable.UpdatedTime = srv.UpdatedTime
+	lable.ID = srv.ID.Int64
+	lable.Name = srv.Name.String
+	lable.Class = srv.Class.String
+	lable.State = srv.State.String
+	lable.Value = srv.Value.String
+	lable.DeletedTime = srv.DeletedTime.Time.String()
+	lable.CreatedTime = srv.CreatedTime.Time.String()
+	lable.UpdatedTime = srv.UpdatedTime.Time.String()
 	return lable
 }

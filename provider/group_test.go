@@ -54,9 +54,9 @@ func TestService_QueryGroups(t *testing.T) {
 		name            string
 		args            *standard.QueryGroupsRequest
 		wantState       standard.State
-		wantDataSize    uint32
-		wantCurrentPage uint32
-		wantTotalPage   uint32
+		wantDataSize    int64
+		wantCurrentPage int64
+		wantTotalPage   int64
 		wantErr         bool
 	}{
 		{"正常查询", &standard.QueryGroupsRequest{Page: 1, Limit: 90},
@@ -89,7 +89,7 @@ func TestService_QueryGroups(t *testing.T) {
 					t.Errorf("Service.QueryGroups() = %v, want %d", gotResp, tt.wantTotalPage)
 					return
 				}
-				if uint32(len(gotResp.Data)) != tt.wantDataSize {
+				if int64(len(gotResp.Data)) != tt.wantDataSize {
 					t.Errorf("Service.QueryGroups() = %v, want %d", gotResp, tt.wantDataSize)
 					return
 				}

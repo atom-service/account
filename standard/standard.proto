@@ -30,7 +30,7 @@ enum State {
 
 // Group 组
 message Group {
-  uint32 ID = 1 ;
+  int64 ID = 1 ;
   string Name = 2 ;
 	string Class = 3 ;
   string State = 4 ;
@@ -42,7 +42,7 @@ message Group {
 
 // Label 标签
 message Label {
-  uint32 ID = 1 ;
+  int64 ID = 1 ;
   string Name = 2 ;
 	string Class = 3 ;
 	string State = 4 ;
@@ -54,10 +54,10 @@ message Label {
 
 // User 用户
 message User {
-  uint32 ID = 1 ;
+  int64 ID = 1 ;
   string Class = 2 ;
   string Avatar = 3 ;
-  uint32 Inviter = 4 ;
+  int64 Inviter = 4 ;
 	string Nickname = 5 ;
 	string Username = 6 ;
   string Password = 7 ;
@@ -68,7 +68,7 @@ message User {
 
 message CreateUserRequest {
   string Class = 1 ;
-  uint32 Inviter = 3 ;
+  int64 Inviter = 3 ;
 	string Nickname = 4 ;
 	string Username = 5 ;
   string Password = 6 ;
@@ -81,20 +81,20 @@ message CreateUserResponse {
 }
 
 message QueryUsersRequest {
-  uint32 Page = 1 ;
-  uint32 Limit = 2 ;
+  int64 Page = 1 ;
+  int64 Limit = 2 ;
 }
 
 message QueryUsersResponse {
   State  State = 1 ;
   string Message = 2 ;
-  uint32 totalPage = 3 ;
-  uint32 currentPage = 4 ;
+  int64 totalPage = 3 ;
+  int64 currentPage = 4 ;
   repeated User Data = 5 ;
 }
 
 message QueryUserByIDRequest {
-  uint32 ID = 1 ;
+  int64 ID = 1 ;
 }
 
 message QueryUserByIDResponse {
@@ -104,16 +104,16 @@ message QueryUserByIDResponse {
 }
 
 message QueryUsersByInviterRequest {
-  uint32 Inviter = 1 ;
-  uint32 Page = 2 ;
-  uint32 Limit = 3 ;
+  int64 Inviter = 1 ;
+  int64 Page = 2 ;
+  int64 Limit = 3 ;
 }
 
 message QueryUsersByInviterResponse {
   State  State = 1 ;
   string Message = 2 ;
-  uint32 totalPage = 3 ;
-  uint32 currentPage = 4 ;
+  int64 totalPage = 3 ;
+  int64 currentPage = 4 ;
   repeated User Data = 5 ;
 }
 
@@ -128,7 +128,7 @@ message QueryUserByUsernameResponse{
 }
 
 message DeleteUserByIDRequest {
-  uint32 ID = 1 ;
+  int64 ID = 1 ;
 }
 
 message DeleteUserByIDResponse {
@@ -137,7 +137,7 @@ message DeleteUserByIDResponse {
 }
 
 message UpdateUserPasswordByIDRequest {
-  uint32 ID = 1 ;
+  int64 ID = 1 ;
   string Password = 2 ;
 }
 
@@ -147,7 +147,7 @@ message UpdateUserPasswordByIDResponse {
 }
 
 message VerifyUserPasswordByIDRequest {
-  uint32 ID = 1 ;
+  int64 ID = 1 ;
   string Password = 2 ;
 }
 
@@ -182,7 +182,7 @@ message CreateLabelResponse {
 
 // 给指定用户创建标签
 message CreateLabelForUserRequest {
-  uint32 UserID = 1 ;
+  int64 UserID = 1 ;
   string Name = 2 ;
 	string Class = 3 ;
 	string State = 4 ;
@@ -196,7 +196,7 @@ message CreateLabelForUserResponse {
 }
 
 message QueryLabelByIDRequest {
-  uint32 ID = 1 ;
+  int64 ID = 1 ;
 }
 
 message QueryLabelByIDResponse {
@@ -206,7 +206,7 @@ message QueryLabelByIDResponse {
 }
 
 message UpdateLabelNameByIDRequest {
-  uint32 ID = 1 ;
+  int64 ID = 1 ;
 	string Name = 2 ;
 }
 
@@ -216,7 +216,7 @@ message UpdateLabelNameByIDResponse {
 }
 
 message UpdateLabelClassByIDRequest {
-  uint32 ID = 1 ;
+  int64 ID = 1 ;
 	string Class = 2 ;
 }
 
@@ -226,7 +226,7 @@ message UpdateLabelClassByIDResponse {
 }
 
 message UpdateLabelStateByIDRequest {
-  uint32 ID = 1 ;
+  int64 ID = 1 ;
   string State = 2 ;
 }
 
@@ -236,7 +236,7 @@ message UpdateLabelStateByIDResponse {
 }
 
 message UpdateLabelValueByIDRequest {
-  uint32 ID = 1 ;
+  int64 ID = 1 ;
   string Value = 2 ;
 }
 
@@ -246,7 +246,7 @@ message UpdateLabelValueByIDResponse {
 }
 
 message DeleteLabelByIDRequest {
-  uint32 ID = 1 ;
+  int64 ID = 1 ;
 }
 
 message DeleteLabelByIDResponse {
@@ -255,8 +255,8 @@ message DeleteLabelByIDResponse {
 }
 
 message AddLabelToUserByIDRequest {
-  uint32 ID = 1 ;
-  uint32 UserID = 2 ; // 添加标签给用户 谓语是用户
+  int64 ID = 1 ;
+  int64 UserID = 2 ; // 添加标签给用户 谓语是用户
 }
 
 message AddLabelToUserByIDResponse {
@@ -265,8 +265,8 @@ message AddLabelToUserByIDResponse {
 }
 
 message RemoveLabelFromUserByIDRequest {
-  uint32 ID = 1 ;
-  uint32 LabelID = 2 ; // 从用户身上撕下标签 所以谓语是标签
+  int64 ID = 1 ;
+  int64 LabelID = 2 ; // 从用户身上撕下标签 所以谓语是标签
 }
 
 message RemoveLabelFromUserByIDResponse {
@@ -289,19 +289,19 @@ message CreateGroupResponse {
 }
 
 message QueryGroupsRequest {
-  uint32 Page = 1 ;
-  uint32 Limit = 2 ;
+  int64 Page = 1 ;
+  int64 Limit = 2 ;
 }
 message QueryGroupsResponse {
   State  State = 1 ;
   string Message = 2 ;
-  uint32 totalPage = 3 ;
-  uint32 currentPage = 4 ;
+  int64 totalPage = 3 ;
+  int64 currentPage = 4 ;
   repeated Group Data = 5 ;
 }
 
 message QueryGroupByIDRequest {
-  uint32 ID = 1 ;
+  int64 ID = 1 ;
 }
 
 message QueryGroupByIDResponse {
@@ -311,7 +311,7 @@ message QueryGroupByIDResponse {
 }
 
 message UpdateGroupNameByIDRequest {
-  uint32 ID = 1 ;
+  int64 ID = 1 ;
   string Name = 2 ;
 }
 
@@ -321,7 +321,7 @@ message UpdateGroupNameByIDResponse {
 }
 
 message UpdateGroupClassByIDRequest {
-  uint32 ID = 1 ;
+  int64 ID = 1 ;
 	string Class = 2 ;
 }
 
@@ -331,7 +331,7 @@ message UpdateGroupClassByIDResponse {
 }
 
 message UpdateGroupStateByIDRequest {
-  uint32 ID = 1 ;
+  int64 ID = 1 ;
   string State = 2 ;
 }
 
@@ -341,7 +341,7 @@ message UpdateGroupStateByIDResponse {
 }
 
 message UpdateGroupDescriptionByIDRequest {
-  uint32 ID = 1 ;
+  int64 ID = 1 ;
   string Description = 2 ;
 }
 
@@ -351,7 +351,7 @@ message UpdateGroupDescriptionByIDResponse {
 }
 
 message DeleteGroupByIDRequest {
-  uint32 ID = 1 ;
+  int64 ID = 1 ;
 }
 
 message DeleteGroupByIDResponse {
@@ -360,8 +360,8 @@ message DeleteGroupByIDResponse {
 }
 
 message AddUserToGroupByIDRequest {
-  uint32 ID = 1 ;
-  uint32 GroupID = 2 ; // 添加用户到组 组是谓语
+  int64 ID = 1 ;
+  int64 GroupID = 2 ; // 添加用户到组 组是谓语
 }
 
 message AddUserToGroupByIDResponse {
@@ -370,8 +370,8 @@ message AddUserToGroupByIDResponse {
 }
 
 message RemoveUserFromGroupByIDRequest {
-  uint32 ID = 1 ;
-  uint32 UserID = 2 ; // 从组里移除用户 用户是谓语
+  int64 ID = 1 ;
+  int64 UserID = 2 ; // 从组里移除用户 用户是谓语
 }
 
 message RemoveUserFromGroupByIDResponse {

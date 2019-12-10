@@ -46,7 +46,7 @@ func createUserTable() error {
 }
 
 // CountUserByID 根据 id 统计
-func CountUserByID(id uint32) (int, error) {
+func CountUserByID(id int64) (int, error) {
 	conn := easysql.GetConn()
 
 	idstr := strconv.FormatUint(uint64(id), 10)
@@ -82,7 +82,7 @@ func QueryUsers(page, limit int) (totalPage, currentPage int, users []*models.Us
 }
 
 // QueryUsersByInviter 查询用户
-func QueryUsersByInviter(inviter uint32, page, limit int) (totalPage, currentPage int, users []*models.User, err error) {
+func QueryUsersByInviter(inviter int64, page, limit int) (totalPage, currentPage int, users []*models.User, err error) {
 	// conn := easysql.GetConn()
 	// inviterstr := strconv.FormatUint(uint64(inviter), 10)
 	// cond := map[string]string{"Inviter": inviterstr}
@@ -101,7 +101,7 @@ func QueryUsersByInviter(inviter uint32, page, limit int) (totalPage, currentPag
 }
 
 // QueryUserByID 根据 id 查询
-func QueryUserByID(id uint32) (*models.User, error) {
+func QueryUserByID(id int64) (*models.User, error) {
 	conn := easysql.GetConn()
 
 	idstr := strconv.FormatUint(uint64(id), 10)
@@ -149,7 +149,7 @@ func CountUserByUsername(username string) (int, error) {
 }
 
 // CreateUser 创建用户
-func CreateUser(class, nickname, username, password string, inviter uint32) (int64, error) {
+func CreateUser(class, nickname, username, password string, inviter int64) (int64, error) {
 	conn := easysql.GetConn()
 
 	cond := map[string]string{
@@ -168,13 +168,13 @@ func CreateUser(class, nickname, username, password string, inviter uint32) (int
 }
 
 // DeleteUserByID 删除用户
-func DeleteUserByID(id uint32) error {
+func DeleteUserByID(id int64) error {
 	nowTime := time.Now().Format("2006-01-02 15:04:05")
 	return UpdataUserFieldByID(id, map[string]string{"DeletedTime": nowTime})
 }
 
 // UpdataUserFieldByID 根据 ID 更新用户指定字段
-func UpdataUserFieldByID(id uint32, field map[string]string) error {
+func UpdataUserFieldByID(id int64, field map[string]string) error {
 	conn := easysql.GetConn()
 
 	cond := map[string]string{"ID": strconv.FormatUint(uint64(id), 10)}
@@ -183,34 +183,34 @@ func UpdataUserFieldByID(id uint32, field map[string]string) error {
 }
 
 // UpdateUserClassByID 更新用户类型
-func UpdateUserClassByID(id uint32, class string) error {
+func UpdateUserClassByID(id int64, class string) error {
 	return UpdataUserFieldByID(id, map[string]string{"Class": class})
 }
 
 // UpdateUserAvatarByID 更新用户头像
-func UpdateUserAvatarByID(id uint32, avatar string) error {
+func UpdateUserAvatarByID(id int64, avatar string) error {
 	return UpdataUserFieldByID(id, map[string]string{"Avatar": avatar})
 }
 
 // UpdateUserNicknameByID 更新用户昵称
-func UpdateUserNicknameByID(id uint32, nickname string) error {
+func UpdateUserNicknameByID(id int64, nickname string) error {
 	return UpdataUserFieldByID(id, map[string]string{"Nickname": nickname})
 }
 
 // UpdateUserInviterByID 更新用户邀请码
-func UpdateUserInviterByID(id, inviter uint32) error {
+func UpdateUserInviterByID(id, inviter int64) error {
 	return UpdataUserFieldByID(id, map[string]string{"Inviter": strconv.FormatUint(uint64(inviter), 10)})
 }
 
 // UpdateUserPasswordByID 更新用户密码
-func UpdateUserPasswordByID(id uint32, password string) error {
+func UpdateUserPasswordByID(id int64, password string) error {
 	// 加密
 	encryptPassword := crypto.MD5Encrypt(password, config.MustGet("encrypt-password"))
 	return UpdataUserFieldByID(id, map[string]string{"Password": encryptPassword})
 }
 
 // VerifyUserPasswordByID 验证用户密码
-func VerifyUserPasswordByID(id uint32, password string) (bool, error) {
+func VerifyUserPasswordByID(id int64, password string) (bool, error) {
 	conn := easysql.GetConn()
 
 	idstr := strconv.FormatUint(uint64(id), 10)

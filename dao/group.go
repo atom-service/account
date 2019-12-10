@@ -88,7 +88,7 @@ func CountGroupByName(name string) (int64, error) {
 }
 
 // CountGroupByID 根据 id 统计
-func CountGroupByID(id uint32) (int64, error) {
+func CountGroupByID(id int64) (int64, error) {
 	stmp := sqldb.CreateNamedStmt(strings.Join([]string{
 		"SELECT COUNT(*) as Count FROM",
 		"`" + groupTableName + "`",
@@ -153,7 +153,7 @@ func QueryGroups(page, limit int64) (totalPage, currentPage int64, groups []*mod
 }
 
 // QueryGroupByID 根据 id 查询
-func QueryGroupByID(id uint32) (*models.Group, error) {
+func QueryGroupByID(id int64) (*models.Group, error) {
 	conn := easysql.GetConn()
 
 	idstr := strconv.FormatUint(uint64(id), 10)
@@ -169,33 +169,33 @@ func QueryGroupByID(id uint32) (*models.Group, error) {
 }
 
 // DeleteGroupByID 删除标签
-func DeleteGroupByID(id uint32) error {
+func DeleteGroupByID(id int64) error {
 	nowTime := time.Now().Format("2006-01-02 15:04:05")
 	return updataGroupFieldByID(id, map[string]string{"DeletedTime": nowTime})
 }
 
 // UpdateGroupNameByID 更新标签类型
-func UpdateGroupNameByID(id uint32, name string) error {
+func UpdateGroupNameByID(id int64, name string) error {
 	return updataGroupFieldByID(id, map[string]string{"Name": name})
 }
 
 // UpdateGroupClassByID 更新标签状态
-func UpdateGroupClassByID(id uint32, class string) error {
+func UpdateGroupClassByID(id int64, class string) error {
 	return updataGroupFieldByID(id, map[string]string{"Class": class})
 }
 
 // UpdateGroupStateByID 更新标签值
-func UpdateGroupStateByID(id uint32, class string) error {
+func UpdateGroupStateByID(id int64, class string) error {
 	return updataGroupFieldByID(id, map[string]string{"State": class})
 }
 
 // UpdateGroupDescriptionByID 更新标签值
-func UpdateGroupDescriptionByID(id uint32, description string) error {
+func UpdateGroupDescriptionByID(id int64, description string) error {
 	return updataGroupFieldByID(id, map[string]string{"Description": description})
 }
 
 // 根据 ID 更新标签
-func updataGroupFieldByID(id uint32, field map[string]string) error {
+func updataGroupFieldByID(id int64, field map[string]string) error {
 	conn := easysql.GetConn()
 
 	cond := map[string]string{"ID": strconv.FormatUint(uint64(id), 10)}
@@ -228,7 +228,7 @@ func createGroupMappingTable() error {
 }
 
 // RemoveUserFromGroupByID 从组里移除用户
-func RemoveUserFromGroupByID(group, user uint32) error {
+func RemoveUserFromGroupByID(group, user int64) error {
 	conn := easysql.GetConn()
 
 	cond := map[string]string{
@@ -242,7 +242,7 @@ func RemoveUserFromGroupByID(group, user uint32) error {
 }
 
 // AddUserToGroupByID 添加用户进组
-func AddUserToGroupByID(group, user uint32) error {
+func AddUserToGroupByID(group, user int64) error {
 	conn := easysql.GetConn()
 
 	data := map[string]string{
@@ -255,7 +255,7 @@ func AddUserToGroupByID(group, user uint32) error {
 }
 
 // IsAlreadyInGroup 是否已存在关联
-func IsAlreadyInGroup(group, user uint32) (bool, error) {
+func IsAlreadyInGroup(group, user int64) (bool, error) {
 	conn := easysql.GetConn()
 
 	cond := map[string]string{

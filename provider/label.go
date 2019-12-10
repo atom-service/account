@@ -43,7 +43,7 @@ func (srv *Service) CreateLabel(ctx context.Context, req *standard.CreateLabelRe
 	}
 
 	// 查询数据
-	queryResult, err := srv.QueryLabelByID(ctx, &standard.QueryLabelByIDRequest{ID: uint32(id)})
+	queryResult, err := srv.QueryLabelByID(ctx, &standard.QueryLabelByIDRequest{ID: int64(id)})
 	if err != nil {
 		resp.State = standard.State_SERVICE_ERROR
 		resp.Message = err.Error()

@@ -58,7 +58,7 @@ func (srv *Service) CreateGroup(ctx context.Context, req *standard.CreateGroupRe
 	}
 
 	// 查询数据
-	queryResult, err := srv.QueryGroupByID(ctx, &standard.QueryGroupByIDRequest{ID: uint32(id)})
+	queryResult, err := srv.QueryGroupByID(ctx, &standard.QueryGroupByIDRequest{ID: id})
 	if err != nil {
 		resp.State = standard.State_SERVICE_ERROR
 		resp.Message = err.Error()
@@ -101,8 +101,8 @@ func (srv *Service) QueryGroups(ctx context.Context, req *standard.QueryGroupsRe
 	}
 
 	resp.State = standard.State_SUCCESS
-	resp.CurrentPage = uint32(currentPage)
-	resp.TotalPage = uint32(totalPage)
+	resp.CurrentPage = int64(currentPage)
+	resp.TotalPage = int64(totalPage)
 	resp.Message = "查询成功"
 	resp.Data = data
 	return resp, nil

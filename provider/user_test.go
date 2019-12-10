@@ -77,9 +77,9 @@ func TestService_QueryUsers(t *testing.T) {
 		name            string
 		args            *standard.QueryUsersRequest
 		wantState       standard.State
-		wantDataSize    uint32
-		wantCurrentPage uint32
-		wantTotalPage   uint32
+		wantDataSize    int64
+		wantCurrentPage int64
+		wantTotalPage   int64
 		wantErr         bool
 	}{
 		{"正常查询", &standard.QueryUsersRequest{Page: 1, Limit: 90},
@@ -112,7 +112,7 @@ func TestService_QueryUsers(t *testing.T) {
 					t.Errorf("Service.QueryUsers() = %v, want %d", gotResp, tt.wantTotalPage)
 					return
 				}
-				if uint32(len(gotResp.Data)) != tt.wantDataSize {
+				if int64(len(gotResp.Data)) != tt.wantDataSize {
 					t.Errorf("Service.QueryUsers() = %v, want %d", gotResp, tt.wantDataSize)
 					return
 				}
@@ -175,9 +175,9 @@ func TestService_QueryUsersByInviter(t *testing.T) {
 		name            string
 		args            *standard.QueryUsersByInviterRequest
 		wantState       standard.State
-		wantDataSize    uint32
-		wantCurrentPage uint32
-		wantTotalPage   uint32
+		wantDataSize    int64
+		wantCurrentPage int64
+		wantTotalPage   int64
 		wantErr         bool
 	}{
 		{"正常查询", &standard.QueryUsersByInviterRequest{Inviter: 1, Page: 1, Limit: 90},
@@ -212,7 +212,7 @@ func TestService_QueryUsersByInviter(t *testing.T) {
 					t.Errorf("Service.QueryUsersByInviter() = %v, want %d", gotResp, tt.wantTotalPage)
 					return
 				}
-				if uint32(len(gotResp.Data)) != tt.wantDataSize {
+				if int64(len(gotResp.Data)) != tt.wantDataSize {
 					t.Errorf("Service.QueryUsersByInviter() = %v, want %d", gotResp, tt.wantDataSize)
 					return
 				}
