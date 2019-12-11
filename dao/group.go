@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"fmt"
 	"math"
 	"strconv"
 	"strings"
@@ -15,8 +16,8 @@ const groupTableName = "group"
 const groupMappingUserTableName = "group-mapping"
 
 func truncateGroupTable() error {
-	stmp := sqldb.CreateStmt("truncate table `?`")
-	_, err := stmp.Exec(groupTableName)
+	stmp := sqldb.CreateStmt("truncate table `" + groupTableName + "`")
+	_, err := stmp.Exec()
 	return err
 }
 
@@ -109,6 +110,8 @@ func CountGroupByID(id int64) (int64, error) {
 
 // QueryGroups 查询组
 func QueryGroups(page, limit int64) (totalPage, currentPage int64, groups []*models.Group, err error) {
+	currentPage = page // 固定当前页
+
 	// 查询数据长度
 	countStmp := sqldb.CreateStmt(strings.Join([]string{
 		"SELECT COUNT(*) as Count FROM",
@@ -127,8 +130,10 @@ func QueryGroups(page, limit int64) (totalPage, currentPage int64, groups []*mod
 
 	// 超出数据总页数
 	if page > totalPage {
+		// 返回当前页、空数据（当前页确实不存在数据）
 		return totalPage, page, groups, err
 	}
+
 	// 计算偏移
 	offSet := (page - 1) * limit
 	stmp := sqldb.CreateNamedStmt(strings.Join([]string{
@@ -138,13 +143,13 @@ func QueryGroups(page, limit int64) (totalPage, currentPage int64, groups []*mod
 		" OFFSET :Offset",
 	}, ""))
 
-	result := []*models.Group{}
+	groups = []*models.Group{}
 	namedData := map[string]interface{}{
 		"Limit":  limit,
 		"Offset": offSet,
 	}
 
-	err = stmp.Select(&result, namedData)
+	err = stmp.Select(&groups, namedData)
 	if err != nil {
 		return totalPage, currentPage, groups, err
 	}
@@ -170,74 +175,140 @@ func QueryGroupByID(id int64) (*models.Group, error) {
 
 // DeleteGroupByID 删除标签
 func DeleteGroupByID(id int64) error {
-	nowTime := time.Now().Format("2006-01-02 15:04:05")
-	return updataGroupFieldByID(id, map[string]string{"DeletedTime": nowTime})
+	return updataGroupFieldByID(id, map[string]interface{}{"DeletedTime": time.Now()})
 }
 
 // UpdateGroupNameByID 更新标签类型
 func UpdateGroupNameByID(id int64, name string) error {
-	return updataGroupFieldByID(id, map[string]string{"Name": name})
+	return updataGroupFieldByID(id, map[string]interface{}{"Name": name})
 }
 
 // UpdateGroupClassByID 更新标签状态
 func UpdateGroupClassByID(id int64, class string) error {
-	return updataGroupFieldByID(id, map[string]string{"Class": class})
+	return updataGroupFieldByID(id, map[string]interface{}{"Class": class})
 }
 
 // UpdateGroupStateByID 更新标签值
 func UpdateGroupStateByID(id int64, class string) error {
-	return updataGroupFieldByID(id, map[string]string{"State": class})
+	return updataGroupFieldByID(id, map[string]interface{}{"State": class})
 }
 
 // UpdateGroupDescriptionByID 更新标签值
 func UpdateGroupDescriptionByID(id int64, description string) error {
-	return updataGroupFieldByID(id, map[string]string{"Description": description})
+	return updataGroupFieldByID(id, map[string]interface{}{"Description": description})
 }
 
 // 根据 ID 更新标签
-func updataGroupFieldByID(id int64, field map[string]string) error {
-	conn := easysql.GetConn()
+func updataGroupFieldByID(id int64, field map[string]interface{}) error {
+	// TODO: 考虑如何记录修改记录
 
-	cond := map[string]string{"ID": strconv.FormatUint(uint64(id), 10)}
-	_, err := conn.Where(cond).Update(groupTableName, field)
+	fieldSQL := []string{}
+	for name := range field {
+		fieldSQL = append(fieldSQL, fmt.Sprintf("`%s`=:%s", name, name))
+	}
+
+	stmp := sqldb.CreateNamedStmt(strings.Join([]string{
+		"UPDATE",
+		"`" + groupTableName + "`",
+		"SET",
+		strings.Join(fieldSQL, ","),
+		fmt.Sprintf("WHERE ID = %d", id),
+	}, " "))
+
+	_, err := stmp.Exec(field)
 	return err
 }
 
 func truncateGroupMappingTable() error {
-	conn := easysql.GetConn()
-
-	_, err := conn.ExecSQL("truncate table `" + groupMappingUserTableName + "`")
+	stmp := sqldb.CreateStmt("truncate table `" + groupMappingUserTableName + "`")
+	_, err := stmp.Exec()
 	return err
 }
 
 func createGroupMappingTable() error {
-	conn := easysql.GetConn()
-
-	_, err := conn.ExecSQL(strings.Join([]string{
+	stmp := sqldb.CreateStmt(strings.Join([]string{
 		"CREATE TABLE IF NOT EXISTS `" + groupMappingUserTableName + "` (",
 		"`Group` int(11) NOT NULL COMMENT '组 ID',",
-		"`Owner` int(11) NOT NULL COMMENT '所属者 ID',",
+		"`User` int(11) NOT NULL COMMENT '用户 ID',",
 		"`DeletedTime` datetime DEFAULT NULL COMMENT '删除时间',",
 		"`CreatedTime` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',",
 		"`UpdatedTime` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',",
 		"PRIMARY KEY (`Group`,`Owner`)",
-		")ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4;",
-	}, " "),
-	)
+		")ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;",
+	}, " "))
+	_, err := stmp.Exec()
+	return err
+}
+
+// 关系历史表
+// 关系操作先复制当前记录到历史表、再更新主表
+func createGroupMappingHistoreTable() error {
+	//
+	stmp := sqldb.CreateStmt(strings.Join([]string{
+		"CREATE TABLE IF NOT EXISTS `" + groupMappingUserTableName + "History` (",
+		"`Group` int(11) NOT NULL COMMENT '组 ID',",
+		"`User` int(11) NOT NULL COMMENT '用户 ID',",
+		"`UpdatedTime` datetime COMMENT '更新时间'",
+		"`CreatedTime` datetime COMMENT '创建时间',",
+		"`DeletedTime` datetime DEFAULT NULL COMMENT '删除时间',",
+		")ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;",
+	}, " "))
+	_, err := stmp.Exec()
 	return err
 }
 
 // RemoveUserFromGroupByID 从组里移除用户
 func RemoveUserFromGroupByID(group, user int64) error {
-	conn := easysql.GetConn()
+	// TODO: 重新设计：删除数据时、更新删除时间
+	// 同时将该条数据移动到对应的 history 表中
 
-	cond := map[string]string{
-		"Owner": strconv.FormatUint(uint64(user), 10),
-		"Group": strconv.FormatUint(uint64(group), 10),
+	tx, err := sqldb.GetDB().Beginx()
+	if err != nil {
+		return err
 	}
 
-	nowTime := time.Now().Format("2006-01-02 15:04:05")
-	_, err := conn.Where(cond).Update(groupMappingUserTableName, map[string]string{"DeletedTime": nowTime})
+	// 复制
+	stmp, err := tx.PrepareNamed(strings.Join([]string{
+		"UPDATE",
+		"`" + groupMappingUserTableName + "`",
+		"SET",
+		"`DeletedTime`=:DeletedTime",
+		"WHERE",
+		"`User`=:User",
+		"AND",
+		"`Group`=:Group",
+		"AND",
+		"DeletedTime IS NOT NULL", // 删除时间已存在说明是旧数据
+	}, " "))
+
+	if err != nil {
+		return err
+	}
+
+	namedData := map[string]interface{}{
+		"User":        user,
+		"Group":       group,
+		"DeletedTime": time.Now(),
+	}
+
+	// 更新历史
+	stmp, err := tx.PrepareNamed(strings.Join([]string{
+		"UPDATE",
+		"`" + groupMappingUserTableName + "`",
+		"SET",
+		"`DeletedTime`=:DeletedTime",
+		"WHERE",
+		"`User`=:User",
+		"AND",
+		"`Group`=:Group",
+		"AND",
+		"DeletedTime IS NOT NULL", // 删除时间已存在说明是旧数据
+	}, " "))
+	if err != nil {
+		return err
+	}
+
+	_, err := stmp.Exec(namedData)
 	return err
 }
 
@@ -246,7 +317,7 @@ func AddUserToGroupByID(group, user int64) error {
 	conn := easysql.GetConn()
 
 	data := map[string]string{
-		"Owner": strconv.FormatUint(uint64(user), 10),
+		"User":  strconv.FormatUint(uint64(user), 10),
 		"Group": strconv.FormatUint(uint64(group), 10),
 	}
 
@@ -259,7 +330,7 @@ func IsAlreadyInGroup(group, user int64) (bool, error) {
 	conn := easysql.GetConn()
 
 	cond := map[string]string{
-		"Owner": strconv.FormatUint(uint64(user), 10),
+		"User":  strconv.FormatUint(uint64(user), 10),
 		"Group": strconv.FormatUint(uint64(group), 10),
 	}
 	queryField := []string{"count(*) as count"}

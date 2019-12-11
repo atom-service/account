@@ -90,7 +90,7 @@ func TestService_QueryGroups(t *testing.T) {
 					return
 				}
 				if int64(len(gotResp.Data)) != tt.wantDataSize {
-					t.Errorf("Service.QueryGroups() = %v, want %d", gotResp, tt.wantDataSize)
+					t.Errorf("Service.QueryGroups() = %v, want %d", gotResp.Data, tt.wantDataSize)
 					return
 				}
 				if gotResp.CurrentPage != tt.wantCurrentPage {
