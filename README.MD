@@ -4,20 +4,21 @@
 
 ## 自动生成的 RPC 文档 
 
-    [【点击查看】](./standard/document.md). 
+> [document.md](./standard/document.md)、
+> [document.html](./standard/document.html) 
 
 ## Features
 
-    [x] 用户 CURD
-    [x] 用户 CURD 历史记录
-    [x] 分组 CURD
-    [x] 分组 CURD 历史记录
-    [x] 标签 CURD
-    [x] 标签 CURD 历史记录
+> * [x] 用户 CURD
+> * [x] 用户 CURD 历史记录
+> * [x] 分组 CURD
+> * [x] 分组 CURD 历史记录
+> * [x] 标签 CURD
+> * [x] 标签 CURD 历史记录
 
 ## TODO
 
-    [ ] 用户 CURD 测试
-    [ ] 分组 CURD 测试
-    [ ] 标签 CURD 测试
-    [ ] 修改历史记录 测试
+> * [ ] 用户 CURD 测试
+> * [ ] 分组 CURD 测试
+> * [ ] 标签 CURD 测试
+> * [ ] 修改历史记录 测试
