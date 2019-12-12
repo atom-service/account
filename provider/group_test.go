@@ -65,8 +65,8 @@ func TestService_QueryGroups(t *testing.T) {
 			standard.State_SUCCESS, 1, 1, 3, false},
 		{"第二页", &standard.QueryGroupsRequest{Page: 1, Limit: 2},
 			standard.State_SUCCESS, 2, 1, 2, false},
-		{"空的 ID", &standard.QueryGroupsRequest{Page: 0, Limit: 0},
-			standard.State_PARAMS_INVALID, 0, 0, 0, false},
+		{"空的 ID", &standard.QueryGroupsRequest{Page: 1, Limit: 0},
+			standard.State_PARAMS_INVALID, 0, 1, 0, false},
 		{"不存在的 ID", &standard.QueryGroupsRequest{},
 			standard.State_PARAMS_INVALID, 0, 0, 0, false},
 	}

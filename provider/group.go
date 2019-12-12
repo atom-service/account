@@ -82,7 +82,7 @@ func (srv *Service) CreateGroup(ctx context.Context, req *standard.CreateGroupRe
 func (srv *Service) QueryGroups(ctx context.Context, req *standard.QueryGroupsRequest) (resp *standard.QueryGroupsResponse, err error) {
 	resp = new(standard.QueryGroupsResponse)
 
-	if req.Page == 0 || req.Limit == 0 {
+	if req.Page <= 0 || req.Limit <= 0 {
 		resp.State = standard.State_PARAMS_INVALID
 		resp.Message = "无效的参数"
 		return resp, nil
@@ -111,7 +111,7 @@ func (srv *Service) QueryGroups(ctx context.Context, req *standard.QueryGroupsRe
 // QueryGroupByID 通过 ID 查询组信息
 func (srv *Service) QueryGroupByID(ctx context.Context, req *standard.QueryGroupByIDRequest) (resp *standard.QueryGroupByIDResponse, err error) {
 	resp = new(standard.QueryGroupByIDResponse)
-	if req.ID == 0 {
+	if req.ID <= 0 {
 		resp.State = standard.State_PARAMS_INVALID
 		resp.Message = "无效的 ID"
 		return resp, nil
@@ -145,7 +145,7 @@ func (srv *Service) QueryGroupByID(ctx context.Context, req *standard.QueryGroup
 // DeleteGroupByID 通过 ID 删除分支
 func (srv *Service) DeleteGroupByID(ctx context.Context, req *standard.DeleteGroupByIDRequest) (resp *standard.DeleteGroupByIDResponse, err error) {
 	resp = new(standard.DeleteGroupByIDResponse)
-	if req.ID == 0 {
+	if req.ID <= 0 {
 		resp.State = standard.State_PARAMS_INVALID
 		resp.Message = "无效的 ID"
 		return resp, nil
@@ -179,7 +179,7 @@ func (srv *Service) DeleteGroupByID(ctx context.Context, req *standard.DeleteGro
 // UpdateGroupNameByID 更新分组名称
 func (srv *Service) UpdateGroupNameByID(ctx context.Context, req *standard.UpdateGroupNameByIDRequest) (resp *standard.UpdateGroupNameByIDResponse, err error) {
 	resp = new(standard.UpdateGroupNameByIDResponse)
-	if req.ID == 0 {
+	if req.ID <= 0 {
 		resp.State = standard.State_PARAMS_INVALID
 		resp.Message = "无效的 ID"
 		return resp, nil
@@ -219,7 +219,7 @@ func (srv *Service) UpdateGroupNameByID(ctx context.Context, req *standard.Updat
 // UpdateGroupClassByID 更新分组的 Class 信息
 func (srv *Service) UpdateGroupClassByID(ctx context.Context, req *standard.UpdateGroupClassByIDRequest) (resp *standard.UpdateGroupClassByIDResponse, err error) {
 	resp = new(standard.UpdateGroupClassByIDResponse)
-	if req.ID == 0 {
+	if req.ID <= 0 {
 		resp.State = standard.State_PARAMS_INVALID
 		resp.Message = "无效的 ID"
 		return resp, nil
@@ -259,7 +259,7 @@ func (srv *Service) UpdateGroupClassByID(ctx context.Context, req *standard.Upda
 // UpdateGroupStateByID 更新分组的状态
 func (srv *Service) UpdateGroupStateByID(ctx context.Context, req *standard.UpdateGroupStateByIDRequest) (resp *standard.UpdateGroupStateByIDResponse, err error) {
 	resp = new(standard.UpdateGroupStateByIDResponse)
-	if req.ID == 0 {
+	if req.ID <= 0 {
 		resp.State = standard.State_PARAMS_INVALID
 		resp.Message = "无效的 ID"
 		return resp, nil
@@ -299,7 +299,7 @@ func (srv *Service) UpdateGroupStateByID(ctx context.Context, req *standard.Upda
 // UpdateGroupDescriptionByID 更新分组的介绍信息
 func (srv *Service) UpdateGroupDescriptionByID(ctx context.Context, req *standard.UpdateGroupDescriptionByIDRequest) (resp *standard.UpdateGroupDescriptionByIDResponse, err error) {
 	resp = new(standard.UpdateGroupDescriptionByIDResponse)
-	if req.ID == 0 {
+	if req.ID <= 0 {
 		resp.State = standard.State_PARAMS_INVALID
 		resp.Message = "无效的 ID"
 		return resp, nil
@@ -339,7 +339,7 @@ func (srv *Service) UpdateGroupDescriptionByID(ctx context.Context, req *standar
 // AddUserToGroupByID 添加用户进组
 func (srv *Service) AddUserToGroupByID(ctx context.Context, req *standard.AddUserToGroupByIDRequest) (resp *standard.AddUserToGroupByIDResponse, err error) {
 	resp = new(standard.AddUserToGroupByIDResponse)
-	if req.ID == 0 || req.GroupID == 0 {
+	if req.ID <= 0 || req.GroupID <= 0 {
 		resp.State = standard.State_PARAMS_INVALID
 		resp.Message = "无效的分组 ID"
 		return resp, nil
@@ -401,7 +401,7 @@ func (srv *Service) AddUserToGroupByID(ctx context.Context, req *standard.AddUse
 // RemoveUserFromGroupByID 将用户移出组
 func (srv *Service) RemoveUserFromGroupByID(ctx context.Context, req *standard.RemoveUserFromGroupByIDRequest) (resp *standard.RemoveUserFromGroupByIDResponse, err error) {
 	resp = new(standard.RemoveUserFromGroupByIDResponse)
-	if req.ID == 0 || req.UserID == 0 {
+	if req.ID <= 0 || req.UserID <= 0 {
 		resp.State = standard.State_PARAMS_INVALID
 		resp.Message = "无效的 ID"
 		return resp, nil

@@ -71,7 +71,7 @@ func TestService_QueryUsers(t *testing.T) {
 			standard.State_SUCCESS, 2, 1, 2, false},
 		{"空的 ID", &standard.QueryUsersRequest{Page: 0, Limit: 0},
 			standard.State_PARAMS_INVALID, 0, 0, 0, false},
-		{"不存在的 ID", &standard.QueryUsersRequest{},
+		{"不存在的 ID", &standard.QueryUsersRequest{Page: 0, Limit: 0},
 			standard.State_PARAMS_INVALID, 0, 0, 0, false},
 	}
 
@@ -122,9 +122,9 @@ func TestService_QueryUserByID(t *testing.T) {
 		{"正常查询", &standard.QueryUserByIDRequest{ID: 3},
 			"Username2", standard.State_SUCCESS, false},
 		{"空的 ID", &standard.QueryUserByIDRequest{ID: 0},
-			"ignore", standard.State_PARAMS_INVALID, false},
+			"", standard.State_PARAMS_INVALID, false},
 		{"不存在的 ID", &standard.QueryUserByIDRequest{ID: 999},
-			"ignore", standard.State_USER_NOT_EXIST, false},
+			"", standard.State_USER_NOT_EXIST, false},
 	}
 
 	for _, tt := range tests {
@@ -140,7 +140,7 @@ func TestService_QueryUserByID(t *testing.T) {
 				return
 			}
 
-			if tt.wantUsername != "ignore" {
+			if tt.wantState == standard.State_SUCCESS {
 				if gotResp.Data.Username != tt.wantUsername {
 					t.Errorf("Service.QueryUserByID() = %v, want %v", gotResp, tt.wantUsername)
 					return
@@ -170,9 +170,9 @@ func TestService_QueryUsersByInviter(t *testing.T) {
 		{"无效的翻页数据", &standard.QueryUsersByInviterRequest{Inviter: 1, Page: 0, Limit: 0},
 			standard.State_PARAMS_INVALID, 0, 0, 0, false},
 		{"不存在的 ID", &standard.QueryUsersByInviterRequest{Inviter: 999, Page: 1, Limit: 90},
-			standard.State_SUCCESS, 0, 0, 0, false},
+			standard.State_SUCCESS, 0, 1, 0, false},
 		{"空的 ID", &standard.QueryUsersByInviterRequest{Page: 1, Limit: 90},
-			standard.State_PARAMS_INVALID, 0, 0, 0, false},
+			standard.State_PARAMS_INVALID, 0, 1, 0, false},
 	}
 
 	for _, tt := range tests {
@@ -222,9 +222,9 @@ func TestService_QueryUserByUsername(t *testing.T) {
 		{"正常查询", &standard.QueryUserByUsernameRequest{Username: "Username2"},
 			"Username2", standard.State_SUCCESS, false},
 		{"空的 Username", &standard.QueryUserByUsernameRequest{Username: ""},
-			"ignore", standard.State_PARAMS_INVALID, false},
+			"", standard.State_PARAMS_INVALID, false},
 		{"不存在的 Username", &standard.QueryUserByUsernameRequest{Username: "TESTNAME"},
-			"ignore", standard.State_USER_NOT_EXIST, false},
+			"", standard.State_USER_NOT_EXIST, false},
 	}
 
 	for _, tt := range tests {
@@ -240,7 +240,7 @@ func TestService_QueryUserByUsername(t *testing.T) {
 				return
 			}
 
-			if tt.wantUsername != "ignore" {
+			if tt.wantState == standard.State_SUCCESS {
 				if gotResp.Data.Username != tt.wantUsername {
 					t.Errorf("Service.QueryUserByUsername() = %v, want %v", gotResp, tt.wantUsername)
 					return

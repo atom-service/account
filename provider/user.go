@@ -61,7 +61,7 @@ func (srv *Service) CreateUser(ctx context.Context, req *standard.CreateUserRequ
 	}
 
 	// 查询数据
-	queryResult, err := srv.QueryUserByID(ctx, &standard.QueryUserByIDRequest{ID: int64(id)})
+	queryResult, err := srv.QueryUserByID(ctx, &standard.QueryUserByIDRequest{ID: id})
 	if err != nil {
 		resp.State = standard.State_SERVICE_ERROR
 		resp.Message = err.Error()
@@ -85,7 +85,7 @@ func (srv *Service) CreateUser(ctx context.Context, req *standard.CreateUserRequ
 func (srv *Service) QueryUserByID(ctx context.Context, req *standard.QueryUserByIDRequest) (resp *standard.QueryUserByIDResponse, err error) {
 	resp = new(standard.QueryUserByIDResponse)
 
-	if req.ID == 0 {
+	if req.ID <= 0 {
 		resp.State = standard.State_PARAMS_INVALID
 		resp.Message = "无效的 ID"
 		return resp, nil
@@ -121,13 +121,13 @@ func (srv *Service) QueryUserByID(ctx context.Context, req *standard.QueryUserBy
 func (srv *Service) QueryUsers(ctx context.Context, req *standard.QueryUsersRequest) (resp *standard.QueryUsersResponse, err error) {
 	resp = new(standard.QueryUsersResponse)
 
-	if req.Page == 0 || req.Limit == 0 {
+	if req.Page <= 0 || req.Limit <= 0 {
 		resp.State = standard.State_PARAMS_INVALID
 		resp.Message = "无效的参数"
 		return resp, nil
 	}
 
-	totalPage, currentPage, users, err := dao.QueryUsers(int(req.Page), int(req.Limit))
+	totalPage, currentPage, users, err := dao.QueryUsers(req.Page, req.Limit)
 	if err != nil {
 		resp.State = standard.State_DB_OPERATION_FATLURE
 		resp.Message = err.Error()
@@ -140,8 +140,8 @@ func (srv *Service) QueryUsers(ctx context.Context, req *standard.QueryUsersRequ
 	}
 
 	resp.State = standard.State_SUCCESS
-	resp.CurrentPage = int64(currentPage)
-	resp.TotalPage = int64(totalPage)
+	resp.CurrentPage = currentPage
+	resp.TotalPage = totalPage
 	resp.Message = "查询成功"
 	resp.Data = data
 	return resp, nil
@@ -150,13 +150,19 @@ func (srv *Service) QueryUsers(ctx context.Context, req *standard.QueryUsersRequ
 // QueryUsersByInviter 根据邀请码查找用户
 func (srv *Service) QueryUsersByInviter(ctx context.Context, req *standard.QueryUsersByInviterRequest) (resp *standard.QueryUsersByInviterResponse, err error) {
 	resp = new(standard.QueryUsersByInviterResponse)
-	if req.Inviter == 0 {
+	if req.Inviter <= 0 {
 		resp.State = standard.State_PARAMS_INVALID
 		resp.Message = "无效的 Inviter"
 		return resp, nil
 	}
 
-	totalPage, currentPage, users, err := dao.QueryUsersByInviter(req.Inviter, int(req.Page), int(req.Limit))
+	if req.Page <= 0 || req.Limit <= 0 {
+		resp.State = standard.State_PARAMS_INVALID
+		resp.Message = "无效的参数"
+		return resp, nil
+	}
+
+	totalPage, currentPage, users, err := dao.QueryUsersByInviter(req.Inviter, req.Page, req.Limit)
 	if err != nil {
 		resp.State = standard.State_DB_OPERATION_FATLURE
 		resp.Message = err.Error()
@@ -169,8 +175,8 @@ func (srv *Service) QueryUsersByInviter(ctx context.Context, req *standard.Query
 	}
 
 	resp.State = standard.State_SUCCESS
-	resp.CurrentPage = int64(currentPage)
-	resp.TotalPage = int64(totalPage)
+	resp.CurrentPage = currentPage
+	resp.TotalPage = totalPage
 	resp.Message = "查询成功"
 	resp.Data = data
 
@@ -217,7 +223,7 @@ func (srv *Service) QueryUserByUsername(ctx context.Context, req *standard.Query
 func (srv *Service) DeleteUserByID(ctx context.Context, req *standard.DeleteUserByIDRequest) (resp *standard.DeleteUserByIDResponse, err error) {
 	resp = new(standard.DeleteUserByIDResponse)
 
-	if req.ID == 0 {
+	if req.ID <= 0 {
 		resp.State = standard.State_PARAMS_INVALID
 		resp.Message = "无效的 ID"
 		return resp, nil
@@ -251,7 +257,7 @@ func (srv *Service) DeleteUserByID(ctx context.Context, req *standard.DeleteUser
 // UpdateUserPasswordByID 通过 ID 更新用户密码
 func (srv *Service) UpdateUserPasswordByID(ctx context.Context, req *standard.UpdateUserPasswordByIDRequest) (resp *standard.UpdateUserPasswordByIDResponse, err error) {
 	resp = new(standard.UpdateUserPasswordByIDResponse)
-	if req.ID == 0 {
+	if req.ID <= 0 {
 		resp.State = standard.State_PARAMS_INVALID
 		resp.Message = "无效的 ID"
 		return resp, nil
@@ -291,7 +297,7 @@ func (srv *Service) UpdateUserPasswordByID(ctx context.Context, req *standard.Up
 // VerifyUserPasswordByID 通过 ID 验证用户密码
 func (srv *Service) VerifyUserPasswordByID(ctx context.Context, req *standard.VerifyUserPasswordByIDRequest) (resp *standard.VerifyUserPasswordByIDResponse, err error) {
 	resp = new(standard.VerifyUserPasswordByIDResponse)
-	if req.ID == 0 {
+	if req.ID <= 0 {
 		resp.State = standard.State_PARAMS_INVALID
 		resp.Message = "无效的 ID"
 		return resp, nil
