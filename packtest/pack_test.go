@@ -25,7 +25,7 @@ func TestMain(m *testing.M) {
 	os.Exit(exitCode)                                                                           // 推出
 }
 
-func CreateUserTest(t *testing.T) {
+func TestCreateUser(t *testing.T) {
 	srv := provider.NewService()
 	tests := []struct {
 		name string
