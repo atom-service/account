@@ -44,6 +44,13 @@ func TestService_CreateLabel(t *testing.T) {
 				t.Errorf("Service.CreateLabel() = %v, want %v", gotResp, tt.wantState)
 				return
 			}
+			if gotResp.State == standard.State_SUCCESS {
+				if gotResp.Data.Name != tt.args.Name {
+					t.Errorf("Service.CreateLabel() = %v, want %v", gotResp, tt.wantState)
+					return
+				}
+			}
+
 		})
 	}
 }
@@ -86,6 +93,13 @@ func TestService_CreateLabelForUser(t *testing.T) {
 			if gotResp.State.String() != tt.wantState.String() {
 				t.Errorf("Service.CreateLabelForUser() = %v, want %v", gotResp, tt.wantState)
 				return
+			}
+
+			if gotResp.State == standard.State_SUCCESS {
+				if gotResp.Data.Name != tt.args.Name {
+					t.Errorf("Service.CreateLabelForUser() = %v, want %v", gotResp, tt.wantState)
+					return
+				}
 			}
 		})
 	}

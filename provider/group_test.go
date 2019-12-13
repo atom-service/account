@@ -44,6 +44,13 @@ func TestService_CreateGroup(t *testing.T) {
 				t.Errorf("Service.CreateGroup() = %v, want %v", gotResp, tt.wantState)
 				return
 			}
+
+			if gotResp.State == standard.State_SUCCESS {
+				if gotResp.Data.Name != tt.args.Name {
+					t.Errorf("Service.CreateGroup() = %v, want %v", gotResp, tt.wantState)
+					return
+				}
+			}
 		})
 	}
 }

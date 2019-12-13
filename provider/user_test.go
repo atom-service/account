@@ -48,6 +48,12 @@ func TestService_CreateUser(t *testing.T) {
 				t.Errorf("Service.CreateUser() = %v, want %v", gotResp, tt.wantState)
 				return
 			}
+			if gotResp.State == standard.State_SUCCESS {
+				if gotResp.Data.Username != tt.args.Username {
+					t.Errorf("Service.CreateUser() = %v, want %v", gotResp, tt.wantState)
+					return
+				}
+			}
 		})
 	}
 }
