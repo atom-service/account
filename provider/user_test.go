@@ -2,10 +2,46 @@ package provider
 
 import (
 	"context"
+	"fmt"
+	"os"
 	"testing"
 
+	"github.com/grpcbrick/account/dao"
 	"github.com/grpcbrick/account/standard"
+	"github.com/yinxulai/goutils/config"
+	"github.com/yinxulai/goutils/sqldb"
 )
+
+func TestMain(m *testing.M) {
+	fmt.Println("准备测试环境")                                                                       // 日志
+	config.Set("encrypt-password", "encrypt-password")                                          // 密码加密中会用到的
+	sqldb.Init("mysql", "root:root@tcp(localhost:3306)/default?charset=utf8mb4&parseTime=true") // 测试数据库
+	dao.InitTables()                                                                            // 初始化测试数据库
+	InitTestData()                                                                              // 预插入一条用户数据
+	fmt.Println("开始执行测试")                                                                       // 日志
+	exitCode := m.Run()                                                                         // 执行测试
+	fmt.Println("测试执行完成,清理测试数据")                                                                // 日志
+	dao.TruncateTables()                                                                        // 重置测试数据库
+	os.Exit(exitCode)                                                                           // 推出
+}
+
+func InitTestData() {
+	// 预创建一条测试用户数据
+	// 方便 label、group 测试
+	srv := NewService()
+	resp, err := srv.CreateUser(
+		context.Background(),
+		&standard.CreateUserRequest{Class: "InitTestData", Inviter: 0, Nickname: "InitTestData", Username: "InitTestData", Password: "InitTestData"},
+	)
+	if err != nil {
+		panic(err)
+	}
+	if resp.State != standard.State_SUCCESS {
+		panic(fmt.Errorf("准备测试数据失败、用户创建失败: %v", resp))
+	}
+
+	fmt.Printf("预插入一条用户数据 ID 为: %d \n", resp.Data.ID)
+}
 
 func TestService_CreateUser(t *testing.T) {
 	srv := NewService()
@@ -70,9 +106,9 @@ func TestService_QueryUsers(t *testing.T) {
 		wantErr         bool
 	}{
 		{"正常查询", &standard.QueryUsersRequest{Page: 1, Limit: 90},
-			standard.State_SUCCESS, 3, 1, 1, false},
+			standard.State_SUCCESS, 4, 1, 1, false},
 		{"只查一条", &standard.QueryUsersRequest{Page: 1, Limit: 1},
-			standard.State_SUCCESS, 1, 1, 3, false},
+			standard.State_SUCCESS, 1, 1, 4, false},
 		{"第二页", &standard.QueryUsersRequest{Page: 1, Limit: 2},
 			standard.State_SUCCESS, 2, 1, 2, false},
 		{"空的 ID", &standard.QueryUsersRequest{Page: 0, Limit: 0},
@@ -121,11 +157,11 @@ func TestService_QueryUserByID(t *testing.T) {
 		wantState    standard.State
 		wantErr      bool
 	}{
-		{"正常查询", &standard.QueryUserByIDRequest{ID: 1},
-			"Username", standard.State_SUCCESS, false},
 		{"正常查询", &standard.QueryUserByIDRequest{ID: 2},
-			"Username1", standard.State_SUCCESS, false},
+			"Username", standard.State_SUCCESS, false},
 		{"正常查询", &standard.QueryUserByIDRequest{ID: 3},
+			"Username1", standard.State_SUCCESS, false},
+		{"正常查询", &standard.QueryUserByIDRequest{ID: 4},
 			"Username2", standard.State_SUCCESS, false},
 		{"空的 ID", &standard.QueryUserByIDRequest{ID: 0},
 			"", standard.State_PARAMS_INVALID, false},
@@ -264,15 +300,15 @@ func TestService_DeleteUserByID(t *testing.T) {
 		wantState standard.State
 		wantErr   bool
 	}{
-		{"正常删除", &standard.DeleteUserByIDRequest{ID: 1},
-			standard.State_SUCCESS, false},
 		{"正常删除", &standard.DeleteUserByIDRequest{ID: 2},
 			standard.State_SUCCESS, false},
 		{"正常删除", &standard.DeleteUserByIDRequest{ID: 3},
 			standard.State_SUCCESS, false},
-		{"不存在的 ID", &standard.DeleteUserByIDRequest{ID: 4},
+		{"正常删除", &standard.DeleteUserByIDRequest{ID: 4},
+			standard.State_SUCCESS, false},
+		{"不存在的 ID", &standard.DeleteUserByIDRequest{ID: 9999},
 			standard.State_USER_NOT_EXIST, false},
-		{"已删除的 ID", &standard.DeleteUserByIDRequest{ID: 1},
+		{"已删除的 ID", &standard.DeleteUserByIDRequest{ID: 2},
 			standard.State_SUCCESS, false},
 		{"空的 ID", &standard.DeleteUserByIDRequest{ID: 0},
 			standard.State_PARAMS_INVALID, false},
@@ -302,15 +338,15 @@ func TestService_UpdateUserPasswordByID(t *testing.T) {
 		wantState standard.State
 		wantErr   bool
 	}{
-		{"正常更新", &standard.UpdateUserPasswordByIDRequest{ID: 1, Password: "password1"},
+		{"正常更新", &standard.UpdateUserPasswordByIDRequest{ID: 2, Password: "password1"},
 			standard.State_SUCCESS, false},
-		{"正常更新", &standard.UpdateUserPasswordByIDRequest{ID: 2, Password: "password2"},
+		{"正常更新", &standard.UpdateUserPasswordByIDRequest{ID: 3, Password: "password2"},
 			standard.State_SUCCESS, false},
-		{"正常更新", &standard.UpdateUserPasswordByIDRequest{ID: 3, Password: "password3"},
+		{"正常更新", &standard.UpdateUserPasswordByIDRequest{ID: 4, Password: "password3"},
 			standard.State_SUCCESS, false},
-		{"对不存在的用户 ID 更新", &standard.UpdateUserPasswordByIDRequest{ID: 4, Password: "password4"},
+		{"对不存在的用户 ID 更新", &standard.UpdateUserPasswordByIDRequest{ID: 99999, Password: "password4"},
 			standard.State_USER_NOT_EXIST, false},
-		{"对存在的用户使用空密码更新", &standard.UpdateUserPasswordByIDRequest{ID: 1, Password: ""},
+		{"对存在的用户使用空密码更新", &standard.UpdateUserPasswordByIDRequest{ID: 2, Password: ""},
 			standard.State_PARAMS_INVALID, false},
 		// TODO: 测试密码正则
 
@@ -340,17 +376,17 @@ func TestService_VerifyUserPasswordByID(t *testing.T) {
 		wantState standard.State
 		wantErr   bool
 	}{
-		{"正常验证密码1", &standard.VerifyUserPasswordByIDRequest{ID: 1, Password: "password1"},
+		{"正常验证密码1", &standard.VerifyUserPasswordByIDRequest{ID: 2, Password: "password1"},
 			standard.State_SUCCESS, false},
-		{"正常验证密码2", &standard.VerifyUserPasswordByIDRequest{ID: 2, Password: "password2"},
+		{"正常验证密码2", &standard.VerifyUserPasswordByIDRequest{ID: 3, Password: "password2"},
 			standard.State_SUCCESS, false},
-		{"正常验证密码3", &standard.VerifyUserPasswordByIDRequest{ID: 3, Password: "password3"},
+		{"正常验证密码3", &standard.VerifyUserPasswordByIDRequest{ID: 4, Password: "password3"},
 			standard.State_SUCCESS, false},
-		{"正常验证错误密码", &standard.VerifyUserPasswordByIDRequest{ID: 1, Password: "password-error"},
+		{"正常验证错误密码", &standard.VerifyUserPasswordByIDRequest{ID: 2, Password: "password-error"},
 			standard.State_FAILURE, false},
-		{"对不存在的用户验证密码", &standard.VerifyUserPasswordByIDRequest{ID: 4, Password: "password4"},
+		{"对不存在的用户验证密码", &standard.VerifyUserPasswordByIDRequest{ID: 99999, Password: "password4"},
 			standard.State_USER_NOT_EXIST, false},
-		{"对存在的用户使用空密码更新", &standard.VerifyUserPasswordByIDRequest{ID: 1, Password: ""},
+		{"对存在的用户使用空密码更新", &standard.VerifyUserPasswordByIDRequest{ID: 2, Password: ""},
 			standard.State_PARAMS_INVALID, false},
 	}
 

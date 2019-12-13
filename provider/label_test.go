@@ -64,21 +64,21 @@ func TestService_CreateLabelForUser(t *testing.T) {
 		wantErr   bool
 	}{
 		{"正常创建", &standard.CreateLabelForUserRequest{UserID: 1, Name: "TEST1", Class: "Class", State: "State", Value: "Value"},
-			standard.State_USER_NOT_EXIST, false},
+			standard.State_SUCCESS, false},
 		{"正常创建", &standard.CreateLabelForUserRequest{UserID: 1, Name: "TEST2", Class: "Class", State: "State", Value: "Value"},
-			standard.State_USER_NOT_EXIST, false},
+			standard.State_SUCCESS, false},
 		{"正常创建", &standard.CreateLabelForUserRequest{UserID: 1, Name: "TEST3", Class: "Class", State: "State", Value: "Value"},
-			standard.State_USER_NOT_EXIST, false},
+			standard.State_SUCCESS, false},
 		{"重复的 Name", &standard.CreateLabelForUserRequest{UserID: 1, Name: "TEST4", Class: "Class", State: "State", Value: "Value"},
-			standard.State_USER_NOT_EXIST, false}, // 标签允许重复
+			standard.State_SUCCESS, false}, // 标签允许重复
 		{"空的 Name", &standard.CreateLabelForUserRequest{UserID: 1, Name: "5", Class: "Class", State: "Nickname", Value: "Value"},
-			standard.State_USER_NOT_EXIST, false},
+			standard.State_PARAMS_INVALID, false},
 		{"空的 Class", &standard.CreateLabelForUserRequest{UserID: 1, Name: "TEST6", Class: "", State: "Nickname", Value: "Value"},
-			standard.State_USER_NOT_EXIST, false},
+			standard.State_PARAMS_INVALID, false},
 		{"空的 State", &standard.CreateLabelForUserRequest{UserID: 1, Name: "TEST7", Class: "Class", State: "", Value: "Value"},
-			standard.State_USER_NOT_EXIST, false},
+			standard.State_PARAMS_INVALID, false},
 		{"空的 Value", &standard.CreateLabelForUserRequest{UserID: 1, Name: "TEST8", Class: "Class", State: "Nickname", Value: ""},
-			standard.State_USER_NOT_EXIST, false},
+			standard.State_PARAMS_INVALID, false},
 		{"空的 UserID", &standard.CreateLabelForUserRequest{Name: "TEST9", Class: "Class", State: "Nickname", Value: ""},
 			standard.State_USER_NOT_EXIST, false},
 	}
@@ -305,41 +305,6 @@ func TestService_UpdateLabelValueByID(t *testing.T) {
 	}
 }
 
-func TestService_AddLabelToUserByID(t *testing.T) {
-	srv := NewService()
-	tests := []struct {
-		name      string
-		args      *standard.AddLabelToUserByIDRequest
-		wantState standard.State
-		wantErr   bool
-	}{
-		{"空的用户 ID", &standard.AddLabelToUserByIDRequest{ID: 2},
-			standard.State_PARAMS_INVALID, false},
-		{"不存在的用户 ID", &standard.AddLabelToUserByIDRequest{ID: 2, UserID: 999999},
-			standard.State_USER_NOT_EXIST, false},
-		{"空的标签 ID", &standard.AddLabelToUserByIDRequest{UserID: 999999},
-			standard.State_PARAMS_INVALID, false},
-		{"不存在的标签 ID", &standard.AddLabelToUserByIDRequest{ID: 999999, UserID: 1},
-			standard.State_LABEL_NOT_EXIST, false},
-		{"正常添加", &standard.AddLabelToUserByIDRequest{ID: 1, UserID: 1},
-			standard.State_USER_NOT_EXIST, false},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			gotResp, err := srv.AddLabelToUserByID(context.Background(), tt.args)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("Service.AddLabelToUserByID() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-
-			if gotResp.State.String() != tt.wantState.String() {
-				t.Errorf("Service.AddLabelToUserByID() = %v, want %v", gotResp, tt.wantState)
-				return
-			}
-		})
-	}
-}
-
 func TestService_QueryLabels(t *testing.T) {
 	srv := NewService()
 	tests := []struct {
@@ -352,11 +317,11 @@ func TestService_QueryLabels(t *testing.T) {
 		wantErr         bool
 	}{
 		{"正常查询", &standard.QueryLabelsRequest{Page: 1, Limit: 90},
-			standard.State_SUCCESS, 4, 1, 1, false},
+			standard.State_SUCCESS, 8, 1, 1, false},
 		{"只查一条", &standard.QueryLabelsRequest{Page: 1, Limit: 1},
-			standard.State_SUCCESS, 1, 1, 4, false},
+			standard.State_SUCCESS, 1, 1, 8, false},
 		{"第二页", &standard.QueryLabelsRequest{Page: 1, Limit: 2},
-			standard.State_SUCCESS, 2, 1, 2, false},
+			standard.State_SUCCESS, 2, 1, 4, false},
 		{"空的 ID", &standard.QueryLabelsRequest{Page: 1, Limit: 0},
 			standard.State_PARAMS_INVALID, 0, 1, 0, false},
 		{"不存在的 ID", &standard.QueryLabelsRequest{},
@@ -394,6 +359,41 @@ func TestService_QueryLabels(t *testing.T) {
 	}
 }
 
+func TestService_AddLabelToUserByID(t *testing.T) {
+	srv := NewService()
+	tests := []struct {
+		name      string
+		args      *standard.AddLabelToUserByIDRequest
+		wantState standard.State
+		wantErr   bool
+	}{
+		{"空的用户 ID", &standard.AddLabelToUserByIDRequest{ID: 2},
+			standard.State_PARAMS_INVALID, false},
+		{"不存在的用户 ID", &standard.AddLabelToUserByIDRequest{ID: 2, UserID: 999999},
+			standard.State_USER_NOT_EXIST, false},
+		{"空的标签 ID", &standard.AddLabelToUserByIDRequest{UserID: 999999},
+			standard.State_PARAMS_INVALID, false},
+		{"不存在的标签 ID", &standard.AddLabelToUserByIDRequest{ID: 999999, UserID: 1},
+			standard.State_LABEL_NOT_EXIST, false},
+		{"正常添加", &standard.AddLabelToUserByIDRequest{ID: 1, UserID: 1},
+			standard.State_SUCCESS, false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotResp, err := srv.AddLabelToUserByID(context.Background(), tt.args)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Service.AddLabelToUserByID() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+
+			if gotResp.State.String() != tt.wantState.String() {
+				t.Errorf("Service.AddLabelToUserByID() = %v, want %v", gotResp, tt.wantState)
+				return
+			}
+		})
+	}
+}
+
 func TestService_RemoveLabelFromUserByID(t *testing.T) {
 	srv := NewService()
 	tests := []struct {
@@ -411,7 +411,7 @@ func TestService_RemoveLabelFromUserByID(t *testing.T) {
 		{"不存在的标签 ID", &standard.RemoveLabelFromUserByIDRequest{LabelID: 9999, ID: 2},
 			standard.State_LABEL_NOT_EXIST, false},
 		{"正常添加", &standard.RemoveLabelFromUserByIDRequest{LabelID: 1, ID: 1},
-			standard.State_USER_NOT_EXIST, false},
+			standard.State_SUCCESS, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

@@ -326,7 +326,7 @@ func TestService_AddUserToGroupByID(t *testing.T) {
 		{"不存在的组 ID", &standard.AddUserToGroupByIDRequest{ID: 1, GroupID: 999999},
 			standard.State_GROUP_NOT_EXIST, false},
 		{"正常添加", &standard.AddUserToGroupByIDRequest{ID: 1, GroupID: 1},
-			standard.State_USER_NOT_EXIST, false},
+			standard.State_SUCCESS, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -360,8 +360,8 @@ func TestService_RemoveUserFromGroupByID(t *testing.T) {
 			standard.State_PARAMS_INVALID, false},
 		{"不存在的组 ID", &standard.RemoveUserFromGroupByIDRequest{UserID: 1, ID: 999999},
 			standard.State_GROUP_NOT_EXIST, false},
-		{"正常添加", &standard.RemoveUserFromGroupByIDRequest{UserID: 1, ID: 1},
-			standard.State_USER_NOT_EXIST, false},
+		{"正常移除", &standard.RemoveUserFromGroupByIDRequest{UserID: 1, ID: 1},
+			standard.State_SUCCESS, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
