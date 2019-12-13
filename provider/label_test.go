@@ -56,24 +56,24 @@ func TestService_CreateLabelForUser(t *testing.T) {
 		wantState standard.State
 		wantErr   bool
 	}{
-		{"正常创建", &standard.CreateLabelForUserRequest{UserID: 1, Name: "TEST", Class: "Class", State: "State", Value: "Value"},
+		{"正常创建", &standard.CreateLabelForUserRequest{UserID: 1, Name: "TEST1", Class: "Class", State: "State", Value: "Value"},
 			standard.State_USER_NOT_EXIST, false},
 		{"正常创建", &standard.CreateLabelForUserRequest{UserID: 1, Name: "TEST2", Class: "Class", State: "State", Value: "Value"},
 			standard.State_USER_NOT_EXIST, false},
 		{"正常创建", &standard.CreateLabelForUserRequest{UserID: 1, Name: "TEST3", Class: "Class", State: "State", Value: "Value"},
 			standard.State_USER_NOT_EXIST, false},
-		{"重复的 Name", &standard.CreateLabelForUserRequest{UserID: 1, Name: "TEST", Class: "Class", State: "State", Value: "Value"},
+		{"重复的 Name", &standard.CreateLabelForUserRequest{UserID: 1, Name: "TEST4", Class: "Class", State: "State", Value: "Value"},
 			standard.State_USER_NOT_EXIST, false}, // 标签允许重复
-		{"空的 Name", &standard.CreateLabelForUserRequest{UserID: 1, Name: "", Class: "Class", State: "Nickname", Value: "Value"},
-			standard.State_PARAMS_INVALID, false},
-		{"空的 Class", &standard.CreateLabelForUserRequest{UserID: 1, Name: "TEST", Class: "", State: "Nickname", Value: "Value"},
-			standard.State_PARAMS_INVALID, false},
-		{"空的 State", &standard.CreateLabelForUserRequest{UserID: 1, Name: "TEST", Class: "Class", State: "", Value: "Value"},
-			standard.State_PARAMS_INVALID, false},
-		{"空的 Value", &standard.CreateLabelForUserRequest{UserID: 1, Name: "TEST", Class: "Class", State: "Nickname", Value: ""},
-			standard.State_PARAMS_INVALID, false},
-		{"空的 UserID", &standard.CreateLabelForUserRequest{Name: "TEST", Class: "Class", State: "Nickname", Value: ""},
-			standard.State_PARAMS_INVALID, false},
+		{"空的 Name", &standard.CreateLabelForUserRequest{UserID: 1, Name: "5", Class: "Class", State: "Nickname", Value: "Value"},
+			standard.State_USER_NOT_EXIST, false},
+		{"空的 Class", &standard.CreateLabelForUserRequest{UserID: 1, Name: "TEST6", Class: "", State: "Nickname", Value: "Value"},
+			standard.State_USER_NOT_EXIST, false},
+		{"空的 State", &standard.CreateLabelForUserRequest{UserID: 1, Name: "TEST7", Class: "Class", State: "", Value: "Value"},
+			standard.State_USER_NOT_EXIST, false},
+		{"空的 Value", &standard.CreateLabelForUserRequest{UserID: 1, Name: "TEST8", Class: "Class", State: "Nickname", Value: ""},
+			standard.State_USER_NOT_EXIST, false},
+		{"空的 UserID", &standard.CreateLabelForUserRequest{Name: "TEST9", Class: "Class", State: "Nickname", Value: ""},
+			standard.State_USER_NOT_EXIST, false},
 	}
 
 	for _, tt := range tests {
@@ -321,6 +321,60 @@ func TestService_AddLabelToUserByID(t *testing.T) {
 			if gotResp.State.String() != tt.wantState.String() {
 				t.Errorf("Service.AddLabelToUserByID() = %v, want %v", gotResp, tt.wantState)
 				return
+			}
+		})
+	}
+}
+
+func TestService_QueryLabels(t *testing.T) {
+	srv := NewService()
+	tests := []struct {
+		name            string
+		args            *standard.QueryLabelsRequest
+		wantState       standard.State
+		wantDataSize    int64
+		wantCurrentPage int64
+		wantTotalPage   int64
+		wantErr         bool
+	}{
+		{"正常查询", &standard.QueryLabelsRequest{Page: 1, Limit: 90},
+			standard.State_SUCCESS, 4, 1, 1, false},
+		{"只查一条", &standard.QueryLabelsRequest{Page: 1, Limit: 1},
+			standard.State_SUCCESS, 1, 1, 4, false},
+		{"第二页", &standard.QueryLabelsRequest{Page: 1, Limit: 2},
+			standard.State_SUCCESS, 2, 1, 2, false},
+		{"空的 ID", &standard.QueryLabelsRequest{Page: 1, Limit: 0},
+			standard.State_PARAMS_INVALID, 0, 1, 0, false},
+		{"不存在的 ID", &standard.QueryLabelsRequest{},
+			standard.State_PARAMS_INVALID, 0, 0, 0, false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotResp, err := srv.QueryLabels(context.Background(), tt.args)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Service.QueryLabels() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+
+			if gotResp.State.String() != tt.wantState.String() {
+				t.Errorf("Service.QueryLabels() = %v, want %v", gotResp, tt.wantState)
+				return
+			}
+
+			if tt.wantState == standard.State_SUCCESS {
+				if gotResp.TotalPage != tt.wantTotalPage {
+					t.Errorf("Service.QueryLabels() = %v, want %d", gotResp, tt.wantTotalPage)
+					return
+				}
+				if int64(len(gotResp.Data)) != tt.wantDataSize {
+					t.Errorf("Service.QueryLabels() = %v, want %d", gotResp.Data, tt.wantDataSize)
+					return
+				}
+				if gotResp.CurrentPage != tt.wantCurrentPage {
+					t.Errorf("Service.QueryLabels() = %v, want %d", gotResp, tt.wantCurrentPage)
+					return
+				}
 			}
 		})
 	}

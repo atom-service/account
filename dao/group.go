@@ -92,9 +92,9 @@ func CreateGroupHistory(id int64) error {
 	historyStmp := sqldb.CreateNamedStmt(strings.Join([]string{
 		"INSERT INTO",
 		"`" + groupHistoryTableName + "`",
-		"(ID,Name,Class,State,Description,DeletedTime,CreatedTime,UpdatedTime)",
+		"(`ID`,`Name`,`Class`,`State`,`Description`,`DeletedTime`,`CreatedTime`,`UpdatedTime`)",
 		"SELECT",
-		"ID,Name,Class,State,Description,DeletedTime,CreatedTime,UpdatedTime",
+		"`ID`,`Name`,`Class`,`State`,`Description`,`DeletedTime`,`CreatedTime`,`UpdatedTime`",
 		"FROM",
 		"`" + groupTableName + "`",
 		"WHERE",
@@ -112,7 +112,7 @@ func CreateGroup(name, class, state, description string) (int64, error) {
 	stmp := sqldb.CreateNamedStmt(strings.Join([]string{
 		"INSERT INTO",
 		"`" + groupTableName + "`",
-		"(Name, Class, State, Description)",
+		"(`Name`, `Class`, `State`, `Description`)",
 		"VALUES",
 		"(:Name, :Class, :State, :Description)",
 	}, " "))
@@ -138,7 +138,7 @@ func CountGroupByName(name string) (int64, error) {
 		"SELECT COUNT(*) as Count FROM",
 		"`" + groupTableName + "`",
 		"WHERE",
-		"Name=:Name",
+		"`Name`=:Name",
 	}, " "))
 
 	result := struct{ Count int64 }{}
@@ -159,7 +159,7 @@ func CountGroupByID(id int64) (int64, error) {
 		"SELECT COUNT(*) as Count FROM",
 		"`" + groupTableName + "`",
 		"WHERE",
-		"ID=:ID",
+		"`ID`=:ID",
 	}, " "))
 
 	result := struct{ Count int64 }{}
@@ -179,7 +179,7 @@ func QueryGroups(page, limit int64) (totalPage, currentPage int64, groups []*mod
 
 	// 查询数据长度
 	countStmp := sqldb.CreateStmt(strings.Join([]string{
-		"SELECT COUNT(*) as Count FROM",
+		"SELECT COUNT(*) as `Count` FROM",
 		"`" + groupTableName + "`",
 	}, " "))
 
@@ -230,7 +230,7 @@ func QueryGroupByID(id int64) (*models.Group, error) {
 		"SELECT * FROM",
 		"`" + groupTableName + "`",
 		"WHERE",
-		"ID=:ID",
+		"`ID`=:ID",
 	}, " "))
 
 	group := new(models.Group)
@@ -281,7 +281,8 @@ func updataGroupFieldByID(id int64, field map[string]interface{}) error {
 		"`" + groupTableName + "`",
 		"SET",
 		strings.Join(fieldSQL, ","),
-		"WHERE ID=:ID",
+		"WHERE",
+		"`ID`=:ID",
 	}, " "))
 
 	// 修改前创建历史
@@ -398,7 +399,7 @@ func AddUserToGroupByID(group, user int64) error {
 	stmp := sqldb.CreateNamedStmt(strings.Join([]string{
 		"INSERT INTO",
 		"`" + groupMappingUserTableName + "`",
-		"(User, Group)",
+		"(`User`, `Group`)",
 		"VALUES",
 		"(:User, :Group)",
 	}, " "))
@@ -422,9 +423,9 @@ func IsAlreadyInGroup(group, user int64) (bool, error) {
 		"SELECT COUNT(*) as Count FROM",
 		"`" + groupMappingUserTableName + "`",
 		"WHERE",
-		"User=:User",
+		"`User`=:User",
 		"AND",
-		"Group=:Group",
+		"`Group`=:Group",
 	}, " "))
 
 	result := struct{ Count int64 }{}
@@ -452,9 +453,9 @@ func CreateGroupMappingHistory(group, user int64) error {
 	historyStmp := sqldb.CreateNamedStmt(strings.Join([]string{
 		"INSERT INTO",
 		"`" + groupMappingUserHistoryTableName + "`",
-		"(ID,Group,User,UpdatedTime,CreatedTime,DeletedTime)",
+		"(`ID`,`Group`,`User`,`UpdatedTime`,`CreatedTime`,`DeletedTime`)",
 		"SELECT",
-		"ID,Group,User,UpdatedTime,CreatedTime,DeletedTime",
+		"`ID`,Group,`User`,`UpdatedTime`,`CreatedTime`,`DeletedTime`",
 		"FROM",
 		"`" + groupMappingUserTableName + "`",
 		"WHERE",

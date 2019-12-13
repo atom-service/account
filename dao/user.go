@@ -113,7 +113,7 @@ func CountUserByID(id int64) (int64, error) {
 		"SELECT COUNT(*) as Count FROM",
 		"`" + userTableName + "`",
 		"WHERE",
-		"ID=:ID",
+		"`ID`=:ID",
 	}, " "))
 
 	result := struct{ Count int64 }{}
@@ -190,7 +190,7 @@ func QueryUsersByInviter(inviter int64, page, limit int64) (totalPage, currentPa
 		"SELECT COUNT(*) as Count FROM",
 		"`" + userTableName + "`",
 		"WHERE",
-		"Inviter=:Inviter",
+		"`Inviter`=:Inviter",
 	}, " "))
 
 	countResult := struct{ Count int64 }{}
@@ -215,7 +215,7 @@ func QueryUsersByInviter(inviter int64, page, limit int64) (totalPage, currentPa
 		"SELECT * FROM",
 		"`" + userTableName + "`",
 		"WHERE",
-		"Inviter=:Inviter",
+		"`Inviter`=:Inviter",
 		"LIMIT :Limit",
 		"OFFSET :Offset",
 	}, " "))
@@ -243,7 +243,7 @@ func QueryUserByID(id int64) (*models.User, error) {
 		"SELECT * FROM",
 		"`" + userTableName + "`",
 		"WHERE",
-		"ID=:ID",
+		"`ID`=:ID",
 	}, " "))
 
 	user := new(models.User)
@@ -263,7 +263,7 @@ func QueryUserByUsername(username string) (*models.User, error) {
 		"SELECT * FROM",
 		"`" + userTableName + "`",
 		"WHERE",
-		"Username=:Username",
+		"`Username`=:Username",
 	}, " "))
 
 	user := new(models.User)
@@ -281,7 +281,7 @@ func CountUserByUsername(username string) (int64, error) {
 		"SELECT COUNT(*) as Count FROM",
 		"`" + userTableName + "`",
 		"WHERE",
-		"Username=:Username",
+		"`Username`=:Username",
 	}, " "))
 
 	result := struct{ Count int64 }{}
@@ -301,7 +301,7 @@ func CreateUser(class, nickname, username, password string, inviter int64) (int6
 	stmp := sqldb.CreateNamedStmt(strings.Join([]string{
 		"INSERT INTO",
 		"`" + userTableName + "`",
-		"(Class, Nickname, Username, Inviter, Password)",
+		"(`Class`, `Nickname`, `Username`, `Inviter`, `Password`)",
 		"VALUES",
 		"(:Class, :Nickname, :Username, :Inviter, :Password)",
 	}, " "))
@@ -338,7 +338,8 @@ func UpdataUserFieldByID(id int64, field map[string]interface{}) error {
 		"`" + userTableName + "`",
 		"SET",
 		strings.Join(fieldSQL, ","),
-		"WHERE ID=:ID",
+		"WHERE",
+		"`ID`=:ID",
 	}, " "))
 
 	// 修改前创建历史

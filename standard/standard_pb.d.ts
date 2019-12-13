@@ -797,6 +797,70 @@ export namespace CreateLabelForUserResponse {
     }
 }
 
+export class QueryLabelsRequest extends jspb.Message { 
+    getPage(): number;
+    setPage(value: number): void;
+
+    getLimit(): number;
+    setLimit(value: number): void;
+
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): QueryLabelsRequest.AsObject;
+    static toObject(includeInstance: boolean, msg: QueryLabelsRequest): QueryLabelsRequest.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: QueryLabelsRequest, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): QueryLabelsRequest;
+    static deserializeBinaryFromReader(message: QueryLabelsRequest, reader: jspb.BinaryReader): QueryLabelsRequest;
+}
+
+export namespace QueryLabelsRequest {
+    export type AsObject = {
+        page: number,
+        limit: number,
+    }
+}
+
+export class QueryLabelsResponse extends jspb.Message { 
+    getState(): State;
+    setState(value: State): void;
+
+    getMessage(): string;
+    setMessage(value: string): void;
+
+    getTotalpage(): number;
+    setTotalpage(value: number): void;
+
+    getCurrentpage(): number;
+    setCurrentpage(value: number): void;
+
+    clearDataList(): void;
+    getDataList(): Array<Label>;
+    setDataList(value: Array<Label>): void;
+    addData(value?: Label, index?: number): Label;
+
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): QueryLabelsResponse.AsObject;
+    static toObject(includeInstance: boolean, msg: QueryLabelsResponse): QueryLabelsResponse.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: QueryLabelsResponse, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): QueryLabelsResponse;
+    static deserializeBinaryFromReader(message: QueryLabelsResponse, reader: jspb.BinaryReader): QueryLabelsResponse;
+}
+
+export namespace QueryLabelsResponse {
+    export type AsObject = {
+        state: State,
+        message: string,
+        totalpage: number,
+        currentpage: number,
+        dataList: Array<Label.AsObject>,
+    }
+}
+
 export class QueryLabelByIDRequest extends jspb.Message { 
     getId(): number;
     setId(value: number): void;

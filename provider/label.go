@@ -63,9 +63,53 @@ func (srv *Service) CreateLabel(ctx context.Context, req *standard.CreateLabelRe
 	return resp, nil
 }
 
+// QueryLabels 查询标签
+func (srv *Service) QueryLabels(ctx context.Context, req *standard.QueryLabelsRequest) (resp *standard.QueryLabelsResponse, err error) {
+	resp = new(standard.QueryLabelsResponse)
+
+	if req.Page <= 0 || req.Limit <= 0 {
+		resp.State = standard.State_PARAMS_INVALID
+		resp.Message = "无效的参数"
+		return resp, nil
+	}
+
+	totalPage, currentPage, labels, err := dao.QueryLabels(req.Page, req.Limit)
+	if err != nil {
+		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.Message = err.Error()
+		return resp, nil
+	}
+
+	data := []*standard.Label{}
+	for _, label := range labels {
+		data = append(data, label.OutProtoStruct())
+	}
+
+	resp.State = standard.State_SUCCESS
+	resp.CurrentPage = currentPage
+	resp.TotalPage = totalPage
+	resp.Message = "查询成功"
+	resp.Data = data
+	return resp, nil
+}
+
 // CreateLabelForUser 给指定用户创建标签
 func (srv *Service) CreateLabelForUser(ctx context.Context, req *standard.CreateLabelForUserRequest) (resp *standard.CreateLabelForUserResponse, err error) {
 	resp = new(standard.CreateLabelForUserResponse)
+
+	// 先判断条件
+	userCount, err := dao.CountUserByID(req.UserID)
+	if err != nil {
+		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.Message = err.Error()
+		return resp, nil
+	}
+
+	if userCount <= 0 { // 没有找到用户
+		resp.State = standard.State_USER_NOT_EXIST
+		resp.Message = "该用户不存在"
+		return resp, nil
+	}
 
 	createResult, err := srv.CreateLabel(ctx, &standard.CreateLabelRequest{Name: req.Name, Class: req.Class, State: req.State, Value: req.Value})
 	if err != nil {
@@ -74,7 +118,6 @@ func (srv *Service) CreateLabelForUser(ctx context.Context, req *standard.Create
 		return resp, nil
 	}
 
-	// 创建失败了
 	if createResult.State != standard.State_SUCCESS {
 		resp.State = createResult.State
 		resp.Message = createResult.Message

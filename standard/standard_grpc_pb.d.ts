@@ -16,6 +16,7 @@ interface IAccountService extends grpc.ServiceDefinition<grpc.UntypedServiceImpl
     updateUserPasswordByID: IAccountService_IUpdateUserPasswordByID;
     verifyUserPasswordByID: IAccountService_IVerifyUserPasswordByID;
     verifyUserPasswordByUsername: IAccountService_IVerifyUserPasswordByUsername;
+    queryLabels: IAccountService_IQueryLabels;
     createLabel: IAccountService_ICreateLabel;
     createLabelForUser: IAccountService_ICreateLabelForUser;
     queryLabelByID: IAccountService_IQueryLabelByID;
@@ -118,6 +119,15 @@ interface IAccountService_IVerifyUserPasswordByUsername extends grpc.MethodDefin
     requestDeserialize: grpc.deserialize<standard_pb.VerifyUserPasswordByUsernameRequest>;
     responseSerialize: grpc.serialize<standard_pb.VerifyUserPasswordByUsernameResponse>;
     responseDeserialize: grpc.deserialize<standard_pb.VerifyUserPasswordByUsernameResponse>;
+}
+interface IAccountService_IQueryLabels extends grpc.MethodDefinition<standard_pb.QueryLabelsRequest, standard_pb.QueryLabelsResponse> {
+    path: string; // "/standard.Account/QueryLabels"
+    requestStream: boolean; // false
+    responseStream: boolean; // false
+    requestSerialize: grpc.serialize<standard_pb.QueryLabelsRequest>;
+    requestDeserialize: grpc.deserialize<standard_pb.QueryLabelsRequest>;
+    responseSerialize: grpc.serialize<standard_pb.QueryLabelsResponse>;
+    responseDeserialize: grpc.deserialize<standard_pb.QueryLabelsResponse>;
 }
 interface IAccountService_ICreateLabel extends grpc.MethodDefinition<standard_pb.CreateLabelRequest, standard_pb.CreateLabelResponse> {
     path: string; // "/standard.Account/CreateLabel"
@@ -312,6 +322,7 @@ export interface IAccountServer {
     updateUserPasswordByID: grpc.handleUnaryCall<standard_pb.UpdateUserPasswordByIDRequest, standard_pb.UpdateUserPasswordByIDResponse>;
     verifyUserPasswordByID: grpc.handleUnaryCall<standard_pb.VerifyUserPasswordByIDRequest, standard_pb.VerifyUserPasswordByIDResponse>;
     verifyUserPasswordByUsername: grpc.handleUnaryCall<standard_pb.VerifyUserPasswordByUsernameRequest, standard_pb.VerifyUserPasswordByUsernameResponse>;
+    queryLabels: grpc.handleUnaryCall<standard_pb.QueryLabelsRequest, standard_pb.QueryLabelsResponse>;
     createLabel: grpc.handleUnaryCall<standard_pb.CreateLabelRequest, standard_pb.CreateLabelResponse>;
     createLabelForUser: grpc.handleUnaryCall<standard_pb.CreateLabelForUserRequest, standard_pb.CreateLabelForUserResponse>;
     queryLabelByID: grpc.handleUnaryCall<standard_pb.QueryLabelByIDRequest, standard_pb.QueryLabelByIDResponse>;
@@ -362,6 +373,9 @@ export interface IAccountClient {
     verifyUserPasswordByUsername(request: standard_pb.VerifyUserPasswordByUsernameRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.VerifyUserPasswordByUsernameResponse) => void): grpc.ClientUnaryCall;
     verifyUserPasswordByUsername(request: standard_pb.VerifyUserPasswordByUsernameRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.VerifyUserPasswordByUsernameResponse) => void): grpc.ClientUnaryCall;
     verifyUserPasswordByUsername(request: standard_pb.VerifyUserPasswordByUsernameRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.VerifyUserPasswordByUsernameResponse) => void): grpc.ClientUnaryCall;
+    queryLabels(request: standard_pb.QueryLabelsRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryLabelsResponse) => void): grpc.ClientUnaryCall;
+    queryLabels(request: standard_pb.QueryLabelsRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryLabelsResponse) => void): grpc.ClientUnaryCall;
+    queryLabels(request: standard_pb.QueryLabelsRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryLabelsResponse) => void): grpc.ClientUnaryCall;
     createLabel(request: standard_pb.CreateLabelRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateLabelResponse) => void): grpc.ClientUnaryCall;
     createLabel(request: standard_pb.CreateLabelRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateLabelResponse) => void): grpc.ClientUnaryCall;
     createLabel(request: standard_pb.CreateLabelRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateLabelResponse) => void): grpc.ClientUnaryCall;
@@ -453,6 +467,9 @@ export class AccountClient extends grpc.Client implements IAccountClient {
     public verifyUserPasswordByUsername(request: standard_pb.VerifyUserPasswordByUsernameRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.VerifyUserPasswordByUsernameResponse) => void): grpc.ClientUnaryCall;
     public verifyUserPasswordByUsername(request: standard_pb.VerifyUserPasswordByUsernameRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.VerifyUserPasswordByUsernameResponse) => void): grpc.ClientUnaryCall;
     public verifyUserPasswordByUsername(request: standard_pb.VerifyUserPasswordByUsernameRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.VerifyUserPasswordByUsernameResponse) => void): grpc.ClientUnaryCall;
+    public queryLabels(request: standard_pb.QueryLabelsRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryLabelsResponse) => void): grpc.ClientUnaryCall;
+    public queryLabels(request: standard_pb.QueryLabelsRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryLabelsResponse) => void): grpc.ClientUnaryCall;
+    public queryLabels(request: standard_pb.QueryLabelsRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryLabelsResponse) => void): grpc.ClientUnaryCall;
     public createLabel(request: standard_pb.CreateLabelRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateLabelResponse) => void): grpc.ClientUnaryCall;
     public createLabel(request: standard_pb.CreateLabelRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateLabelResponse) => void): grpc.ClientUnaryCall;
     public createLabel(request: standard_pb.CreateLabelRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateLabelResponse) => void): grpc.ClientUnaryCall;

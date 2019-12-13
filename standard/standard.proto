@@ -195,6 +195,19 @@ message CreateLabelForUserResponse {
   Label Data = 3;
 }
 
+message QueryLabelsRequest {
+  int64 Page = 1 ;
+  int64 Limit = 2 ;
+}
+
+message QueryLabelsResponse {
+  State  State = 1 ;
+  string Message = 2 ;
+  int64 totalPage = 3 ;
+  int64 currentPage = 4 ;
+  repeated Label Data = 5 ;
+}
+
 message QueryLabelByIDRequest {
   int64 ID = 1 ;
 }
@@ -393,6 +406,7 @@ service Account {
 
   // 标签操作 标签用来处理其他额外的用户数据、例如一些地址 手机 邮箱等信息
   // 创建一个标签 然后分配给一个用户 多个用户可以共享同一个标签（共有数据）
+  rpc QueryLabels(QueryLabelsRequest)returns(QueryLabelsResponse){} // 查询全部分组
   rpc CreateLabel(CreateLabelRequest)returns(CreateLabelResponse){} // 根据 ID 查询标签
   rpc CreateLabelForUser(CreateLabelForUserRequest)returns(CreateLabelForUserResponse){} // 给指定用户创建标签
   rpc QueryLabelByID(QueryLabelByIDRequest)returns(QueryLabelByIDResponse){} // 根据 ID 查询标签

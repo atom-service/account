@@ -91,9 +91,9 @@ func CreateLabelHistory(id int64) error {
 	historyStmp := sqldb.CreateNamedStmt(strings.Join([]string{
 		"INSERT INTO",
 		"`" + labelHistoryTableName + "`",
-		"(ID,Name,Class,State,Value,DeletedTime,CreatedTime,UpdatedTime)",
+		"(`ID`,`Name`,`Class`,`State`,`Value`,`DeletedTime`,`CreatedTime`,`UpdatedTime`)",
 		"SELECT",
-		"ID,Name,Class,State,Value,DeletedTime,CreatedTime,UpdatedTime",
+		"`ID`,`Name`,`Class`,`State`,`Value`,`DeletedTime`,`CreatedTime`,`UpdatedTime`",
 		"FROM",
 		"`" + labelTableName + "`",
 		"WHERE",
@@ -111,7 +111,7 @@ func CreateLabel(name, class, state, value string) (int64, error) {
 	stmp := sqldb.CreateNamedStmt(strings.Join([]string{
 		"INSERT INTO",
 		"`" + labelTableName + "`",
-		"(Name, Class, State, Value)",
+		"(`Name`, `Class`, `State`, `Value`)",
 		"VALUES",
 		"(:Name, :Class, :State, :Value)",
 	}, " "))
@@ -138,7 +138,7 @@ func CountLabelByID(id int64) (int64, error) {
 		"SELECT COUNT(*) as Count FROM",
 		"`" + labelTableName + "`",
 		"WHERE",
-		"ID=:ID",
+		"`ID`=:ID",
 	}, " "))
 
 	result := struct{ Count int64 }{}
@@ -209,7 +209,7 @@ func QueryLabelByID(id int64) (*models.Label, error) {
 		"SELECT * FROM",
 		"`" + labelTableName + "`",
 		"WHERE",
-		"ID=:ID",
+		"`ID`=:ID",
 	}, " "))
 
 	label := new(models.Label)
@@ -260,7 +260,8 @@ func updataLabelFieldByID(id int64, field map[string]interface{}) error {
 		"`" + labelTableName + "`",
 		"SET",
 		strings.Join(fieldSQL, ","),
-		"WHERE ID=:ID",
+		"WHERE",
+		"`ID`=:ID",
 	}, " "))
 
 	// 修改前创建历史
@@ -374,7 +375,7 @@ func AddLabelToUserByID(label, user int64) error {
 	stmp := sqldb.CreateNamedStmt(strings.Join([]string{
 		"INSERT INTO",
 		"`" + labelMappingUserTableName + "`",
-		"(User, Label)",
+		"(`User`, `Label`)",
 		"VALUES",
 		"(:User, :Label)",
 	}, " "))
@@ -398,9 +399,9 @@ func IsAlreadyOwnLabel(label, user int64) (bool, error) {
 		"SELECT COUNT(*) as Count FROM",
 		"`" + labelMappingUserTableName + "`",
 		"WHERE",
-		"User=:User",
+		"`User`=:User",
 		"AND",
-		"Label=:Label",
+		"`Label`=:Label",
 	}, " "))
 
 	result := struct{ Count int64 }{}
@@ -428,9 +429,9 @@ func CreateLabelMappingHistory(label, user int64) error {
 	historyStmp := sqldb.CreateNamedStmt(strings.Join([]string{
 		"INSERT INTO",
 		"`" + labelMappingUserHistoryTableName + "`",
-		"(Label,User,DeletedTime,CreatedTime,UpdatedTime)",
+		"(`Label`,`User`,`DeletedTime`,`CreatedTime`,`UpdatedTime`)",
 		"SELECT",
-		"Label,User,DeletedTime,CreatedTime,UpdatedTime",
+		"`Label`,`User`,`DeletedTime`,`CreatedTime`,`UpdatedTime`",
 		"FROM",
 		"`" + labelMappingUserTableName + "`",
 		"WHERE",

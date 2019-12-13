@@ -30,6 +30,8 @@
     - [QueryGroupsResponse](#standard.QueryGroupsResponse)
     - [QueryLabelByIDRequest](#standard.QueryLabelByIDRequest)
     - [QueryLabelByIDResponse](#standard.QueryLabelByIDResponse)
+    - [QueryLabelsRequest](#standard.QueryLabelsRequest)
+    - [QueryLabelsResponse](#standard.QueryLabelsResponse)
     - [QueryUserByIDRequest](#standard.QueryUserByIDRequest)
     - [QueryUserByIDResponse](#standard.QueryUserByIDResponse)
     - [QueryUserByUsernameRequest](#standard.QueryUserByUsernameRequest)
@@ -519,6 +521,41 @@ Label 标签
 | State | [State](#standard.State) |  | 状态 |
 | Message | [string](#string) |  |  |
 | Data | [Label](#standard.Label) |  |  |
+
+
+
+
+
+
+<a name="standard.QueryLabelsRequest"></a>
+
+### QueryLabelsRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| Page | [int64](#int64) |  |  |
+| Limit | [int64](#int64) |  |  |
+
+
+
+
+
+
+<a name="standard.QueryLabelsResponse"></a>
+
+### QueryLabelsResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| State | [State](#standard.State) |  |  |
+| Message | [string](#string) |  |  |
+| totalPage | [int64](#int64) |  |  |
+| currentPage | [int64](#int64) |  |  |
+| Data | [Label](#standard.Label) | repeated |  |
 
 
 
@@ -1148,7 +1185,8 @@ User 用户
 | UpdateUserPasswordByID | [UpdateUserPasswordByIDRequest](#standard.UpdateUserPasswordByIDRequest) | [UpdateUserPasswordByIDResponse](#standard.UpdateUserPasswordByIDResponse) |  |
 | VerifyUserPasswordByID | [VerifyUserPasswordByIDRequest](#standard.VerifyUserPasswordByIDRequest) | [VerifyUserPasswordByIDResponse](#standard.VerifyUserPasswordByIDResponse) |  |
 | VerifyUserPasswordByUsername | [VerifyUserPasswordByUsernameRequest](#standard.VerifyUserPasswordByUsernameRequest) | [VerifyUserPasswordByUsernameResponse](#standard.VerifyUserPasswordByUsernameResponse) |  |
-| CreateLabel | [CreateLabelRequest](#standard.CreateLabelRequest) | [CreateLabelResponse](#standard.CreateLabelResponse) | 标签操作 标签用来处理其他额外的用户数据、例如一些地址 手机 邮箱等信息 创建一个标签 然后分配给一个用户 多个用户可以共享同一个标签（共有数据） |
+| QueryLabels | [QueryLabelsRequest](#standard.QueryLabelsRequest) | [QueryLabelsResponse](#standard.QueryLabelsResponse) | 标签操作 标签用来处理其他额外的用户数据、例如一些地址 手机 邮箱等信息 创建一个标签 然后分配给一个用户 多个用户可以共享同一个标签（共有数据） |
+| CreateLabel | [CreateLabelRequest](#standard.CreateLabelRequest) | [CreateLabelResponse](#standard.CreateLabelResponse) |  |
 | CreateLabelForUser | [CreateLabelForUserRequest](#standard.CreateLabelForUserRequest) | [CreateLabelForUserResponse](#standard.CreateLabelForUserResponse) |  |
 | QueryLabelByID | [QueryLabelByIDRequest](#standard.QueryLabelByIDRequest) | [QueryLabelByIDResponse](#standard.QueryLabelByIDResponse) |  |
 | DeleteLabelByID | [DeleteLabelByIDRequest](#standard.DeleteLabelByIDRequest) | [DeleteLabelByIDResponse](#standard.DeleteLabelByIDResponse) |  |
