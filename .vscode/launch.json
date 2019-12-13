@@ -12,9 +12,9 @@
       "program": "${workspaceFolder}/main.go",
       "env": {},
       "args": [
-        "-rpc-port",
+        "-rpc_port",
         ":3000",
-        "-mysql-url",
+        "-mysql_url",
         "root:root@tcp(localhost:3306)/default?charset=utf8mb4"
       ]
     }

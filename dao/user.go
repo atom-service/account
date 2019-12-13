@@ -311,7 +311,7 @@ func CreateUser(class, nickname, username, password string, inviter int64) (int6
 		"Nickname": nickname,
 		"Username": username,
 		"Inviter":  inviter,
-		"Password": crypto.MD5Encrypt(password, config.MustGet("encrypt-password")),
+		"Password": crypto.MD5Encrypt(password, config.MustGet("encrypt_password")),
 	}
 
 	result, err := stmp.Exec(data)
@@ -382,7 +382,7 @@ func UpdateUserInviterByID(id, inviter int64) error {
 // UpdateUserPasswordByID 更新用户密码
 func UpdateUserPasswordByID(id int64, password string) error {
 	// 加密
-	encryptPassword := crypto.MD5Encrypt(password, config.MustGet("encrypt-password"))
+	encryptPassword := crypto.MD5Encrypt(password, config.MustGet("encrypt_password"))
 	return UpdataUserFieldByID(id, map[string]interface{}{"Password": encryptPassword})
 }
 
@@ -393,7 +393,7 @@ func VerifyUserPasswordByID(id int64, password string) (bool, error) {
 		return false, err
 	}
 	// 加密
-	encryptPassword := crypto.MD5Encrypt(password, config.MustGet("encrypt-password"))
+	encryptPassword := crypto.MD5Encrypt(password, config.MustGet("encrypt_password"))
 	if !user.Password.Valid { // NULL 密码禁止使用
 		return false, nil
 	}

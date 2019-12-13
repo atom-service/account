@@ -13,18 +13,17 @@ import (
 )
 
 func init() {
-	config.SetStandard("rpc-port", ":3000", true, "RPC 服务监听的端口")
-	config.SetStandard("mysql-url", "", true, "RPC 使用的 MYSQL 数据库配置")
-	config.SetStandard("mongo-url", "", false, "RPC 使用的 MONGODB 数据库配置")
-	config.SetStandard("encrypt-password", "encrypt-password", false, "作为一些数据加密的密钥")
+	config.SetStandard("rpc_port", ":3000", true, "RPC 服务监听的端口")
+	config.SetStandard("mysql_url", "", true, "RPC 使用的 MYSQL 数据库配置")
+	config.SetStandard("encrypt_password", "encrypt_password", false, "作为一些数据加密的密钥")
 	config.LoadFlag()
 }
 
 func main() {
 	var err error
-	sqldb.Init("mysql", config.MustGet("mysql-url"))
+	sqldb.Init("mysql", config.MustGet("mysql_url"))
 	dao.MustInitTables()
-	lis, err := net.Listen("tcp", config.MustGet("rpc-port"))
+	lis, err := net.Listen("tcp", config.MustGet("rpc_port"))
 	if err != nil {
 		panic(err)
 	}
