@@ -44,22 +44,30 @@
     - [RemoveLabelFromUserByIDResponse](#standard.RemoveLabelFromUserByIDResponse)
     - [RemoveUserFromGroupByIDRequest](#standard.RemoveUserFromGroupByIDRequest)
     - [RemoveUserFromGroupByIDResponse](#standard.RemoveUserFromGroupByIDResponse)
-    - [UpdateGroupClassByIDRequest](#standard.UpdateGroupClassByIDRequest)
-    - [UpdateGroupClassByIDResponse](#standard.UpdateGroupClassByIDResponse)
+    - [UpdateGroupCategoryByIDRequest](#standard.UpdateGroupCategoryByIDRequest)
+    - [UpdateGroupCategoryByIDResponse](#standard.UpdateGroupCategoryByIDResponse)
     - [UpdateGroupDescriptionByIDRequest](#standard.UpdateGroupDescriptionByIDRequest)
     - [UpdateGroupDescriptionByIDResponse](#standard.UpdateGroupDescriptionByIDResponse)
     - [UpdateGroupNameByIDRequest](#standard.UpdateGroupNameByIDRequest)
     - [UpdateGroupNameByIDResponse](#standard.UpdateGroupNameByIDResponse)
     - [UpdateGroupStateByIDRequest](#standard.UpdateGroupStateByIDRequest)
     - [UpdateGroupStateByIDResponse](#standard.UpdateGroupStateByIDResponse)
-    - [UpdateLabelClassByIDRequest](#standard.UpdateLabelClassByIDRequest)
-    - [UpdateLabelClassByIDResponse](#standard.UpdateLabelClassByIDResponse)
+    - [UpdateLabelCategoryByIDRequest](#standard.UpdateLabelCategoryByIDRequest)
+    - [UpdateLabelCategoryByIDResponse](#standard.UpdateLabelCategoryByIDResponse)
     - [UpdateLabelNameByIDRequest](#standard.UpdateLabelNameByIDRequest)
     - [UpdateLabelNameByIDResponse](#standard.UpdateLabelNameByIDResponse)
     - [UpdateLabelStateByIDRequest](#standard.UpdateLabelStateByIDRequest)
     - [UpdateLabelStateByIDResponse](#standard.UpdateLabelStateByIDResponse)
     - [UpdateLabelValueByIDRequest](#standard.UpdateLabelValueByIDRequest)
     - [UpdateLabelValueByIDResponse](#standard.UpdateLabelValueByIDResponse)
+    - [UpdateUserAvatarByIDRequest](#standard.UpdateUserAvatarByIDRequest)
+    - [UpdateUserAvatarByIDResponse](#standard.UpdateUserAvatarByIDResponse)
+    - [UpdateUserCategoryByIDRequest](#standard.UpdateUserCategoryByIDRequest)
+    - [UpdateUserCategoryByIDResponse](#standard.UpdateUserCategoryByIDResponse)
+    - [UpdateUserInviterByIDRequest](#standard.UpdateUserInviterByIDRequest)
+    - [UpdateUserInviterByIDResponse](#standard.UpdateUserInviterByIDResponse)
+    - [UpdateUserNicknameByIDRequest](#standard.UpdateUserNicknameByIDRequest)
+    - [UpdateUserNicknameByIDResponse](#standard.UpdateUserNicknameByIDResponse)
     - [UpdateUserPasswordByIDRequest](#standard.UpdateUserPasswordByIDRequest)
     - [UpdateUserPasswordByIDResponse](#standard.UpdateUserPasswordByIDResponse)
     - [User](#standard.User)
@@ -158,7 +166,7 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | Name | [string](#string) |  |  |
-| Class | [string](#string) |  |  |
+| Category | [string](#string) |  |  |
 | State | [string](#string) |  |  |
 | Description | [string](#string) |  |  |
 
@@ -194,7 +202,7 @@
 | ----- | ---- | ----- | ----------- |
 | UserID | [int64](#int64) |  |  |
 | Name | [string](#string) |  |  |
-| Class | [string](#string) |  |  |
+| Category | [string](#string) |  |  |
 | State | [string](#string) |  |  |
 | Value | [string](#string) |  |  |
 
@@ -229,7 +237,7 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | Name | [string](#string) |  |  |
-| Class | [string](#string) |  |  |
+| Category | [string](#string) |  |  |
 | State | [string](#string) |  |  |
 | Value | [string](#string) |  |  |
 
@@ -263,7 +271,7 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| Class | [string](#string) |  |  |
+| Category | [string](#string) |  |  |
 | Inviter | [int64](#int64) |  |  |
 | Nickname | [string](#string) |  |  |
 | Username | [string](#string) |  |  |
@@ -394,7 +402,7 @@ Group 组
 | ----- | ---- | ----- | ----------- |
 | ID | [int64](#int64) |  |  |
 | Name | [string](#string) |  |  |
-| Class | [string](#string) |  |  |
+| Category | [string](#string) |  |  |
 | State | [string](#string) |  |  |
 | Description | [string](#string) |  |  |
 | CreatedTime | [string](#string) |  |  |
@@ -416,7 +424,7 @@ Label 标签
 | ----- | ---- | ----- | ----------- |
 | ID | [int64](#int64) |  |  |
 | Name | [string](#string) |  |  |
-| Class | [string](#string) |  |  |
+| Category | [string](#string) |  |  |
 | State | [string](#string) |  |  |
 | Value | [string](#string) |  |  |
 | CreatedTime | [string](#string) |  |  |
@@ -761,25 +769,25 @@ Label 标签
 
 
 
-<a name="standard.UpdateGroupClassByIDRequest"></a>
+<a name="standard.UpdateGroupCategoryByIDRequest"></a>
 
-### UpdateGroupClassByIDRequest
+### UpdateGroupCategoryByIDRequest
 
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | ID | [int64](#int64) |  |  |
-| Class | [string](#string) |  |  |
+| Category | [string](#string) |  |  |
 
 
 
 
 
 
-<a name="standard.UpdateGroupClassByIDResponse"></a>
+<a name="standard.UpdateGroupCategoryByIDResponse"></a>
 
-### UpdateGroupClassByIDResponse
+### UpdateGroupCategoryByIDResponse
 
 
 
@@ -889,25 +897,25 @@ Label 标签
 
 
 
-<a name="standard.UpdateLabelClassByIDRequest"></a>
+<a name="standard.UpdateLabelCategoryByIDRequest"></a>
 
-### UpdateLabelClassByIDRequest
+### UpdateLabelCategoryByIDRequest
 
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | ID | [int64](#int64) |  |  |
-| Class | [string](#string) |  |  |
+| Category | [string](#string) |  |  |
 
 
 
 
 
 
-<a name="standard.UpdateLabelClassByIDResponse"></a>
+<a name="standard.UpdateLabelCategoryByIDResponse"></a>
 
-### UpdateLabelClassByIDResponse
+### UpdateLabelCategoryByIDResponse
 
 
 
@@ -1017,6 +1025,134 @@ Label 标签
 
 
 
+<a name="standard.UpdateUserAvatarByIDRequest"></a>
+
+### UpdateUserAvatarByIDRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| ID | [int64](#int64) |  |  |
+| Avatar | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="standard.UpdateUserAvatarByIDResponse"></a>
+
+### UpdateUserAvatarByIDResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| State | [State](#standard.State) |  |  |
+| Message | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="standard.UpdateUserCategoryByIDRequest"></a>
+
+### UpdateUserCategoryByIDRequest
+===== //
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| ID | [int64](#int64) |  |  |
+| Category | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="standard.UpdateUserCategoryByIDResponse"></a>
+
+### UpdateUserCategoryByIDResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| State | [State](#standard.State) |  |  |
+| Message | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="standard.UpdateUserInviterByIDRequest"></a>
+
+### UpdateUserInviterByIDRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| ID | [int64](#int64) |  |  |
+| Inviter | [int64](#int64) |  |  |
+
+
+
+
+
+
+<a name="standard.UpdateUserInviterByIDResponse"></a>
+
+### UpdateUserInviterByIDResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| State | [State](#standard.State) |  |  |
+| Message | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="standard.UpdateUserNicknameByIDRequest"></a>
+
+### UpdateUserNicknameByIDRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| ID | [int64](#int64) |  |  |
+| Nickname | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="standard.UpdateUserNicknameByIDResponse"></a>
+
+### UpdateUserNicknameByIDResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| State | [State](#standard.State) |  |  |
+| Message | [string](#string) |  |  |
+
+
+
+
+
+
 <a name="standard.UpdateUserPasswordByIDRequest"></a>
 
 ### UpdateUserPasswordByIDRequest
@@ -1058,7 +1194,7 @@ User 用户
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | ID | [int64](#int64) |  |  |
-| Class | [string](#string) |  |  |
+| Category | [string](#string) |  |  |
 | Avatar | [string](#string) |  |  |
 | Inviter | [int64](#int64) |  |  |
 | Nickname | [string](#string) |  |  |
@@ -1182,6 +1318,10 @@ User 用户
 | QueryUsersByInviter | [QueryUsersByInviterRequest](#standard.QueryUsersByInviterRequest) | [QueryUsersByInviterResponse](#standard.QueryUsersByInviterResponse) |  |
 | DeleteUserByID | [DeleteUserByIDRequest](#standard.DeleteUserByIDRequest) | [DeleteUserByIDResponse](#standard.DeleteUserByIDResponse) |  |
 | QueryUserByUsername | [QueryUserByUsernameRequest](#standard.QueryUserByUsernameRequest) | [QueryUserByUsernameResponse](#standard.QueryUserByUsernameResponse) |  |
+| UpdateUserCategoryByID | [UpdateUserCategoryByIDRequest](#standard.UpdateUserCategoryByIDRequest) | [UpdateUserCategoryByIDResponse](#standard.UpdateUserCategoryByIDResponse) |  |
+| UpdateUserAvatarByID | [UpdateUserAvatarByIDRequest](#standard.UpdateUserAvatarByIDRequest) | [UpdateUserAvatarByIDResponse](#standard.UpdateUserAvatarByIDResponse) |  |
+| UpdateUserInviterByID | [UpdateUserInviterByIDRequest](#standard.UpdateUserInviterByIDRequest) | [UpdateUserInviterByIDResponse](#standard.UpdateUserInviterByIDResponse) |  |
+| UpdateUserNicknameByID | [UpdateUserNicknameByIDRequest](#standard.UpdateUserNicknameByIDRequest) | [UpdateUserNicknameByIDResponse](#standard.UpdateUserNicknameByIDResponse) |  |
 | UpdateUserPasswordByID | [UpdateUserPasswordByIDRequest](#standard.UpdateUserPasswordByIDRequest) | [UpdateUserPasswordByIDResponse](#standard.UpdateUserPasswordByIDResponse) |  |
 | VerifyUserPasswordByID | [VerifyUserPasswordByIDRequest](#standard.VerifyUserPasswordByIDRequest) | [VerifyUserPasswordByIDResponse](#standard.VerifyUserPasswordByIDResponse) |  |
 | VerifyUserPasswordByUsername | [VerifyUserPasswordByUsernameRequest](#standard.VerifyUserPasswordByUsernameRequest) | [VerifyUserPasswordByUsernameResponse](#standard.VerifyUserPasswordByUsernameResponse) |  |
@@ -1191,7 +1331,7 @@ User 用户
 | QueryLabelByID | [QueryLabelByIDRequest](#standard.QueryLabelByIDRequest) | [QueryLabelByIDResponse](#standard.QueryLabelByIDResponse) |  |
 | DeleteLabelByID | [DeleteLabelByIDRequest](#standard.DeleteLabelByIDRequest) | [DeleteLabelByIDResponse](#standard.DeleteLabelByIDResponse) |  |
 | UpdateLabelNameByID | [UpdateLabelNameByIDRequest](#standard.UpdateLabelNameByIDRequest) | [UpdateLabelNameByIDResponse](#standard.UpdateLabelNameByIDResponse) |  |
-| UpdateLabelClassByID | [UpdateLabelClassByIDRequest](#standard.UpdateLabelClassByIDRequest) | [UpdateLabelClassByIDResponse](#standard.UpdateLabelClassByIDResponse) |  |
+| UpdateLabelCategoryByID | [UpdateLabelCategoryByIDRequest](#standard.UpdateLabelCategoryByIDRequest) | [UpdateLabelCategoryByIDResponse](#standard.UpdateLabelCategoryByIDResponse) |  |
 | UpdateLabelStateByID | [UpdateLabelStateByIDRequest](#standard.UpdateLabelStateByIDRequest) | [UpdateLabelStateByIDResponse](#standard.UpdateLabelStateByIDResponse) |  |
 | UpdateLabelValueByID | [UpdateLabelValueByIDRequest](#standard.UpdateLabelValueByIDRequest) | [UpdateLabelValueByIDResponse](#standard.UpdateLabelValueByIDResponse) |  |
 | AddLabelToUserByID | [AddLabelToUserByIDRequest](#standard.AddLabelToUserByIDRequest) | [AddLabelToUserByIDResponse](#standard.AddLabelToUserByIDResponse) |  |
@@ -1201,7 +1341,7 @@ User 用户
 | QueryGroupByID | [QueryGroupByIDRequest](#standard.QueryGroupByIDRequest) | [QueryGroupByIDResponse](#standard.QueryGroupByIDResponse) |  |
 | DeleteGroupByID | [DeleteGroupByIDRequest](#standard.DeleteGroupByIDRequest) | [DeleteGroupByIDResponse](#standard.DeleteGroupByIDResponse) |  |
 | UpdateGroupNameByID | [UpdateGroupNameByIDRequest](#standard.UpdateGroupNameByIDRequest) | [UpdateGroupNameByIDResponse](#standard.UpdateGroupNameByIDResponse) |  |
-| UpdateGroupClassByID | [UpdateGroupClassByIDRequest](#standard.UpdateGroupClassByIDRequest) | [UpdateGroupClassByIDResponse](#standard.UpdateGroupClassByIDResponse) |  |
+| UpdateGroupCategoryByID | [UpdateGroupCategoryByIDRequest](#standard.UpdateGroupCategoryByIDRequest) | [UpdateGroupCategoryByIDResponse](#standard.UpdateGroupCategoryByIDResponse) |  |
 | UpdateGroupStateByID | [UpdateGroupStateByIDRequest](#standard.UpdateGroupStateByIDRequest) | [UpdateGroupStateByIDResponse](#standard.UpdateGroupStateByIDResponse) |  |
 | UpdateGroupDescriptionByID | [UpdateGroupDescriptionByIDRequest](#standard.UpdateGroupDescriptionByIDRequest) | [UpdateGroupDescriptionByIDResponse](#standard.UpdateGroupDescriptionByIDResponse) |  |
 | AddUserToGroupByID | [AddUserToGroupByIDRequest](#standard.AddUserToGroupByIDRequest) | [AddUserToGroupByIDResponse](#standard.AddUserToGroupByIDResponse) | 组关系操作 |

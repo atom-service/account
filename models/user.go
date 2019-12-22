@@ -9,7 +9,7 @@ import (
 // User 用户
 type User struct {
 	ID          sql.NullInt64
-	Class       sql.NullString
+	Category       sql.NullString
 	Avatar      sql.NullString
 	Inviter     sql.NullInt64
 	Nickname    sql.NullString
@@ -33,7 +33,7 @@ func (srv *User) EqualPassword(target string) bool {
 // LoadStringMap 从 string map 中加载数据
 func (srv *User) LoadStringMap(data map[string]string) {
 	srv.ID.Scan(data["ID"])
-	srv.Class.Scan(data["Class"])
+	srv.Category.Scan(data["Category"])
 	srv.Avatar.Scan(data["Avatar"])
 	srv.Inviter.Scan(data["Inviter"])
 	srv.Username.Scan(data["Username"])
@@ -46,7 +46,7 @@ func (srv *User) LoadStringMap(data map[string]string) {
 // LoadProtoStruct LoadProtoStruct
 func (srv *User) LoadProtoStruct(user *standard.User) {
 	srv.ID.Scan(user.ID)
-	srv.Class.Scan(user.Class)
+	srv.Category.Scan(user.Category)
 	srv.Avatar.Scan(user.Avatar)
 	srv.Inviter.Scan(user.Inviter)
 	srv.Nickname.Scan(user.Nickname)
@@ -61,7 +61,7 @@ func (srv *User) LoadProtoStruct(user *standard.User) {
 func (srv *User) OutProtoStruct() *standard.User {
 	user := new(standard.User)
 	user.ID = srv.ID.Int64
-	user.Class = srv.Class.String
+	user.Category = srv.Category.String
 	user.Avatar = srv.Avatar.String
 	user.Inviter = srv.Inviter.Int64
 	user.Nickname = srv.Nickname.String

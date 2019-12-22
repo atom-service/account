@@ -11,7 +11,7 @@ import (
 type Group struct {
 	ID          sql.NullInt64  // ID
 	Name        sql.NullString // Name
-	Class       sql.NullString // 分类
+	Category       sql.NullString // 分类
 	State       sql.NullString
 	Description sql.NullString
 	DeletedTime sql.NullTime
@@ -23,7 +23,7 @@ type Group struct {
 func (srv *Group) LoadProtoStruct(group *standard.Group) {
 	srv.ID.Scan(group.ID)
 	srv.Name.Scan(group.Name)
-	srv.Class.Scan(group.Class)
+	srv.Category.Scan(group.Category)
 	srv.State.Scan(group.State)
 	srv.Description.Scan(group.Description)
 	srv.DeletedTime.Scan(group.DeletedTime)
@@ -35,7 +35,7 @@ func (srv *Group) LoadProtoStruct(group *standard.Group) {
 func (srv *Group) LoadStringMap(data map[string]string) {
 	srv.Name.Scan(data["ID"])
 	srv.Name.Scan(data["Name"])
-	srv.Class.Scan(data["Class"])
+	srv.Category.Scan(data["Category"])
 	srv.State.Scan(data["State"])
 	srv.Description.Scan(data["Description"])
 	srv.DeletedTime.Scan(data["DeletedTime"])
@@ -48,7 +48,7 @@ func (srv *Group) OutProtoStruct() *standard.Group {
 	lable := new(standard.Group)
 	lable.ID = srv.ID.Int64
 	lable.Name = srv.Name.String
-	lable.Class = srv.Class.String
+	lable.Category = srv.Category.String
 	lable.State = srv.State.String
 	lable.Description = srv.Description.String
 	lable.DeletedTime = srv.DeletedTime.Time.String()

@@ -24,7 +24,7 @@ func TestGroupName(t *testing.T) {
 	}
 }
 
-func TestGroupClass(t *testing.T) {
+func TestGroupCategory(t *testing.T) {
 	tests := []struct {
 		name string
 
@@ -40,9 +40,9 @@ func TestGroupClass(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotPass, _ := GroupClass(tt.args)
+			gotPass, _ := GroupCategory(tt.args)
 			if gotPass != tt.wantPass {
-				t.Errorf("GroupClass() gotPass = %v, want %v", gotPass, tt.wantPass)
+				t.Errorf("GroupCategory() gotPass = %v, want %v", gotPass, tt.wantPass)
 			}
 		})
 	}

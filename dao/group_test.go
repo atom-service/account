@@ -24,7 +24,7 @@ func TestMain(m *testing.M) {
 func TestCreateGroup(t *testing.T) {
 	type args struct {
 		name        string
-		class       string
+		category    string
 		state       string
 		description string
 	}
@@ -37,7 +37,7 @@ func TestCreateGroup(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, err := CreateGroup(tt.args.name, tt.args.class, tt.args.state, tt.args.description)
+			_, err := CreateGroup(tt.args.name, tt.args.category, tt.args.state, tt.args.description)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("CreateGroup() error = %v, wantErr %v", err, tt.wantErr)
 				return

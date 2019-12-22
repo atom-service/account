@@ -24,7 +24,7 @@ func TestLabelName(t *testing.T) {
 	}
 }
 
-func TestLabelClass(t *testing.T) {
+func TestLabelCategory(t *testing.T) {
 	tests := []struct {
 		name string
 
@@ -40,9 +40,9 @@ func TestLabelClass(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotPass, _ := LabelClass(tt.args)
+			gotPass, _ := LabelCategory(tt.args)
 			if gotPass != tt.wantPass {
-				t.Errorf("LabelClass() gotPass = %v, want %v", gotPass, tt.wantPass)
+				t.Errorf("LabelCategory() gotPass = %v, want %v", gotPass, tt.wantPass)
 			}
 		})
 	}

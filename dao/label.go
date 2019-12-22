@@ -39,13 +39,13 @@ func createLabelTable() error {
 		"(",
 		"`ID` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID',",
 		"`Name` varchar(128) NOT NULL COMMENT '名称',",
-		"`Class` varchar(128) NOT NULL COMMENT '类型',",
+		"`Category` varchar(128) NOT NULL COMMENT '类型',",
 		"`State` varchar(128) DEFAULT '' COMMENT '状态',",
 		"`Value` varchar(512) DEFAULT '' COMMENT '值',",
 		"`DeletedTime` datetime DEFAULT NULL COMMENT '删除时间',",
 		"`CreatedTime` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',",
 		"`UpdatedTime` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',",
-		"PRIMARY KEY (`ID`,`Name`,`Class`,`State`)",
+		"PRIMARY KEY (`ID`,`Name`,`Category`,`State`)",
 		")",
 		"ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4;",
 	}, " "))
@@ -62,7 +62,7 @@ func createLabelTable() error {
 		"`Index` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Index',",
 		"`ID` int(11) COMMENT 'ID',",
 		"`Name` varchar(128) COMMENT '名称',",
-		"`Class` varchar(128) COMMENT '类型',",
+		"`Category` varchar(128) COMMENT '类型',",
 		"`State` varchar(128) COMMENT '状态',",
 		"`Value` varchar(512) COMMENT '简介',",
 		"`DeletedTime` datetime COMMENT '删除时间',",
@@ -91,9 +91,9 @@ func CreateLabelHistory(id int64) error {
 	historyStmp := sqldb.CreateNamedStmt(strings.Join([]string{
 		"INSERT INTO",
 		"`" + labelHistoryTableName + "`",
-		"(`ID`,`Name`,`Class`,`State`,`Value`,`DeletedTime`,`CreatedTime`,`UpdatedTime`)",
+		"(`ID`,`Name`,`Category`,`State`,`Value`,`DeletedTime`,`CreatedTime`,`UpdatedTime`)",
 		"SELECT",
-		"`ID`,`Name`,`Class`,`State`,`Value`,`DeletedTime`,`CreatedTime`,`UpdatedTime`",
+		"`ID`,`Name`,`Category`,`State`,`Value`,`DeletedTime`,`CreatedTime`,`UpdatedTime`",
 		"FROM",
 		"`" + labelTableName + "`",
 		"WHERE",
@@ -107,20 +107,20 @@ func CreateLabelHistory(id int64) error {
 }
 
 // CreateLabel 创建标签
-func CreateLabel(name, class, state, value string) (int64, error) {
+func CreateLabel(name, category, state, value string) (int64, error) {
 	stmp := sqldb.CreateNamedStmt(strings.Join([]string{
 		"INSERT INTO",
 		"`" + labelTableName + "`",
-		"(`Name`, `Class`, `State`, `Value`)",
+		"(`Name`, `Category`, `State`, `Value`)",
 		"VALUES",
-		"(:Name, :Class, :State, :Value)",
+		"(:Name, :Category, :State, :Value)",
 	}, " "))
 
 	namedData := map[string]interface{}{
-		"Name":  name,
-		"Class": class,
-		"State": state,
-		"Value": value,
+		"Name":     name,
+		"Category": category,
+		"State":    state,
+		"Value":    value,
 	}
 
 	result, err := stmp.Exec(namedData)
@@ -231,19 +231,19 @@ func UpdateLabelNameByID(id int64, name string) error {
 	return updataLabelFieldByID(id, map[string]interface{}{"Name": name})
 }
 
-// UpdateLabelClassByID 更新标签类型
-func UpdateLabelClassByID(id int64, class string) error {
-	return updataLabelFieldByID(id, map[string]interface{}{"Class": class})
+// UpdateLabelCategoryByID 更新标签类型
+func UpdateLabelCategoryByID(id int64, category string) error {
+	return updataLabelFieldByID(id, map[string]interface{}{"Category": category})
 }
 
 // UpdateLabelStateByID 更新标签状态
-func UpdateLabelStateByID(id int64, class string) error {
-	return updataLabelFieldByID(id, map[string]interface{}{"State": class})
+func UpdateLabelStateByID(id int64, category string) error {
+	return updataLabelFieldByID(id, map[string]interface{}{"State": category})
 }
 
 // UpdateLabelValueByID 更新标签值
-func UpdateLabelValueByID(id int64, class string) error {
-	return updataLabelFieldByID(id, map[string]interface{}{"Value": class})
+func UpdateLabelValueByID(id int64, category string) error {
+	return updataLabelFieldByID(id, map[string]interface{}{"Value": category})
 }
 
 // 根据 ID 更新标签

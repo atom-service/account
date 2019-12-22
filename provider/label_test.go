@@ -15,21 +15,21 @@ func TestService_CreateLabel(t *testing.T) {
 		wantState standard.State
 		wantErr   bool
 	}{
-		{"正常创建", &standard.CreateLabelRequest{Name: "TEST", Class: "Class", State: "State", Value: "Value"},
+		{"正常创建", &standard.CreateLabelRequest{Name: "TEST", Category: "Category", State: "State", Value: "Value"},
 			standard.State_SUCCESS, false},
-		{"正常创建", &standard.CreateLabelRequest{Name: "TEST2", Class: "Class", State: "State", Value: "Value"},
+		{"正常创建", &standard.CreateLabelRequest{Name: "TEST2", Category: "Category", State: "State", Value: "Value"},
 			standard.State_SUCCESS, false},
-		{"正常创建", &standard.CreateLabelRequest{Name: "TEST3", Class: "Class", State: "State", Value: "Value"},
+		{"正常创建", &standard.CreateLabelRequest{Name: "TEST3", Category: "Category", State: "State", Value: "Value"},
 			standard.State_SUCCESS, false},
-		{"重复的 Name", &standard.CreateLabelRequest{Name: "TEST", Class: "Class", State: "State", Value: "Value"},
+		{"重复的 Name", &standard.CreateLabelRequest{Name: "TEST", Category: "Category", State: "State", Value: "Value"},
 			standard.State_SUCCESS, false}, // 标签允许重复
-		{"空的 Name", &standard.CreateLabelRequest{Name: "", Class: "Class", State: "Nickname", Value: "Value"},
+		{"空的 Name", &standard.CreateLabelRequest{Name: "", Category: "Category", State: "Nickname", Value: "Value"},
 			standard.State_PARAMS_INVALID, false},
-		{"空的 Class", &standard.CreateLabelRequest{Name: "TEST", Class: "", State: "Nickname", Value: "Value"},
+		{"空的 Category", &standard.CreateLabelRequest{Name: "TEST", Category: "", State: "Nickname", Value: "Value"},
 			standard.State_PARAMS_INVALID, false},
-		{"空的 State", &standard.CreateLabelRequest{Name: "TEST", Class: "Class", State: "", Value: "Value"},
+		{"空的 State", &standard.CreateLabelRequest{Name: "TEST", Category: "Category", State: "", Value: "Value"},
 			standard.State_PARAMS_INVALID, false},
-		{"空的 Value", &standard.CreateLabelRequest{Name: "TEST", Class: "Class", State: "Nickname", Value: ""},
+		{"空的 Value", &standard.CreateLabelRequest{Name: "TEST", Category: "Category", State: "Nickname", Value: ""},
 			standard.State_PARAMS_INVALID, false},
 	}
 
@@ -63,23 +63,23 @@ func TestService_CreateLabelForUser(t *testing.T) {
 		wantState standard.State
 		wantErr   bool
 	}{
-		{"正常创建", &standard.CreateLabelForUserRequest{UserID: 1, Name: "TEST1", Class: "Class", State: "State", Value: "Value"},
+		{"正常创建", &standard.CreateLabelForUserRequest{UserID: 1, Name: "TEST1", Category: "Category", State: "State", Value: "Value"},
 			standard.State_SUCCESS, false},
-		{"正常创建", &standard.CreateLabelForUserRequest{UserID: 1, Name: "TEST2", Class: "Class", State: "State", Value: "Value"},
+		{"正常创建", &standard.CreateLabelForUserRequest{UserID: 1, Name: "TEST2", Category: "Category", State: "State", Value: "Value"},
 			standard.State_SUCCESS, false},
-		{"正常创建", &standard.CreateLabelForUserRequest{UserID: 1, Name: "TEST3", Class: "Class", State: "State", Value: "Value"},
+		{"正常创建", &standard.CreateLabelForUserRequest{UserID: 1, Name: "TEST3", Category: "Category", State: "State", Value: "Value"},
 			standard.State_SUCCESS, false},
-		{"重复的 Name", &standard.CreateLabelForUserRequest{UserID: 1, Name: "TEST4", Class: "Class", State: "State", Value: "Value"},
+		{"重复的 Name", &standard.CreateLabelForUserRequest{UserID: 1, Name: "TEST4", Category: "Category", State: "State", Value: "Value"},
 			standard.State_SUCCESS, false}, // 标签允许重复
-		{"空的 Name", &standard.CreateLabelForUserRequest{UserID: 1, Name: "5", Class: "Class", State: "Nickname", Value: "Value"},
+		{"空的 Name", &standard.CreateLabelForUserRequest{UserID: 1, Name: "5", Category: "Category", State: "Nickname", Value: "Value"},
 			standard.State_PARAMS_INVALID, false},
-		{"空的 Class", &standard.CreateLabelForUserRequest{UserID: 1, Name: "TEST6", Class: "", State: "Nickname", Value: "Value"},
+		{"空的 Category", &standard.CreateLabelForUserRequest{UserID: 1, Name: "TEST6", Category: "", State: "Nickname", Value: "Value"},
 			standard.State_PARAMS_INVALID, false},
-		{"空的 State", &standard.CreateLabelForUserRequest{UserID: 1, Name: "TEST7", Class: "Class", State: "", Value: "Value"},
+		{"空的 State", &standard.CreateLabelForUserRequest{UserID: 1, Name: "TEST7", Category: "Category", State: "", Value: "Value"},
 			standard.State_PARAMS_INVALID, false},
-		{"空的 Value", &standard.CreateLabelForUserRequest{UserID: 1, Name: "TEST8", Class: "Class", State: "Nickname", Value: ""},
+		{"空的 Value", &standard.CreateLabelForUserRequest{UserID: 1, Name: "TEST8", Category: "Category", State: "Nickname", Value: ""},
 			standard.State_PARAMS_INVALID, false},
-		{"空的 UserID", &standard.CreateLabelForUserRequest{Name: "TEST9", Class: "Class", State: "Nickname", Value: ""},
+		{"空的 UserID", &standard.CreateLabelForUserRequest{Name: "TEST9", Category: "Category", State: "Nickname", Value: ""},
 			standard.State_USER_NOT_EXIST, false},
 	}
 
@@ -206,33 +206,33 @@ func TestService_UpdateLabelNameByID(t *testing.T) {
 	}
 }
 
-func TestService_UpdateLabelClassByID(t *testing.T) {
+func TestService_UpdateLabelCategoryByID(t *testing.T) {
 	srv := NewService()
 	tests := []struct {
 		name      string
-		args      *standard.UpdateLabelClassByIDRequest
+		args      *standard.UpdateLabelCategoryByIDRequest
 		wantState standard.State
 		wantErr   bool
 	}{
-		{"空的 ID", &standard.UpdateLabelClassByIDRequest{Class: "Update1"},
+		{"空的 ID", &standard.UpdateLabelCategoryByIDRequest{Category: "Update1"},
 			standard.State_PARAMS_INVALID, false},
-		{"正常更新", &standard.UpdateLabelClassByIDRequest{ID: 2, Class: "Update1"},
+		{"正常更新", &standard.UpdateLabelCategoryByIDRequest{ID: 2, Category: "Update1"},
 			standard.State_SUCCESS, false},
-		{"不存在的 ID", &standard.UpdateLabelClassByIDRequest{ID: 99999, Class: "Update1"},
+		{"不存在的 ID", &standard.UpdateLabelCategoryByIDRequest{ID: 99999, Category: "Update1"},
 			standard.State_LABEL_NOT_EXIST, false},
-		{"空的 Name", &standard.UpdateLabelClassByIDRequest{ID: 2},
+		{"空的 Name", &standard.UpdateLabelCategoryByIDRequest{ID: 2},
 			standard.State_PARAMS_INVALID, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotResp, err := srv.UpdateLabelClassByID(context.Background(), tt.args)
+			gotResp, err := srv.UpdateLabelCategoryByID(context.Background(), tt.args)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("Service.UpdateLabelClassByID() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("Service.UpdateLabelCategoryByID() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 
 			if gotResp.State.String() != tt.wantState.String() {
-				t.Errorf("Service.UpdateLabelClassByID() = %v, want %v", gotResp, tt.wantState)
+				t.Errorf("Service.UpdateLabelCategoryByID() = %v, want %v", gotResp, tt.wantState)
 				return
 			}
 		})

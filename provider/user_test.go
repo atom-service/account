@@ -31,7 +31,7 @@ func InitTestData() {
 	srv := NewService()
 	resp, err := srv.CreateUser(
 		context.Background(),
-		&standard.CreateUserRequest{Class: "InitTestData", Inviter: 0, Nickname: "InitTestData", Username: "InitTestData", Password: "InitTestData"},
+		&standard.CreateUserRequest{Category: "InitTestData", Inviter: 0, Nickname: "InitTestData", Username: "InitTestData", Password: "InitTestData"},
 	)
 	if err != nil {
 		panic(err)
@@ -51,25 +51,25 @@ func TestService_CreateUser(t *testing.T) {
 		wantState standard.State
 		wantErr   bool
 	}{
-		{"正常创建", &standard.CreateUserRequest{Class: "TEST", Inviter: 1, Nickname: "Nickname", Username: "Username", Password: "Password"},
+		{"正常创建", &standard.CreateUserRequest{Category: "TEST", Inviter: 1, Nickname: "Nickname", Username: "Username", Password: "Password"},
 			standard.State_SUCCESS, false},
 
-		{"重复的 Username", &standard.CreateUserRequest{Class: "TEST", Inviter: 1, Nickname: "Nickname", Username: "Username", Password: "Password"},
+		{"重复的 Username", &standard.CreateUserRequest{Category: "TEST", Inviter: 1, Nickname: "Nickname", Username: "Username", Password: "Password"},
 			standard.State_USER_ALREADY_EXISTS, false},
 
-		{"空的 Class", &standard.CreateUserRequest{Class: "TEST", Inviter: 1, Nickname: "Nickname", Username: "Username1", Password: "Password"},
+		{"空的 Category", &standard.CreateUserRequest{Category: "TEST", Inviter: 1, Nickname: "Nickname", Username: "Username1", Password: "Password"},
 			standard.State_SUCCESS, false},
 
-		{"空的 Inviter", &standard.CreateUserRequest{Class: "TEST", Nickname: "Nickname", Username: "Username2", Password: "Password"},
+		{"空的 Inviter", &standard.CreateUserRequest{Category: "TEST", Nickname: "Nickname", Username: "Username2", Password: "Password"},
 			standard.State_SUCCESS, false},
 
-		{"空的 Nickname", &standard.CreateUserRequest{Class: "TEST", Inviter: 1, Username: "Username3", Password: "Password"},
+		{"空的 Nickname", &standard.CreateUserRequest{Category: "TEST", Inviter: 1, Username: "Username3", Password: "Password"},
 			standard.State_PARAMS_INVALID, false},
 
-		{"空的 Username", &standard.CreateUserRequest{Class: "TEST", Inviter: 1, Nickname: "Nickname", Password: "Username4"},
+		{"空的 Username", &standard.CreateUserRequest{Category: "TEST", Inviter: 1, Nickname: "Nickname", Password: "Username4"},
 			standard.State_PARAMS_INVALID, false},
 
-		{"空的 Password", &standard.CreateUserRequest{Class: "TEST", Inviter: 1, Nickname: "Nickname", Username: "Username5"},
+		{"空的 Password", &standard.CreateUserRequest{Category: "TEST", Inviter: 1, Nickname: "Nickname", Username: "Username5"},
 			standard.State_PARAMS_INVALID, false},
 	}
 

@@ -18,7 +18,7 @@ func (srv *Service) CreateGroup(ctx context.Context, req *standard.CreateGroupRe
 		return resp, nil
 	}
 
-	if ok, msg := validators.GroupClass(req.Class); ok != true {
+	if ok, msg := validators.GroupCategory(req.Category); ok != true {
 		resp.State = standard.State_PARAMS_INVALID
 		resp.Message = msg
 		return resp, nil
@@ -50,7 +50,7 @@ func (srv *Service) CreateGroup(ctx context.Context, req *standard.CreateGroupRe
 		return resp, nil
 	}
 
-	id, err := dao.CreateGroup(req.Name, req.Class, req.State, req.Description)
+	id, err := dao.CreateGroup(req.Name, req.Category, req.State, req.Description)
 	if err != nil {
 		resp.State = standard.State_DB_OPERATION_FATLURE
 		resp.Message = err.Error() + "CreateGroup"
@@ -216,16 +216,16 @@ func (srv *Service) UpdateGroupNameByID(ctx context.Context, req *standard.Updat
 	return resp, nil
 }
 
-// UpdateGroupClassByID 更新分组的 Class 信息
-func (srv *Service) UpdateGroupClassByID(ctx context.Context, req *standard.UpdateGroupClassByIDRequest) (resp *standard.UpdateGroupClassByIDResponse, err error) {
-	resp = new(standard.UpdateGroupClassByIDResponse)
+// UpdateGroupCategoryByID 更新分组的 Category 信息
+func (srv *Service) UpdateGroupCategoryByID(ctx context.Context, req *standard.UpdateGroupCategoryByIDRequest) (resp *standard.UpdateGroupCategoryByIDResponse, err error) {
+	resp = new(standard.UpdateGroupCategoryByIDResponse)
 	if req.ID <= 0 {
 		resp.State = standard.State_PARAMS_INVALID
 		resp.Message = "无效的 ID"
 		return resp, nil
 	}
 
-	if ok, msg := validators.GroupClass(req.Class); ok != true {
+	if ok, msg := validators.GroupCategory(req.Category); ok != true {
 		resp.State = standard.State_PARAMS_INVALID
 		resp.Message = msg
 		return resp, nil
@@ -244,7 +244,7 @@ func (srv *Service) UpdateGroupClassByID(ctx context.Context, req *standard.Upda
 		return resp, nil
 	}
 
-	err = dao.UpdateGroupClassByID(req.ID, req.Class)
+	err = dao.UpdateGroupCategoryByID(req.ID, req.Category)
 	if err != nil {
 		resp.State = standard.State_DB_OPERATION_FATLURE
 		resp.Message = err.Error()

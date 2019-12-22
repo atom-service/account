@@ -24,13 +24,13 @@ func createGroupTable() error {
 		"(",
 		"`ID` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID',",
 		"`Name` varchar(128) NOT NULL COMMENT '名称',",
-		"`Class` varchar(128) NOT NULL COMMENT '类型',",
+		"`Category` varchar(128) NOT NULL COMMENT '类型',",
 		"`State` varchar(128) DEFAULT '' COMMENT '状态',",
 		"`Description` varchar(512) DEFAULT '' COMMENT '简介',",
 		"`DeletedTime` datetime DEFAULT NULL COMMENT '删除时间',",
 		"`CreatedTime` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',",
 		"`UpdatedTime` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',",
-		"PRIMARY KEY (`ID`,`Name`,`Class`,`State`),",
+		"PRIMARY KEY (`ID`,`Name`,`Category`,`State`),",
 		"UNIQUE KEY `Name` (`Name`)",
 		")",
 		"ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4;",
@@ -48,7 +48,7 @@ func createGroupTable() error {
 		"`Index` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Index',",
 		"`ID` int(11) COMMENT 'ID',",
 		"`Name` varchar(128) COMMENT '名称',",
-		"`Class` varchar(128) COMMENT '类型',",
+		"`Category` varchar(128) COMMENT '类型',",
 		"`State` varchar(128) COMMENT '状态',",
 		"`Description` varchar(512) COMMENT '简介',",
 		"`DeletedTime` datetime COMMENT '删除时间',",
@@ -92,9 +92,9 @@ func CreateGroupHistory(id int64) error {
 	historyStmp := sqldb.CreateNamedStmt(strings.Join([]string{
 		"INSERT INTO",
 		"`" + groupHistoryTableName + "`",
-		"(`ID`,`Name`,`Class`,`State`,`Description`,`DeletedTime`,`CreatedTime`,`UpdatedTime`)",
+		"(`ID`,`Name`,`Category`,`State`,`Description`,`DeletedTime`,`CreatedTime`,`UpdatedTime`)",
 		"SELECT",
-		"`ID`,`Name`,`Class`,`State`,`Description`,`DeletedTime`,`CreatedTime`,`UpdatedTime`",
+		"`ID`,`Name`,`Category`,`State`,`Description`,`DeletedTime`,`CreatedTime`,`UpdatedTime`",
 		"FROM",
 		"`" + groupTableName + "`",
 		"WHERE",
@@ -108,18 +108,18 @@ func CreateGroupHistory(id int64) error {
 }
 
 // CreateGroup 创建组
-func CreateGroup(name, class, state, description string) (int64, error) {
+func CreateGroup(name, category, state, description string) (int64, error) {
 	stmp := sqldb.CreateNamedStmt(strings.Join([]string{
 		"INSERT INTO",
 		"`" + groupTableName + "`",
-		"(`Name`, `Class`, `State`, `Description`)",
+		"(`Name`, `Category`, `State`, `Description`)",
 		"VALUES",
-		"(:Name, :Class, :State, :Description)",
+		"(:Name, :Category, :State, :Description)",
 	}, " "))
 
 	data := map[string]interface{}{
 		"Name":        name,
-		"Class":       class,
+		"Category":    category,
 		"State":       state,
 		"Description": description,
 	}
@@ -252,14 +252,14 @@ func UpdateGroupNameByID(id int64, name string) error {
 	return updataGroupFieldByID(id, map[string]interface{}{"Name": name})
 }
 
-// UpdateGroupClassByID 更新标签状态
-func UpdateGroupClassByID(id int64, class string) error {
-	return updataGroupFieldByID(id, map[string]interface{}{"Class": class})
+// UpdateGroupCategoryByID 更新标签状态
+func UpdateGroupCategoryByID(id int64, category string) error {
+	return updataGroupFieldByID(id, map[string]interface{}{"Category": category})
 }
 
 // UpdateGroupStateByID 更新标签值
-func UpdateGroupStateByID(id int64, class string) error {
-	return updataGroupFieldByID(id, map[string]interface{}{"State": class})
+func UpdateGroupStateByID(id int64, category string) error {
+	return updataGroupFieldByID(id, map[string]interface{}{"State": category})
 }
 
 // UpdateGroupDescriptionByID 更新标签值

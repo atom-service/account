@@ -21,7 +21,7 @@ func createUserTable() error {
 		"CREATE TABLE IF NOT EXISTS `" + userTableName + "`",
 		"(",
 		"`ID` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID',",
-		"`Class` varchar(128) NOT NULL COMMENT '账户类型',",
+		"`Category` varchar(128) NOT NULL COMMENT '账户类型',",
 		"`Avatar` varchar(512) DEFAULT '' COMMENT '头像', ",
 		"`Inviter` int(11) DEFAULT 0 COMMENT '邀请人',",
 		"`Nickname` varchar(128) NOT NULL COMMENT '昵称',",
@@ -30,7 +30,7 @@ func createUserTable() error {
 		"`DeletedTime` datetime DEFAULT NULL COMMENT '删除时间',",
 		"`CreatedTime` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',",
 		"`UpdatedTime` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',",
-		"PRIMARY KEY (`ID`,`Nickname`,`Class`,`Username`),",
+		"PRIMARY KEY (`ID`,`Nickname`,`Category`,`Username`),",
 		"UNIQUE KEY `Username` (`Username`)",
 		")",
 		"ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4;",
@@ -45,7 +45,7 @@ func createUserTable() error {
 		"(",
 		"`Index` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Index',",
 		"`ID` int(11)  COMMENT 'ID',",
-		"`Class` varchar(128) COMMENT '账户类型',",
+		"`Category` varchar(128) COMMENT '账户类型',",
 		"`Avatar` varchar(512) COMMENT '头像', ",
 		"`Inviter` int(11) COMMENT '邀请人',",
 		"`Nickname` varchar(128) COMMENT '昵称',",
@@ -92,9 +92,9 @@ func CreateUserHistory(id int64) error {
 	historyStmp := sqldb.CreateNamedStmt(strings.Join([]string{
 		"INSERT INTO",
 		"`" + userHistoryTableName + "`",
-		"(ID,Class,Avatar,Inviter,Nickname,Username,Password,DeletedTime,CreatedTime,UpdatedTime)",
+		"(ID,Category,Avatar,Inviter,Nickname,Username,Password,DeletedTime,CreatedTime,UpdatedTime)",
 		"SELECT",
-		"ID,Class,Avatar,Inviter,Nickname,Username,Password,DeletedTime,CreatedTime,UpdatedTime",
+		"ID,Category,Avatar,Inviter,Nickname,Username,Password,DeletedTime,CreatedTime,UpdatedTime",
 		"FROM",
 		"`" + userTableName + "`",
 		"WHERE",
@@ -297,17 +297,17 @@ func CountUserByUsername(username string) (int64, error) {
 }
 
 // CreateUser 创建用户
-func CreateUser(class, nickname, username, password string, inviter int64) (int64, error) {
+func CreateUser(category, nickname, username, password string, inviter int64) (int64, error) {
 	stmp := sqldb.CreateNamedStmt(strings.Join([]string{
 		"INSERT INTO",
 		"`" + userTableName + "`",
-		"(`Class`, `Nickname`, `Username`, `Inviter`, `Password`)",
+		"(`Category`, `Nickname`, `Username`, `Inviter`, `Password`)",
 		"VALUES",
-		"(:Class, :Nickname, :Username, :Inviter, :Password)",
+		"(:Category, :Nickname, :Username, :Inviter, :Password)",
 	}, " "))
 
 	data := map[string]interface{}{
-		"Class":    class,
+		"Category": category,
 		"Nickname": nickname,
 		"Username": username,
 		"Inviter":  inviter,
@@ -359,9 +359,9 @@ func DeleteUserByID(id int64) error {
 	return UpdataUserFieldByID(id, map[string]interface{}{"DeletedTime": time.Now()})
 }
 
-// UpdateUserClassByID 更新用户类型
-func UpdateUserClassByID(id int64, class string) error {
-	return UpdataUserFieldByID(id, map[string]interface{}{"Class": class})
+// UpdateUserCategoryByID 更新用户类型
+func UpdateUserCategoryByID(id int64, category string) error {
+	return UpdataUserFieldByID(id, map[string]interface{}{"Category": category})
 }
 
 // UpdateUserAvatarByID 更新用户头像

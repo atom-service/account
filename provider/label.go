@@ -17,7 +17,7 @@ func (srv *Service) CreateLabel(ctx context.Context, req *standard.CreateLabelRe
 		return resp, nil
 	}
 
-	if ok, msg := validators.LabelClass(req.Class); ok != true {
+	if ok, msg := validators.LabelCategory(req.Category); ok != true {
 		resp.State = standard.State_PARAMS_INVALID
 		resp.Message = msg
 		return resp, nil
@@ -35,7 +35,7 @@ func (srv *Service) CreateLabel(ctx context.Context, req *standard.CreateLabelRe
 		return resp, nil
 	}
 
-	id, err := dao.CreateLabel(req.Name, req.Class, req.State, req.Value)
+	id, err := dao.CreateLabel(req.Name, req.Category, req.State, req.Value)
 	if err != nil {
 		resp.State = standard.State_DB_OPERATION_FATLURE
 		resp.Message = err.Error()
@@ -111,7 +111,7 @@ func (srv *Service) CreateLabelForUser(ctx context.Context, req *standard.Create
 		return resp, nil
 	}
 
-	createResult, err := srv.CreateLabel(ctx, &standard.CreateLabelRequest{Name: req.Name, Class: req.Class, State: req.State, Value: req.Value})
+	createResult, err := srv.CreateLabel(ctx, &standard.CreateLabelRequest{Name: req.Name, Category: req.Category, State: req.State, Value: req.Value})
 	if err != nil {
 		resp.State = standard.State_SERVICE_ERROR
 		resp.Message = err.Error()
@@ -253,16 +253,16 @@ func (srv *Service) UpdateLabelNameByID(ctx context.Context, req *standard.Updat
 	return resp, nil
 }
 
-// UpdateLabelClassByID 通过 ID 更新分类
-func (srv *Service) UpdateLabelClassByID(ctx context.Context, req *standard.UpdateLabelClassByIDRequest) (resp *standard.UpdateLabelClassByIDResponse, err error) {
-	resp = new(standard.UpdateLabelClassByIDResponse)
+// UpdateLabelCategoryByID 通过 ID 更新分类
+func (srv *Service) UpdateLabelCategoryByID(ctx context.Context, req *standard.UpdateLabelCategoryByIDRequest) (resp *standard.UpdateLabelCategoryByIDResponse, err error) {
+	resp = new(standard.UpdateLabelCategoryByIDResponse)
 	if req.ID == 0 {
 		resp.State = standard.State_PARAMS_INVALID
 		resp.Message = "无效的 ID"
 		return resp, nil
 	}
 
-	if ok, msg := validators.LabelClass(req.Class); ok != true {
+	if ok, msg := validators.LabelCategory(req.Category); ok != true {
 		resp.State = standard.State_PARAMS_INVALID
 		resp.Message = msg
 		return resp, nil
@@ -281,7 +281,7 @@ func (srv *Service) UpdateLabelClassByID(ctx context.Context, req *standard.Upda
 		return resp, nil
 	}
 
-	err = dao.UpdateLabelClassByID(req.ID, req.Class)
+	err = dao.UpdateLabelCategoryByID(req.ID, req.Category)
 	if err != nil {
 		resp.State = standard.State_DB_OPERATION_FATLURE
 		resp.Message = err.Error()

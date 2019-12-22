@@ -1,533 +1,152 @@
+// GENERATED CODE -- DO NOT EDIT!
+
 // package: standard
 // file: standard.proto
 
-/* tslint:disable */
-
-import * as grpc from "grpc";
 import * as standard_pb from "./standard_pb";
+import * as grpc from "grpc";
 
 interface IAccountService extends grpc.ServiceDefinition<grpc.UntypedServiceImplementation> {
-    createUser: IAccountService_ICreateUser;
-    queryUsers: IAccountService_IQueryUsers;
-    queryUserByID: IAccountService_IQueryUserByID;
-    queryUsersByInviter: IAccountService_IQueryUsersByInviter;
-    deleteUserByID: IAccountService_IDeleteUserByID;
-    queryUserByUsername: IAccountService_IQueryUserByUsername;
-    updateUserPasswordByID: IAccountService_IUpdateUserPasswordByID;
-    verifyUserPasswordByID: IAccountService_IVerifyUserPasswordByID;
-    verifyUserPasswordByUsername: IAccountService_IVerifyUserPasswordByUsername;
-    queryLabels: IAccountService_IQueryLabels;
-    createLabel: IAccountService_ICreateLabel;
-    createLabelForUser: IAccountService_ICreateLabelForUser;
-    queryLabelByID: IAccountService_IQueryLabelByID;
-    deleteLabelByID: IAccountService_IDeleteLabelByID;
-    updateLabelNameByID: IAccountService_IUpdateLabelNameByID;
-    updateLabelClassByID: IAccountService_IUpdateLabelClassByID;
-    updateLabelStateByID: IAccountService_IUpdateLabelStateByID;
-    updateLabelValueByID: IAccountService_IUpdateLabelValueByID;
-    addLabelToUserByID: IAccountService_IAddLabelToUserByID;
-    removeLabelFromUserByID: IAccountService_IRemoveLabelFromUserByID;
-    createGroup: IAccountService_ICreateGroup;
-    queryGroups: IAccountService_IQueryGroups;
-    queryGroupByID: IAccountService_IQueryGroupByID;
-    deleteGroupByID: IAccountService_IDeleteGroupByID;
-    updateGroupNameByID: IAccountService_IUpdateGroupNameByID;
-    updateGroupClassByID: IAccountService_IUpdateGroupClassByID;
-    updateGroupStateByID: IAccountService_IUpdateGroupStateByID;
-    updateGroupDescriptionByID: IAccountService_IUpdateGroupDescriptionByID;
-    addUserToGroupByID: IAccountService_IAddUserToGroupByID;
-    removeUserFromGroupByID: IAccountService_IRemoveUserFromGroupByID;
-}
-
-interface IAccountService_ICreateUser extends grpc.MethodDefinition<standard_pb.CreateUserRequest, standard_pb.CreateUserResponse> {
-    path: string; // "/standard.Account/CreateUser"
-    requestStream: boolean; // false
-    responseStream: boolean; // false
-    requestSerialize: grpc.serialize<standard_pb.CreateUserRequest>;
-    requestDeserialize: grpc.deserialize<standard_pb.CreateUserRequest>;
-    responseSerialize: grpc.serialize<standard_pb.CreateUserResponse>;
-    responseDeserialize: grpc.deserialize<standard_pb.CreateUserResponse>;
-}
-interface IAccountService_IQueryUsers extends grpc.MethodDefinition<standard_pb.QueryUsersRequest, standard_pb.QueryUsersResponse> {
-    path: string; // "/standard.Account/QueryUsers"
-    requestStream: boolean; // false
-    responseStream: boolean; // false
-    requestSerialize: grpc.serialize<standard_pb.QueryUsersRequest>;
-    requestDeserialize: grpc.deserialize<standard_pb.QueryUsersRequest>;
-    responseSerialize: grpc.serialize<standard_pb.QueryUsersResponse>;
-    responseDeserialize: grpc.deserialize<standard_pb.QueryUsersResponse>;
-}
-interface IAccountService_IQueryUserByID extends grpc.MethodDefinition<standard_pb.QueryUserByIDRequest, standard_pb.QueryUserByIDResponse> {
-    path: string; // "/standard.Account/QueryUserByID"
-    requestStream: boolean; // false
-    responseStream: boolean; // false
-    requestSerialize: grpc.serialize<standard_pb.QueryUserByIDRequest>;
-    requestDeserialize: grpc.deserialize<standard_pb.QueryUserByIDRequest>;
-    responseSerialize: grpc.serialize<standard_pb.QueryUserByIDResponse>;
-    responseDeserialize: grpc.deserialize<standard_pb.QueryUserByIDResponse>;
-}
-interface IAccountService_IQueryUsersByInviter extends grpc.MethodDefinition<standard_pb.QueryUsersByInviterRequest, standard_pb.QueryUsersByInviterResponse> {
-    path: string; // "/standard.Account/QueryUsersByInviter"
-    requestStream: boolean; // false
-    responseStream: boolean; // false
-    requestSerialize: grpc.serialize<standard_pb.QueryUsersByInviterRequest>;
-    requestDeserialize: grpc.deserialize<standard_pb.QueryUsersByInviterRequest>;
-    responseSerialize: grpc.serialize<standard_pb.QueryUsersByInviterResponse>;
-    responseDeserialize: grpc.deserialize<standard_pb.QueryUsersByInviterResponse>;
-}
-interface IAccountService_IDeleteUserByID extends grpc.MethodDefinition<standard_pb.DeleteUserByIDRequest, standard_pb.DeleteUserByIDResponse> {
-    path: string; // "/standard.Account/DeleteUserByID"
-    requestStream: boolean; // false
-    responseStream: boolean; // false
-    requestSerialize: grpc.serialize<standard_pb.DeleteUserByIDRequest>;
-    requestDeserialize: grpc.deserialize<standard_pb.DeleteUserByIDRequest>;
-    responseSerialize: grpc.serialize<standard_pb.DeleteUserByIDResponse>;
-    responseDeserialize: grpc.deserialize<standard_pb.DeleteUserByIDResponse>;
-}
-interface IAccountService_IQueryUserByUsername extends grpc.MethodDefinition<standard_pb.QueryUserByUsernameRequest, standard_pb.QueryUserByUsernameResponse> {
-    path: string; // "/standard.Account/QueryUserByUsername"
-    requestStream: boolean; // false
-    responseStream: boolean; // false
-    requestSerialize: grpc.serialize<standard_pb.QueryUserByUsernameRequest>;
-    requestDeserialize: grpc.deserialize<standard_pb.QueryUserByUsernameRequest>;
-    responseSerialize: grpc.serialize<standard_pb.QueryUserByUsernameResponse>;
-    responseDeserialize: grpc.deserialize<standard_pb.QueryUserByUsernameResponse>;
-}
-interface IAccountService_IUpdateUserPasswordByID extends grpc.MethodDefinition<standard_pb.UpdateUserPasswordByIDRequest, standard_pb.UpdateUserPasswordByIDResponse> {
-    path: string; // "/standard.Account/UpdateUserPasswordByID"
-    requestStream: boolean; // false
-    responseStream: boolean; // false
-    requestSerialize: grpc.serialize<standard_pb.UpdateUserPasswordByIDRequest>;
-    requestDeserialize: grpc.deserialize<standard_pb.UpdateUserPasswordByIDRequest>;
-    responseSerialize: grpc.serialize<standard_pb.UpdateUserPasswordByIDResponse>;
-    responseDeserialize: grpc.deserialize<standard_pb.UpdateUserPasswordByIDResponse>;
-}
-interface IAccountService_IVerifyUserPasswordByID extends grpc.MethodDefinition<standard_pb.VerifyUserPasswordByIDRequest, standard_pb.VerifyUserPasswordByIDResponse> {
-    path: string; // "/standard.Account/VerifyUserPasswordByID"
-    requestStream: boolean; // false
-    responseStream: boolean; // false
-    requestSerialize: grpc.serialize<standard_pb.VerifyUserPasswordByIDRequest>;
-    requestDeserialize: grpc.deserialize<standard_pb.VerifyUserPasswordByIDRequest>;
-    responseSerialize: grpc.serialize<standard_pb.VerifyUserPasswordByIDResponse>;
-    responseDeserialize: grpc.deserialize<standard_pb.VerifyUserPasswordByIDResponse>;
-}
-interface IAccountService_IVerifyUserPasswordByUsername extends grpc.MethodDefinition<standard_pb.VerifyUserPasswordByUsernameRequest, standard_pb.VerifyUserPasswordByUsernameResponse> {
-    path: string; // "/standard.Account/VerifyUserPasswordByUsername"
-    requestStream: boolean; // false
-    responseStream: boolean; // false
-    requestSerialize: grpc.serialize<standard_pb.VerifyUserPasswordByUsernameRequest>;
-    requestDeserialize: grpc.deserialize<standard_pb.VerifyUserPasswordByUsernameRequest>;
-    responseSerialize: grpc.serialize<standard_pb.VerifyUserPasswordByUsernameResponse>;
-    responseDeserialize: grpc.deserialize<standard_pb.VerifyUserPasswordByUsernameResponse>;
-}
-interface IAccountService_IQueryLabels extends grpc.MethodDefinition<standard_pb.QueryLabelsRequest, standard_pb.QueryLabelsResponse> {
-    path: string; // "/standard.Account/QueryLabels"
-    requestStream: boolean; // false
-    responseStream: boolean; // false
-    requestSerialize: grpc.serialize<standard_pb.QueryLabelsRequest>;
-    requestDeserialize: grpc.deserialize<standard_pb.QueryLabelsRequest>;
-    responseSerialize: grpc.serialize<standard_pb.QueryLabelsResponse>;
-    responseDeserialize: grpc.deserialize<standard_pb.QueryLabelsResponse>;
-}
-interface IAccountService_ICreateLabel extends grpc.MethodDefinition<standard_pb.CreateLabelRequest, standard_pb.CreateLabelResponse> {
-    path: string; // "/standard.Account/CreateLabel"
-    requestStream: boolean; // false
-    responseStream: boolean; // false
-    requestSerialize: grpc.serialize<standard_pb.CreateLabelRequest>;
-    requestDeserialize: grpc.deserialize<standard_pb.CreateLabelRequest>;
-    responseSerialize: grpc.serialize<standard_pb.CreateLabelResponse>;
-    responseDeserialize: grpc.deserialize<standard_pb.CreateLabelResponse>;
-}
-interface IAccountService_ICreateLabelForUser extends grpc.MethodDefinition<standard_pb.CreateLabelForUserRequest, standard_pb.CreateLabelForUserResponse> {
-    path: string; // "/standard.Account/CreateLabelForUser"
-    requestStream: boolean; // false
-    responseStream: boolean; // false
-    requestSerialize: grpc.serialize<standard_pb.CreateLabelForUserRequest>;
-    requestDeserialize: grpc.deserialize<standard_pb.CreateLabelForUserRequest>;
-    responseSerialize: grpc.serialize<standard_pb.CreateLabelForUserResponse>;
-    responseDeserialize: grpc.deserialize<standard_pb.CreateLabelForUserResponse>;
-}
-interface IAccountService_IQueryLabelByID extends grpc.MethodDefinition<standard_pb.QueryLabelByIDRequest, standard_pb.QueryLabelByIDResponse> {
-    path: string; // "/standard.Account/QueryLabelByID"
-    requestStream: boolean; // false
-    responseStream: boolean; // false
-    requestSerialize: grpc.serialize<standard_pb.QueryLabelByIDRequest>;
-    requestDeserialize: grpc.deserialize<standard_pb.QueryLabelByIDRequest>;
-    responseSerialize: grpc.serialize<standard_pb.QueryLabelByIDResponse>;
-    responseDeserialize: grpc.deserialize<standard_pb.QueryLabelByIDResponse>;
-}
-interface IAccountService_IDeleteLabelByID extends grpc.MethodDefinition<standard_pb.DeleteLabelByIDRequest, standard_pb.DeleteLabelByIDResponse> {
-    path: string; // "/standard.Account/DeleteLabelByID"
-    requestStream: boolean; // false
-    responseStream: boolean; // false
-    requestSerialize: grpc.serialize<standard_pb.DeleteLabelByIDRequest>;
-    requestDeserialize: grpc.deserialize<standard_pb.DeleteLabelByIDRequest>;
-    responseSerialize: grpc.serialize<standard_pb.DeleteLabelByIDResponse>;
-    responseDeserialize: grpc.deserialize<standard_pb.DeleteLabelByIDResponse>;
-}
-interface IAccountService_IUpdateLabelNameByID extends grpc.MethodDefinition<standard_pb.UpdateLabelNameByIDRequest, standard_pb.UpdateLabelNameByIDResponse> {
-    path: string; // "/standard.Account/UpdateLabelNameByID"
-    requestStream: boolean; // false
-    responseStream: boolean; // false
-    requestSerialize: grpc.serialize<standard_pb.UpdateLabelNameByIDRequest>;
-    requestDeserialize: grpc.deserialize<standard_pb.UpdateLabelNameByIDRequest>;
-    responseSerialize: grpc.serialize<standard_pb.UpdateLabelNameByIDResponse>;
-    responseDeserialize: grpc.deserialize<standard_pb.UpdateLabelNameByIDResponse>;
-}
-interface IAccountService_IUpdateLabelClassByID extends grpc.MethodDefinition<standard_pb.UpdateLabelClassByIDRequest, standard_pb.UpdateLabelClassByIDResponse> {
-    path: string; // "/standard.Account/UpdateLabelClassByID"
-    requestStream: boolean; // false
-    responseStream: boolean; // false
-    requestSerialize: grpc.serialize<standard_pb.UpdateLabelClassByIDRequest>;
-    requestDeserialize: grpc.deserialize<standard_pb.UpdateLabelClassByIDRequest>;
-    responseSerialize: grpc.serialize<standard_pb.UpdateLabelClassByIDResponse>;
-    responseDeserialize: grpc.deserialize<standard_pb.UpdateLabelClassByIDResponse>;
-}
-interface IAccountService_IUpdateLabelStateByID extends grpc.MethodDefinition<standard_pb.UpdateLabelStateByIDRequest, standard_pb.UpdateLabelStateByIDResponse> {
-    path: string; // "/standard.Account/UpdateLabelStateByID"
-    requestStream: boolean; // false
-    responseStream: boolean; // false
-    requestSerialize: grpc.serialize<standard_pb.UpdateLabelStateByIDRequest>;
-    requestDeserialize: grpc.deserialize<standard_pb.UpdateLabelStateByIDRequest>;
-    responseSerialize: grpc.serialize<standard_pb.UpdateLabelStateByIDResponse>;
-    responseDeserialize: grpc.deserialize<standard_pb.UpdateLabelStateByIDResponse>;
-}
-interface IAccountService_IUpdateLabelValueByID extends grpc.MethodDefinition<standard_pb.UpdateLabelValueByIDRequest, standard_pb.UpdateLabelValueByIDResponse> {
-    path: string; // "/standard.Account/UpdateLabelValueByID"
-    requestStream: boolean; // false
-    responseStream: boolean; // false
-    requestSerialize: grpc.serialize<standard_pb.UpdateLabelValueByIDRequest>;
-    requestDeserialize: grpc.deserialize<standard_pb.UpdateLabelValueByIDRequest>;
-    responseSerialize: grpc.serialize<standard_pb.UpdateLabelValueByIDResponse>;
-    responseDeserialize: grpc.deserialize<standard_pb.UpdateLabelValueByIDResponse>;
-}
-interface IAccountService_IAddLabelToUserByID extends grpc.MethodDefinition<standard_pb.AddLabelToUserByIDRequest, standard_pb.AddLabelToUserByIDResponse> {
-    path: string; // "/standard.Account/AddLabelToUserByID"
-    requestStream: boolean; // false
-    responseStream: boolean; // false
-    requestSerialize: grpc.serialize<standard_pb.AddLabelToUserByIDRequest>;
-    requestDeserialize: grpc.deserialize<standard_pb.AddLabelToUserByIDRequest>;
-    responseSerialize: grpc.serialize<standard_pb.AddLabelToUserByIDResponse>;
-    responseDeserialize: grpc.deserialize<standard_pb.AddLabelToUserByIDResponse>;
-}
-interface IAccountService_IRemoveLabelFromUserByID extends grpc.MethodDefinition<standard_pb.RemoveLabelFromUserByIDRequest, standard_pb.RemoveLabelFromUserByIDResponse> {
-    path: string; // "/standard.Account/RemoveLabelFromUserByID"
-    requestStream: boolean; // false
-    responseStream: boolean; // false
-    requestSerialize: grpc.serialize<standard_pb.RemoveLabelFromUserByIDRequest>;
-    requestDeserialize: grpc.deserialize<standard_pb.RemoveLabelFromUserByIDRequest>;
-    responseSerialize: grpc.serialize<standard_pb.RemoveLabelFromUserByIDResponse>;
-    responseDeserialize: grpc.deserialize<standard_pb.RemoveLabelFromUserByIDResponse>;
-}
-interface IAccountService_ICreateGroup extends grpc.MethodDefinition<standard_pb.CreateGroupRequest, standard_pb.CreateGroupResponse> {
-    path: string; // "/standard.Account/CreateGroup"
-    requestStream: boolean; // false
-    responseStream: boolean; // false
-    requestSerialize: grpc.serialize<standard_pb.CreateGroupRequest>;
-    requestDeserialize: grpc.deserialize<standard_pb.CreateGroupRequest>;
-    responseSerialize: grpc.serialize<standard_pb.CreateGroupResponse>;
-    responseDeserialize: grpc.deserialize<standard_pb.CreateGroupResponse>;
-}
-interface IAccountService_IQueryGroups extends grpc.MethodDefinition<standard_pb.QueryGroupsRequest, standard_pb.QueryGroupsResponse> {
-    path: string; // "/standard.Account/QueryGroups"
-    requestStream: boolean; // false
-    responseStream: boolean; // false
-    requestSerialize: grpc.serialize<standard_pb.QueryGroupsRequest>;
-    requestDeserialize: grpc.deserialize<standard_pb.QueryGroupsRequest>;
-    responseSerialize: grpc.serialize<standard_pb.QueryGroupsResponse>;
-    responseDeserialize: grpc.deserialize<standard_pb.QueryGroupsResponse>;
-}
-interface IAccountService_IQueryGroupByID extends grpc.MethodDefinition<standard_pb.QueryGroupByIDRequest, standard_pb.QueryGroupByIDResponse> {
-    path: string; // "/standard.Account/QueryGroupByID"
-    requestStream: boolean; // false
-    responseStream: boolean; // false
-    requestSerialize: grpc.serialize<standard_pb.QueryGroupByIDRequest>;
-    requestDeserialize: grpc.deserialize<standard_pb.QueryGroupByIDRequest>;
-    responseSerialize: grpc.serialize<standard_pb.QueryGroupByIDResponse>;
-    responseDeserialize: grpc.deserialize<standard_pb.QueryGroupByIDResponse>;
-}
-interface IAccountService_IDeleteGroupByID extends grpc.MethodDefinition<standard_pb.DeleteGroupByIDRequest, standard_pb.DeleteGroupByIDResponse> {
-    path: string; // "/standard.Account/DeleteGroupByID"
-    requestStream: boolean; // false
-    responseStream: boolean; // false
-    requestSerialize: grpc.serialize<standard_pb.DeleteGroupByIDRequest>;
-    requestDeserialize: grpc.deserialize<standard_pb.DeleteGroupByIDRequest>;
-    responseSerialize: grpc.serialize<standard_pb.DeleteGroupByIDResponse>;
-    responseDeserialize: grpc.deserialize<standard_pb.DeleteGroupByIDResponse>;
-}
-interface IAccountService_IUpdateGroupNameByID extends grpc.MethodDefinition<standard_pb.UpdateGroupNameByIDRequest, standard_pb.UpdateGroupNameByIDResponse> {
-    path: string; // "/standard.Account/UpdateGroupNameByID"
-    requestStream: boolean; // false
-    responseStream: boolean; // false
-    requestSerialize: grpc.serialize<standard_pb.UpdateGroupNameByIDRequest>;
-    requestDeserialize: grpc.deserialize<standard_pb.UpdateGroupNameByIDRequest>;
-    responseSerialize: grpc.serialize<standard_pb.UpdateGroupNameByIDResponse>;
-    responseDeserialize: grpc.deserialize<standard_pb.UpdateGroupNameByIDResponse>;
-}
-interface IAccountService_IUpdateGroupClassByID extends grpc.MethodDefinition<standard_pb.UpdateGroupClassByIDRequest, standard_pb.UpdateGroupClassByIDResponse> {
-    path: string; // "/standard.Account/UpdateGroupClassByID"
-    requestStream: boolean; // false
-    responseStream: boolean; // false
-    requestSerialize: grpc.serialize<standard_pb.UpdateGroupClassByIDRequest>;
-    requestDeserialize: grpc.deserialize<standard_pb.UpdateGroupClassByIDRequest>;
-    responseSerialize: grpc.serialize<standard_pb.UpdateGroupClassByIDResponse>;
-    responseDeserialize: grpc.deserialize<standard_pb.UpdateGroupClassByIDResponse>;
-}
-interface IAccountService_IUpdateGroupStateByID extends grpc.MethodDefinition<standard_pb.UpdateGroupStateByIDRequest, standard_pb.UpdateGroupStateByIDResponse> {
-    path: string; // "/standard.Account/UpdateGroupStateByID"
-    requestStream: boolean; // false
-    responseStream: boolean; // false
-    requestSerialize: grpc.serialize<standard_pb.UpdateGroupStateByIDRequest>;
-    requestDeserialize: grpc.deserialize<standard_pb.UpdateGroupStateByIDRequest>;
-    responseSerialize: grpc.serialize<standard_pb.UpdateGroupStateByIDResponse>;
-    responseDeserialize: grpc.deserialize<standard_pb.UpdateGroupStateByIDResponse>;
-}
-interface IAccountService_IUpdateGroupDescriptionByID extends grpc.MethodDefinition<standard_pb.UpdateGroupDescriptionByIDRequest, standard_pb.UpdateGroupDescriptionByIDResponse> {
-    path: string; // "/standard.Account/UpdateGroupDescriptionByID"
-    requestStream: boolean; // false
-    responseStream: boolean; // false
-    requestSerialize: grpc.serialize<standard_pb.UpdateGroupDescriptionByIDRequest>;
-    requestDeserialize: grpc.deserialize<standard_pb.UpdateGroupDescriptionByIDRequest>;
-    responseSerialize: grpc.serialize<standard_pb.UpdateGroupDescriptionByIDResponse>;
-    responseDeserialize: grpc.deserialize<standard_pb.UpdateGroupDescriptionByIDResponse>;
-}
-interface IAccountService_IAddUserToGroupByID extends grpc.MethodDefinition<standard_pb.AddUserToGroupByIDRequest, standard_pb.AddUserToGroupByIDResponse> {
-    path: string; // "/standard.Account/AddUserToGroupByID"
-    requestStream: boolean; // false
-    responseStream: boolean; // false
-    requestSerialize: grpc.serialize<standard_pb.AddUserToGroupByIDRequest>;
-    requestDeserialize: grpc.deserialize<standard_pb.AddUserToGroupByIDRequest>;
-    responseSerialize: grpc.serialize<standard_pb.AddUserToGroupByIDResponse>;
-    responseDeserialize: grpc.deserialize<standard_pb.AddUserToGroupByIDResponse>;
-}
-interface IAccountService_IRemoveUserFromGroupByID extends grpc.MethodDefinition<standard_pb.RemoveUserFromGroupByIDRequest, standard_pb.RemoveUserFromGroupByIDResponse> {
-    path: string; // "/standard.Account/RemoveUserFromGroupByID"
-    requestStream: boolean; // false
-    responseStream: boolean; // false
-    requestSerialize: grpc.serialize<standard_pb.RemoveUserFromGroupByIDRequest>;
-    requestDeserialize: grpc.deserialize<standard_pb.RemoveUserFromGroupByIDRequest>;
-    responseSerialize: grpc.serialize<standard_pb.RemoveUserFromGroupByIDResponse>;
-    responseDeserialize: grpc.deserialize<standard_pb.RemoveUserFromGroupByIDResponse>;
+  createUser: grpc.MethodDefinition<standard_pb.CreateUserRequest, standard_pb.CreateUserResponse>;
+  queryUsers: grpc.MethodDefinition<standard_pb.QueryUsersRequest, standard_pb.QueryUsersResponse>;
+  queryUserByID: grpc.MethodDefinition<standard_pb.QueryUserByIDRequest, standard_pb.QueryUserByIDResponse>;
+  queryUsersByInviter: grpc.MethodDefinition<standard_pb.QueryUsersByInviterRequest, standard_pb.QueryUsersByInviterResponse>;
+  deleteUserByID: grpc.MethodDefinition<standard_pb.DeleteUserByIDRequest, standard_pb.DeleteUserByIDResponse>;
+  queryUserByUsername: grpc.MethodDefinition<standard_pb.QueryUserByUsernameRequest, standard_pb.QueryUserByUsernameResponse>;
+  updateUserCategoryByID: grpc.MethodDefinition<standard_pb.UpdateUserCategoryByIDRequest, standard_pb.UpdateUserCategoryByIDResponse>;
+  updateUserAvatarByID: grpc.MethodDefinition<standard_pb.UpdateUserAvatarByIDRequest, standard_pb.UpdateUserAvatarByIDResponse>;
+  updateUserInviterByID: grpc.MethodDefinition<standard_pb.UpdateUserInviterByIDRequest, standard_pb.UpdateUserInviterByIDResponse>;
+  updateUserNicknameByID: grpc.MethodDefinition<standard_pb.UpdateUserNicknameByIDRequest, standard_pb.UpdateUserNicknameByIDResponse>;
+  updateUserPasswordByID: grpc.MethodDefinition<standard_pb.UpdateUserPasswordByIDRequest, standard_pb.UpdateUserPasswordByIDResponse>;
+  verifyUserPasswordByID: grpc.MethodDefinition<standard_pb.VerifyUserPasswordByIDRequest, standard_pb.VerifyUserPasswordByIDResponse>;
+  verifyUserPasswordByUsername: grpc.MethodDefinition<standard_pb.VerifyUserPasswordByUsernameRequest, standard_pb.VerifyUserPasswordByUsernameResponse>;
+  queryLabels: grpc.MethodDefinition<standard_pb.QueryLabelsRequest, standard_pb.QueryLabelsResponse>;
+  createLabel: grpc.MethodDefinition<standard_pb.CreateLabelRequest, standard_pb.CreateLabelResponse>;
+  createLabelForUser: grpc.MethodDefinition<standard_pb.CreateLabelForUserRequest, standard_pb.CreateLabelForUserResponse>;
+  queryLabelByID: grpc.MethodDefinition<standard_pb.QueryLabelByIDRequest, standard_pb.QueryLabelByIDResponse>;
+  deleteLabelByID: grpc.MethodDefinition<standard_pb.DeleteLabelByIDRequest, standard_pb.DeleteLabelByIDResponse>;
+  updateLabelNameByID: grpc.MethodDefinition<standard_pb.UpdateLabelNameByIDRequest, standard_pb.UpdateLabelNameByIDResponse>;
+  updateLabelCategoryByID: grpc.MethodDefinition<standard_pb.UpdateLabelCategoryByIDRequest, standard_pb.UpdateLabelCategoryByIDResponse>;
+  updateLabelStateByID: grpc.MethodDefinition<standard_pb.UpdateLabelStateByIDRequest, standard_pb.UpdateLabelStateByIDResponse>;
+  updateLabelValueByID: grpc.MethodDefinition<standard_pb.UpdateLabelValueByIDRequest, standard_pb.UpdateLabelValueByIDResponse>;
+  addLabelToUserByID: grpc.MethodDefinition<standard_pb.AddLabelToUserByIDRequest, standard_pb.AddLabelToUserByIDResponse>;
+  removeLabelFromUserByID: grpc.MethodDefinition<standard_pb.RemoveLabelFromUserByIDRequest, standard_pb.RemoveLabelFromUserByIDResponse>;
+  createGroup: grpc.MethodDefinition<standard_pb.CreateGroupRequest, standard_pb.CreateGroupResponse>;
+  queryGroups: grpc.MethodDefinition<standard_pb.QueryGroupsRequest, standard_pb.QueryGroupsResponse>;
+  queryGroupByID: grpc.MethodDefinition<standard_pb.QueryGroupByIDRequest, standard_pb.QueryGroupByIDResponse>;
+  deleteGroupByID: grpc.MethodDefinition<standard_pb.DeleteGroupByIDRequest, standard_pb.DeleteGroupByIDResponse>;
+  updateGroupNameByID: grpc.MethodDefinition<standard_pb.UpdateGroupNameByIDRequest, standard_pb.UpdateGroupNameByIDResponse>;
+  updateGroupCategoryByID: grpc.MethodDefinition<standard_pb.UpdateGroupCategoryByIDRequest, standard_pb.UpdateGroupCategoryByIDResponse>;
+  updateGroupStateByID: grpc.MethodDefinition<standard_pb.UpdateGroupStateByIDRequest, standard_pb.UpdateGroupStateByIDResponse>;
+  updateGroupDescriptionByID: grpc.MethodDefinition<standard_pb.UpdateGroupDescriptionByIDRequest, standard_pb.UpdateGroupDescriptionByIDResponse>;
+  addUserToGroupByID: grpc.MethodDefinition<standard_pb.AddUserToGroupByIDRequest, standard_pb.AddUserToGroupByIDResponse>;
+  removeUserFromGroupByID: grpc.MethodDefinition<standard_pb.RemoveUserFromGroupByIDRequest, standard_pb.RemoveUserFromGroupByIDResponse>;
 }
 
 export const AccountService: IAccountService;
 
-export interface IAccountServer {
-    createUser: grpc.handleUnaryCall<standard_pb.CreateUserRequest, standard_pb.CreateUserResponse>;
-    queryUsers: grpc.handleUnaryCall<standard_pb.QueryUsersRequest, standard_pb.QueryUsersResponse>;
-    queryUserByID: grpc.handleUnaryCall<standard_pb.QueryUserByIDRequest, standard_pb.QueryUserByIDResponse>;
-    queryUsersByInviter: grpc.handleUnaryCall<standard_pb.QueryUsersByInviterRequest, standard_pb.QueryUsersByInviterResponse>;
-    deleteUserByID: grpc.handleUnaryCall<standard_pb.DeleteUserByIDRequest, standard_pb.DeleteUserByIDResponse>;
-    queryUserByUsername: grpc.handleUnaryCall<standard_pb.QueryUserByUsernameRequest, standard_pb.QueryUserByUsernameResponse>;
-    updateUserPasswordByID: grpc.handleUnaryCall<standard_pb.UpdateUserPasswordByIDRequest, standard_pb.UpdateUserPasswordByIDResponse>;
-    verifyUserPasswordByID: grpc.handleUnaryCall<standard_pb.VerifyUserPasswordByIDRequest, standard_pb.VerifyUserPasswordByIDResponse>;
-    verifyUserPasswordByUsername: grpc.handleUnaryCall<standard_pb.VerifyUserPasswordByUsernameRequest, standard_pb.VerifyUserPasswordByUsernameResponse>;
-    queryLabels: grpc.handleUnaryCall<standard_pb.QueryLabelsRequest, standard_pb.QueryLabelsResponse>;
-    createLabel: grpc.handleUnaryCall<standard_pb.CreateLabelRequest, standard_pb.CreateLabelResponse>;
-    createLabelForUser: grpc.handleUnaryCall<standard_pb.CreateLabelForUserRequest, standard_pb.CreateLabelForUserResponse>;
-    queryLabelByID: grpc.handleUnaryCall<standard_pb.QueryLabelByIDRequest, standard_pb.QueryLabelByIDResponse>;
-    deleteLabelByID: grpc.handleUnaryCall<standard_pb.DeleteLabelByIDRequest, standard_pb.DeleteLabelByIDResponse>;
-    updateLabelNameByID: grpc.handleUnaryCall<standard_pb.UpdateLabelNameByIDRequest, standard_pb.UpdateLabelNameByIDResponse>;
-    updateLabelClassByID: grpc.handleUnaryCall<standard_pb.UpdateLabelClassByIDRequest, standard_pb.UpdateLabelClassByIDResponse>;
-    updateLabelStateByID: grpc.handleUnaryCall<standard_pb.UpdateLabelStateByIDRequest, standard_pb.UpdateLabelStateByIDResponse>;
-    updateLabelValueByID: grpc.handleUnaryCall<standard_pb.UpdateLabelValueByIDRequest, standard_pb.UpdateLabelValueByIDResponse>;
-    addLabelToUserByID: grpc.handleUnaryCall<standard_pb.AddLabelToUserByIDRequest, standard_pb.AddLabelToUserByIDResponse>;
-    removeLabelFromUserByID: grpc.handleUnaryCall<standard_pb.RemoveLabelFromUserByIDRequest, standard_pb.RemoveLabelFromUserByIDResponse>;
-    createGroup: grpc.handleUnaryCall<standard_pb.CreateGroupRequest, standard_pb.CreateGroupResponse>;
-    queryGroups: grpc.handleUnaryCall<standard_pb.QueryGroupsRequest, standard_pb.QueryGroupsResponse>;
-    queryGroupByID: grpc.handleUnaryCall<standard_pb.QueryGroupByIDRequest, standard_pb.QueryGroupByIDResponse>;
-    deleteGroupByID: grpc.handleUnaryCall<standard_pb.DeleteGroupByIDRequest, standard_pb.DeleteGroupByIDResponse>;
-    updateGroupNameByID: grpc.handleUnaryCall<standard_pb.UpdateGroupNameByIDRequest, standard_pb.UpdateGroupNameByIDResponse>;
-    updateGroupClassByID: grpc.handleUnaryCall<standard_pb.UpdateGroupClassByIDRequest, standard_pb.UpdateGroupClassByIDResponse>;
-    updateGroupStateByID: grpc.handleUnaryCall<standard_pb.UpdateGroupStateByIDRequest, standard_pb.UpdateGroupStateByIDResponse>;
-    updateGroupDescriptionByID: grpc.handleUnaryCall<standard_pb.UpdateGroupDescriptionByIDRequest, standard_pb.UpdateGroupDescriptionByIDResponse>;
-    addUserToGroupByID: grpc.handleUnaryCall<standard_pb.AddUserToGroupByIDRequest, standard_pb.AddUserToGroupByIDResponse>;
-    removeUserFromGroupByID: grpc.handleUnaryCall<standard_pb.RemoveUserFromGroupByIDRequest, standard_pb.RemoveUserFromGroupByIDResponse>;
-}
-
-export interface IAccountClient {
-    createUser(request: standard_pb.CreateUserRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateUserResponse) => void): grpc.ClientUnaryCall;
-    createUser(request: standard_pb.CreateUserRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateUserResponse) => void): grpc.ClientUnaryCall;
-    createUser(request: standard_pb.CreateUserRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateUserResponse) => void): grpc.ClientUnaryCall;
-    queryUsers(request: standard_pb.QueryUsersRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryUsersResponse) => void): grpc.ClientUnaryCall;
-    queryUsers(request: standard_pb.QueryUsersRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryUsersResponse) => void): grpc.ClientUnaryCall;
-    queryUsers(request: standard_pb.QueryUsersRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryUsersResponse) => void): grpc.ClientUnaryCall;
-    queryUserByID(request: standard_pb.QueryUserByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryUserByIDResponse) => void): grpc.ClientUnaryCall;
-    queryUserByID(request: standard_pb.QueryUserByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryUserByIDResponse) => void): grpc.ClientUnaryCall;
-    queryUserByID(request: standard_pb.QueryUserByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryUserByIDResponse) => void): grpc.ClientUnaryCall;
-    queryUsersByInviter(request: standard_pb.QueryUsersByInviterRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryUsersByInviterResponse) => void): grpc.ClientUnaryCall;
-    queryUsersByInviter(request: standard_pb.QueryUsersByInviterRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryUsersByInviterResponse) => void): grpc.ClientUnaryCall;
-    queryUsersByInviter(request: standard_pb.QueryUsersByInviterRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryUsersByInviterResponse) => void): grpc.ClientUnaryCall;
-    deleteUserByID(request: standard_pb.DeleteUserByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.DeleteUserByIDResponse) => void): grpc.ClientUnaryCall;
-    deleteUserByID(request: standard_pb.DeleteUserByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.DeleteUserByIDResponse) => void): grpc.ClientUnaryCall;
-    deleteUserByID(request: standard_pb.DeleteUserByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.DeleteUserByIDResponse) => void): grpc.ClientUnaryCall;
-    queryUserByUsername(request: standard_pb.QueryUserByUsernameRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryUserByUsernameResponse) => void): grpc.ClientUnaryCall;
-    queryUserByUsername(request: standard_pb.QueryUserByUsernameRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryUserByUsernameResponse) => void): grpc.ClientUnaryCall;
-    queryUserByUsername(request: standard_pb.QueryUserByUsernameRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryUserByUsernameResponse) => void): grpc.ClientUnaryCall;
-    updateUserPasswordByID(request: standard_pb.UpdateUserPasswordByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateUserPasswordByIDResponse) => void): grpc.ClientUnaryCall;
-    updateUserPasswordByID(request: standard_pb.UpdateUserPasswordByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateUserPasswordByIDResponse) => void): grpc.ClientUnaryCall;
-    updateUserPasswordByID(request: standard_pb.UpdateUserPasswordByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateUserPasswordByIDResponse) => void): grpc.ClientUnaryCall;
-    verifyUserPasswordByID(request: standard_pb.VerifyUserPasswordByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.VerifyUserPasswordByIDResponse) => void): grpc.ClientUnaryCall;
-    verifyUserPasswordByID(request: standard_pb.VerifyUserPasswordByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.VerifyUserPasswordByIDResponse) => void): grpc.ClientUnaryCall;
-    verifyUserPasswordByID(request: standard_pb.VerifyUserPasswordByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.VerifyUserPasswordByIDResponse) => void): grpc.ClientUnaryCall;
-    verifyUserPasswordByUsername(request: standard_pb.VerifyUserPasswordByUsernameRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.VerifyUserPasswordByUsernameResponse) => void): grpc.ClientUnaryCall;
-    verifyUserPasswordByUsername(request: standard_pb.VerifyUserPasswordByUsernameRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.VerifyUserPasswordByUsernameResponse) => void): grpc.ClientUnaryCall;
-    verifyUserPasswordByUsername(request: standard_pb.VerifyUserPasswordByUsernameRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.VerifyUserPasswordByUsernameResponse) => void): grpc.ClientUnaryCall;
-    queryLabels(request: standard_pb.QueryLabelsRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryLabelsResponse) => void): grpc.ClientUnaryCall;
-    queryLabels(request: standard_pb.QueryLabelsRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryLabelsResponse) => void): grpc.ClientUnaryCall;
-    queryLabels(request: standard_pb.QueryLabelsRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryLabelsResponse) => void): grpc.ClientUnaryCall;
-    createLabel(request: standard_pb.CreateLabelRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateLabelResponse) => void): grpc.ClientUnaryCall;
-    createLabel(request: standard_pb.CreateLabelRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateLabelResponse) => void): grpc.ClientUnaryCall;
-    createLabel(request: standard_pb.CreateLabelRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateLabelResponse) => void): grpc.ClientUnaryCall;
-    createLabelForUser(request: standard_pb.CreateLabelForUserRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateLabelForUserResponse) => void): grpc.ClientUnaryCall;
-    createLabelForUser(request: standard_pb.CreateLabelForUserRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateLabelForUserResponse) => void): grpc.ClientUnaryCall;
-    createLabelForUser(request: standard_pb.CreateLabelForUserRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateLabelForUserResponse) => void): grpc.ClientUnaryCall;
-    queryLabelByID(request: standard_pb.QueryLabelByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryLabelByIDResponse) => void): grpc.ClientUnaryCall;
-    queryLabelByID(request: standard_pb.QueryLabelByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryLabelByIDResponse) => void): grpc.ClientUnaryCall;
-    queryLabelByID(request: standard_pb.QueryLabelByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryLabelByIDResponse) => void): grpc.ClientUnaryCall;
-    deleteLabelByID(request: standard_pb.DeleteLabelByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.DeleteLabelByIDResponse) => void): grpc.ClientUnaryCall;
-    deleteLabelByID(request: standard_pb.DeleteLabelByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.DeleteLabelByIDResponse) => void): grpc.ClientUnaryCall;
-    deleteLabelByID(request: standard_pb.DeleteLabelByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.DeleteLabelByIDResponse) => void): grpc.ClientUnaryCall;
-    updateLabelNameByID(request: standard_pb.UpdateLabelNameByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateLabelNameByIDResponse) => void): grpc.ClientUnaryCall;
-    updateLabelNameByID(request: standard_pb.UpdateLabelNameByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateLabelNameByIDResponse) => void): grpc.ClientUnaryCall;
-    updateLabelNameByID(request: standard_pb.UpdateLabelNameByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateLabelNameByIDResponse) => void): grpc.ClientUnaryCall;
-    updateLabelClassByID(request: standard_pb.UpdateLabelClassByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateLabelClassByIDResponse) => void): grpc.ClientUnaryCall;
-    updateLabelClassByID(request: standard_pb.UpdateLabelClassByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateLabelClassByIDResponse) => void): grpc.ClientUnaryCall;
-    updateLabelClassByID(request: standard_pb.UpdateLabelClassByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateLabelClassByIDResponse) => void): grpc.ClientUnaryCall;
-    updateLabelStateByID(request: standard_pb.UpdateLabelStateByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateLabelStateByIDResponse) => void): grpc.ClientUnaryCall;
-    updateLabelStateByID(request: standard_pb.UpdateLabelStateByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateLabelStateByIDResponse) => void): grpc.ClientUnaryCall;
-    updateLabelStateByID(request: standard_pb.UpdateLabelStateByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateLabelStateByIDResponse) => void): grpc.ClientUnaryCall;
-    updateLabelValueByID(request: standard_pb.UpdateLabelValueByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateLabelValueByIDResponse) => void): grpc.ClientUnaryCall;
-    updateLabelValueByID(request: standard_pb.UpdateLabelValueByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateLabelValueByIDResponse) => void): grpc.ClientUnaryCall;
-    updateLabelValueByID(request: standard_pb.UpdateLabelValueByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateLabelValueByIDResponse) => void): grpc.ClientUnaryCall;
-    addLabelToUserByID(request: standard_pb.AddLabelToUserByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.AddLabelToUserByIDResponse) => void): grpc.ClientUnaryCall;
-    addLabelToUserByID(request: standard_pb.AddLabelToUserByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.AddLabelToUserByIDResponse) => void): grpc.ClientUnaryCall;
-    addLabelToUserByID(request: standard_pb.AddLabelToUserByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.AddLabelToUserByIDResponse) => void): grpc.ClientUnaryCall;
-    removeLabelFromUserByID(request: standard_pb.RemoveLabelFromUserByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.RemoveLabelFromUserByIDResponse) => void): grpc.ClientUnaryCall;
-    removeLabelFromUserByID(request: standard_pb.RemoveLabelFromUserByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.RemoveLabelFromUserByIDResponse) => void): grpc.ClientUnaryCall;
-    removeLabelFromUserByID(request: standard_pb.RemoveLabelFromUserByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.RemoveLabelFromUserByIDResponse) => void): grpc.ClientUnaryCall;
-    createGroup(request: standard_pb.CreateGroupRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateGroupResponse) => void): grpc.ClientUnaryCall;
-    createGroup(request: standard_pb.CreateGroupRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateGroupResponse) => void): grpc.ClientUnaryCall;
-    createGroup(request: standard_pb.CreateGroupRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateGroupResponse) => void): grpc.ClientUnaryCall;
-    queryGroups(request: standard_pb.QueryGroupsRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryGroupsResponse) => void): grpc.ClientUnaryCall;
-    queryGroups(request: standard_pb.QueryGroupsRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryGroupsResponse) => void): grpc.ClientUnaryCall;
-    queryGroups(request: standard_pb.QueryGroupsRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryGroupsResponse) => void): grpc.ClientUnaryCall;
-    queryGroupByID(request: standard_pb.QueryGroupByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryGroupByIDResponse) => void): grpc.ClientUnaryCall;
-    queryGroupByID(request: standard_pb.QueryGroupByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryGroupByIDResponse) => void): grpc.ClientUnaryCall;
-    queryGroupByID(request: standard_pb.QueryGroupByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryGroupByIDResponse) => void): grpc.ClientUnaryCall;
-    deleteGroupByID(request: standard_pb.DeleteGroupByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.DeleteGroupByIDResponse) => void): grpc.ClientUnaryCall;
-    deleteGroupByID(request: standard_pb.DeleteGroupByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.DeleteGroupByIDResponse) => void): grpc.ClientUnaryCall;
-    deleteGroupByID(request: standard_pb.DeleteGroupByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.DeleteGroupByIDResponse) => void): grpc.ClientUnaryCall;
-    updateGroupNameByID(request: standard_pb.UpdateGroupNameByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateGroupNameByIDResponse) => void): grpc.ClientUnaryCall;
-    updateGroupNameByID(request: standard_pb.UpdateGroupNameByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateGroupNameByIDResponse) => void): grpc.ClientUnaryCall;
-    updateGroupNameByID(request: standard_pb.UpdateGroupNameByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateGroupNameByIDResponse) => void): grpc.ClientUnaryCall;
-    updateGroupClassByID(request: standard_pb.UpdateGroupClassByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateGroupClassByIDResponse) => void): grpc.ClientUnaryCall;
-    updateGroupClassByID(request: standard_pb.UpdateGroupClassByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateGroupClassByIDResponse) => void): grpc.ClientUnaryCall;
-    updateGroupClassByID(request: standard_pb.UpdateGroupClassByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateGroupClassByIDResponse) => void): grpc.ClientUnaryCall;
-    updateGroupStateByID(request: standard_pb.UpdateGroupStateByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateGroupStateByIDResponse) => void): grpc.ClientUnaryCall;
-    updateGroupStateByID(request: standard_pb.UpdateGroupStateByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateGroupStateByIDResponse) => void): grpc.ClientUnaryCall;
-    updateGroupStateByID(request: standard_pb.UpdateGroupStateByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateGroupStateByIDResponse) => void): grpc.ClientUnaryCall;
-    updateGroupDescriptionByID(request: standard_pb.UpdateGroupDescriptionByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateGroupDescriptionByIDResponse) => void): grpc.ClientUnaryCall;
-    updateGroupDescriptionByID(request: standard_pb.UpdateGroupDescriptionByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateGroupDescriptionByIDResponse) => void): grpc.ClientUnaryCall;
-    updateGroupDescriptionByID(request: standard_pb.UpdateGroupDescriptionByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateGroupDescriptionByIDResponse) => void): grpc.ClientUnaryCall;
-    addUserToGroupByID(request: standard_pb.AddUserToGroupByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.AddUserToGroupByIDResponse) => void): grpc.ClientUnaryCall;
-    addUserToGroupByID(request: standard_pb.AddUserToGroupByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.AddUserToGroupByIDResponse) => void): grpc.ClientUnaryCall;
-    addUserToGroupByID(request: standard_pb.AddUserToGroupByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.AddUserToGroupByIDResponse) => void): grpc.ClientUnaryCall;
-    removeUserFromGroupByID(request: standard_pb.RemoveUserFromGroupByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.RemoveUserFromGroupByIDResponse) => void): grpc.ClientUnaryCall;
-    removeUserFromGroupByID(request: standard_pb.RemoveUserFromGroupByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.RemoveUserFromGroupByIDResponse) => void): grpc.ClientUnaryCall;
-    removeUserFromGroupByID(request: standard_pb.RemoveUserFromGroupByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.RemoveUserFromGroupByIDResponse) => void): grpc.ClientUnaryCall;
-}
-
-export class AccountClient extends grpc.Client implements IAccountClient {
-    constructor(address: string, credentials: grpc.ChannelCredentials, options?: object);
-    public createUser(request: standard_pb.CreateUserRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateUserResponse) => void): grpc.ClientUnaryCall;
-    public createUser(request: standard_pb.CreateUserRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateUserResponse) => void): grpc.ClientUnaryCall;
-    public createUser(request: standard_pb.CreateUserRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateUserResponse) => void): grpc.ClientUnaryCall;
-    public queryUsers(request: standard_pb.QueryUsersRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryUsersResponse) => void): grpc.ClientUnaryCall;
-    public queryUsers(request: standard_pb.QueryUsersRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryUsersResponse) => void): grpc.ClientUnaryCall;
-    public queryUsers(request: standard_pb.QueryUsersRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryUsersResponse) => void): grpc.ClientUnaryCall;
-    public queryUserByID(request: standard_pb.QueryUserByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryUserByIDResponse) => void): grpc.ClientUnaryCall;
-    public queryUserByID(request: standard_pb.QueryUserByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryUserByIDResponse) => void): grpc.ClientUnaryCall;
-    public queryUserByID(request: standard_pb.QueryUserByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryUserByIDResponse) => void): grpc.ClientUnaryCall;
-    public queryUsersByInviter(request: standard_pb.QueryUsersByInviterRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryUsersByInviterResponse) => void): grpc.ClientUnaryCall;
-    public queryUsersByInviter(request: standard_pb.QueryUsersByInviterRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryUsersByInviterResponse) => void): grpc.ClientUnaryCall;
-    public queryUsersByInviter(request: standard_pb.QueryUsersByInviterRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryUsersByInviterResponse) => void): grpc.ClientUnaryCall;
-    public deleteUserByID(request: standard_pb.DeleteUserByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.DeleteUserByIDResponse) => void): grpc.ClientUnaryCall;
-    public deleteUserByID(request: standard_pb.DeleteUserByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.DeleteUserByIDResponse) => void): grpc.ClientUnaryCall;
-    public deleteUserByID(request: standard_pb.DeleteUserByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.DeleteUserByIDResponse) => void): grpc.ClientUnaryCall;
-    public queryUserByUsername(request: standard_pb.QueryUserByUsernameRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryUserByUsernameResponse) => void): grpc.ClientUnaryCall;
-    public queryUserByUsername(request: standard_pb.QueryUserByUsernameRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryUserByUsernameResponse) => void): grpc.ClientUnaryCall;
-    public queryUserByUsername(request: standard_pb.QueryUserByUsernameRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryUserByUsernameResponse) => void): grpc.ClientUnaryCall;
-    public updateUserPasswordByID(request: standard_pb.UpdateUserPasswordByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateUserPasswordByIDResponse) => void): grpc.ClientUnaryCall;
-    public updateUserPasswordByID(request: standard_pb.UpdateUserPasswordByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateUserPasswordByIDResponse) => void): grpc.ClientUnaryCall;
-    public updateUserPasswordByID(request: standard_pb.UpdateUserPasswordByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateUserPasswordByIDResponse) => void): grpc.ClientUnaryCall;
-    public verifyUserPasswordByID(request: standard_pb.VerifyUserPasswordByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.VerifyUserPasswordByIDResponse) => void): grpc.ClientUnaryCall;
-    public verifyUserPasswordByID(request: standard_pb.VerifyUserPasswordByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.VerifyUserPasswordByIDResponse) => void): grpc.ClientUnaryCall;
-    public verifyUserPasswordByID(request: standard_pb.VerifyUserPasswordByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.VerifyUserPasswordByIDResponse) => void): grpc.ClientUnaryCall;
-    public verifyUserPasswordByUsername(request: standard_pb.VerifyUserPasswordByUsernameRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.VerifyUserPasswordByUsernameResponse) => void): grpc.ClientUnaryCall;
-    public verifyUserPasswordByUsername(request: standard_pb.VerifyUserPasswordByUsernameRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.VerifyUserPasswordByUsernameResponse) => void): grpc.ClientUnaryCall;
-    public verifyUserPasswordByUsername(request: standard_pb.VerifyUserPasswordByUsernameRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.VerifyUserPasswordByUsernameResponse) => void): grpc.ClientUnaryCall;
-    public queryLabels(request: standard_pb.QueryLabelsRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryLabelsResponse) => void): grpc.ClientUnaryCall;
-    public queryLabels(request: standard_pb.QueryLabelsRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryLabelsResponse) => void): grpc.ClientUnaryCall;
-    public queryLabels(request: standard_pb.QueryLabelsRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryLabelsResponse) => void): grpc.ClientUnaryCall;
-    public createLabel(request: standard_pb.CreateLabelRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateLabelResponse) => void): grpc.ClientUnaryCall;
-    public createLabel(request: standard_pb.CreateLabelRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateLabelResponse) => void): grpc.ClientUnaryCall;
-    public createLabel(request: standard_pb.CreateLabelRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateLabelResponse) => void): grpc.ClientUnaryCall;
-    public createLabelForUser(request: standard_pb.CreateLabelForUserRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateLabelForUserResponse) => void): grpc.ClientUnaryCall;
-    public createLabelForUser(request: standard_pb.CreateLabelForUserRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateLabelForUserResponse) => void): grpc.ClientUnaryCall;
-    public createLabelForUser(request: standard_pb.CreateLabelForUserRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateLabelForUserResponse) => void): grpc.ClientUnaryCall;
-    public queryLabelByID(request: standard_pb.QueryLabelByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryLabelByIDResponse) => void): grpc.ClientUnaryCall;
-    public queryLabelByID(request: standard_pb.QueryLabelByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryLabelByIDResponse) => void): grpc.ClientUnaryCall;
-    public queryLabelByID(request: standard_pb.QueryLabelByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryLabelByIDResponse) => void): grpc.ClientUnaryCall;
-    public deleteLabelByID(request: standard_pb.DeleteLabelByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.DeleteLabelByIDResponse) => void): grpc.ClientUnaryCall;
-    public deleteLabelByID(request: standard_pb.DeleteLabelByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.DeleteLabelByIDResponse) => void): grpc.ClientUnaryCall;
-    public deleteLabelByID(request: standard_pb.DeleteLabelByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.DeleteLabelByIDResponse) => void): grpc.ClientUnaryCall;
-    public updateLabelNameByID(request: standard_pb.UpdateLabelNameByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateLabelNameByIDResponse) => void): grpc.ClientUnaryCall;
-    public updateLabelNameByID(request: standard_pb.UpdateLabelNameByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateLabelNameByIDResponse) => void): grpc.ClientUnaryCall;
-    public updateLabelNameByID(request: standard_pb.UpdateLabelNameByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateLabelNameByIDResponse) => void): grpc.ClientUnaryCall;
-    public updateLabelClassByID(request: standard_pb.UpdateLabelClassByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateLabelClassByIDResponse) => void): grpc.ClientUnaryCall;
-    public updateLabelClassByID(request: standard_pb.UpdateLabelClassByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateLabelClassByIDResponse) => void): grpc.ClientUnaryCall;
-    public updateLabelClassByID(request: standard_pb.UpdateLabelClassByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateLabelClassByIDResponse) => void): grpc.ClientUnaryCall;
-    public updateLabelStateByID(request: standard_pb.UpdateLabelStateByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateLabelStateByIDResponse) => void): grpc.ClientUnaryCall;
-    public updateLabelStateByID(request: standard_pb.UpdateLabelStateByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateLabelStateByIDResponse) => void): grpc.ClientUnaryCall;
-    public updateLabelStateByID(request: standard_pb.UpdateLabelStateByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateLabelStateByIDResponse) => void): grpc.ClientUnaryCall;
-    public updateLabelValueByID(request: standard_pb.UpdateLabelValueByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateLabelValueByIDResponse) => void): grpc.ClientUnaryCall;
-    public updateLabelValueByID(request: standard_pb.UpdateLabelValueByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateLabelValueByIDResponse) => void): grpc.ClientUnaryCall;
-    public updateLabelValueByID(request: standard_pb.UpdateLabelValueByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateLabelValueByIDResponse) => void): grpc.ClientUnaryCall;
-    public addLabelToUserByID(request: standard_pb.AddLabelToUserByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.AddLabelToUserByIDResponse) => void): grpc.ClientUnaryCall;
-    public addLabelToUserByID(request: standard_pb.AddLabelToUserByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.AddLabelToUserByIDResponse) => void): grpc.ClientUnaryCall;
-    public addLabelToUserByID(request: standard_pb.AddLabelToUserByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.AddLabelToUserByIDResponse) => void): grpc.ClientUnaryCall;
-    public removeLabelFromUserByID(request: standard_pb.RemoveLabelFromUserByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.RemoveLabelFromUserByIDResponse) => void): grpc.ClientUnaryCall;
-    public removeLabelFromUserByID(request: standard_pb.RemoveLabelFromUserByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.RemoveLabelFromUserByIDResponse) => void): grpc.ClientUnaryCall;
-    public removeLabelFromUserByID(request: standard_pb.RemoveLabelFromUserByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.RemoveLabelFromUserByIDResponse) => void): grpc.ClientUnaryCall;
-    public createGroup(request: standard_pb.CreateGroupRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateGroupResponse) => void): grpc.ClientUnaryCall;
-    public createGroup(request: standard_pb.CreateGroupRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateGroupResponse) => void): grpc.ClientUnaryCall;
-    public createGroup(request: standard_pb.CreateGroupRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.CreateGroupResponse) => void): grpc.ClientUnaryCall;
-    public queryGroups(request: standard_pb.QueryGroupsRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryGroupsResponse) => void): grpc.ClientUnaryCall;
-    public queryGroups(request: standard_pb.QueryGroupsRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryGroupsResponse) => void): grpc.ClientUnaryCall;
-    public queryGroups(request: standard_pb.QueryGroupsRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryGroupsResponse) => void): grpc.ClientUnaryCall;
-    public queryGroupByID(request: standard_pb.QueryGroupByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryGroupByIDResponse) => void): grpc.ClientUnaryCall;
-    public queryGroupByID(request: standard_pb.QueryGroupByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryGroupByIDResponse) => void): grpc.ClientUnaryCall;
-    public queryGroupByID(request: standard_pb.QueryGroupByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.QueryGroupByIDResponse) => void): grpc.ClientUnaryCall;
-    public deleteGroupByID(request: standard_pb.DeleteGroupByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.DeleteGroupByIDResponse) => void): grpc.ClientUnaryCall;
-    public deleteGroupByID(request: standard_pb.DeleteGroupByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.DeleteGroupByIDResponse) => void): grpc.ClientUnaryCall;
-    public deleteGroupByID(request: standard_pb.DeleteGroupByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.DeleteGroupByIDResponse) => void): grpc.ClientUnaryCall;
-    public updateGroupNameByID(request: standard_pb.UpdateGroupNameByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateGroupNameByIDResponse) => void): grpc.ClientUnaryCall;
-    public updateGroupNameByID(request: standard_pb.UpdateGroupNameByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateGroupNameByIDResponse) => void): grpc.ClientUnaryCall;
-    public updateGroupNameByID(request: standard_pb.UpdateGroupNameByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateGroupNameByIDResponse) => void): grpc.ClientUnaryCall;
-    public updateGroupClassByID(request: standard_pb.UpdateGroupClassByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateGroupClassByIDResponse) => void): grpc.ClientUnaryCall;
-    public updateGroupClassByID(request: standard_pb.UpdateGroupClassByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateGroupClassByIDResponse) => void): grpc.ClientUnaryCall;
-    public updateGroupClassByID(request: standard_pb.UpdateGroupClassByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateGroupClassByIDResponse) => void): grpc.ClientUnaryCall;
-    public updateGroupStateByID(request: standard_pb.UpdateGroupStateByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateGroupStateByIDResponse) => void): grpc.ClientUnaryCall;
-    public updateGroupStateByID(request: standard_pb.UpdateGroupStateByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateGroupStateByIDResponse) => void): grpc.ClientUnaryCall;
-    public updateGroupStateByID(request: standard_pb.UpdateGroupStateByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateGroupStateByIDResponse) => void): grpc.ClientUnaryCall;
-    public updateGroupDescriptionByID(request: standard_pb.UpdateGroupDescriptionByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateGroupDescriptionByIDResponse) => void): grpc.ClientUnaryCall;
-    public updateGroupDescriptionByID(request: standard_pb.UpdateGroupDescriptionByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateGroupDescriptionByIDResponse) => void): grpc.ClientUnaryCall;
-    public updateGroupDescriptionByID(request: standard_pb.UpdateGroupDescriptionByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.UpdateGroupDescriptionByIDResponse) => void): grpc.ClientUnaryCall;
-    public addUserToGroupByID(request: standard_pb.AddUserToGroupByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.AddUserToGroupByIDResponse) => void): grpc.ClientUnaryCall;
-    public addUserToGroupByID(request: standard_pb.AddUserToGroupByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.AddUserToGroupByIDResponse) => void): grpc.ClientUnaryCall;
-    public addUserToGroupByID(request: standard_pb.AddUserToGroupByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.AddUserToGroupByIDResponse) => void): grpc.ClientUnaryCall;
-    public removeUserFromGroupByID(request: standard_pb.RemoveUserFromGroupByIDRequest, callback: (error: grpc.ServiceError | null, response: standard_pb.RemoveUserFromGroupByIDResponse) => void): grpc.ClientUnaryCall;
-    public removeUserFromGroupByID(request: standard_pb.RemoveUserFromGroupByIDRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: standard_pb.RemoveUserFromGroupByIDResponse) => void): grpc.ClientUnaryCall;
-    public removeUserFromGroupByID(request: standard_pb.RemoveUserFromGroupByIDRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: standard_pb.RemoveUserFromGroupByIDResponse) => void): grpc.ClientUnaryCall;
+export class AccountClient extends grpc.Client {
+  constructor(address: string, credentials: grpc.ChannelCredentials, options?: object);
+  createUser(argument: standard_pb.CreateUserRequest, callback: grpc.requestCallback<standard_pb.CreateUserResponse>): grpc.ClientUnaryCall;
+  createUser(argument: standard_pb.CreateUserRequest, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.CreateUserResponse>): grpc.ClientUnaryCall;
+  createUser(argument: standard_pb.CreateUserRequest, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.CreateUserResponse>): grpc.ClientUnaryCall;
+  queryUsers(argument: standard_pb.QueryUsersRequest, callback: grpc.requestCallback<standard_pb.QueryUsersResponse>): grpc.ClientUnaryCall;
+  queryUsers(argument: standard_pb.QueryUsersRequest, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.QueryUsersResponse>): grpc.ClientUnaryCall;
+  queryUsers(argument: standard_pb.QueryUsersRequest, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.QueryUsersResponse>): grpc.ClientUnaryCall;
+  queryUserByID(argument: standard_pb.QueryUserByIDRequest, callback: grpc.requestCallback<standard_pb.QueryUserByIDResponse>): grpc.ClientUnaryCall;
+  queryUserByID(argument: standard_pb.QueryUserByIDRequest, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.QueryUserByIDResponse>): grpc.ClientUnaryCall;
+  queryUserByID(argument: standard_pb.QueryUserByIDRequest, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.QueryUserByIDResponse>): grpc.ClientUnaryCall;
+  queryUsersByInviter(argument: standard_pb.QueryUsersByInviterRequest, callback: grpc.requestCallback<standard_pb.QueryUsersByInviterResponse>): grpc.ClientUnaryCall;
+  queryUsersByInviter(argument: standard_pb.QueryUsersByInviterRequest, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.QueryUsersByInviterResponse>): grpc.ClientUnaryCall;
+  queryUsersByInviter(argument: standard_pb.QueryUsersByInviterRequest, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.QueryUsersByInviterResponse>): grpc.ClientUnaryCall;
+  deleteUserByID(argument: standard_pb.DeleteUserByIDRequest, callback: grpc.requestCallback<standard_pb.DeleteUserByIDResponse>): grpc.ClientUnaryCall;
+  deleteUserByID(argument: standard_pb.DeleteUserByIDRequest, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.DeleteUserByIDResponse>): grpc.ClientUnaryCall;
+  deleteUserByID(argument: standard_pb.DeleteUserByIDRequest, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.DeleteUserByIDResponse>): grpc.ClientUnaryCall;
+  queryUserByUsername(argument: standard_pb.QueryUserByUsernameRequest, callback: grpc.requestCallback<standard_pb.QueryUserByUsernameResponse>): grpc.ClientUnaryCall;
+  queryUserByUsername(argument: standard_pb.QueryUserByUsernameRequest, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.QueryUserByUsernameResponse>): grpc.ClientUnaryCall;
+  queryUserByUsername(argument: standard_pb.QueryUserByUsernameRequest, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.QueryUserByUsernameResponse>): grpc.ClientUnaryCall;
+  updateUserCategoryByID(argument: standard_pb.UpdateUserCategoryByIDRequest, callback: grpc.requestCallback<standard_pb.UpdateUserCategoryByIDResponse>): grpc.ClientUnaryCall;
+  updateUserCategoryByID(argument: standard_pb.UpdateUserCategoryByIDRequest, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.UpdateUserCategoryByIDResponse>): grpc.ClientUnaryCall;
+  updateUserCategoryByID(argument: standard_pb.UpdateUserCategoryByIDRequest, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.UpdateUserCategoryByIDResponse>): grpc.ClientUnaryCall;
+  updateUserAvatarByID(argument: standard_pb.UpdateUserAvatarByIDRequest, callback: grpc.requestCallback<standard_pb.UpdateUserAvatarByIDResponse>): grpc.ClientUnaryCall;
+  updateUserAvatarByID(argument: standard_pb.UpdateUserAvatarByIDRequest, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.UpdateUserAvatarByIDResponse>): grpc.ClientUnaryCall;
+  updateUserAvatarByID(argument: standard_pb.UpdateUserAvatarByIDRequest, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.UpdateUserAvatarByIDResponse>): grpc.ClientUnaryCall;
+  updateUserInviterByID(argument: standard_pb.UpdateUserInviterByIDRequest, callback: grpc.requestCallback<standard_pb.UpdateUserInviterByIDResponse>): grpc.ClientUnaryCall;
+  updateUserInviterByID(argument: standard_pb.UpdateUserInviterByIDRequest, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.UpdateUserInviterByIDResponse>): grpc.ClientUnaryCall;
+  updateUserInviterByID(argument: standard_pb.UpdateUserInviterByIDRequest, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.UpdateUserInviterByIDResponse>): grpc.ClientUnaryCall;
+  updateUserNicknameByID(argument: standard_pb.UpdateUserNicknameByIDRequest, callback: grpc.requestCallback<standard_pb.UpdateUserNicknameByIDResponse>): grpc.ClientUnaryCall;
+  updateUserNicknameByID(argument: standard_pb.UpdateUserNicknameByIDRequest, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.UpdateUserNicknameByIDResponse>): grpc.ClientUnaryCall;
+  updateUserNicknameByID(argument: standard_pb.UpdateUserNicknameByIDRequest, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.UpdateUserNicknameByIDResponse>): grpc.ClientUnaryCall;
+  updateUserPasswordByID(argument: standard_pb.UpdateUserPasswordByIDRequest, callback: grpc.requestCallback<standard_pb.UpdateUserPasswordByIDResponse>): grpc.ClientUnaryCall;
+  updateUserPasswordByID(argument: standard_pb.UpdateUserPasswordByIDRequest, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.UpdateUserPasswordByIDResponse>): grpc.ClientUnaryCall;
+  updateUserPasswordByID(argument: standard_pb.UpdateUserPasswordByIDRequest, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.UpdateUserPasswordByIDResponse>): grpc.ClientUnaryCall;
+  verifyUserPasswordByID(argument: standard_pb.VerifyUserPasswordByIDRequest, callback: grpc.requestCallback<standard_pb.VerifyUserPasswordByIDResponse>): grpc.ClientUnaryCall;
+  verifyUserPasswordByID(argument: standard_pb.VerifyUserPasswordByIDRequest, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.VerifyUserPasswordByIDResponse>): grpc.ClientUnaryCall;
+  verifyUserPasswordByID(argument: standard_pb.VerifyUserPasswordByIDRequest, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.VerifyUserPasswordByIDResponse>): grpc.ClientUnaryCall;
+  verifyUserPasswordByUsername(argument: standard_pb.VerifyUserPasswordByUsernameRequest, callback: grpc.requestCallback<standard_pb.VerifyUserPasswordByUsernameResponse>): grpc.ClientUnaryCall;
+  verifyUserPasswordByUsername(argument: standard_pb.VerifyUserPasswordByUsernameRequest, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.VerifyUserPasswordByUsernameResponse>): grpc.ClientUnaryCall;
+  verifyUserPasswordByUsername(argument: standard_pb.VerifyUserPasswordByUsernameRequest, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.VerifyUserPasswordByUsernameResponse>): grpc.ClientUnaryCall;
+  queryLabels(argument: standard_pb.QueryLabelsRequest, callback: grpc.requestCallback<standard_pb.QueryLabelsResponse>): grpc.ClientUnaryCall;
+  queryLabels(argument: standard_pb.QueryLabelsRequest, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.QueryLabelsResponse>): grpc.ClientUnaryCall;
+  queryLabels(argument: standard_pb.QueryLabelsRequest, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.QueryLabelsResponse>): grpc.ClientUnaryCall;
+  createLabel(argument: standard_pb.CreateLabelRequest, callback: grpc.requestCallback<standard_pb.CreateLabelResponse>): grpc.ClientUnaryCall;
+  createLabel(argument: standard_pb.CreateLabelRequest, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.CreateLabelResponse>): grpc.ClientUnaryCall;
+  createLabel(argument: standard_pb.CreateLabelRequest, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.CreateLabelResponse>): grpc.ClientUnaryCall;
+  createLabelForUser(argument: standard_pb.CreateLabelForUserRequest, callback: grpc.requestCallback<standard_pb.CreateLabelForUserResponse>): grpc.ClientUnaryCall;
+  createLabelForUser(argument: standard_pb.CreateLabelForUserRequest, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.CreateLabelForUserResponse>): grpc.ClientUnaryCall;
+  createLabelForUser(argument: standard_pb.CreateLabelForUserRequest, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.CreateLabelForUserResponse>): grpc.ClientUnaryCall;
+  queryLabelByID(argument: standard_pb.QueryLabelByIDRequest, callback: grpc.requestCallback<standard_pb.QueryLabelByIDResponse>): grpc.ClientUnaryCall;
+  queryLabelByID(argument: standard_pb.QueryLabelByIDRequest, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.QueryLabelByIDResponse>): grpc.ClientUnaryCall;
+  queryLabelByID(argument: standard_pb.QueryLabelByIDRequest, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.QueryLabelByIDResponse>): grpc.ClientUnaryCall;
+  deleteLabelByID(argument: standard_pb.DeleteLabelByIDRequest, callback: grpc.requestCallback<standard_pb.DeleteLabelByIDResponse>): grpc.ClientUnaryCall;
+  deleteLabelByID(argument: standard_pb.DeleteLabelByIDRequest, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.DeleteLabelByIDResponse>): grpc.ClientUnaryCall;
+  deleteLabelByID(argument: standard_pb.DeleteLabelByIDRequest, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.DeleteLabelByIDResponse>): grpc.ClientUnaryCall;
+  updateLabelNameByID(argument: standard_pb.UpdateLabelNameByIDRequest, callback: grpc.requestCallback<standard_pb.UpdateLabelNameByIDResponse>): grpc.ClientUnaryCall;
+  updateLabelNameByID(argument: standard_pb.UpdateLabelNameByIDRequest, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.UpdateLabelNameByIDResponse>): grpc.ClientUnaryCall;
+  updateLabelNameByID(argument: standard_pb.UpdateLabelNameByIDRequest, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.UpdateLabelNameByIDResponse>): grpc.ClientUnaryCall;
+  updateLabelCategoryByID(argument: standard_pb.UpdateLabelCategoryByIDRequest, callback: grpc.requestCallback<standard_pb.UpdateLabelCategoryByIDResponse>): grpc.ClientUnaryCall;
+  updateLabelCategoryByID(argument: standard_pb.UpdateLabelCategoryByIDRequest, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.UpdateLabelCategoryByIDResponse>): grpc.ClientUnaryCall;
+  updateLabelCategoryByID(argument: standard_pb.UpdateLabelCategoryByIDRequest, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.UpdateLabelCategoryByIDResponse>): grpc.ClientUnaryCall;
+  updateLabelStateByID(argument: standard_pb.UpdateLabelStateByIDRequest, callback: grpc.requestCallback<standard_pb.UpdateLabelStateByIDResponse>): grpc.ClientUnaryCall;
+  updateLabelStateByID(argument: standard_pb.UpdateLabelStateByIDRequest, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.UpdateLabelStateByIDResponse>): grpc.ClientUnaryCall;
+  updateLabelStateByID(argument: standard_pb.UpdateLabelStateByIDRequest, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.UpdateLabelStateByIDResponse>): grpc.ClientUnaryCall;
+  updateLabelValueByID(argument: standard_pb.UpdateLabelValueByIDRequest, callback: grpc.requestCallback<standard_pb.UpdateLabelValueByIDResponse>): grpc.ClientUnaryCall;
+  updateLabelValueByID(argument: standard_pb.UpdateLabelValueByIDRequest, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.UpdateLabelValueByIDResponse>): grpc.ClientUnaryCall;
+  updateLabelValueByID(argument: standard_pb.UpdateLabelValueByIDRequest, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.UpdateLabelValueByIDResponse>): grpc.ClientUnaryCall;
+  addLabelToUserByID(argument: standard_pb.AddLabelToUserByIDRequest, callback: grpc.requestCallback<standard_pb.AddLabelToUserByIDResponse>): grpc.ClientUnaryCall;
+  addLabelToUserByID(argument: standard_pb.AddLabelToUserByIDRequest, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.AddLabelToUserByIDResponse>): grpc.ClientUnaryCall;
+  addLabelToUserByID(argument: standard_pb.AddLabelToUserByIDRequest, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.AddLabelToUserByIDResponse>): grpc.ClientUnaryCall;
+  removeLabelFromUserByID(argument: standard_pb.RemoveLabelFromUserByIDRequest, callback: grpc.requestCallback<standard_pb.RemoveLabelFromUserByIDResponse>): grpc.ClientUnaryCall;
+  removeLabelFromUserByID(argument: standard_pb.RemoveLabelFromUserByIDRequest, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.RemoveLabelFromUserByIDResponse>): grpc.ClientUnaryCall;
+  removeLabelFromUserByID(argument: standard_pb.RemoveLabelFromUserByIDRequest, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.RemoveLabelFromUserByIDResponse>): grpc.ClientUnaryCall;
+  createGroup(argument: standard_pb.CreateGroupRequest, callback: grpc.requestCallback<standard_pb.CreateGroupResponse>): grpc.ClientUnaryCall;
+  createGroup(argument: standard_pb.CreateGroupRequest, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.CreateGroupResponse>): grpc.ClientUnaryCall;
+  createGroup(argument: standard_pb.CreateGroupRequest, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.CreateGroupResponse>): grpc.ClientUnaryCall;
+  queryGroups(argument: standard_pb.QueryGroupsRequest, callback: grpc.requestCallback<standard_pb.QueryGroupsResponse>): grpc.ClientUnaryCall;
+  queryGroups(argument: standard_pb.QueryGroupsRequest, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.QueryGroupsResponse>): grpc.ClientUnaryCall;
+  queryGroups(argument: standard_pb.QueryGroupsRequest, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.QueryGroupsResponse>): grpc.ClientUnaryCall;
+  queryGroupByID(argument: standard_pb.QueryGroupByIDRequest, callback: grpc.requestCallback<standard_pb.QueryGroupByIDResponse>): grpc.ClientUnaryCall;
+  queryGroupByID(argument: standard_pb.QueryGroupByIDRequest, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.QueryGroupByIDResponse>): grpc.ClientUnaryCall;
+  queryGroupByID(argument: standard_pb.QueryGroupByIDRequest, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.QueryGroupByIDResponse>): grpc.ClientUnaryCall;
+  deleteGroupByID(argument: standard_pb.DeleteGroupByIDRequest, callback: grpc.requestCallback<standard_pb.DeleteGroupByIDResponse>): grpc.ClientUnaryCall;
+  deleteGroupByID(argument: standard_pb.DeleteGroupByIDRequest, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.DeleteGroupByIDResponse>): grpc.ClientUnaryCall;
+  deleteGroupByID(argument: standard_pb.DeleteGroupByIDRequest, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.DeleteGroupByIDResponse>): grpc.ClientUnaryCall;
+  updateGroupNameByID(argument: standard_pb.UpdateGroupNameByIDRequest, callback: grpc.requestCallback<standard_pb.UpdateGroupNameByIDResponse>): grpc.ClientUnaryCall;
+  updateGroupNameByID(argument: standard_pb.UpdateGroupNameByIDRequest, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.UpdateGroupNameByIDResponse>): grpc.ClientUnaryCall;
+  updateGroupNameByID(argument: standard_pb.UpdateGroupNameByIDRequest, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.UpdateGroupNameByIDResponse>): grpc.ClientUnaryCall;
+  updateGroupCategoryByID(argument: standard_pb.UpdateGroupCategoryByIDRequest, callback: grpc.requestCallback<standard_pb.UpdateGroupCategoryByIDResponse>): grpc.ClientUnaryCall;
+  updateGroupCategoryByID(argument: standard_pb.UpdateGroupCategoryByIDRequest, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.UpdateGroupCategoryByIDResponse>): grpc.ClientUnaryCall;
+  updateGroupCategoryByID(argument: standard_pb.UpdateGroupCategoryByIDRequest, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.UpdateGroupCategoryByIDResponse>): grpc.ClientUnaryCall;
+  updateGroupStateByID(argument: standard_pb.UpdateGroupStateByIDRequest, callback: grpc.requestCallback<standard_pb.UpdateGroupStateByIDResponse>): grpc.ClientUnaryCall;
+  updateGroupStateByID(argument: standard_pb.UpdateGroupStateByIDRequest, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.UpdateGroupStateByIDResponse>): grpc.ClientUnaryCall;
+  updateGroupStateByID(argument: standard_pb.UpdateGroupStateByIDRequest, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.UpdateGroupStateByIDResponse>): grpc.ClientUnaryCall;
+  updateGroupDescriptionByID(argument: standard_pb.UpdateGroupDescriptionByIDRequest, callback: grpc.requestCallback<standard_pb.UpdateGroupDescriptionByIDResponse>): grpc.ClientUnaryCall;
+  updateGroupDescriptionByID(argument: standard_pb.UpdateGroupDescriptionByIDRequest, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.UpdateGroupDescriptionByIDResponse>): grpc.ClientUnaryCall;
+  updateGroupDescriptionByID(argument: standard_pb.UpdateGroupDescriptionByIDRequest, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.UpdateGroupDescriptionByIDResponse>): grpc.ClientUnaryCall;
+  addUserToGroupByID(argument: standard_pb.AddUserToGroupByIDRequest, callback: grpc.requestCallback<standard_pb.AddUserToGroupByIDResponse>): grpc.ClientUnaryCall;
+  addUserToGroupByID(argument: standard_pb.AddUserToGroupByIDRequest, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.AddUserToGroupByIDResponse>): grpc.ClientUnaryCall;
+  addUserToGroupByID(argument: standard_pb.AddUserToGroupByIDRequest, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.AddUserToGroupByIDResponse>): grpc.ClientUnaryCall;
+  removeUserFromGroupByID(argument: standard_pb.RemoveUserFromGroupByIDRequest, callback: grpc.requestCallback<standard_pb.RemoveUserFromGroupByIDResponse>): grpc.ClientUnaryCall;
+  removeUserFromGroupByID(argument: standard_pb.RemoveUserFromGroupByIDRequest, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.RemoveUserFromGroupByIDResponse>): grpc.ClientUnaryCall;
+  removeUserFromGroupByID(argument: standard_pb.RemoveUserFromGroupByIDRequest, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<standard_pb.RemoveUserFromGroupByIDResponse>): grpc.ClientUnaryCall;
 }

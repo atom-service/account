@@ -15,21 +15,21 @@ func TestService_CreateGroup(t *testing.T) {
 		wantState standard.State
 		wantErr   bool
 	}{
-		{"正常创建", &standard.CreateGroupRequest{Name: "TEST", Class: "Class", State: "State", Description: "Description"},
+		{"正常创建", &standard.CreateGroupRequest{Name: "TEST", Category: "Category", State: "State", Description: "Description"},
 			standard.State_SUCCESS, false},
-		{"正常创建", &standard.CreateGroupRequest{Name: "TEST2", Class: "Class", State: "State", Description: "Description"},
+		{"正常创建", &standard.CreateGroupRequest{Name: "TEST2", Category: "Category", State: "State", Description: "Description"},
 			standard.State_SUCCESS, false},
-		{"正常创建", &standard.CreateGroupRequest{Name: "TEST3", Class: "Class", State: "State", Description: "Description"},
+		{"正常创建", &standard.CreateGroupRequest{Name: "TEST3", Category: "Category", State: "State", Description: "Description"},
 			standard.State_SUCCESS, false},
-		{"重复的 Name", &standard.CreateGroupRequest{Name: "TEST", Class: "Class", State: "State", Description: "Description"},
+		{"重复的 Name", &standard.CreateGroupRequest{Name: "TEST", Category: "Category", State: "State", Description: "Description"},
 			standard.State_GROUP_ALREADY_EXISTS, false},
-		{"空的 Name", &standard.CreateGroupRequest{Name: "", Class: "Class", State: "Nickname", Description: "Username"},
+		{"空的 Name", &standard.CreateGroupRequest{Name: "", Category: "Category", State: "Nickname", Description: "Username"},
 			standard.State_PARAMS_INVALID, false},
-		{"空的 Class", &standard.CreateGroupRequest{Name: "TEST", Class: "", State: "Nickname", Description: "Username"},
+		{"空的 Category", &standard.CreateGroupRequest{Name: "TEST", Category: "", State: "Nickname", Description: "Username"},
 			standard.State_PARAMS_INVALID, false},
-		{"空的 State", &standard.CreateGroupRequest{Name: "TEST", Class: "Class", State: "", Description: "Username"},
+		{"空的 State", &standard.CreateGroupRequest{Name: "TEST", Category: "Category", State: "", Description: "Username"},
 			standard.State_PARAMS_INVALID, false},
-		{"空的 Description", &standard.CreateGroupRequest{Name: "TEST", Class: "Class", State: "Nickname", Description: ""},
+		{"空的 Description", &standard.CreateGroupRequest{Name: "TEST", Category: "Category", State: "Nickname", Description: ""},
 			standard.State_PARAMS_INVALID, false},
 	}
 
@@ -210,33 +210,33 @@ func TestService_UpdateGroupNameByID(t *testing.T) {
 	}
 }
 
-func TestService_UpdateGroupClassByID(t *testing.T) {
+func TestService_UpdateGroupCategoryByID(t *testing.T) {
 	srv := NewService()
 	tests := []struct {
 		name      string
-		args      *standard.UpdateGroupClassByIDRequest
+		args      *standard.UpdateGroupCategoryByIDRequest
 		wantState standard.State
 		wantErr   bool
 	}{
-		{"空的 ID", &standard.UpdateGroupClassByIDRequest{Class: "Update1"},
+		{"空的 ID", &standard.UpdateGroupCategoryByIDRequest{Category: "Update1"},
 			standard.State_PARAMS_INVALID, false},
-		{"正常更新", &standard.UpdateGroupClassByIDRequest{ID: 2, Class: "Update1"},
+		{"正常更新", &standard.UpdateGroupCategoryByIDRequest{ID: 2, Category: "Update1"},
 			standard.State_SUCCESS, false},
-		{"不存在的 ID", &standard.UpdateGroupClassByIDRequest{ID: 99999, Class: "Update1"},
+		{"不存在的 ID", &standard.UpdateGroupCategoryByIDRequest{ID: 99999, Category: "Update1"},
 			standard.State_GROUP_NOT_EXIST, false},
-		{"空的 Name", &standard.UpdateGroupClassByIDRequest{ID: 2},
+		{"空的 Name", &standard.UpdateGroupCategoryByIDRequest{ID: 2},
 			standard.State_PARAMS_INVALID, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotResp, err := srv.UpdateGroupClassByID(context.Background(), tt.args)
+			gotResp, err := srv.UpdateGroupCategoryByID(context.Background(), tt.args)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("Service.UpdateGroupClassByID() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("Service.UpdateGroupCategoryByID() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 
 			if gotResp.State.String() != tt.wantState.String() {
-				t.Errorf("Service.UpdateGroupClassByID() = %v, want %v", gotResp, tt.wantState)
+				t.Errorf("Service.UpdateGroupCategoryByID() = %v, want %v", gotResp, tt.wantState)
 				return
 			}
 		})

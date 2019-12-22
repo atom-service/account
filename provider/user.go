@@ -53,7 +53,7 @@ func (srv *Service) CreateUser(ctx context.Context, req *standard.CreateUserRequ
 		return resp, nil
 	}
 
-	id, err := dao.CreateUser(req.Class, req.Nickname, req.Username, req.Password, req.Inviter)
+	id, err := dao.CreateUser(req.Category, req.Nickname, req.Username, req.Password, req.Inviter)
 	if err != nil {
 		resp.State = standard.State_DB_OPERATION_FATLURE
 		resp.Message = err.Error()

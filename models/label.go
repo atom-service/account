@@ -10,7 +10,7 @@ import (
 type Label struct {
 	ID          sql.NullInt64
 	Name        sql.NullString
-	Class       sql.NullString
+	Category       sql.NullString
 	State       sql.NullString
 	Value       sql.NullString
 	DeletedTime sql.NullTime
@@ -22,7 +22,7 @@ type Label struct {
 func (srv *Label) LoadProtoStruct(label *standard.Label) {
 	srv.ID.Scan(label.ID)
 	srv.Name.Scan(label.Name)
-	srv.Class.Scan(label.Class)
+	srv.Category.Scan(label.Category)
 	srv.State.Scan(label.State)
 	srv.Value.Scan(label.Value)
 	srv.DeletedTime.Scan(label.DeletedTime)
@@ -34,7 +34,7 @@ func (srv *Label) LoadProtoStruct(label *standard.Label) {
 func (srv *Label) LoadStringMap(data map[string]string) {
 	srv.Name.Scan(data["ID"])
 	srv.Name.Scan(data["Name"])
-	srv.Class.Scan(data["Class"])
+	srv.Category.Scan(data["Category"])
 	srv.State.Scan(data["State"])
 	srv.Value.Scan(data["Value"])
 	srv.DeletedTime.Scan(data["DeletedTime"])
@@ -47,7 +47,7 @@ func (srv *Label) OutProtoStruct() *standard.Label {
 	lable := new(standard.Label)
 	lable.ID = srv.ID.Int64
 	lable.Name = srv.Name.String
-	lable.Class = srv.Class.String
+	lable.Category = srv.Category.String
 	lable.State = srv.State.String
 	lable.Value = srv.Value.String
 	lable.DeletedTime = srv.DeletedTime.Time.String()
