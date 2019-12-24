@@ -254,6 +254,138 @@ func (srv *Service) DeleteUserByID(ctx context.Context, req *standard.DeleteUser
 	return resp, nil
 }
 
+// UpdateUserCategoryByID 更新用户分类
+func (srv *Service) UpdateUserCategoryByID(ctx context.Context, req *standard.UpdateUserCategoryByIDRequest) (resp *standard.UpdateUserCategoryByIDResponse, err error) {
+	resp = new(standard.UpdateUserCategoryByIDResponse)
+	if req.ID <= 0 {
+		resp.State = standard.State_PARAMS_INVALID
+		resp.Message = "无效的 ID"
+		return resp, nil
+	}
+	count, err := dao.CountUserByID(req.ID)
+	if err != nil {
+		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.Message = err.Error()
+		return resp, nil
+	}
+
+	if count <= 0 { // 没有找到用户
+		resp.State = standard.State_USER_NOT_EXIST
+		resp.Message = "该用户不存在"
+		return resp, nil
+	}
+
+	err = dao.UpdateUserCategoryByID(req.ID, req.Category)
+	if err != nil {
+		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.Message = err.Error()
+		return resp, nil
+	}
+
+	resp.State = standard.State_SUCCESS
+	resp.Message = "更新成功"
+	return resp, nil
+}
+
+// UpdateUserAvatarByID 更新用户头像
+func (srv *Service) UpdateUserAvatarByID(ctx context.Context, req *standard.UpdateUserAvatarByIDRequest) (resp *standard.UpdateUserAvatarByIDResponse, err error) {
+	resp = new(standard.UpdateUserAvatarByIDResponse)
+	if req.ID <= 0 {
+		resp.State = standard.State_PARAMS_INVALID
+		resp.Message = "无效的 ID"
+		return resp, nil
+	}
+	count, err := dao.CountUserByID(req.ID)
+	if err != nil {
+		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.Message = err.Error()
+		return resp, nil
+	}
+
+	if count <= 0 { // 没有找到用户
+		resp.State = standard.State_USER_NOT_EXIST
+		resp.Message = "该用户不存在"
+		return resp, nil
+	}
+
+	err = dao.UpdateUserAvatarByID(req.ID, req.Avatar)
+	if err != nil {
+		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.Message = err.Error()
+		return resp, nil
+	}
+
+	resp.State = standard.State_SUCCESS
+	resp.Message = "更新成功"
+	return resp, nil
+}
+
+// UpdateUserInviterByID 更新用户邀请码
+func (srv *Service) UpdateUserInviterByID(ctx context.Context, req *standard.UpdateUserInviterByIDRequest) (resp *standard.UpdateUserInviterByIDResponse, err error) {
+	resp = new(standard.UpdateUserInviterByIDResponse)
+	if req.ID <= 0 {
+		resp.State = standard.State_PARAMS_INVALID
+		resp.Message = "无效的 ID"
+		return resp, nil
+	}
+	count, err := dao.CountUserByID(req.ID)
+	if err != nil {
+		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.Message = err.Error()
+		return resp, nil
+	}
+
+	if count <= 0 { // 没有找到用户
+		resp.State = standard.State_USER_NOT_EXIST
+		resp.Message = "该用户不存在"
+		return resp, nil
+	}
+
+	err = dao.UpdateUserInviterByID(req.ID, req.Inviter)
+	if err != nil {
+		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.Message = err.Error()
+		return resp, nil
+	}
+
+	resp.State = standard.State_SUCCESS
+	resp.Message = "更新成功"
+	return resp, nil
+}
+
+// UpdateUserNicknameByID 更新用户昵称
+func (srv *Service) UpdateUserNicknameByID(ctx context.Context, req *standard.UpdateUserNicknameByIDRequest) (resp *standard.UpdateUserNicknameByIDResponse, err error) {
+	resp = new(standard.UpdateUserNicknameByIDResponse)
+	if req.ID <= 0 {
+		resp.State = standard.State_PARAMS_INVALID
+		resp.Message = "无效的 ID"
+		return resp, nil
+	}
+	count, err := dao.CountUserByID(req.ID)
+	if err != nil {
+		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.Message = err.Error()
+		return resp, nil
+	}
+
+	if count <= 0 { // 没有找到用户
+		resp.State = standard.State_USER_NOT_EXIST
+		resp.Message = "该用户不存在"
+		return resp, nil
+	}
+
+	err = dao.UpdateUserNicknameByID(req.ID, req.Nickname)
+	if err != nil {
+		resp.State = standard.State_DB_OPERATION_FATLURE
+		resp.Message = err.Error()
+		return resp, nil
+	}
+
+	resp.State = standard.State_SUCCESS
+	resp.Message = "更新成功"
+	return resp, nil
+}
+
 // UpdateUserPasswordByID 通过 ID 更新用户密码
 func (srv *Service) UpdateUserPasswordByID(ctx context.Context, req *standard.UpdateUserPasswordByIDRequest) (resp *standard.UpdateUserPasswordByIDResponse, err error) {
 	resp = new(standard.UpdateUserPasswordByIDResponse)
