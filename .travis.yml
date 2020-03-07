@@ -22,22 +22,3 @@ install:
   - CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./deploy/account ./main.go
 
 script: skip
-
-before_deploy:
-  # 准备服务器的 ssh_key
-  - git clone https://github.com/yinxulai/keystore.git ./keystore
-  - cd ./keystore
-  - ./crypt.sh -d $pass_k $pass_iv
-  - ./deploy.sh server root 132.232.106.236 44 deploy.key
-  - cd ../
-  - rm -rf ./keystore
-
-deploy:
-    skip_cleanup: true
-    provider: script
-    script:
-      - scp -r ./deploy server:/www/grpcbrick/account
-      - ssh -tt server "cd /www/grpcbrick/account/deploy; ./init.sh && ./start.sh;"
-    on:
-      branch: master
-

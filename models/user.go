@@ -9,25 +9,15 @@ import (
 // User 用户
 type User struct {
 	ID          sql.NullInt64
-	Category       sql.NullString
-	Avatar      sql.NullString
 	Inviter     sql.NullInt64
+	Avatar      sql.NullString
+	Category    sql.NullString
 	Nickname    sql.NullString
 	Username    sql.NullString
 	Password    sql.NullString
 	DeletedTime sql.NullTime
 	CreatedTime sql.NullTime
 	UpdatedTime sql.NullTime
-}
-
-// SetPassword SetPassword
-func (srv *User) SetPassword(password string) {
-	srv.Password.Scan(password)
-}
-
-// EqualPassword EqualPassword
-func (srv *User) EqualPassword(target string) bool {
-	return false
 }
 
 // LoadStringMap 从 string map 中加载数据
@@ -61,12 +51,12 @@ func (srv *User) LoadProtoStruct(user *standard.User) {
 func (srv *User) OutProtoStruct() *standard.User {
 	user := new(standard.User)
 	user.ID = srv.ID.Int64
-	user.Category = srv.Category.String
+	user.Password = "Privacyfield"
 	user.Avatar = srv.Avatar.String
 	user.Inviter = srv.Inviter.Int64
 	user.Nickname = srv.Nickname.String
 	user.Username = srv.Username.String
-	user.Password = srv.Password.String
+	user.Category = srv.Category.String
 	user.DeletedTime = srv.DeletedTime.Time.String()
 	user.CreatedTime = srv.CreatedTime.Time.String()
 	user.UpdatedTime = srv.UpdatedTime.Time.String()
