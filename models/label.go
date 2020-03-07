@@ -32,7 +32,7 @@ func (srv *Label) LoadProtoStruct(label *standard.Label) {
 
 // LoadStringMap 从 string map 中加载数据
 func (srv *Label) LoadStringMap(data map[string]string) {
-	srv.Name.Scan(data["ID"])
+	srv.ID.Scan(data["ID"])
 	srv.Name.Scan(data["Name"])
 	srv.Category.Scan(data["Category"])
 	srv.State.Scan(data["State"])

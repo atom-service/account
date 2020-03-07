@@ -46,12 +46,12 @@ func (srv *User) LoadStringMap(data map[string]string) {
 // LoadProtoStruct LoadProtoStruct
 func (srv *User) LoadProtoStruct(user *standard.User) {
 	srv.ID.Scan(user.ID)
-	srv.Category.Scan(user.Category)
 	srv.Avatar.Scan(user.Avatar)
 	srv.Inviter.Scan(user.Inviter)
 	srv.Nickname.Scan(user.Nickname)
 	srv.Username.Scan(user.Username)
 	srv.Password.Scan(user.Password)
+	srv.Category.Scan(user.Category)
 	srv.DeletedTime.Scan(user.DeletedTime)
 	srv.CreatedTime.Scan(user.CreatedTime)
 	srv.UpdatedTime.Scan(user.UpdatedTime)
