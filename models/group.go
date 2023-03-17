@@ -3,7 +3,7 @@ package models
 import (
 	"database/sql"
 
-	"github.com/grpcbrick/account/standard"
+	"github.com/grpc-brick/account/protodef"
 )
 
 // Group 用户可以属于某个组

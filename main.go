@@ -3,12 +3,12 @@ package main
 import (
 	"net"
 
-	"github.com/grpcbrick/account/dao"
-	"github.com/grpcbrick/account/provider"
-	"github.com/grpcbrick/account/standard"
-	"github.com/yinxulai/goutils/config"
-	"github.com/yinxulai/goutils/grpc/interceptor"
-	"github.com/yinxulai/goutils/sqldb"
+	"github.com/grpc-brick/account/dao"
+	"github.com/grpc-brick/account/provider"
+	"github.com/grpc-brick/account/protodef"
+	"github.com/grpc-brick/common/config"
+	"github.com/grpc-brick/common/grpc/interceptor"
+	"github.com/grpc-brick/common/sqldb"
 	"google.golang.org/grpc"
 )
 

@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/grpcbrick/account/standard"
+	"github.com/grpc-brick/account/protodef"
 )
 
 func TestService_CreateGroup(t *testing.T) {

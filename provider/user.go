@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 
-	"github.com/grpcbrick/account/dao"
-	"github.com/grpcbrick/account/standard"
-	validators "github.com/grpcbrick/account/validators"
+	"github.com/grpc-brick/account/dao"
+	"github.com/grpc-brick/account/protodef"
+	validators "github.com/grpc-brick/account/validators"
 )
 
 // NewService NewService

@@ -3,7 +3,7 @@ package models
 import (
 	"database/sql"
 
-	"github.com/grpcbrick/account/standard"
+	"github.com/grpc-brick/account/protodef"
 )
 
 // User 用户

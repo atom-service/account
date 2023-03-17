@@ -11,15 +11,6 @@ echo "[ ProtoPath ]:  $ProtoPath"
 # 进入工作目录
 cd $BasePath
 
-
-protoc --go_out=plugins=grpc:. *.proto
-
-protoc --doc_out=. --doc_opt=html,document.html *.proto
-protoc --doc_out=. --doc_opt=markdown,document.md *.proto
-
-
-
-# protoc  --letmegrpc_out=. *.proto
-# mv ./standard.letmegrpc.go  ./standard.test.go
+protoc --proto_path=. --go_out=. --go_opt=paths=source_relative *.proto
 
 echo "[  完成  ]"

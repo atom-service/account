@@ -8,7 +8,7 @@ installVendor() {
   go get -v -u -d google.golang.org/grpc
   go get -v -u -d github.com/jmoiron/sqlx
   go get -v -u -d github.com/go-sql-driver/mysql
-  go get -v -u -d github.com/yinxulai/goutils/...
+  go get -v -u -d github.com/grpc-brick/common/...
   go get -v -u -d github.com/golang/protobuf/proto
 }
 

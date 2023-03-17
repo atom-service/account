@@ -5,8 +5,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/yinxulai/goutils/config"
-	"github.com/yinxulai/goutils/sqldb"
+	"github.com/grpc-brick/common/config"
+	"github.com/grpc-brick/common/sqldb"
 )
 
 func TestMain(m *testing.M) {

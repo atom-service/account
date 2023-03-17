@@ -14,7 +14,7 @@ before_install:
   - go get -v -d google.golang.org/grpc
   - go get -v -d github.com/jmoiron/sqlx
   - go get -v -d github.com/go-sql-driver/mysql
-  - go get -v -d github.com/yinxulai/goutils/...
+  - go get -v -d github.com/grpc-brick/common/...
   - go get -v -d github.com/golang/protobuf/proto
 
 install:

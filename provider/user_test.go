@@ -6,10 +6,10 @@ import (
 	"os"
 	"testing"
 
-	"github.com/grpcbrick/account/dao"
-	"github.com/grpcbrick/account/standard"
-	"github.com/yinxulai/goutils/config"
-	"github.com/yinxulai/goutils/sqldb"
+	"github.com/grpc-brick/account/dao"
+	"github.com/grpc-brick/account/protodef"
+	"github.com/grpc-brick/common/config"
+	"github.com/grpc-brick/common/sqldb"
 )
 
 func TestMain(m *testing.M) {

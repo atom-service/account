@@ -6,10 +6,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/grpcbrick/account/models"
-	"github.com/yinxulai/goutils/config"
-	"github.com/yinxulai/goutils/crypto"
-	"github.com/yinxulai/goutils/sqldb"
+	"github.com/grpc-brick/account/models"
+	"github.com/grpc-brick/common/config"
+	"github.com/grpc-brick/common/crypto"
+	"github.com/grpc-brick/common/sqldb"
 )
 
 const userTableName = "users"

@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/grpcbrick/account/models"
-	"github.com/yinxulai/goutils/sqldb"
+	"github.com/grpc-brick/account/models"
+	"github.com/grpc-brick/common/sqldb"
 )
 
 const labelTableName = "labels"
