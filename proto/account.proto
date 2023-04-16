@@ -1,0 +1,143 @@
+syntax = "proto3";
+package protodef;
+
+// 状态
+enum ResponseState {
+  UNKNOWN = 0;   // 未知
+  SUCCESS = 1;   // 成功
+  FAILURE = 2;   // 失败
+
+  SERVICE_ERROR = 3;   // 服务错误
+  PARAMS_INVALID = 4;   // 参数不合法
+  ILLEGAL_REQUEST = 5;   // 非法请求
+
+  USER_NOT_EXIST = 8;   // 用户不存在
+  LABEL_NOT_EXIST = 6;   // 标签不存在
+  GROUP_NOT_EXIST = 7;   // 分组不存在
+
+  USER_ALREADY_EXISTS = 9;   // 用户已经存在
+  LABEL_ALREADY_EXISTS = 11;   // 标签已经存在
+  GROUP_ALREADY_EXISTS = 12;   // 分组已经存在
+
+  USER_ALREADY_DELETE = 14;   // 用户已经删除
+  LABEL_ALREADY_DELETE  = 15;  // 标签已经删除
+  GROUP_ALREADY_DELETE  = 16;   // 分组已经删除
+
+  DB_OPERATION_FATLURE = 13;    // 数据库操作失败
+}
+
+
+// Group 组
+message Group {
+  string ID = 1;
+  string Name = 2;
+  string Description = 3;
+  string CreatedTime = 4;
+  string UpdatedTime = 5;
+  string DeletedTime = 6;
+}
+
+// Label 标签
+message Label {
+  string ID = 1;
+	string Type = 2;
+  string Value = 3;
+  string CreatedTime = 4;
+  string UpdatedTime = 5;
+  string DeletedTime = 6;
+}
+
+// User 用户
+message User {
+  string ID = 1; // 用户唯一 ID
+	string Nickname = 2; // 用户昵称
+	string Username = 3; // 账号名
+  string Password = 4; // 密码
+  string CreatedTime = 5; // 创建时间
+  string UpdatedTime = 6; // 更新时间
+  string DeletedTime = 7; // 删除时间
+  repeated Label Labels = 8; // 用户标签
+  repeated Group Groups = 9; // 用户所在组
+  repeated PermissionRole roles = 10; // 权限角色
+}
+
+// PermissionRule 权限规则
+message PermissionRule {
+  enum PermissionRuleType {
+    Query = 1;
+    Create = 2;
+    Delete = 3;
+    Update = 4;
+  }
+  
+  string ID = 1; // 规则 ID
+  string Resource = 2; // 资源名称
+  string Description = 3; // 资源介绍
+  PermissionRuleType Type = 1; // 增删改查四个类型
+}
+
+// PermissionRole 权限角色
+message PermissionRole {
+  string ID = 1;
+  string Name = 2;
+  string Description = 3;
+  string CreatedTime = 4;
+  string UpdatedTime = 5;
+  string DeletedTime = 6;
+  repeated PermissionRule rules = 7;
+}
+
+message CreateUserRequest {
+  string Nickname = 1;
+	string Username = 2;
+  string Password = 3;
+  repeated string Labels = 5; // 创建时添加的标签
+  repeated string Groups = 5; // 创建时加入的组
+  repeated string PermissionRoles = 6; // 创建时添加的权限角色
+}
+
+message CreateUserResponse {
+  ResponseState State = 1;
+  string Message = 2;
+  User Data = 3;
+}
+
+message QueryUsersRequest {
+  message QueryUsersFilter {
+    repeated string labels = 1;
+    repeated string groups = 2;
+  }
+  
+  QueryUsersFilter filter = 1;
+}
+
+service Account {
+  // 用户操作
+  rpc CreateUser(CreateUserRequest)returns(CreateUserResponse){} // 创建一个用户
+  rpc QueryUsers(QueryUsersRequest)returns(QueryUsersResponse){} // 查询用户
+  rpc DeleteUser(DeleteUserRequest)returns(DeleteUserResponse){} // 删除用户
+  rpc UpdateUser(UpdateUserRequest)returns(UpdateUserResponse){} // 更新用户信息
+  rpc UpdateUserPassword(UpdateUserPasswordRequest)returns(UpdateUserPasswordResponse){} // 更新用户密码
+  rpc VerifyUserPassword(VerifyUserPassworddRequest)returns(VerifyUserPassworddResponse){} // 更新用户密码
+
+  // 标签操作
+  rpc UpdateLabel(UpdateLabelRequest)returns(UpdateLabelResponse){}
+  rpc CreateLabelForUser(CreateLabelForUserRequest)returns(CreateLabelForUserResponse){} // 查询标签
+  rpc DeleteLabelFromUser(DeleteLabelFromUserRequest)returns(DeleteLabelFromUserResponse){} // 查询标签
+ 
+  // 分组操作
+  rpc CreateGroup(CreateGroupRequest)returns(CreateGroupResponse){} // 查询分组
+  rpc QueryGroups(QueryGroupsRequest)returns(QueryGroupsResponse){} // 查询分组
+  rpc DeleteGroup(DeleteGroupRequest)returns(DeleteGroupResponse){} // 删除分组
+  rpc UpdateGroup(UpdateGroupRequest)returns(UpdateGroupREsponse){} // 更新分组信息
+  rpc AddUserToGroup(UpdateGroupRequest)returns(UpdateGroupREsponse){} // 添加用户到分组
+  rpc RemoveUserFormGroup(UpdateGroupRequest)returns(UpdateGroupREsponse){} // 从分组移除用户
+
+  // 权限操作
+  rpc CreatePermissionRole(CreatePermissionRoleRequest)returns(CreatePermissionRoleResponse){} // 查询分组
+  rpc QueryPermissionRoles(QueryPermissionRolesRequest)returns(QueryPermissionRolesResponse){} // 查询分组
+  rpc DeletePermissionRole(DeletePermissionRoleRequest)returns(DeletePermissionRoleResponse){} // 查询分组
+  rpc UpdatePermissionRole(UpdatePermissionRoleRequest)returns(UpdatePermissionRoleResponse){} // 查询分组
+  rpc AddPermissionRoleToUser(AddPermissionRoleToUserRequest)returns(AddPermissionRoleToUserResponse){} // 查询分组
+  rpc RemovePermissionRoleFormUser(RemovePermissionRoleFormUserRequest)returns(RemovePermissionRoleFormUserResponse){} // 查询分组
+}

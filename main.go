@@ -5,7 +5,6 @@ import (
 
 	"github.com/grpc-brick/account/dao"
 	"github.com/grpc-brick/account/provider"
-	"github.com/grpc-brick/account/protodef"
 	"github.com/grpc-brick/common/config"
 	"github.com/grpc-brick/common/grpc/interceptor"
 	"github.com/grpc-brick/common/sqldb"
@@ -17,7 +16,7 @@ func init() {
 	config.SetStandard("mysql_url", "", true, "RPC 使用的 MYSQL 数据库配置")
 	config.SetStandard("encrypt_password", "encrypt_password", false, "作为一些数据加密的密钥")
 	config.LoadFlag()
-}
+} 
 
 func main() {
 	var err error
