@@ -23,7 +23,7 @@
 					"devcontainer"
 				],
 				"protoc": {
-					"compile_on_save": true,
+					"compile_on_save": false,
 					"options": [
 						"--go_opt=paths=source_relative",
 						"--go-grpc_opt=paths=source_relative",

@@ -5,6 +5,11 @@ option go_package = "./protos";
 
 import  "common.proto";
 
+message UserSelector {
+  optional string ID = 1;
+  optional string Username = 2;
+}
+
 message User {
   string ID = 1;
 	string Username = 3;
@@ -14,27 +19,38 @@ message User {
   optional string DeletedTime = 7;
 }
 
-message CreateUserRequest {
-	string Username = 2;
-  string Password = 3;
+message SignInRequest {
+  UserSelector Selector = 1;
+  string Password = 2;
 }
 
-message CreateUserResponse {
+message SignInResponse {
   State State = 1;
   string Message = 2;
-  User data = 3;
+  string AuthenticationToken = 3;
+}
+
+message SignUpRequest {
+  
+}
+
+message SignUpResponse {
+  
+}
+
+message SignOutRequest {
+  
+}
+
+message SignOutResponse {
+  
 }
 
 message QueryUsersRequest {
-  message FilterOption {
-    optional string ID = 1;
-    optional string Username = 2;
-  }
-  
   optional uint64 Offset = 1;
   optional uint64 Limit = 2;
   optional SortOption Sort = 3;
-  repeated FilterOption Filters = 4;
+  repeated UserSelector Selector = 4;
 }
 
 message QueryUsersResponse {
@@ -49,12 +65,8 @@ message QueryUsersResponse {
 }
 
 message DeleteUserRequest {
-  message FilterOption {
-    optional string ID = 1;
-    optional string Username = 2;
-  }
-
-  repeated FilterOption Filters = 1;
+  string Season = 1;
+  repeated UserSelector Selector = 2;
 }
 
 message DeleteUserResponse {
@@ -62,25 +74,10 @@ message DeleteUserResponse {
   string Message = 2;
 }
 
-message VerifyUserPasswordRequest {
-  message FilterOption {
-    optional string ID = 1;
-    optional string Username = 2;
-  }
-
-  FilterOption Filter = 1;
-  string Password = 2;
-}
-
-message VerifyUserPasswordResponse {
-  State State = 1;
-  string Message = 2;
-  bool Data = 3;
-}
-
 service Account {
-  rpc CreateUser(CreateUserRequest)returns(CreateUserResponse){} // 创建一个用户
+  rpc SignIn(SignInRequest)returns(SignInResponse){} // 登录
+  rpc SignUp(SignUpRequest)returns(SignUpResponse){} // 注册
+  rpc SignOut(SignOutRequest)returns(SignOutResponse){} // 登出
   rpc QueryUsers(QueryUsersRequest)returns(QueryUsersResponse){} // 查询用户
   rpc DeleteUser(DeleteUserRequest)returns(DeleteUserResponse){} // 删除用户
-  rpc VerifyUserPassword(VerifyUserPasswordRequest)returns(VerifyUserPasswordResponse){} // 验证用户密码
 }
