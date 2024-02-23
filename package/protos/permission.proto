@@ -1,0 +1,269 @@
+syntax = "proto3";
+
+option go_package = "./protos";
+
+import "common.proto";
+
+message RoleResource {
+  string Resource = 1;
+  bool Insert = 2;
+  bool Delete = 3;
+  bool Update = 4;
+  bool Query  = 5;
+}
+
+message Role {
+  string ID = 1;
+  string Name = 2;
+  string Description = 3;
+  repeated RoleResource Resources = 4;
+
+  string CreatedTime = 5;
+  string UpdatedTime = 6;
+  optional string DeletedTime = 7;
+}
+
+message Resource {
+  string ID = 1;
+  string Name = 2;
+  string Description = 3;
+  string CreatedTime = 4;
+  string UpdatedTime = 5;
+  optional string DeletedTime = 6;
+}
+
+message CreateRoleRequest {
+  message RoleResourceOption {
+    message ResourceOption {
+      optional string ID = 1;
+      optional string Name = 2; 
+    }
+
+    ResourceOption Resource = 1;
+    bool Insert = 2;
+    bool Delete = 3;
+    bool Update = 4;
+    bool Query  = 5;
+  }
+
+  string Name = 1;
+  string Description = 2;
+  repeated RoleResourceOption Resources = 4;
+}
+
+message CreateRoleResponse {
+  State State = 1;
+  string Message = 2;
+  optional Role Data = 3;
+}
+
+message QueryRolesRequest {
+  message FilterOption {
+    optional string ID = 1;
+    optional string Name = 2;
+  }
+  
+  optional uint64 Offset = 1;
+  optional uint64 Limit = 2;
+  optional SortOption Sort = 3;
+  repeated FilterOption Filters = 4;
+}
+
+message QueryRolesResponse {
+  message DataType {
+    uint64 Total = 1;
+    repeated Role roles = 2;
+  }
+
+  State State = 1;
+  string Message = 2;
+  DataType Data = 3;
+}
+
+message UpdateRoleRequest {
+  message FilterOption {
+    string ID = 1;
+  }
+
+  message UpdateData {
+    optional string Name = 1;
+    optional string Description = 2;
+    repeated RoleResource Resources = 3;
+  }
+
+  FilterOption Filter = 1;
+  UpdateData Data = 2;
+}
+
+message UpdateRoleResponse {
+  State State = 1;
+  string Message = 2;
+  Role Data = 3;
+}
+
+message DeleteRoleRequest {
+  message FilterOption {
+    string ID = 1;
+  }
+  FilterOption Filter = 1;
+}
+
+message DeleteRoleResponse {
+  State State = 1;
+  string Message = 2;
+}
+
+message CreateResourceRequest {
+  string Name = 1;
+  string Description = 2;
+}
+
+message CreateResourceResponse {
+  State State = 1;
+  string Message = 2;
+  Resource Data = 3;
+}
+
+message QueryResourcesRequest {
+  message FilterOption {
+    optional string ID = 1;
+    optional string Name = 2;
+  }
+  
+  optional uint64 Offset = 1;
+  optional uint64 Limit = 2;
+  optional SortOption Sort = 3;
+  repeated FilterOption Filters = 4;
+}
+
+message QueryResourcesResponse {
+  message DataType {
+    uint64 Total = 1;
+    repeated Resource Resources = 2;
+  }
+
+  State State = 1;
+  string Message = 2;
+  DataType Data = 3;
+}
+
+message DeleteResourceRequest {
+  message FilterOption {
+    string ID = 1;
+  }
+  FilterOption Filter = 1;
+}
+
+message DeleteResourceResponse {
+  State State = 1;
+  string Message = 2;
+}
+
+message UpdateResourceRequest {
+  message FilterOption {
+    string ID = 1;
+  }
+
+  message UpdateData {
+    optional string Name = 1;
+    optional string Description = 2;
+  }
+
+  FilterOption Filter = 1;
+  UpdateData Data = 2;
+}
+
+message UpdateResourceResponse {
+  State State = 1;
+  string Message = 2;
+  Resource Data = 3;
+}
+
+message AddRoleForUserRequest {
+  message UserFilter {
+    optional string ID = 1;
+    optional string Username = 2;
+  }
+
+  message RoleFilter {
+    optional string ID = 1;
+    optional string Name = 2;
+  }
+
+  UserFilter User = 1;
+  repeated RoleFilter Roles = 2;
+}
+
+message AddRoleForUserResponse {
+  State State = 1;
+  string Message = 2;
+}
+
+message RemoveRoleForUserRequest {
+  message UserFilter {
+    optional string ID = 1;
+    optional string Username = 2;
+  }
+
+  message RoleFilter {
+    optional string ID = 1;
+    optional string Name = 2;
+  }
+
+  UserFilter User = 1;
+  repeated RoleFilter Roles = 2;
+}
+
+message RemoveRoleForUserResponse {
+  State State = 1;
+  string Message = 2;
+}
+
+message CheckRequest {
+  message UserFilter {
+    optional string ID = 1;
+    optional string Username = 2;
+  }
+
+  message ResourceFilter {
+    optional string ID = 1;
+    optional string Name = 2;
+  }
+
+  UserFilter User = 1;
+  repeated ResourceFilter Resources = 2;
+}
+
+message CheckResponse {
+  message ResourceTarget {
+    optional string ID = 1;
+    optional string Name = 2;
+  }
+  
+  message CheckResult {
+    ResourceTarget Resource = 1;
+    bool Write = 2;
+    bool Read = 3;
+  }
+
+  State State = 1;
+  string Message = 2;
+  repeated CheckResult Data = 3;
+}
+
+service Permission {
+  rpc CreateRole(CreateRoleRequest)returns(CreateRoleResponse){} 
+  rpc QueryRoles(QueryRolesRequest)returns(QueryRolesResponse){} 
+  rpc UpdateRole(UpdateRoleRequest)returns(UpdateRoleResponse){} 
+  rpc DeleteRole(DeleteRoleRequest)returns(DeleteRoleResponse){}
+
+  rpc CreateResource(CreateResourceRequest)returns(CreateResourceResponse){}
+  rpc QueryResources(QueryResourcesRequest)returns(QueryResourcesResponse){}
+  rpc DeleteResource(DeleteResourceRequest)returns(DeleteResourceResponse){}
+  rpc UpdateResource(UpdateResourceRequest)returns(UpdateResourceResponse){}
+
+  rpc AddRoleForUser(AddRoleForUserRequest)returns(AddRoleForUserResponse){}
+  rpc RemoveRoleForUser(RemoveRoleForUserRequest)returns(RemoveRoleForUserResponse){}
+
+  rpc Check(CheckRequest)returns(CheckResponse){} // 检查权限
+}

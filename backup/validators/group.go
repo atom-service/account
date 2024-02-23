@@ -4,7 +4,7 @@ import "regexp"
 
 var (
 	groupNamePattern        = regexp.MustCompile(`^[a-zA-Z0-9-_]{4,128}$`) // 组名称
-	groupCategoryPattern       = regexp.MustCompile(`^[a-zA-Z0-9-_]{4,128}$`) // 组名称
+	groupCategoryPattern    = regexp.MustCompile(`^[a-zA-Z0-9-_]{4,128}$`) // 组名称
 	groupStatePattern       = regexp.MustCompile(`^[a-zA-Z0-9-_]{4,128}$`) // 组名称
 	groupDescriptionPattern = regexp.MustCompile(`^.{4,512}$`)             // 组名称
 )

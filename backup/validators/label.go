@@ -3,10 +3,10 @@ package validators
 import "regexp"
 
 var (
-	labelNamePattern  = regexp.MustCompile(`^[a-zA-Z0-9-_]{4,128}$`) // 标签名称
+	labelNamePattern     = regexp.MustCompile(`^[a-zA-Z0-9-_]{4,128}$`) // 标签名称
 	labelCategoryPattern = regexp.MustCompile(`^[a-zA-Z0-9-_]{4,128}$`) // 标签类型
-	labelStatePattern = regexp.MustCompile(`^[a-zA-Z0-9-_]{4,128}$`) // 标签状态
-	labelValuePattern = regexp.MustCompile(`^.{4,512}$`)             // 标签值 任意字符
+	labelStatePattern    = regexp.MustCompile(`^[a-zA-Z0-9-_]{4,128}$`) // 标签状态
+	labelValuePattern    = regexp.MustCompile(`^.{4,512}$`)             // 标签值 任意字符
 )
 
 // LabelName 标签名称

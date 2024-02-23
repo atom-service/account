@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+// 声明包为当前目录下的 protos
+option go_package = "./protos";
+
+message SortOption {
+  enum TypeOption {
+    Asc = 0;
+    Desc = 1;
+  }
+
+  string Key = 1;
+  TypeOption Type = 2;
+}
+
+// 状态
+enum State {
+  UNKNOWN = 0; // 未知
+  SUCCESS = 1; // 成功
+  FAILURE = 2; // 失败
+
+  PARAMS_INVALID = 3; // 参数不合法
+  ILLEGAL_REQUEST = 4; // 非法请求
+
+  USER_NOT_EXIST = 5; // 用户不存在
+  USER_ALREADY_EXISTS = 6; // 用户已经存在
+
+  PERMISSION_RULE_NOT_EXIST = 7; // 用户不存在
+  PERMISSION_RULE_ALREADY_EXISTS = 8; // 用户已经存在
+
+  PERMISSION_RESOURCE_NOT_EXIST = 9; // 用户不存在
+  PERMISSION_RESOURCE_ALREADY_EXISTS = 10; // 用户已经存在
+}

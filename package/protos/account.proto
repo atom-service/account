@@ -1,0 +1,86 @@
+syntax = "proto3";
+
+// 声明包为当前目录下的 protos
+option go_package = "./protos";
+
+import  "common.proto";
+
+message User {
+  string ID = 1;
+	string Username = 3;
+  string Password = 4;
+  string CreatedTime = 5;
+  string UpdatedTime = 6;
+  optional string DeletedTime = 7;
+}
+
+message CreateUserRequest {
+	string Username = 2;
+  string Password = 3;
+}
+
+message CreateUserResponse {
+  State State = 1;
+  string Message = 2;
+  User data = 3;
+}
+
+message QueryUsersRequest {
+  message FilterOption {
+    optional string ID = 1;
+    optional string Username = 2;
+  }
+  
+  optional uint64 Offset = 1;
+  optional uint64 Limit = 2;
+  optional SortOption Sort = 3;
+  repeated FilterOption Filters = 4;
+}
+
+message QueryUsersResponse {
+  message DataType {
+    uint64 Total = 1;
+    repeated User users = 2;
+  }
+
+  State State = 1;
+  string Message = 2;
+  DataType Data = 3;
+}
+
+message DeleteUserRequest {
+  message FilterOption {
+    optional string ID = 1;
+    optional string Username = 2;
+  }
+
+  repeated FilterOption Filters = 1;
+}
+
+message DeleteUserResponse {
+  State State = 1;
+  string Message = 2;
+}
+
+message VerifyUserPasswordRequest {
+  message FilterOption {
+    optional string ID = 1;
+    optional string Username = 2;
+  }
+
+  FilterOption Filter = 1;
+  string Password = 2;
+}
+
+message VerifyUserPasswordResponse {
+  State State = 1;
+  string Message = 2;
+  bool Data = 3;
+}
+
+service Account {
+  rpc CreateUser(CreateUserRequest)returns(CreateUserResponse){} // 创建一个用户
+  rpc QueryUsers(QueryUsersRequest)returns(QueryUsersResponse){} // 查询用户
+  rpc DeleteUser(DeleteUserRequest)returns(DeleteUserResponse){} // 删除用户
+  rpc VerifyUserPassword(VerifyUserPasswordRequest)returns(VerifyUserPasswordResponse){} // 验证用户密码
+}
