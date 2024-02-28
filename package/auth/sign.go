@@ -3,6 +3,7 @@ package auth
 import (
 	"crypto/hmac"
 	"crypto/sha256"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -15,9 +16,11 @@ type SignData struct {
 
 func SignToken(SecretID string, SecretKey string, data SignData) string {
 	dataString, _ := json.Marshal(data)
+	base64DataString := base64.URLEncoding.EncodeToString(dataString)
+
 	mac := hmac.New(sha256.New, []byte(SecretKey))
-	signString := string(mac.Sum([]byte(dataString)))
-	return fmt.Sprintf("%s:%s:%s", SecretID, signString, dataString)
+	signString := string(mac.Sum([]byte(base64DataString)))
+	return fmt.Sprintf("%s:%s:%s", SecretID, signString, base64DataString)
 }
 
 func VerifyToken(SecretID string, SecretKey string, token string) bool {
@@ -36,12 +39,22 @@ func VerifyToken(SecretID string, SecretKey string, token string) bool {
 		return false
 	}
 
+	tokenInfo, err := ParseToken(token)
+	if err != nil {
+		return false
+	}
+
+	// 过期了
+	if tokenInfo.Data.ExpiresAt.Before(time.Now()) {
+		return false
+	}
+
 	return true
 }
 
 type TokenInfo struct {
 	SecretID string
-	Data SignData
+	Data     SignData
 }
 
 func ParseToken(token string) (*TokenInfo, error) {
@@ -49,5 +62,23 @@ func ParseToken(token string) (*TokenInfo, error) {
 		return nil, fmt.Errorf("")
 	}
 
-	return nil, nil
+	fragment := strings.Split(token, ":")
+	SecretID := fragment[0]
+	// signString := fragment[1]
+	dataString := fragment[2]
+
+	var tokenInfo TokenInfo
+	var tokenData SignData
+	decodedData, err := base64.URLEncoding.DecodeString(dataString)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := json.Unmarshal(decodedData, &tokenData); err != nil {
+		return nil, err
+	}
+
+	tokenInfo.SecretID = SecretID
+	tokenInfo.Data = tokenData
+	return &tokenInfo, nil
 }

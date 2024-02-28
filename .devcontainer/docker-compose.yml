@@ -12,16 +12,32 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - ..:/workspaces:cached
+      - ../../:/workspaces:cached
+    command: sleep infinity # 禁止容器自动关闭
+    environment:
+      PORT: :80
+      POSTGRES_URI: postgresql://postgres:password@postgresql
     networks:
       - dev-net
-    command: sleep infinity # 禁止容器自动关闭
 
   # 数据库
   postgresql:
     image: postgres
     restart: always
     environment:
+      POSTGRES_DB: account
       POSTGRES_PASSWORD: password
     networks:
       - dev-net
+    ports:
+      - 35432:5432
+
+  # postgresql 管理平台
+  postgresql-adminer:
+    image: adminer
+    restart: always
+    networks:
+      - dev-net
+    ports:
+      - 35433:8080
+    

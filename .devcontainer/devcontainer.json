@@ -3,18 +3,23 @@
 	"name": "AccountDevContainer",
 	"service": "workspace",
 	"dockerComposeFile": "docker-compose.yml",
-	"workspaceFolder": "/workspaces",
+	"workspaceFolder": "/workspaces/account",
 	"customizations": {
 		"vscode": {
 			"extensions": [
 				"golang.Go",
 				"zxh404.vscode-proto3",
+				"ckolkman.vscode-postgres",
 				"ms-vscode.makefile-tools",
 				"aaron-bond.better-comments",
 				"ms-azuretools.vscode-docker",
 				"streetsidesoftware.code-spell-checker"
 			],
 			"settings": {
+				"vscode-postgres": {
+					"showExplorer": true,
+					"defaultConnection": "postgresql://postgres:password@postgresql",
+				},
 				"cSpell.words": [
 					"proto",
 					"protoc",

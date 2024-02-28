@@ -3,6 +3,11 @@ syntax = "proto3";
 // 声明包为当前目录下的 protos
 option go_package = "./protos";
 
+message PaginationOption {
+  optional uint64 Limit = 1;
+  optional uint64 Offset = 2;
+}
+
 message SortOption {
   enum TypeOption {
     Asc = 0;
