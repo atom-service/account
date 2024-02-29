@@ -127,13 +127,15 @@ func (r *userTable) QueryUsers(ctx context.Context, selector UserSelector, pagin
 		whereCond["username="] = selector.Username
 	}
 
-	selectSql := sqls.Select(tableName, "COUNT(*)").Where(whereCond)
+	// 先查总数
+	selectSql := sqls.SELECT(tableName, "COUNT(*)").WHERE(whereCond)
 	logger.Debugf("ready to execute sql %s, %v", selectSql.String(), selectSql.Params())
 	_, err := db.Database.QueryContext(ctx, selectSql.String(), selectSql.Params()...)
 	if err != nil {
 		logger.Error(err)
-		return nil, err
+		return result, err
 	}
 
+	// 再读数据
 	return result, nil
 }

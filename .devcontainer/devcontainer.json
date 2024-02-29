@@ -25,7 +25,11 @@
 					"protoc",
 					"protos",
 					"yinxulai",
-					"devcontainer"
+					"devcontainer",
+					"Debugf",
+					"Infof",
+					"Warnf",
+					"Errorf"
 				],
 				"protoc": {
 					"compile_on_save": false,
