@@ -8,7 +8,11 @@ import (
 
 	"github.com/atom-service/account/internal/db"
 	"github.com/atom-service/account/package/protos"
+	"github.com/atom-service/common/logger"
+	"github.com/atom-service/common/sqls"
 )
+
+var tableName = "\"user\".\"users\""
 
 type userTable struct{}
 
@@ -109,12 +113,27 @@ func (t *userTable) TruncateTable(ctx context.Context) error {
 
 func (r *userTable) CreateUser() {}
 
-func (r *userTable) QueryUsers(selector UserSelector, pagination Pagination, sort Sort) (PaginationResult[User], error) {
+func (r *userTable) QueryUsers(ctx context.Context, selector UserSelector, pagination Pagination, sort Sort) (PaginationResult[User], error) {
 	result := PaginationResult[User]{
 		Total: 0,
 		Data:  []User{},
 	}
 
+	whereCond := map[string]any{}
+	if selector.ID != nil {
+		whereCond["id="] = selector.ID
+	}
+	if selector.Username != nil {
+		whereCond["username="] = selector.Username
+	}
+
+	selectSql := sqls.Select(tableName, "COUNT(*)").Where(whereCond)
+	logger.Debugf("ready to execute sql %s, %v", selectSql.String(), selectSql.Params())
+	_, err := db.Database.QueryContext(ctx, selectSql.String(), selectSql.Params()...)
+	if err != nil {
+		logger.Error(err)
+		return nil, err
+	}
 
 	return result, nil
 }

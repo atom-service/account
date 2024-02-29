@@ -24,6 +24,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	
 	grpcServer := grpc.NewServer()
 	protos.RegisterAccountServer(grpcServer, server.NewAccountServer())
 	protos.RegisterPermissionServer(grpcServer, server.NewPermissionServer())
