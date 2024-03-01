@@ -10,6 +10,7 @@ import (
 	"github.com/atom-service/account/package/protos"
 	"github.com/atom-service/common/logger"
 	"github.com/atom-service/common/sqls"
+	sqb "github.com/huandu/go-sqlbuilder"
 )
 
 var tableName = "\"user\".\"users\""
@@ -126,6 +127,9 @@ func (r *userTable) QueryUsers(ctx context.Context, selector UserSelector, pagin
 	if selector.Username != nil {
 		whereCond["username="] = selector.Username
 	}
+
+	test := sqb.NewSelectBuilder()
+	test.In()
 
 	// 先查总数
 	selectSql := sqls.SELECT(tableName, "COUNT(*)").WHERE(whereCond)
