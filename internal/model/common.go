@@ -21,8 +21,15 @@ func (srv *Pagination) OutProtoStruct() *protos.PaginationOption {
 
 type Sort struct {
 	Key  string
-	Type int32
+	Type SortType
 }
+
+type SortType = int32
+
+const (
+	SortAsc = SortType(0)
+	SortDesc = SortType(1)
+)
 
 func (srv *Sort) LoadProtoStruct(data *protos.SortOption) {
 	srv.Key = data.Key

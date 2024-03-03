@@ -4,13 +4,11 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"strings"
 
 	"github.com/atom-service/account/internal/db"
 	"github.com/atom-service/account/package/protos"
 	"github.com/atom-service/common/logger"
 	"github.com/atom-service/common/sqls"
-	sqb "github.com/huandu/go-sqlbuilder"
 )
 
 var tableName = "\"user\".\"users\""
@@ -19,6 +17,7 @@ type userTable struct{}
 
 type User struct {
 	ID          sql.NullInt64  `json:"id"`
+	ParentID    sql.NullInt64  `json:"parent_id"`
 	Username    sql.NullString `json:"username"`
 	Password    sql.NullString `json:"password"`
 	CreatedTime sql.NullTime   `json:"created-time"`
@@ -85,18 +84,18 @@ func (t *userTable) CreateTable(ctx context.Context) error {
 	tx.ExecContext(ctx, "CREATE SCHEMA IF NOT EXISTS \"user\"")
 
 	// 创建 table
-	tx.ExecContext(ctx, strings.Join([]string{
-		"CREATE TABLE IF NOT EXISTS \"user\".\"users\" (",
-		"id serial NOT NULL,",
-		"parent_id integer NULL,",
-		"username character varying(64) NOT NULL,",
-		"password character varying(256) NOT NULL,",
-		"created_time timestamp without time zone NULL DEFAULT now(),",
-		"updated_time timestamp without time zone NULL DEFAULT now(),",
-		"deleted_time timestamp without time zone NULL",
-		");",
-	}, " "))
-
+	s := sqls.Begin(sqls.PostgreSQL)
+	s.Append("CREATE TABLE IF NOT EXISTS \"user\".\"users\" (")
+	s.Append("id serial NOT NULL,")
+	s.Append("parent_id integer NULL,")
+	s.Append("username character varying(64) NOT NULL,")
+	s.Append("password character varying(256) NOT NULL,")
+	s.Append("created_time timestamp without time zone NULL DEFAULT now(),")
+	s.Append("updated_time timestamp without time zone NULL DEFAULT now(),")
+	s.Append("deleted_time timestamp without time zone NULL")
+	s.Append(");")
+	tx.ExecContext(ctx, s.String())
+	logger.Debug(s.String())
 	if err := tx.Commit(); err != nil {
 		if rollbackErr := tx.Rollback(); rollbackErr != nil {
 			return errors.Join(err)
@@ -112,34 +111,108 @@ func (t *userTable) TruncateTable(ctx context.Context) error {
 	return err
 }
 
-func (r *userTable) CreateUser() {}
+func (r *userTable) CreateUser(ctx context.Context, newUser User) (user User, err error) {
+	// 检查昵称是否存在
 
-func (r *userTable) QueryUsers(ctx context.Context, selector UserSelector, pagination Pagination, sort Sort) (PaginationResult[User], error) {
-	result := PaginationResult[User]{
-		Total: 0,
-		Data:  []User{},
+	return
+}
+
+func (r *userTable) CountUsers(ctx context.Context, selector UserSelector) (result uint64, err error) {
+	s := sqls.Begin(sqls.PostgreSQL)
+	s.Append("SELECT COUNT(*) AS count FORM", tableName)
+	if selector.ID != nil || selector.Username != nil {
+		s.Append("WHERE")
+		if selector.ID != nil {
+			s.Append("id = ", s.Param(selector.ID), ",")
+		}
+		if selector.Username != nil {
+			s.Append("username = ", s.Param(selector.Username), ",")
+		}
+
+		s.TrimSuffix(",")
 	}
 
-	whereCond := map[string]any{}
-	if selector.ID != nil {
-		whereCond["id="] = selector.ID
-	}
-	if selector.Username != nil {
-		whereCond["username="] = selector.Username
+	rowQuery := db.Database.QueryRowContext(ctx, s.String(), s.Params()...)
+	if err = rowQuery.Scan(&result); err != nil {
+		logger.Error(err)
 	}
 
-	test := sqb.NewSelectBuilder()
-	test.In()
+	return
+}
 
-	// 先查总数
-	selectSql := sqls.SELECT(tableName, "COUNT(*)").WHERE(whereCond)
-	logger.Debugf("ready to execute sql %s, %v", selectSql.String(), selectSql.Params())
-	_, err := db.Database.QueryContext(ctx, selectSql.String(), selectSql.Params()...)
+func (r *userTable) QueryUsers(ctx context.Context, selector UserSelector, pagination Pagination, sort *Sort) (result PaginationResult[User], err error) {
+	result.Data = []User{}
+
+	s := sqls.Begin(sqls.PostgreSQL)
+	s.Append("SELECT")
+	s.Append("id,")
+	s.Append("parent_id,")
+	s.Append("username,")
+	s.Append("password,")
+	s.Append("created_time,")
+	s.Append("updated_time,")
+	s.Append("deleted_time")
+	s.Append("FORM", tableName)
+	if selector.ID != nil || selector.Username != nil {
+		s.Append("WHERE")
+		if selector.ID != nil {
+			s.Append("id = ", s.Param(selector.ID), ",")
+		}
+		if selector.Username != nil {
+			s.Append("username = ", s.Param(selector.Username), ",")
+		}
+
+		s.TrimSuffix(",")
+	}
+
+	if pagination.Limit == nil {
+		// 限制最大
+		defaultLimit := uint64(1000)
+		pagination.Limit = &defaultLimit
+	}
+
+	s.Append("LIMIT ", s.Param(pagination.Limit))
+
+	if pagination.Offset != nil {
+		s.Append("OFFSET ", s.Param(pagination.Offset))
+	}
+
+	if sort != nil {
+		s.Append("ORDER BY ", s.Param(sort.Key), " ")
+		if sort.Type == SortAsc {
+			s.Append("ASC")
+		}
+		if sort.Type == SortDesc {
+			s.Append("DESC")
+		}
+	}
+
+	queryResult, err := db.Database.QueryContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		logger.Error(err)
-		return result, err
+		return
 	}
 
-	// 再读数据
-	return result, nil
+	defer queryResult.Close()
+	for queryResult.Next() {
+		user := User{}
+		if err = queryResult.Scan(
+			&user.ID,
+			&user.ParentID,
+			&user.Username,
+			&user.Password,
+			&user.CreatedTime,
+			&user.UpdatedTime,
+			&user.DeletedTime,
+		); err != nil {
+			logger.Error(err)
+			return
+		}
+		result.Data = append(result.Data, user)
+	}
+	if err = queryResult.Err(); err != nil {
+		logger.Error(err)
+		return
+	}
+	return
 }
