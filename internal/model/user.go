@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"time"
 
 	"github.com/atom-service/account/internal/db"
 	"github.com/atom-service/account/package/protos"
@@ -16,24 +17,25 @@ var tableName = "\"user\".\"users\""
 type userTable struct{}
 
 type User struct {
-	ID          sql.NullInt64  `json:"id"`
-	ParentID    sql.NullInt64  `json:"parent_id"`
-	Username    sql.NullString `json:"username"`
-	Password    sql.NullString `json:"password"`
-	CreatedTime sql.NullTime   `json:"created-time"`
-	UpdatedTime sql.NullTime   `json:"updated-time"`
-	DeletedTime sql.NullTime   `json:"deleted-time"`
+	ID          *uint64    `json:"id"`
+	ParentID    *uint64    `json:"parent_id"`
+	Username    *string    `json:"username"`
+	Password    *string    `json:"password"`
+	CreatedTime *time.Time `json:"created-time"`
+	UpdatedTime *time.Time `json:"updated-time"`
+	DeletedTime *time.Time `json:"deleted-time"`
 }
 
 func (srv *User) LoadProtoStruct(user *protos.User) {
-	srv.ID.Scan(user.ID)
-	srv.Username.Scan(user.Username)
-	srv.Password.Scan(user.Password)
-	srv.CreatedTime.Scan(user.CreatedTime)
-	srv.UpdatedTime.Scan(user.UpdatedTime)
+	id := uint64(user.ID)
+	srv.ID = &id
+	srv.Username = &user.Username
+	srv.Password = &user.Password
+	srv.CreatedTime = user.CreatedTime
+	srv.UpdatedTime = user.UpdatedTime
 
 	if user.DeletedTime != nil {
-		srv.DeletedTime.Scan(user.DeletedTime)
+		srv.DeletedTime = user.DeletedTime
 	}
 }
 
