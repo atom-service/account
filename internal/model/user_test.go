@@ -27,3 +27,10 @@ func TestTruncateTable(t *testing.T) {
 		t.Error(err)
 	}
 }
+
+
+func FuzzTestUsers(f *testing.F) {
+	f.Fuzz(func(t *testing.T, b []byte, i int64) {
+
+	})
+}

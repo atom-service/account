@@ -17,8 +17,8 @@ var tableName = "\"user\".\"users\""
 type userTable struct{}
 
 type User struct {
-	ID          *uint64    `json:"id"`
-	ParentID    *uint64    `json:"parent_id"`
+	ID          *int64     `json:"id"`
+	ParentID    *int64     `json:"parent_id"`
 	Username    *string    `json:"username"`
 	Password    *string    `json:"password"`
 	CreatedTime *time.Time `json:"created-time"`
@@ -26,30 +26,48 @@ type User struct {
 	DeletedTime *time.Time `json:"deleted-time"`
 }
 
-func (srv *User) LoadProtoStruct(user *protos.User) {
-	id := uint64(user.ID)
-	srv.ID = &id
+func (srv *User) LoadProtoStruct(user *protos.User) (err error) {
+	srv.ID = &user.ID
 	srv.Username = &user.Username
 	srv.Password = &user.Password
-	srv.CreatedTime = user.CreatedTime
-	srv.UpdatedTime = user.UpdatedTime
+
+	createdTime, err := time.Parse(time.RFC3339Nano, user.CreatedTime)
+	if err != nil {
+		return err
+	}
+
+	srv.CreatedTime = &createdTime
+
+	updatedTime, err := time.Parse(time.RFC3339Nano, user.UpdatedTime)
+	if err != nil {
+		return err
+	}
+
+	srv.UpdatedTime = &updatedTime
 
 	if user.DeletedTime != nil {
-		srv.DeletedTime = user.DeletedTime
+		deletedTime, err := time.Parse(time.RFC3339Nano, *user.DeletedTime)
+		if err != nil {
+			return err
+		}
+
+		srv.DeletedTime = &deletedTime
 	}
+
+	return
 }
 
 // OutProtoStruct OutProtoStruct
 func (srv *User) OutProtoStruct() *protos.User {
 	user := new(protos.User)
-	user.ID = srv.ID.Int64
+	user.ID = *srv.ID
 	// user.Password = srv.Password.String
-	user.Username = srv.Username.String
-	user.CreatedTime = srv.CreatedTime.Time.String()
-	user.UpdatedTime = srv.UpdatedTime.Time.String()
+	user.Username = *srv.Username
+	user.CreatedTime = srv.CreatedTime.String()
+	user.UpdatedTime = srv.UpdatedTime.String()
 
-	if srv.DeletedTime.Valid {
-		timeString := srv.DeletedTime.Time.String()
+	if srv.DeletedTime != nil {
+		timeString := srv.DeletedTime.String()
 		user.DeletedTime = &timeString
 	}
 
@@ -113,8 +131,18 @@ func (t *userTable) TruncateTable(ctx context.Context) error {
 	return err
 }
 
-func (r *userTable) CreateUser(ctx context.Context, newUser User) (user User, err error) {
-	// 检查昵称是否存在
+func (r *userTable) CreateUser(ctx context.Context, newUser User) (err error) {
+	s := sqls.Begin(sqls.PostgreSQL)
+	s.Append("INSERT INTO", tableName)
+	s.Append("(", "parent_id,", ",username", ",password", ")")
+	s.Append("VALUES")
+	s.Append("(", s.Param(newUser.ParentID), ",", s.Param(newUser.Username), ",", s.Param(newUser.Password), ")")
+
+	_, err = db.Database.ExecContext(ctx, s.String(), s.Params()...)
+	if err != nil {
+		logger.Error(err)
+		return
+	}
 
 	return
 }
@@ -122,13 +150,14 @@ func (r *userTable) CreateUser(ctx context.Context, newUser User) (user User, er
 func (r *userTable) CountUsers(ctx context.Context, selector UserSelector) (result uint64, err error) {
 	s := sqls.Begin(sqls.PostgreSQL)
 	s.Append("SELECT COUNT(*) AS count FORM", tableName)
+
 	if selector.ID != nil || selector.Username != nil {
 		s.Append("WHERE")
 		if selector.ID != nil {
-			s.Append("id = ", s.Param(selector.ID), ",")
+			s.Append("id=", s.Param(selector.ID), ",")
 		}
 		if selector.Username != nil {
-			s.Append("username = ", s.Param(selector.Username), ",")
+			s.Append("username=", s.Param(selector.Username), ",")
 		}
 
 		s.TrimSuffix(",")
@@ -155,13 +184,15 @@ func (r *userTable) QueryUsers(ctx context.Context, selector UserSelector, pagin
 	s.Append("updated_time,")
 	s.Append("deleted_time")
 	s.Append("FORM", tableName)
+
 	if selector.ID != nil || selector.Username != nil {
 		s.Append("WHERE")
 		if selector.ID != nil {
-			s.Append("id = ", s.Param(selector.ID), ",")
+			s.Append("id =", s.Param(selector.ID), ",")
 		}
+
 		if selector.Username != nil {
-			s.Append("username = ", s.Param(selector.Username), ",")
+			s.Append("username=", s.Param(selector.Username), ",")
 		}
 
 		s.TrimSuffix(",")
@@ -173,14 +204,14 @@ func (r *userTable) QueryUsers(ctx context.Context, selector UserSelector, pagin
 		pagination.Limit = &defaultLimit
 	}
 
-	s.Append("LIMIT ", s.Param(pagination.Limit))
+	s.Append("LIMIT", s.Param(pagination.Limit))
 
 	if pagination.Offset != nil {
-		s.Append("OFFSET ", s.Param(pagination.Offset))
+		s.Append("OFFSET", s.Param(pagination.Offset))
 	}
 
 	if sort != nil {
-		s.Append("ORDER BY ", s.Param(sort.Key), " ")
+		s.Append("ORDER BY", s.Param(sort.Key))
 		if sort.Type == SortAsc {
 			s.Append("ASC")
 		}
