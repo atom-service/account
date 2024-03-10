@@ -251,7 +251,7 @@ message CheckResponse {
   repeated CheckResult Data = 3;
 }
 
-service Permission {
+service PermissionService {
   rpc CreateRole(CreateRoleRequest)returns(CreateRoleResponse){} 
   rpc QueryRoles(QueryRolesRequest)returns(QueryRolesResponse){} 
   rpc UpdateRole(UpdateRoleRequest)returns(UpdateRoleResponse){} 

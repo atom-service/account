@@ -30,6 +30,8 @@ func TestTruncateTable(t *testing.T) {
 
 
 func FuzzTestUsers(f *testing.F) {
+	
+
 	f.Fuzz(func(t *testing.T, b []byte, i int64) {
 
 	})

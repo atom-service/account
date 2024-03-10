@@ -5,6 +5,8 @@ option go_package = "./protos";
 
 import  "common.proto";
 
+message User
+
 message UserSelector {
   optional int64 ID = 1;
   optional string Username = 2;
@@ -16,7 +18,8 @@ message User {
   string Password = 4;
   string CreatedTime = 5;
   string UpdatedTime = 6;
-  optional string DeletedTime = 7;
+  string LastVerifyTime = 7;
+  optional string DeletedTime = 8;
 }
 
 message SignInRequest {
@@ -31,11 +34,13 @@ message SignInResponse {
 }
 
 message SignUpRequest {
-  
+  UserSelector Selector = 1;
+  string Password = 2;
 }
 
 message SignUpResponse {
-  
+  State State = 1;
+  string Message = 2;
 }
 
 message SignOutRequest {
@@ -43,21 +48,12 @@ message SignOutRequest {
 }
 
 message SignOutResponse {
-  
-}
-
-message OverviewRequest {
-  UserSelector Selector = 2;
-}
-
-message OverviewResponse {
   State State = 1;
   string Message = 2;
-  User User = 3;
 }
 
 message QueryUsersRequest {
-  repeated UserSelector Selectors = 1;
+  UserSelector Selectors = 1;
   optional SortOption Sort = 2;
   optional PaginationOption Pagination = 3;
 }
@@ -74,7 +70,7 @@ message QueryUsersResponse {
 }
 
 message DeleteUserRequest {
-  repeated UserSelector Selectors = 1;
+  UserSelector Selectors = 1;
 }
 
 message DeleteUserResponse {
@@ -82,11 +78,10 @@ message DeleteUserResponse {
   string Message = 2;
 }
 
-service Account {
+service AccountServie {
   rpc SignIn(SignInRequest)returns(SignInResponse){} // 登录
   rpc SignUp(SignUpRequest)returns(SignUpResponse){} // 注册
   rpc SignOut(SignOutRequest)returns(SignOutResponse){} // 登出
-  rpc Overview(OverviewRequest)returns(OverviewResponse){} // 登出
   rpc QueryUsers(QueryUsersRequest)returns(QueryUsersResponse){} // 查询用户
   rpc DeleteUser(DeleteUserRequest)returns(DeleteUserResponse){} // 删除用户
 }
