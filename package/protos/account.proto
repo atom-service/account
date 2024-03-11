@@ -5,8 +5,6 @@ option go_package = "./protos";
 
 import  "common.proto";
 
-message User
-
 message UserSelector {
   optional int64 ID = 1;
   optional string Username = 2;
@@ -34,7 +32,7 @@ message SignInResponse {
 }
 
 message SignUpRequest {
-  UserSelector Selector = 1;
+  string Username = 1;
   string Password = 2;
 }
 
@@ -53,7 +51,7 @@ message SignOutResponse {
 }
 
 message QueryUsersRequest {
-  UserSelector Selectors = 1;
+  UserSelector Selector = 1;
   optional SortOption Sort = 2;
   optional PaginationOption Pagination = 3;
 }
@@ -78,7 +76,7 @@ message DeleteUserResponse {
   string Message = 2;
 }
 
-service AccountServie {
+service AccountService {
   rpc SignIn(SignInRequest)returns(SignInResponse){} // 登录
   rpc SignUp(SignUpRequest)returns(SignUpResponse){} // 注册
   rpc SignOut(SignOutRequest)returns(SignOutResponse){} // 登出

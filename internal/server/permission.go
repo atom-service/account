@@ -3,7 +3,7 @@ package server
 import "github.com/atom-service/account/package/protos"
 
 type PermissionServer struct {
-	protos.UnimplementedPermissionServer
+	protos.UnimplementedPermissionServiceServer
 }
 
 func NewPermissionServer() *PermissionServer {

@@ -3,6 +3,7 @@ package auth
 import (
 	"context"
 
+	"github.com/atom-service/account/internal/model"
 	protos "github.com/atom-service/account/package/protos"
 	grpc "google.golang.org/grpc"
 	metadata "google.golang.org/grpc/metadata"
@@ -25,8 +26,8 @@ func (x *AuthCredentials) RequireTransportSecurity() bool {
 }
 
 type AuthInterceptor struct {
-	accountClient    protos.AccountClient
-	permissionClient protos.PermissionClient
+	accountClient    protos.AccountServiceClient
+	permissionClient protos.PermissionServiceClient
 }
 
 func (ai *AuthInterceptor) resolveUserIncomingContext(ctx context.Context) context.Context {
@@ -40,9 +41,9 @@ func (ai *AuthInterceptor) resolveUserIncomingContext(ctx context.Context) conte
 	}
 
 	// 查询用户信息
-	// ai.accountClient.QueryUsers(ctx, &protos.QueryUsersRequest{
+	ai.accountClient.QueryUsers(ctx, &protos.QueryUsersRequest{
 
-	// })
+	})
 
 	return context.WithValue(ctx, "auth", nil)
 }
@@ -61,11 +62,12 @@ func NewAuthInterceptor(address string) *AuthInterceptor {
 	}
 
 	return &AuthInterceptor{
-		protos.NewAccountClient(conn),
-		protos.NewPermissionClient(conn),
+		protos.NewAccountServiceClient(conn),
+		protos.NewPermissionServiceClient(conn),
 	}
 }
 
-func ResolveUserFromIncomingContext(ctx context.Context) {
-
+func ResolveUserFromIncomingContext(ctx context.Context) (*model.User) {
+	// TODO
+	return nil
 }

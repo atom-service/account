@@ -2,7 +2,9 @@ package model
 
 import (
 	"context"
+	"crypto/sha256"
 	"database/sql"
+	"encoding/hex"
 	"errors"
 	"time"
 
@@ -12,18 +14,27 @@ import (
 	"github.com/atom-service/common/sqls"
 )
 
-var tableName = "\"user\".\"users\""
+var userTableName = "\"user\".\"users\""
 
 type userTable struct{}
 
+var Password = &password{}
+
+type password struct{}
+
+func (p *password) Hash(str string) string {
+	hash := sha256.Sum256([]byte(str))
+	return hex.EncodeToString(hash[:])
+}
+
 type User struct {
 	ID          *int64     `json:"id"`
-	ParentID    *int64     `json:"parent_id"`
+	ParentID    *int64     `json:"parent-id"`
 	Username    *string    `json:"username"`
 	Password    *string    `json:"password"`
-	CreatedTime *time.Time `json:"created-time"`
-	UpdatedTime *time.Time `json:"updated-time"`
-	DeletedTime *time.Time `json:"deleted-time"`
+	CreatedTime *time.Time `json:"created_time"`
+	UpdatedTime *time.Time `json:"updated_time"`
+	DeletedTime *time.Time `json:"deleted_time"`
 }
 
 func (srv *User) LoadProtoStruct(user *protos.User) (err error) {
@@ -105,7 +116,7 @@ func (t *userTable) CreateTable(ctx context.Context) error {
 
 	// 创建 table
 	s := sqls.Begin(sqls.PostgreSQL)
-	s.Append("CREATE TABLE IF NOT EXISTS \"user\".\"users\" (")
+	s.Append("CREATE TABLE IF NOT EXISTS", userTableName, "(")
 	s.Append("id serial NOT NULL,")
 	s.Append("parent_id integer NULL,")
 	s.Append("username character varying(64) NOT NULL,")
@@ -127,13 +138,13 @@ func (t *userTable) CreateTable(ctx context.Context) error {
 }
 
 func (t *userTable) TruncateTable(ctx context.Context) error {
-	_, err := db.Database.ExecContext(ctx, "TRUNCATE TABLE \"user\".\"users\";")
+	_, err := db.Database.ExecContext(ctx, "TRUNCATE TABLE", secretTableName, ";")
 	return err
 }
 
 func (r *userTable) CreateUser(ctx context.Context, newUser User) (err error) {
 	s := sqls.Begin(sqls.PostgreSQL)
-	s.Append("INSERT INTO", tableName, "(parent_id,username,password)")
+	s.Append("INSERT INTO", userTableName, "(parent_id,username,password)")
 	s.Append("VALUES", "(", s.Param(newUser.ParentID), ",", s.Param(newUser.Username), ",", s.Param(newUser.Password), ")")
 
 	logger.Debug(s.String())
@@ -148,7 +159,7 @@ func (r *userTable) CreateUser(ctx context.Context, newUser User) (err error) {
 
 func (r *userTable) CountUsers(ctx context.Context, selector UserSelector) (result uint64, err error) {
 	s := sqls.Begin(sqls.PostgreSQL)
-	s.Append("SELECT COUNT(*) AS count FORM", tableName)
+	s.Append("SELECT COUNT(*) AS count FORM", userTableName)
 
 	if selector.ID != nil || selector.Username != nil {
 		s.Append("WHERE")
@@ -181,7 +192,7 @@ func (r *userTable) QueryUsers(ctx context.Context, selector UserSelector, pagin
 	s.Append("created_time,")
 	s.Append("updated_time,")
 	s.Append("deleted_time")
-	s.Append("FORM", tableName)
+	s.Append("FORM", userTableName)
 
 	if selector.ID != nil || selector.Username != nil {
 		s.Append("WHERE")
@@ -196,18 +207,20 @@ func (r *userTable) QueryUsers(ctx context.Context, selector UserSelector, pagin
 		s.TrimSuffix(",")
 	}
 
-	if pagination != nil {
-		if pagination.Limit == nil {
-			// 限制最大
-			defaultLimit := uint64(1000)
-			pagination.Limit = &defaultLimit
-		}
+	if pagination == nil {
+		pagination = &Pagination{}
+	}
 
-		s.Append("LIMIT", s.Param(pagination.Limit))
+	if pagination.Limit == nil {
+		// 默认为 100，防止刷爆
+		defaultLimit := uint64(100)
+		pagination.Limit = &defaultLimit
+	}
 
-		if pagination.Offset != nil {
-			s.Append("OFFSET", s.Param(pagination.Offset))
-		}
+	s.Append("LIMIT", s.Param(pagination.Limit))
+
+	if pagination.Offset != nil {
+		s.Append("OFFSET", s.Param(pagination.Offset))
 	}
 
 	if sort != nil {

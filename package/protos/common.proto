@@ -23,16 +23,17 @@ enum State {
   UNKNOWN = 0; // 未知
   SUCCESS = 1; // 成功
   FAILURE = 2; // 失败
+  NO_PERMISSION = 3;
 
-  PARAMS_INVALID = 3; // 参数不合法
-  ILLEGAL_REQUEST = 4; // 非法请求
+  PARAMS_INVALID = 4; // 参数不合法
+  ILLEGAL_REQUEST = 5; // 非法请求
 
-  USER_NOT_EXIST = 5; // 用户不存在
-  USER_ALREADY_EXISTS = 6; // 用户已经存在
+  USER_NOT_EXIST = 6; // 用户不存在
+  USER_ALREADY_EXISTS = 7; // 用户已经存在
 
-  PERMISSION_RULE_NOT_EXIST = 7; // 权限不存在
-  PERMISSION_RULE_ALREADY_EXISTS = 8; // 权限已经存在
+  PERMISSION_RULE_NOT_EXIST = 8; // 权限不存在
+  PERMISSION_RULE_ALREADY_EXISTS = 9; // 权限已经存在
 
-  PERMISSION_RESOURCE_NOT_EXIST = 9; // 权限资源不存在
-  PERMISSION_RESOURCE_ALREADY_EXISTS = 10; // 权限资源已经存在
+  PERMISSION_RESOURCE_NOT_EXIST = 10; // 权限资源不存在
+  PERMISSION_RESOURCE_ALREADY_EXISTS = 11; // 权限资源已经存在
 }
