@@ -24,9 +24,14 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	
-	grpcServer := grpc.NewServer()
-	protos.RegisterAccountServer(grpcServer, server.NewAccountServer())
-	protos.RegisterPermissionServer(grpcServer, server.NewPermissionServer())
+
+	grpcServer := grpc.NewServer(
+		grpc.ChainUnaryInterceptor(),
+		grpc.ChainStreamInterceptor(),
+	)
+
+	protos.RegisterSecretServiceServer(grpcServer, server.NewSecretServer())
+	protos.RegisterAccountServiceServer(grpcServer, server.NewAccountServer())
+	protos.RegisterPermissionServiceServer(grpcServer, server.NewPermissionServer())
 	panic(grpcServer.Serve(listen))
 }

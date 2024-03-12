@@ -103,7 +103,7 @@ func (s *AccountServer) SignUp(ctx context.Context, request *protos.SignUpReques
 		return
 	}
 
-	// TODO 创建一组 AK/SK
+	// TODO 创建一组 system AK/SK
 
 	return
 }

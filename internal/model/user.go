@@ -28,13 +28,14 @@ func (p *password) Hash(str string) string {
 }
 
 type User struct {
-	ID          *int64     `json:"id"`
-	ParentID    *int64     `json:"parent-id"`
-	Username    *string    `json:"username"`
-	Password    *string    `json:"password"`
-	CreatedTime *time.Time `json:"created_time"`
-	UpdatedTime *time.Time `json:"updated_time"`
-	DeletedTime *time.Time `json:"deleted_time"`
+	ID           *int64     `json:"id"`
+	ParentID     *int64     `json:"parent-id"`
+	Username     *string    `json:"username"`
+	Password     *string    `json:"password"`
+	CreatedTime  *time.Time `json:"created_time"`
+	UpdatedTime  *time.Time `json:"updated_time"`
+	DeletedTime  *time.Time `json:"deleted_time"`
+	DisabledTime *time.Time `json:"disabled_time"`
 }
 
 func (srv *User) LoadProtoStruct(user *protos.User) (err error) {
@@ -65,6 +66,15 @@ func (srv *User) LoadProtoStruct(user *protos.User) (err error) {
 		srv.DeletedTime = &deletedTime
 	}
 
+	if user.DisabledTime != nil {
+		disabledTime, err := time.Parse(time.RFC3339Nano, *user.DisabledTime)
+		if err != nil {
+			return err
+		}
+
+		srv.DisabledTime = &disabledTime
+	}
+
 	return
 }
 
@@ -80,6 +90,11 @@ func (srv *User) OutProtoStruct() *protos.User {
 	if srv.DeletedTime != nil {
 		timeString := srv.DeletedTime.String()
 		user.DeletedTime = &timeString
+	}
+
+	if srv.DisabledTime != nil {
+		timeString := srv.DisabledTime.String()
+		user.DisabledTime = &timeString
 	}
 
 	return user
@@ -123,6 +138,7 @@ func (t *userTable) CreateTable(ctx context.Context) error {
 	s.Append("password character varying(256) NOT NULL,")
 	s.Append("created_time timestamp without time zone NULL DEFAULT now(),")
 	s.Append("updated_time timestamp without time zone NULL DEFAULT now(),")
+	s.Append("disabled_time timestamp without time zone NULL")
 	s.Append("deleted_time timestamp without time zone NULL")
 	s.Append(");")
 	logger.Debug(s.String())
@@ -161,18 +177,17 @@ func (r *userTable) CountUsers(ctx context.Context, selector UserSelector) (resu
 	s := sqls.Begin(sqls.PostgreSQL)
 	s.Append("SELECT COUNT(*) AS count FORM", userTableName)
 
-	if selector.ID != nil || selector.Username != nil {
-		s.Append("WHERE")
-		if selector.ID != nil {
-			s.Append("id=", s.Param(selector.ID), ",")
-		}
-		if selector.Username != nil {
-			s.Append("username=", s.Param(selector.Username), ",")
-		}
-
-		s.TrimSuffix(",")
+	s.Append("WHERE")
+	if selector.ID != nil {
+		s.Append("id=", s.Param(selector.ID), "AND")
+	}
+	if selector.Username != nil {
+		s.Append("username=", s.Param(selector.Username), "AND")
 	}
 
+	s.Append("deleted_time<=", s.Param(time.Now())).TrimSuffix("AND")
+
+	s.TrimSuffix(",")
 	logger.Debug(s.String())
 	rowQuery := db.Database.QueryRowContext(ctx, s.String(), s.Params()...)
 	if err = rowQuery.Scan(&result); err != nil {
@@ -192,20 +207,19 @@ func (r *userTable) QueryUsers(ctx context.Context, selector UserSelector, pagin
 	s.Append("created_time,")
 	s.Append("updated_time,")
 	s.Append("deleted_time")
+	s.Append("disabled_time")
 	s.Append("FORM", userTableName)
 
-	if selector.ID != nil || selector.Username != nil {
-		s.Append("WHERE")
-		if selector.ID != nil {
-			s.Append("id =", s.Param(selector.ID), ",")
-		}
-
-		if selector.Username != nil {
-			s.Append("username=", s.Param(selector.Username), ",")
-		}
-
-		s.TrimSuffix(",")
+	s.Append("WHERE")
+	if selector.ID != nil {
+		s.Append("id =", s.Param(selector.ID), "AND")
 	}
+
+	if selector.Username != nil {
+		s.Append("username=", s.Param(selector.Username), "AND")
+	}
+
+	s.Append("deleted_time<=", s.Param(time.Now())).TrimSuffix("AND")
 
 	if pagination == nil {
 		pagination = &Pagination{}
@@ -250,6 +264,7 @@ func (r *userTable) QueryUsers(ctx context.Context, selector UserSelector, pagin
 			&user.CreatedTime,
 			&user.UpdatedTime,
 			&user.DeletedTime,
+			&user.DisabledTime,
 		); err != nil {
 			logger.Error(err)
 			return

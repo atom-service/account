@@ -7,25 +7,96 @@ import (
 	"time"
 
 	"github.com/atom-service/account/internal/db"
+	"github.com/atom-service/account/package/protos"
 	"github.com/atom-service/common/logger"
 	"github.com/atom-service/common/sqls"
 )
 
 var secretTableName = "\"secret\".\"secrets\""
 
+const (
+	UserSecretType   = "user"
+	SystemSecretType = "system"
+)
+
 type Secret struct {
 	Key         *string    `json:"key"`
+	Type        *string    `json:"type"`
 	Value       *string    `json:"value"`
-	OwnerID     *string    `json:"owner_id"`
+	OwnerID     *int64     `json:"owner_id"`
 	Description *string    `json:"description"`
 	CreatedTime *time.Time `json:"created_time"`
 	UpdatedTime *time.Time `json:"updated_time"`
 	DeletedTime *time.Time `json:"deleted_time"`
 }
 
+func (srv *Secret) LoadProtoStruct(secret *protos.Secret) (err error) {
+	srv.Key = &secret.Key
+	srv.Value = &secret.Value
+	srv.OwnerID = &secret.OwnerID
+	srv.Description = &secret.Description
+
+	createdTime, err := time.Parse(time.RFC3339Nano, secret.CreatedTime)
+	if err != nil {
+		return err
+	}
+
+	srv.CreatedTime = &createdTime
+
+	updatedTime, err := time.Parse(time.RFC3339Nano, secret.UpdatedTime)
+	if err != nil {
+		return err
+	}
+
+	srv.UpdatedTime = &updatedTime
+
+	if secret.DeletedTime != nil {
+		deletedTime, err := time.Parse(time.RFC3339Nano, *secret.DeletedTime)
+		if err != nil {
+			return err
+		}
+
+		srv.DeletedTime = &deletedTime
+	}
+
+	return
+}
+
+// OutProtoStruct OutProtoStruct
+func (srv *Secret) OutProtoStruct() *protos.Secret {
+	secret := new(protos.Secret)
+	secret.Key = *srv.Key
+	secret.Value = *srv.Value
+	secret.OwnerID = *srv.OwnerID
+	secret.Description = *srv.Description
+	secret.CreatedTime = srv.CreatedTime.String()
+	secret.UpdatedTime = srv.UpdatedTime.String()
+
+	if srv.DeletedTime != nil {
+		timeString := srv.DeletedTime.String()
+		secret.DeletedTime = &timeString
+	}
+
+	return secret
+}
+
 type SecretSelector struct {
-	Key     *int64
+	Key     *string
+	Type    string
 	OwnerID *int64
+}
+
+func (srv *SecretSelector) LoadProtoStruct(data *protos.SecretSelector) {
+	srv.Key = data.Key
+	srv.OwnerID = data.OwnerID
+}
+
+// OutProtoStruct OutProtoStruct
+func (srv *SecretSelector) OutProtoStruct() *protos.SecretSelector {
+	result := new(protos.SecretSelector)
+	result.Key = srv.Key
+	result.OwnerID = srv.OwnerID
+	return result
 }
 
 type secretTable struct{}
@@ -45,6 +116,7 @@ func (t *secretTable) CreateTable(ctx context.Context) error {
 	s := sqls.Begin(sqls.PostgreSQL)
 	s.Append("CREATE TABLE IF NOT EXISTS", secretTableName, "(")
 	s.Append("key character varying(128) NOT NULL,")
+	s.Append("type character varying(128) NOT NULL,")
 	s.Append("value character varying(128) NOT NULL,")
 	s.Append("owner_id integer NOT NULL,")
 	s.Append("description character varying(64) NULL,")
@@ -71,8 +143,8 @@ func (t *secretTable) TruncateTable(ctx context.Context) error {
 
 func (r *secretTable) CreateSecret(ctx context.Context, secret Secret) (err error) {
 	s := sqls.Begin(sqls.PostgreSQL)
-	s.Append("INSERT INTO", userTableName, "(key,value,owner_id,description)")
-	s.Append("VALUES", "(", s.Param(secret.Key), ",", s.Param(secret.Value), ",", s.Param(secret.OwnerID), ",", s.Param(secret.Description), ")")
+	s.Append("INSERT INTO", userTableName, "(key,value,type,owner_id,description)")
+	s.Append("VALUES", "(", s.Param(secret.Key), ",", s.Param(secret.Value), ",", s.Param(secret.Type), ",", s.Param(secret.OwnerID), ",", s.Param(secret.Description), ")")
 
 	logger.Debug(s.String())
 	_, err = db.Database.ExecContext(ctx, s.String(), s.Params()...)
@@ -88,17 +160,17 @@ func (r *secretTable) CountSecrets(ctx context.Context, selector SecretSelector)
 	s := sqls.Begin(sqls.PostgreSQL)
 	s.Append("SELECT COUNT(*) AS count FORM", secretTableName)
 
-	if selector.Key != nil || selector.OwnerID != nil {
-		s.Append("WHERE")
-		if selector.Key != nil {
-			s.Append("key=", s.Param(selector.Key), ",")
-		}
-		if selector.OwnerID != nil {
-			s.Append("owner_id=", s.Param(selector.OwnerID), ",")
-		}
-
-		s.TrimSuffix(",")
+	s.Append("WHERE")
+	if selector.Key != nil {
+		s.Append("key=", s.Param(selector.Key), "AND")
 	}
+	if selector.OwnerID != nil {
+		s.Append("owner_id=", s.Param(selector.OwnerID), "AND")
+	}
+
+	s.Append("type=", s.Param(selector.Type), "AND")
+	s.Append("deleted_time<=", s.Param(time.Now()))
+	s.TrimSuffix("AND")
 
 	logger.Debug(s.String())
 	rowQuery := db.Database.QueryRowContext(ctx, s.String(), s.Params()...)
@@ -113,6 +185,7 @@ func (r *secretTable) QuerySecrets(ctx context.Context, selector SecretSelector,
 	s := sqls.Begin(sqls.PostgreSQL)
 	s.Append("SELECT")
 	s.Append("key,")
+	s.Append("type,")
 	s.Append("value,")
 	s.Append("owner_id,")
 	s.Append("description,")
@@ -121,17 +194,17 @@ func (r *secretTable) QuerySecrets(ctx context.Context, selector SecretSelector,
 	s.Append("deleted_time")
 	s.Append("FORM", userTableName)
 
-	if selector.Key != nil || selector.OwnerID != nil {
-		s.Append("WHERE")
-		if selector.Key != nil {
-			s.Append("key=", s.Param(selector.Key), ",")
-		}
-		if selector.OwnerID != nil {
-			s.Append("owner_id=", s.Param(selector.OwnerID), ",")
-		}
-
-		s.TrimSuffix(",")
+	s.Append("WHERE")
+	if selector.Key != nil {
+		s.Append("key=", s.Param(selector.Key), "AND")
 	}
+	if selector.OwnerID != nil {
+		s.Append("owner_id=", s.Param(selector.OwnerID), "AND")
+	}
+
+	s.Append("type=", s.Param(selector.Type), "AND")
+	s.Append("deleted_time<=", s.Param(time.Now()))
+	s.TrimSuffix("AND")
 
 	if pagination == nil {
 		pagination = &Pagination{}
@@ -170,6 +243,7 @@ func (r *secretTable) QuerySecrets(ctx context.Context, selector SecretSelector,
 		secret := Secret{}
 		if err = queryResult.Scan(
 			&secret.Key,
+			&secret.Type,
 			&secret.Value,
 			&secret.OwnerID,
 			&secret.Description,

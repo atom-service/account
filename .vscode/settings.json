@@ -1,3 +1,12 @@
 {
-  "files.exclude": {}
+  "files.exclude": {},
+  "protoc": {
+    "options": [
+      "--go_opt=paths=source_relative",
+      "--go-grpc_opt=paths=source_relative",
+      "--go_out=${workspaceRoot}/package/protos",
+      "--go-grpc_out=${workspaceRoot}/package/protos",
+      "--proto_path=${workspaceRoot}/package/protos"
+    ]
+  }
 }

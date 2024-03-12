@@ -16,8 +16,8 @@ message User {
   string Password = 4;
   string CreatedTime = 5;
   string UpdatedTime = 6;
-  string LastVerifyTime = 7;
-  optional string DeletedTime = 8;
+  optional string DeletedTime = 7;
+  optional string DisabledTime = 8;
 }
 
 message SignInRequest {
@@ -59,7 +59,7 @@ message QueryUsersRequest {
 message QueryUsersResponse {
   message DataType {
     uint64 Total = 1;
-    repeated User users = 2;
+    repeated User Users = 2;
   }
 
   State State = 1;
