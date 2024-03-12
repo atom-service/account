@@ -103,7 +103,29 @@ func (s *AccountServer) SignUp(ctx context.Context, request *protos.SignUpReques
 		return
 	}
 
-	// TODO 创建一组 system AK/SK
+	users, err := model.UserTable.QueryUsers(ctx, model.UserSelector{Username: &request.Username}, nil, nil)
+	if err != nil {
+		result.State = protos.State_FAILURE
+		logger.Error(err)
+		return
+	}
+
+	if len(users) <= 0 {
+		result.State = protos.State_FAILURE
+		return
+	}
+
+	// 创建一组 system AK/SK
+	err = model.SecretTable.CreateSecret(ctx, model.CreateSecretParams{
+		OwnerID: *users[0].ID,
+		Type:    model.SystemSecretType,
+	})
+
+	if err != nil {
+		result.State = protos.State_FAILURE
+		logger.Error(err)
+		return
+	}
 
 	return
 }

@@ -2,8 +2,10 @@ package model
 
 import (
 	"context"
+	"crypto/rand"
 	"database/sql"
 	"errors"
+	"math/big"
 	"time"
 
 	"github.com/atom-service/account/internal/db"
@@ -141,10 +143,59 @@ func (t *secretTable) TruncateTable(ctx context.Context) error {
 	return err
 }
 
-func (r *secretTable) CreateSecret(ctx context.Context, secret Secret) (err error) {
+type CreateSecretParams struct {
+	Type        string    `json:"type"`
+	OwnerID     int64     `json:"owner_id"`
+	Description *string    `json:"description"`
+}
+
+func (r *secretTable) CreateSecret(ctx context.Context, createParams CreateSecretParams) (err error) {
+	generateRandomString := func(length int) (string, error) {
+		const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+		charsetLength := big.NewInt(int64(len(charset)))
+
+		randomString := make([]byte, length)
+		for i := 0; i < length; i++ {
+			index, err := rand.Int(rand.Reader, charsetLength)
+			if err != nil {
+				return "", err
+			}
+			randomString[i] = charset[index.Int64()]
+		}
+
+		return string(randomString), nil
+	}
+
+	var key string
+
+	// TODO 并发加快速度
+	for {
+		key, err = generateRandomString(128)
+		if err != nil {
+			return err
+		}
+
+		count, err := r.CountSecrets(ctx, SecretSelector{Key: &key})
+		if err != nil {
+			return err
+		}
+
+		if (count > 0) {
+			continue
+		} else {
+			break
+		}
+	}
+
+	value, err := generateRandomString(128)
+	if err != nil {
+		return err
+	}
+
+
 	s := sqls.Begin(sqls.PostgreSQL)
 	s.Append("INSERT INTO", userTableName, "(key,value,type,owner_id,description)")
-	s.Append("VALUES", "(", s.Param(secret.Key), ",", s.Param(secret.Value), ",", s.Param(secret.Type), ",", s.Param(secret.OwnerID), ",", s.Param(secret.Description), ")")
+	s.Append("VALUES", "(", s.Param(key), ",", s.Param(value), ",", s.Param(createParams.Type), ",", s.Param(createParams.OwnerID), ",", s.Param(createParams.Description), ")")
 
 	logger.Debug(s.String())
 	_, err = db.Database.ExecContext(ctx, s.String(), s.Params()...)
