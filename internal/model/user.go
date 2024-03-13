@@ -130,17 +130,18 @@ func (t *userTable) CreateTable(ctx context.Context) error {
 	tx.ExecContext(ctx, "CREATE SCHEMA IF NOT EXISTS \"user\"")
 
 	// 创建 table
-	s := sqls.Begin(sqls.PostgreSQL)
-	s.Append("CREATE TABLE IF NOT EXISTS", userTableName, "(")
-	s.Append("id serial NOT NULL,")
-	s.Append("parent_id integer NULL,")
-	s.Append("username character varying(64) NOT NULL,")
-	s.Append("password character varying(256) NOT NULL,")
-	s.Append("created_time timestamp without time zone NULL DEFAULT now(),")
-	s.Append("updated_time timestamp without time zone NULL DEFAULT now(),")
-	s.Append("disabled_time timestamp without time zone NULL")
-	s.Append("deleted_time timestamp without time zone NULL")
-	s.Append(");")
+	s := sqls.Begin()
+	s.CREATE_TABLE_IF_NOT_EXISTS(
+		userTableName,
+		"id serial NOT NULL",
+		"parent_id integer NULL",
+		"username character varying(64) NOT NULL",
+		"password character varying(256) NOT NULL",
+		"created_time timestamp without time zone NULL DEFAULT now()",
+		"updated_time timestamp without time zone NULL DEFAULT now()",
+		"disabled_time timestamp without time zone NULL",
+		"deleted_time timestamp without time zone NULL",
+	)
 	logger.Debug(s.String())
 	tx.ExecContext(ctx, s.String())
 	if err := tx.Commit(); err != nil {
@@ -159,9 +160,11 @@ func (t *userTable) TruncateTable(ctx context.Context) error {
 }
 
 func (r *userTable) CreateUser(ctx context.Context, newUser User) (err error) {
-	s := sqls.Begin(sqls.PostgreSQL)
-	s.Append("INSERT INTO", userTableName, "(parent_id,username,password)")
-	s.Append("VALUES", "(", s.Param(newUser.ParentID), ",", s.Param(newUser.Username), ",", s.Param(newUser.Password), ")")
+	s := sqls.Begin()
+	s.INSERT_INTO(userTableName)
+	s.VALUES("parent_id", s.Param(newUser.ParentID))
+	s.VALUES("username", s.Param(newUser.Username))
+	s.VALUES("password", s.Param(newUser.Password))
 
 	logger.Debug(s.String())
 	_, err = db.Database.ExecContext(ctx, s.String(), s.Params()...)
@@ -174,20 +177,18 @@ func (r *userTable) CreateUser(ctx context.Context, newUser User) (err error) {
 }
 
 func (r *userTable) CountUsers(ctx context.Context, selector UserSelector) (result uint64, err error) {
-	s := sqls.Begin(sqls.PostgreSQL)
-	s.Append("SELECT COUNT(*) AS count FORM", userTableName)
+	s := sqls.Begin()
+	s.SELECT("COUNT(*) AS count").FROM(userTableName)
 
-	s.Append("WHERE")
 	if selector.ID != nil {
-		s.Append("id=", s.Param(selector.ID), "AND")
+		s.WHERE("id=" + s.Param(selector.ID))
 	}
 	if selector.Username != nil {
-		s.Append("username=", s.Param(selector.Username), "AND")
+		s.WHERE("username=" + s.Param(selector.Username))
 	}
 
-	s.Append("deleted_time<=", s.Param(time.Now())).TrimSuffix("AND")
+	s.WHERE("deleted_time=" + s.Param(time.Now()))
 
-	s.TrimSuffix(",")
 	logger.Debug(s.String())
 	rowQuery := db.Database.QueryRowContext(ctx, s.String(), s.Params()...)
 	if err = rowQuery.Scan(&result); err != nil {
@@ -198,28 +199,26 @@ func (r *userTable) CountUsers(ctx context.Context, selector UserSelector) (resu
 }
 
 func (r *userTable) QueryUsers(ctx context.Context, selector UserSelector, pagination *Pagination, sort *Sort) (result []*User, err error) {
-	s := sqls.Begin(sqls.PostgreSQL)
-	s.Append("SELECT")
-	s.Append("id,")
-	s.Append("parent_id,")
-	s.Append("username,")
-	s.Append("password,")
-	s.Append("created_time,")
-	s.Append("updated_time,")
-	s.Append("deleted_time")
-	s.Append("disabled_time")
-	s.Append("FORM", userTableName)
+	s := sqls.Begin()
+	s.FROM(userTableName).SELECT(
+		"id",
+		"parent_id",
+		"username",
+		"password",
+		"created_time",
+		"updated_time",
+		"deleted_time",
+		"disabled_time",
+	)
 
-	s.Append("WHERE")
 	if selector.ID != nil {
-		s.Append("id =", s.Param(selector.ID), "AND")
+		s.WHERE("id=" + s.Param(selector.ID))
 	}
-
 	if selector.Username != nil {
-		s.Append("username=", s.Param(selector.Username), "AND")
+		s.WHERE("username=" + s.Param(selector.Username))
 	}
 
-	s.Append("deleted_time<=", s.Param(time.Now())).TrimSuffix("AND")
+	s.WHERE("deleted_time=" + s.Param(time.Now()))
 
 	if pagination == nil {
 		pagination = &Pagination{}
@@ -231,20 +230,18 @@ func (r *userTable) QueryUsers(ctx context.Context, selector UserSelector, pagin
 		pagination.Limit = &defaultLimit
 	}
 
-	s.Append("LIMIT", s.Param(pagination.Limit))
+	s.LIMIT(s.Param(pagination.Limit))
 
 	if pagination.Offset != nil {
-		s.Append("OFFSET", s.Param(pagination.Offset))
+		s.OFFSET(s.Param(pagination.Offset))
 	}
 
 	if sort != nil {
-		s.Append("ORDER BY", s.Param(sort.Key))
-		if sort.Type == SortAsc {
-			s.Append("ASC")
-		}
+		var sortType = "ASC"
 		if sort.Type == SortDesc {
-			s.Append("DESC")
+			sortType = "DESC"
 		}
+		s.ORDER_BY(s.Param(sort.Key) + " " + sortType)
 	}
 
 	queryResult, err := db.Database.QueryContext(ctx, s.String(), s.Params()...)
