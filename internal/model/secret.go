@@ -11,7 +11,7 @@ import (
 	"github.com/atom-service/account/internal/db"
 	"github.com/atom-service/account/package/protos"
 	"github.com/atom-service/common/logger"
-	"github.com/atom-service/common/sqls"
+	"github.com/yinxulai/sqls"
 )
 
 var secretTableName = "\"secret\".\"secrets\""
@@ -112,20 +112,18 @@ func (t *secretTable) CreateTable(ctx context.Context) error {
 	}
 
 	// 创建 schema
-	tx.ExecContext(ctx, "CREATE SCHEMA IF NOT EXISTS \"secret\"")
+	tx.ExecContext(ctx, sqls.CREATE_SCHEMA("secret").String())
 
 	// 创建 table
-	s := sqls.Begin(sqls.PostgreSQL)
-	s.Append("CREATE TABLE IF NOT EXISTS", secretTableName, "(")
-	s.Append("key character varying(128) NOT NULL,")
-	s.Append("type character varying(128) NOT NULL,")
-	s.Append("value character varying(128) NOT NULL,")
-	s.Append("owner_id integer NOT NULL,")
-	s.Append("description character varying(64) NULL,")
-	s.Append("created_time timestamp without time zone NULL DEFAULT now(),")
-	s.Append("updated_time timestamp without time zone NULL DEFAULT now(),")
-	s.Append("deleted_time timestamp without time zone NULL")
-	s.Append(");")
+	s := sqls.CREATE_TABLE(secretTableName).IF_NOT_EXISTS()
+	s.COLUMN("key character varying(128) NOT NULL")
+	s.COLUMN("type character varying(128) NOT NULL")
+	s.COLUMN("value character varying(128) NOT NULL")
+	s.COLUMN("owner_id integer NOT NULL")
+	s.COLUMN("description character varying(64) NULL")
+	s.COLUMN("created_time timestamp without time zone NULL DEFAULT now()")
+	s.COLUMN("updated_time timestamp without time zone NULL DEFAULT now()")
+	s.COLUMN("deleted_time timestamp without time zone NULL")
 	logger.Debug(s.String())
 	tx.ExecContext(ctx, s.String())
 	if err := tx.Commit(); err != nil {
@@ -139,14 +137,14 @@ func (t *secretTable) CreateTable(ctx context.Context) error {
 }
 
 func (t *secretTable) TruncateTable(ctx context.Context) error {
-	_, err := db.Database.ExecContext(ctx, "TRUNCATE TABLE", secretTableName, ";")
+	_, err := db.Database.ExecContext(ctx, sqls.TRUNCATE_TABLE(secretTableName).String())
 	return err
 }
 
 type CreateSecretParams struct {
-	Type        string    `json:"type"`
-	OwnerID     int64     `json:"owner_id"`
-	Description *string    `json:"description"`
+	Type        string  `json:"type"`
+	OwnerID     int64   `json:"owner_id"`
+	Description *string `json:"description"`
 }
 
 func (r *secretTable) CreateSecret(ctx context.Context, createParams CreateSecretParams) (err error) {
@@ -180,7 +178,7 @@ func (r *secretTable) CreateSecret(ctx context.Context, createParams CreateSecre
 			return err
 		}
 
-		if (count > 0) {
+		if count > 0 {
 			continue
 		} else {
 			break
@@ -192,10 +190,12 @@ func (r *secretTable) CreateSecret(ctx context.Context, createParams CreateSecre
 		return err
 	}
 
-
-	s := sqls.Begin(sqls.PostgreSQL)
-	s.Append("INSERT INTO", userTableName, "(key,value,type,owner_id,description)")
-	s.Append("VALUES", "(", s.Param(key), ",", s.Param(value), ",", s.Param(createParams.Type), ",", s.Param(createParams.OwnerID), ",", s.Param(createParams.Description), ")")
+	s := sqls.INSERT_INTO(userTableName)
+	s.VALUES("key", s.Param(key))
+	s.VALUES("value", s.Param(value))
+	s.VALUES("type", s.Param(createParams.Type))
+	s.VALUES("owner_id", s.Param(createParams.OwnerID))
+	s.VALUES("description", s.Param(createParams.Description))
 
 	logger.Debug(s.String())
 	_, err = db.Database.ExecContext(ctx, s.String(), s.Params()...)
@@ -208,20 +208,17 @@ func (r *secretTable) CreateSecret(ctx context.Context, createParams CreateSecre
 }
 
 func (r *secretTable) CountSecrets(ctx context.Context, selector SecretSelector) (result uint64, err error) {
-	s := sqls.Begin(sqls.PostgreSQL)
-	s.Append("SELECT COUNT(*) AS count FORM", secretTableName)
+	s := sqls.SELECT("COUNT(*) AS count").FROM(secretTableName)
 
-	s.Append("WHERE")
 	if selector.Key != nil {
-		s.Append("key=", s.Param(selector.Key), "AND")
+		s.WHERE("key=" + s.Param(selector.Key))
 	}
 	if selector.OwnerID != nil {
-		s.Append("owner_id=", s.Param(selector.OwnerID), "AND")
+		s.WHERE("owner_id=" + s.Param(selector.OwnerID))
 	}
 
-	s.Append("type=", s.Param(selector.Type), "AND")
-	s.Append("deleted_time<=", s.Param(time.Now()))
-	s.TrimSuffix("AND")
+	s.WHERE("type=" + s.Param(selector.Type))
+	s.WHERE("deleted_time<=" + s.Param(time.Now()))
 
 	logger.Debug(s.String())
 	rowQuery := db.Database.QueryRowContext(ctx, s.String(), s.Params()...)
@@ -233,29 +230,26 @@ func (r *secretTable) CountSecrets(ctx context.Context, selector SecretSelector)
 }
 
 func (r *secretTable) QuerySecrets(ctx context.Context, selector SecretSelector, pagination *Pagination, sort *Sort) (result []*Secret, err error) {
-	s := sqls.Begin(sqls.PostgreSQL)
-	s.Append("SELECT")
-	s.Append("key,")
-	s.Append("type,")
-	s.Append("value,")
-	s.Append("owner_id,")
-	s.Append("description,")
-	s.Append("created_time,")
-	s.Append("updated_time,")
-	s.Append("deleted_time")
-	s.Append("FORM", userTableName)
+	s := sqls.SELECT(
+		"key",
+		"type",
+		"value",
+		"owner_id",
+		"description",
+		"created_time",
+		"updated_time",
+		"deleted_time",
+	).FROM(userTableName)
 
-	s.Append("WHERE")
 	if selector.Key != nil {
-		s.Append("key=", s.Param(selector.Key), "AND")
+		s.WHERE("key=" + s.Param(selector.Key))
 	}
 	if selector.OwnerID != nil {
-		s.Append("owner_id=", s.Param(selector.OwnerID), "AND")
+		s.WHERE("owner_id=" + s.Param(selector.OwnerID))
 	}
 
-	s.Append("type=", s.Param(selector.Type), "AND")
-	s.Append("deleted_time<=", s.Param(time.Now()))
-	s.TrimSuffix("AND")
+	s.WHERE("type=" + s.Param(selector.Type))
+	s.WHERE("deleted_time<=" + s.Param(time.Now()))
 
 	if pagination == nil {
 		pagination = &Pagination{}
@@ -267,20 +261,19 @@ func (r *secretTable) QuerySecrets(ctx context.Context, selector SecretSelector,
 		pagination.Limit = &defaultLimit
 	}
 
-	s.Append("LIMIT", s.Param(pagination.Limit))
+	s.LIMIT(s.Param(pagination.Limit))
 
 	if pagination.Offset != nil {
-		s.Append("OFFSET", s.Param(pagination.Offset))
+		s.OFFSET(s.Param(pagination.Offset))
 	}
 
 	if sort != nil {
-		s.Append("ORDER BY", s.Param(sort.Key))
-		if sort.Type == SortAsc {
-			s.Append("ASC")
-		}
+		var sortType = "ASC"
 		if sort.Type == SortDesc {
-			s.Append("DESC")
+			sortType = "DESC"
 		}
+
+		s.ORDER_BY(s.Param(sort.Key) + " " + sortType)
 	}
 
 	queryResult, err := db.Database.QueryContext(ctx, s.String(), s.Params()...)

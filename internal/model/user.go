@@ -11,7 +11,7 @@ import (
 	"github.com/atom-service/account/internal/db"
 	"github.com/atom-service/account/package/protos"
 	"github.com/atom-service/common/logger"
-	"github.com/atom-service/common/sqls"
+	"github.com/yinxulai/sqls"
 )
 
 var userTableName = "\"user\".\"users\""
@@ -127,21 +127,19 @@ func (t *userTable) CreateTable(ctx context.Context) error {
 	}
 
 	// 创建 schema
-	tx.ExecContext(ctx, "CREATE SCHEMA IF NOT EXISTS \"user\"")
+	tx.ExecContext(ctx, sqls.CREATE_SCHEMA("user").IF_NOT_EXISTS().String())
 
 	// 创建 table
-	s := sqls.Begin()
-	s.CREATE_TABLE_IF_NOT_EXISTS(
-		userTableName,
-		"id serial NOT NULL",
-		"parent_id integer NULL",
-		"username character varying(64) NOT NULL",
-		"password character varying(256) NOT NULL",
-		"created_time timestamp without time zone NULL DEFAULT now()",
-		"updated_time timestamp without time zone NULL DEFAULT now()",
-		"disabled_time timestamp without time zone NULL",
-		"deleted_time timestamp without time zone NULL",
-	)
+	s := sqls.CREATE_TABLE(userTableName).IF_NOT_EXISTS()
+	s.COLUMN("id serial NOT NULL")
+	s.COLUMN("parent_id integer NULL")
+	s.COLUMN("username character varying(64) NOT NULL")
+	s.COLUMN("password character varying(256) NOT NULL")
+	s.COLUMN("created_time timestamp without time zone NULL DEFAULT now()")
+	s.COLUMN("updated_time timestamp without time zone NULL DEFAULT now()")
+	s.COLUMN("disabled_time timestamp without time zone NULL")
+	s.COLUMN("deleted_time timestamp without time zone NULL")
+
 	logger.Debug(s.String())
 	tx.ExecContext(ctx, s.String())
 	if err := tx.Commit(); err != nil {
@@ -155,13 +153,12 @@ func (t *userTable) CreateTable(ctx context.Context) error {
 }
 
 func (t *userTable) TruncateTable(ctx context.Context) error {
-	_, err := db.Database.ExecContext(ctx, "TRUNCATE TABLE", secretTableName, ";")
+	_, err := db.Database.ExecContext(ctx, sqls.TRUNCATE_TABLE(userTableName).String())
 	return err
 }
 
 func (r *userTable) CreateUser(ctx context.Context, newUser User) (err error) {
-	s := sqls.Begin()
-	s.INSERT_INTO(userTableName)
+	s := sqls.INSERT_INTO(userTableName)
 	s.VALUES("parent_id", s.Param(newUser.ParentID))
 	s.VALUES("username", s.Param(newUser.Username))
 	s.VALUES("password", s.Param(newUser.Password))
@@ -177,8 +174,7 @@ func (r *userTable) CreateUser(ctx context.Context, newUser User) (err error) {
 }
 
 func (r *userTable) CountUsers(ctx context.Context, selector UserSelector) (result uint64, err error) {
-	s := sqls.Begin()
-	s.SELECT("COUNT(*) AS count").FROM(userTableName)
+	s := sqls.SELECT("COUNT(*) AS count").FROM(userTableName)
 
 	if selector.ID != nil {
 		s.WHERE("id=" + s.Param(selector.ID))
@@ -199,8 +195,7 @@ func (r *userTable) CountUsers(ctx context.Context, selector UserSelector) (resu
 }
 
 func (r *userTable) QueryUsers(ctx context.Context, selector UserSelector, pagination *Pagination, sort *Sort) (result []*User, err error) {
-	s := sqls.Begin()
-	s.FROM(userTableName).SELECT(
+	s := sqls.SELECT(
 		"id",
 		"parent_id",
 		"username",
@@ -209,7 +204,7 @@ func (r *userTable) QueryUsers(ctx context.Context, selector UserSelector, pagin
 		"updated_time",
 		"deleted_time",
 		"disabled_time",
-	)
+	).FROM(userTableName)
 
 	if selector.ID != nil {
 		s.WHERE("id=" + s.Param(selector.ID))

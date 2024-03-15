@@ -1,3 +1,4 @@
+ggolang.org/x/crypto v0.18.0 h1:PGVlW0xEltQnzFZ55hkuX5+KLyrMYhHld1YHO4AKcdc=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/golang/protobuf v1.5.0/go.mod h1:FsONVRAS9T7sI+LIUmWTfcYkHO4aIWwzhcaSAoJOfIk=
@@ -22,7 +23,10 @@ github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+
 github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UVUgZn+9EI=
 github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81PSLYec5m4=
 github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
-golang.org/x/crypto v0.18.0 h1:PGVlW0xEltQnzFZ55hkuX5+KLyrMYhHld1YHO4AKcdc=
+github.com/yinxulai/sqls v0.0.0-20240315075142-75ce285e2a4e h1:VS7XNFPn6RewPn+Rxm5XRgM57Fredd0xOmiZMjQGtPs=
+github.com/yinxulai/sqls v0.0.0-20240315075142-75ce285e2a4e/go.mod h1:4idy4NfaqvxSfCkmSKGmOcNOQ+9c4uMwuJjR2Sx3ZV4=
+github.com/yinxulai/sqls v0.0.0-20240315080552-f0d2223c16aa h1:TeY7p/K3jzcb9F8ayysv5f5yMQ233yWQMhf1JIbxf80=
+github.com/yinxulai/sqls v0.0.0-20240315080552-f0d2223c16aa/go.mod h1:4idy4NfaqvxSfCkmSKGmOcNOQ+9c4uMwuJjR2Sx3ZV4=
 golang.org/x/crypto v0.18.0/go.mod h1:R0j02AL6hcrfOiy9T4ZYp/rcWeMxM3L6QYxlOuEG1mg=
 golang.org/x/net v0.20.0 h1:aCL9BSgETF1k+blQaYUBx9hJ9LOGP3gAVemcZlf1Kpo=
 golang.org/x/net v0.20.0/go.mod h1:z8BVo6PvndSri0LbOE3hAn0apkU+1YvI6E70E9jsnvY=

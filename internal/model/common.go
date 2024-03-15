@@ -42,9 +42,3 @@ func (srv *Sort) OutProtoStruct() *protos.SortOption {
 	result.Type = protos.SortOption_TypeOption(srv.Type)
 	return result
 }
-
-
-type PaginationResult[T any] struct {
-	Total uint64
-	Data []T
-}
