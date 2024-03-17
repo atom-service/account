@@ -40,7 +40,7 @@ func (s *AccountServer) SignIn(ctx context.Context, request *protos.SignInReques
 	}
 
 	if len(queryResult) <= 0 {
-		result.State = protos.State_USER_NOT_EXIST
+		result.State = protos.State_PARAMS_INVALID
 		return
 	}
 
@@ -50,7 +50,7 @@ func (s *AccountServer) SignIn(ctx context.Context, request *protos.SignInReques
 		return
 	}
 
-	querySecretResult, err := model.SecretTable.QuerySecrets(ctx, model.SecretSelector{OwnerID: queryResult[0].ID}, nil, nil)
+	querySecretResult, err := model.SecretTable.QuerySecrets(ctx, model.SecretSelector{UserID: queryResult[0].ID}, nil, nil)
 	if err != nil {
 		result.State = protos.State_FAILURE
 		logger.Error(err)
@@ -88,7 +88,7 @@ func (s *AccountServer) SignUp(ctx context.Context, request *protos.SignUpReques
 	}
 
 	if countResult > 0 {
-		result.State = protos.State_USER_ALREADY_EXISTS
+		result.State = protos.State_PARAMS_INVALID
 		return
 	}
 
@@ -117,8 +117,8 @@ func (s *AccountServer) SignUp(ctx context.Context, request *protos.SignUpReques
 
 	// 创建一组 system AK/SK
 	err = model.SecretTable.CreateSecret(ctx, model.CreateSecretParams{
-		OwnerID: *users[0].ID,
-		Type:    model.SystemSecretType,
+		UserID: *users[0].ID,
+		Type:   model.SystemSecretType,
 	})
 
 	if err != nil {
@@ -196,4 +196,43 @@ func (s *AccountServer) DeleteUser(ctx context.Context, request *protos.DeleteUs
 	}
 
 	return nil, status.Errorf(codes.Unimplemented, "method SignOut not implemented")
+}
+
+func (s *AccountServer) CreateSecret(ctx context.Context, request *protos.CreateSecretRequest) (result *protos.CreateSecretResponse, err error) {
+	result = &protos.CreateSecretResponse{}
+
+	user := auth.ResolveUserFromIncomingContext(ctx)
+	if user == nil {
+		result.State = protos.State_NO_PERMISSION
+		result.Message = "Not logged in"
+		return
+	}
+
+	result = &protos.CreateSecretResponse{}
+
+	err = model.SecretTable.CreateSecret(ctx, model.CreateSecretParams{
+		UserID: *user.ID,
+		Type:   model.UserSecretType,
+	})
+
+	if err != nil {
+		result.State = protos.State_FAILURE
+		logger.Error(err)
+		return
+	}
+
+	result.State = protos.State_SUCCESS
+	return
+}
+
+func (s *AccountServer) DisableSecret(ctx context.Context, request *protos.DisableSecretRequest) (result *protos.DisableSecretResponse, err error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DisableSecret not implemented")
+}
+
+func (s *AccountServer) DeleteSecret(ctx context.Context, request *protos.DeleteSecreteRequest) (result *protos.DeleteSecreteResponse, err error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteSecret not implemented")
+}
+
+func (s *AccountServer) QuerySecrets(ctx context.Context, request *protos.QuerySecretsRequest) (result *protos.QuerySecretsResponse, err error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QuerySecrets not implemented")
 }

@@ -62,7 +62,7 @@ message QueryRolesRequest {
 
 message QueryRolesResponse {
   message DataType {
-    uint64 Total = 1;
+    int64 Total = 1;
     repeated Role Roles = 2;
   }
 
@@ -121,7 +121,7 @@ message QueryResourcesRequest {
 
 message QueryResourcesResponse {
   message DataType {
-    uint64 Total = 1;
+    int64 Total = 1;
     repeated Resource Resources = 2;
   }
 

@@ -1,6 +1,6 @@
 module github.com/atom-service/account
 
-go 1.22
+go 1.22.1
 
 toolchain go1.22.1
 

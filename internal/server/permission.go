@@ -56,7 +56,3 @@ func (s *PermissionServer) AddRoleForUser(ctx context.Context,request *protos.Ad
 func (s *PermissionServer) RemoveRoleForUser(ctx context.Context,request *protos.RemoveRoleForUserRequest) (result *protos.RemoveRoleForUserResponse, err error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemoveRoleForUser not implemented")
 }
-
-func (s *PermissionServer) Check(ctx context.Context,request *protos.CheckRequest) (result *protos.CheckResponse, err error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Check not implemented")
-}

@@ -18,6 +18,7 @@ dev:
 ## build/proto: build the proto files
 .PHONY: build/proto
 build/proto:
+	rm -f package/protos/*.go
 	protoc \
 		--go_out=package/protos \
 		--go_opt=paths=source_relative \

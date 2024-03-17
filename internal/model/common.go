@@ -3,8 +3,8 @@ package model
 import "github.com/atom-service/account/package/protos"
 
 type Pagination struct {
-	Limit  *uint64
-	Offset *uint64
+	Limit  *int64
+	Offset *int64
 }
 
 func (srv *Pagination) LoadProtoStruct(data *protos.PaginationOption) {
@@ -27,7 +27,7 @@ type Sort struct {
 type SortType = int32
 
 const (
-	SortAsc = SortType(0)
+	SortAsc  = SortType(0)
 	SortDesc = SortType(1)
 )
 

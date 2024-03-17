@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"database/sql"
 	"errors"
+	"fmt"
 	"math/big"
 	"time"
 
@@ -14,28 +15,28 @@ import (
 	"github.com/yinxulai/sqls"
 )
 
-var secretTableName = "\"secret\".\"secrets\""
+var secretTableName = userSchemaName + ".\"secrets\""
 
-const (
+var (
 	UserSecretType   = "user"
 	SystemSecretType = "system"
 )
 
 type Secret struct {
-	Key         *string    `json:"key"`
-	Type        *string    `json:"type"`
-	Value       *string    `json:"value"`
-	OwnerID     *int64     `json:"owner_id"`
-	Description *string    `json:"description"`
-	CreatedTime *time.Time `json:"created_time"`
-	UpdatedTime *time.Time `json:"updated_time"`
-	DeletedTime *time.Time `json:"deleted_time"`
+	Key         *string
+	Type        *string
+	Value       *string
+	UserID     *int64
+	Description *string
+	CreatedTime *time.Time
+	UpdatedTime *time.Time
+	DeletedTime *time.Time
 }
 
 func (srv *Secret) LoadProtoStruct(secret *protos.Secret) (err error) {
 	srv.Key = &secret.Key
 	srv.Value = &secret.Value
-	srv.OwnerID = &secret.OwnerID
+	srv.UserID = &secret.UserID
 	srv.Description = &secret.Description
 
 	createdTime, err := time.Parse(time.RFC3339Nano, secret.CreatedTime)
@@ -69,7 +70,7 @@ func (srv *Secret) OutProtoStruct() *protos.Secret {
 	secret := new(protos.Secret)
 	secret.Key = *srv.Key
 	secret.Value = *srv.Value
-	secret.OwnerID = *srv.OwnerID
+	secret.UserID = *srv.UserID
 	secret.Description = *srv.Description
 	secret.CreatedTime = srv.CreatedTime.String()
 	secret.UpdatedTime = srv.UpdatedTime.String()
@@ -84,20 +85,20 @@ func (srv *Secret) OutProtoStruct() *protos.Secret {
 
 type SecretSelector struct {
 	Key     *string
-	Type    string
-	OwnerID *int64
+	Type    *string
+	UserID *int64
 }
 
 func (srv *SecretSelector) LoadProtoStruct(data *protos.SecretSelector) {
 	srv.Key = data.Key
-	srv.OwnerID = data.OwnerID
+	srv.UserID = data.UserID
 }
 
 // OutProtoStruct OutProtoStruct
 func (srv *SecretSelector) OutProtoStruct() *protos.SecretSelector {
 	result := new(protos.SecretSelector)
 	result.Key = srv.Key
-	result.OwnerID = srv.OwnerID
+	result.UserID = srv.UserID
 	return result
 }
 
@@ -112,20 +113,30 @@ func (t *secretTable) CreateTable(ctx context.Context) error {
 	}
 
 	// 创建 schema
-	tx.ExecContext(ctx, sqls.CREATE_SCHEMA("secret").String())
+	cs := sqls.CREATE_SCHEMA(userSchemaName).IF_NOT_EXISTS()
+	logger.Debug(cs.String())
+	if _, err = tx.ExecContext(ctx, cs.String()); err != nil {
+		tx.Rollback()
+		return err
+	}
 
 	// 创建 table
 	s := sqls.CREATE_TABLE(secretTableName).IF_NOT_EXISTS()
-	s.COLUMN("key character varying(128) NOT NULL")
-	s.COLUMN("type character varying(128) NOT NULL")
-	s.COLUMN("value character varying(128) NOT NULL")
-	s.COLUMN("owner_id integer NOT NULL")
-	s.COLUMN("description character varying(64) NULL")
+	s.COLUMN("key character varying(64) NOT NULL")
+	s.COLUMN("type character varying(64) NOT NULL")
+	s.COLUMN("value character varying(64) NOT NULL")
+	s.COLUMN("user_id integer NOT NULL")
+	s.COLUMN("description character varying(128) NULL")
 	s.COLUMN("created_time timestamp without time zone NULL DEFAULT now()")
 	s.COLUMN("updated_time timestamp without time zone NULL DEFAULT now()")
 	s.COLUMN("deleted_time timestamp without time zone NULL")
 	logger.Debug(s.String())
-	tx.ExecContext(ctx, s.String())
+
+	if _, err := tx.ExecContext(ctx, s.String()); err != nil {
+		tx.Rollback()
+		return err
+	}
+
 	if err := tx.Commit(); err != nil {
 		if rollbackErr := tx.Rollback(); rollbackErr != nil {
 			return errors.Join(err)
@@ -142,9 +153,9 @@ func (t *secretTable) TruncateTable(ctx context.Context) error {
 }
 
 type CreateSecretParams struct {
-	Type        string  `json:"type"`
-	OwnerID     int64   `json:"owner_id"`
-	Description *string `json:"description"`
+	Type        string
+	UserID     int64
+	Description *string
 }
 
 func (r *secretTable) CreateSecret(ctx context.Context, createParams CreateSecretParams) (err error) {
@@ -168,7 +179,7 @@ func (r *secretTable) CreateSecret(ctx context.Context, createParams CreateSecre
 
 	// TODO 并发加快速度
 	for {
-		key, err = generateRandomString(128)
+		key, err = generateRandomString(64)
 		if err != nil {
 			return err
 		}
@@ -185,19 +196,19 @@ func (r *secretTable) CreateSecret(ctx context.Context, createParams CreateSecre
 		}
 	}
 
-	value, err := generateRandomString(128)
+	value, err := generateRandomString(64)
 	if err != nil {
 		return err
 	}
 
-	s := sqls.INSERT_INTO(userTableName)
+	s := sqls.INSERT_INTO(secretTableName)
 	s.VALUES("key", s.Param(key))
 	s.VALUES("value", s.Param(value))
 	s.VALUES("type", s.Param(createParams.Type))
-	s.VALUES("owner_id", s.Param(createParams.OwnerID))
+	s.VALUES("user_id", s.Param(createParams.UserID))
 	s.VALUES("description", s.Param(createParams.Description))
 
-	logger.Debug(s.String())
+	logger.Debug(s.String(), s.Params())
 	_, err = db.Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		logger.Error(err)
@@ -207,20 +218,51 @@ func (r *secretTable) CreateSecret(ctx context.Context, createParams CreateSecre
 	return
 }
 
-func (r *secretTable) CountSecrets(ctx context.Context, selector SecretSelector) (result uint64, err error) {
+func (r *secretTable) DeleteSecret(ctx context.Context, selector SecretSelector) (err error) {
+	s := sqls.UPDATE(secretTableName)
+
+	if selector.Key == nil && selector.UserID == nil && selector.Type == nil {
+		return fmt.Errorf("elector conditions cannot all be empty")
+	}
+
+	if selector.Key != nil {
+		s.WHERE("key=" + s.Param(selector.Key))
+	}
+	if selector.UserID != nil {
+		s.WHERE("user_id=" + s.Param(selector.UserID))
+	}
+
+	if selector.Type != nil {
+		s.WHERE("type=" + s.Param(selector.Type))
+	}
+
+	s.SET("deleted_time", s.Param(time.Now()))
+
+	logger.Debug(s.String(), s.Params())
+	_, err = db.Database.ExecContext(ctx, s.String(), s.Params()...)
+	if err != nil {
+		logger.Error(err)
+	}
+
+	return
+}
+
+func (r *secretTable) CountSecrets(ctx context.Context, selector SecretSelector) (result int64, err error) {
 	s := sqls.SELECT("COUNT(*) AS count").FROM(secretTableName)
 
 	if selector.Key != nil {
 		s.WHERE("key=" + s.Param(selector.Key))
 	}
-	if selector.OwnerID != nil {
-		s.WHERE("owner_id=" + s.Param(selector.OwnerID))
+	if selector.UserID != nil {
+		s.WHERE("user_id=" + s.Param(selector.UserID))
+	}
+	if selector.Type != nil {
+		s.WHERE("type=" + s.Param(selector.Type))
 	}
 
-	s.WHERE("type=" + s.Param(selector.Type))
-	s.WHERE("deleted_time<=" + s.Param(time.Now()))
+	s.WHERE("(deleted_time<CURRENT_TIMESTAMP OR deleted_time IS NULL)")
 
-	logger.Debug(s.String())
+	logger.Debug(s.String(), s.Params())
 	rowQuery := db.Database.QueryRowContext(ctx, s.String(), s.Params()...)
 	if err = rowQuery.Scan(&result); err != nil {
 		logger.Error(err)
@@ -234,22 +276,25 @@ func (r *secretTable) QuerySecrets(ctx context.Context, selector SecretSelector,
 		"key",
 		"type",
 		"value",
-		"owner_id",
+		"user_id",
 		"description",
 		"created_time",
 		"updated_time",
 		"deleted_time",
-	).FROM(userTableName)
+	).FROM(secretTableName)
 
 	if selector.Key != nil {
 		s.WHERE("key=" + s.Param(selector.Key))
 	}
-	if selector.OwnerID != nil {
-		s.WHERE("owner_id=" + s.Param(selector.OwnerID))
+	if selector.UserID != nil {
+		s.WHERE("user_id=" + s.Param(selector.UserID))
 	}
 
-	s.WHERE("type=" + s.Param(selector.Type))
-	s.WHERE("deleted_time<=" + s.Param(time.Now()))
+	if selector.Type != nil {
+		s.WHERE("type=" + s.Param(selector.Type))
+	}
+
+	s.WHERE("(deleted_time<CURRENT_TIMESTAMP OR deleted_time IS NULL)")
 
 	if pagination == nil {
 		pagination = &Pagination{}
@@ -257,7 +302,7 @@ func (r *secretTable) QuerySecrets(ctx context.Context, selector SecretSelector,
 
 	if pagination.Limit == nil {
 		// 个人的 ak sk 默认上限 10
-		defaultLimit := uint64(10)
+		defaultLimit := int64(10)
 		pagination.Limit = &defaultLimit
 	}
 
@@ -276,6 +321,7 @@ func (r *secretTable) QuerySecrets(ctx context.Context, selector SecretSelector,
 		s.ORDER_BY(s.Param(sort.Key) + " " + sortType)
 	}
 
+	logger.Debug(s.String(), s.Params())
 	queryResult, err := db.Database.QueryContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		logger.Error(err)
@@ -289,7 +335,7 @@ func (r *secretTable) QuerySecrets(ctx context.Context, selector SecretSelector,
 			&secret.Key,
 			&secret.Type,
 			&secret.Value,
-			&secret.OwnerID,
+			&secret.UserID,
 			&secret.Description,
 			&secret.CreatedTime,
 			&secret.UpdatedTime,

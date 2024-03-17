@@ -2,72 +2,70 @@ package model
 
 import (
 	"context"
+	"math"
 	"math/rand"
 	"slices"
 	"testing"
 	"testing/quick"
 )
 
-func generateRandomString(length int) string {
-	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	randomString := make([]byte, length)
-	for i := 0; i < length; i++ {
-		index := rand.Intn(len(charset))
-		randomString[i] = charset[index]
-	}
-
-	return string(randomString)
-}
-
-func TestUserTable(t *testing.T) {
-	// 创建一个用户表实例
-	userTable := &userTable{}
+func TestUserSettingTable(t *testing.T) {
+	settingTable := &settingTable{}
 
 	context := context.TODO()
 
 	// 创建表
-	if err := userTable.CreateTable(context); err != nil {
+	if err := settingTable.CreateTable(context); err != nil {
 		t.Errorf("Create table failed: %v", err)
 		return
 	}
 
-	if err := userTable.TruncateTable(context); err != nil {
-		t.Errorf("Truncate table failed: %v", err)
+	if err := settingTable.TruncateTable(context); err != nil {
+		t.Errorf("Create table failed: %v", err)
+		return
 	}
 
 	config := &quick.Config{
 		MaxCount: 100,
 	}
 
-	testUsers := []*User{}
+	testRoles := []*Setting{}
 
 	// create test & check result
 	if err := quick.Check(func() bool {
-		username := generateRandomString(64)
-		password := generateRandomString(128)
+		name := generateRandomString(64)
+		value := generateRandomString(128)
+		description := generateRandomString(128)
 
-		testUser := User{
-			Username: &username,
-			Password: &password,
+		testCreateParams := Setting{
+			Key:         name,
+			Value:       &value,
+			Description: &description,
+			UserID:      rand.Int63n(math.MaxInt32),
 		}
 
-		if err := userTable.CreateUser(context, testUser); err != nil {
+		roleSelector := SettingSelector{
+			Key:    &testCreateParams.Key,
+			UserID: &testCreateParams.UserID,
+		}
+
+		if err := settingTable.CreateSetting(context, testCreateParams); err != nil {
 			t.Errorf("Create failed: %v", err)
 			return false
 		}
 
-		countResult, err := userTable.CountUsers(context, UserSelector{})
+		countResult, err := settingTable.CountSettings(context, SettingSelector{})
 		if err != nil {
 			t.Errorf("Count failed: %v", err)
 			return false
 		}
 
-		if countResult != int64(len(testUsers)+1) {
+		if countResult != int64(len(testRoles)+1) {
 			t.Errorf("Count result are incorrect: %v", err)
 			return false
 		}
 
-		queryCreateResult, err := userTable.QueryUsers(context, UserSelector{Username: &username}, nil, nil)
+		queryCreateResult, err := settingTable.QuerySettings(context, roleSelector, nil, nil)
 		if err != nil {
 			t.Errorf("Query failed: %v", err)
 			return false
@@ -78,22 +76,24 @@ func TestUserTable(t *testing.T) {
 			return false
 		}
 
-		if *queryCreateResult[0].Username != username {
+		if *queryCreateResult[0].Description != *testCreateParams.Description {
 			t.Errorf("Query result are incorrect: %v", queryCreateResult)
 			return false
 		}
 
 		// update test & check result
-		newPassword := generateRandomString(64)
-		err = userTable.UpdateUser(context, UserSelector{Username: &username}, &User{
-			Password: &newPassword,
+		newValue := generateRandomString(128)
+		newDescription := generateRandomString(128)
+		err = settingTable.UpdateSetting(context, roleSelector, &Setting{
+			Value:       &newValue,
+			Description: &newDescription,
 		})
 		if err != nil {
 			t.Errorf("Update failed: %v", err)
 			return false
 		}
 
-		queryUpdatedResult, err := userTable.QueryUsers(context, UserSelector{Username: &username}, nil, nil)
+		queryUpdatedResult, err := settingTable.QuerySettings(context, SettingSelector{ID: queryCreateResult[0].ID}, nil, nil)
 		if err != nil {
 			t.Errorf("Query failed: %v", err)
 			return false
@@ -104,7 +104,12 @@ func TestUserTable(t *testing.T) {
 			return false
 		}
 
-		if *queryUpdatedResult[0].Password != newPassword {
+		if *queryUpdatedResult[0].Value != newValue {
+			t.Errorf("Unexpected results after updated: %v", queryCreateResult)
+			return false
+		}
+
+		if *queryUpdatedResult[0].Description != newDescription {
 			t.Errorf("Unexpected results after updated: %v", queryCreateResult)
 			return false
 		}
@@ -115,7 +120,7 @@ func TestUserTable(t *testing.T) {
 		}
 
 		// 最终的结果保存下来给后面的测试使用
-		testUsers = append(testUsers, queryUpdatedResult...)
+		testRoles = append(testRoles, queryUpdatedResult...)
 		return true
 	}, config); err != nil {
 		t.Errorf("Test failed: %v", err)
@@ -128,7 +133,7 @@ func TestUserTable(t *testing.T) {
 		var offsetUint64 = int64(offsetInt)
 		var limitUint64 = int64(limitInt)
 
-		queryPaginationResult, err := userTable.QueryUsers(context, UserSelector{}, &Pagination{
+		queryPaginationResult, err := settingTable.QuerySettings(context, SettingSelector{}, &Pagination{
 			Offset: &offsetUint64,
 			Limit:  &limitUint64,
 		}, nil)
@@ -144,7 +149,11 @@ func TestUserTable(t *testing.T) {
 		}
 
 		if expectedSize > 0 { // 最后一条不需要检查了，删光了
-			if *queryPaginationResult[0].Username != *testUsers[offsetInt].Username {
+			if *queryPaginationResult[0].Value != *testRoles[offsetInt].Value {
+				t.Errorf("Query result are incorrect: %v", queryPaginationResult)
+				return false
+			}
+			if *queryPaginationResult[0].Description != *testRoles[offsetInt].Description {
 				t.Errorf("Query result are incorrect: %v", queryPaginationResult)
 				return false
 			}
@@ -156,28 +165,25 @@ func TestUserTable(t *testing.T) {
 	}
 
 	// delete test & check result
-	for _, testUser := range testUsers {
-		userSelector := UserSelector{}
-		randUseSeed := rand.Intn(3)
-		if randUseSeed == 0 { // 0 use id
-			userSelector.ID = testUser.ID
-		}
-		if randUseSeed == 1 { // 1 use username
-			userSelector.Username = testUser.Username
+	for _, testSecret := range testRoles {
+		selector := SettingSelector{}
+		randUseSeed := rand.Intn(2)
+		if randUseSeed == 0 {
+			selector.ID = testSecret.ID
 		}
 
-		if randUseSeed == 2 { // 2 use id with username
-			userSelector.ID = testUser.ID
-			userSelector.Username = testUser.Username
+		if randUseSeed == 1 {
+			selector.Key = &testSecret.Key
+			selector.UserID = &testSecret.UserID
 		}
 
-		err := userTable.DeleteUser(context, userSelector)
+		err := settingTable.DeleteSetting(context, selector)
 		if err != nil {
 			t.Errorf("Delete failed: %v", err)
 			return
 		}
 
-		queryDeletedResult, err := userTable.QueryUsers(context, userSelector, nil, nil)
+		queryDeletedResult, err := settingTable.QuerySettings(context, selector, nil, nil)
 		if err != nil {
 			t.Errorf("Query failed: %v", err)
 			return
@@ -188,7 +194,7 @@ func TestUserTable(t *testing.T) {
 			return
 		}
 
-		countUpdateResult, err := userTable.CountUsers(context, userSelector)
+		countUpdateResult, err := settingTable.CountSettings(context, selector)
 		if err != nil {
 			t.Errorf("Count failed: %v", err)
 			return

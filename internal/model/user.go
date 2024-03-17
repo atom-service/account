@@ -6,6 +6,7 @@ import (
 	"database/sql"
 	"encoding/hex"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/atom-service/account/internal/db"
@@ -14,7 +15,9 @@ import (
 	"github.com/yinxulai/sqls"
 )
 
-var userTableName = "\"user\".\"users\""
+var userSchemaName = "\"user\""
+var userTableName = userSchemaName + ".\"users\""
+var userSettingTableName = userSchemaName + ".\"settings\""
 
 type userTable struct{}
 
@@ -28,14 +31,14 @@ func (p *password) Hash(str string) string {
 }
 
 type User struct {
-	ID           *int64     `json:"id"`
-	ParentID     *int64     `json:"parent-id"`
-	Username     *string    `json:"username"`
-	Password     *string    `json:"password"`
-	CreatedTime  *time.Time `json:"created_time"`
-	UpdatedTime  *time.Time `json:"updated_time"`
-	DeletedTime  *time.Time `json:"deleted_time"`
-	DisabledTime *time.Time `json:"disabled_time"`
+	ID           *int64
+	ParentID     *int64
+	Username     *string
+	Password     *string
+	CreatedTime  *time.Time
+	UpdatedTime  *time.Time
+	DeletedTime  *time.Time
+	DisabledTime *time.Time
 }
 
 func (srv *User) LoadProtoStruct(user *protos.User) (err error) {
@@ -127,21 +130,29 @@ func (t *userTable) CreateTable(ctx context.Context) error {
 	}
 
 	// 创建 schema
-	tx.ExecContext(ctx, sqls.CREATE_SCHEMA("user").IF_NOT_EXISTS().String())
+	cs := sqls.CREATE_SCHEMA(userSchemaName).IF_NOT_EXISTS()
+	logger.Debug(cs.String())
+	if _, err = tx.ExecContext(ctx, cs.String()); err != nil {
+		return err
+	}
 
 	// 创建 table
-	s := sqls.CREATE_TABLE(userTableName).IF_NOT_EXISTS()
-	s.COLUMN("id serial NOT NULL")
-	s.COLUMN("parent_id integer NULL")
-	s.COLUMN("username character varying(64) NOT NULL")
-	s.COLUMN("password character varying(256) NOT NULL")
-	s.COLUMN("created_time timestamp without time zone NULL DEFAULT now()")
-	s.COLUMN("updated_time timestamp without time zone NULL DEFAULT now()")
-	s.COLUMN("disabled_time timestamp without time zone NULL")
-	s.COLUMN("deleted_time timestamp without time zone NULL")
+	ct := sqls.CREATE_TABLE(userTableName).IF_NOT_EXISTS()
+	ct.COLUMN("id serial NOT NULL")
+	ct.COLUMN("parent_id integer NULL")
+	ct.COLUMN("username character varying(64) NOT NULL")
+	ct.COLUMN("password character varying(256) NOT NULL")
+	ct.COLUMN("created_time timestamp without time zone NULL DEFAULT now()")
+	ct.COLUMN("updated_time timestamp without time zone NULL DEFAULT now()")
+	ct.COLUMN("disabled_time timestamp without time zone NULL")
+	ct.COLUMN("deleted_time timestamp without time zone NULL")
 
-	logger.Debug(s.String())
-	tx.ExecContext(ctx, s.String())
+	logger.Debug(ct.String())
+	if _, err = tx.ExecContext(ctx, ct.String()); err != nil {
+		tx.Rollback()
+		return err
+	}
+
 	if err := tx.Commit(); err != nil {
 		if rollbackErr := tx.Rollback(); rollbackErr != nil {
 			return errors.Join(err)
@@ -163,7 +174,7 @@ func (r *userTable) CreateUser(ctx context.Context, newUser User) (err error) {
 	s.VALUES("username", s.Param(newUser.Username))
 	s.VALUES("password", s.Param(newUser.Password))
 
-	logger.Debug(s.String())
+	logger.Debug(s.String(), s.Params())
 	_, err = db.Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		logger.Error(err)
@@ -173,7 +184,66 @@ func (r *userTable) CreateUser(ctx context.Context, newUser User) (err error) {
 	return
 }
 
-func (r *userTable) CountUsers(ctx context.Context, selector UserSelector) (result uint64, err error) {
+func (r *userTable) DeleteUser(ctx context.Context, selector UserSelector) (err error) {
+	s := sqls.UPDATE(userTableName)
+
+	if selector.ID == nil && selector.Username == nil {
+		return fmt.Errorf("elector conditions cannot all be empty")
+	}
+
+	if selector.ID != nil {
+		s.WHERE("id=" + s.Param(selector.ID))
+	}
+	if selector.Username != nil {
+		s.WHERE("username=" + s.Param(selector.Username))
+	}
+
+	s.SET("deleted_time", s.Param(time.Now()))
+
+	logger.Debug(s.String(), s.Params())
+	_, err = db.Database.ExecContext(ctx, s.String(), s.Params()...)
+	if err != nil {
+		logger.Error(err)
+	}
+
+	return
+}
+
+func (r *userTable) UpdateUser(ctx context.Context, selector UserSelector, user *User) (err error) {
+	s := sqls.UPDATE(userTableName)
+
+	if selector.ID == nil && selector.Username == nil {
+		return fmt.Errorf("elector conditions cannot all be empty")
+	}
+
+	if selector.ID != nil {
+		s.WHERE("id=" + s.Param(selector.ID))
+	}
+
+	if selector.Username != nil {
+		s.WHERE("username=" + s.Param(selector.Username))
+	}
+
+	if user.Password != nil {
+		s.SET("password", s.Param(*user.Password))
+	}
+
+	if user.DisabledTime != nil {
+		s.SET("disabled_time", s.Param(*user.DisabledTime))
+	}
+
+	s.SET("updated_time", s.Param(time.Now()))
+
+	logger.Debug(s.String(), s.Params())
+	_, err = db.Database.ExecContext(ctx, s.String(), s.Params()...)
+	if err != nil {
+		logger.Error(err)
+	}
+
+	return
+}
+
+func (r *userTable) CountUsers(ctx context.Context, selector UserSelector) (result int64, err error) {
 	s := sqls.SELECT("COUNT(*) AS count").FROM(userTableName)
 
 	if selector.ID != nil {
@@ -183,9 +253,9 @@ func (r *userTable) CountUsers(ctx context.Context, selector UserSelector) (resu
 		s.WHERE("username=" + s.Param(selector.Username))
 	}
 
-	s.WHERE("deleted_time=" + s.Param(time.Now()))
+	s.WHERE("(deleted_time<CURRENT_TIMESTAMP OR deleted_time IS NULL)")
 
-	logger.Debug(s.String())
+	logger.Debug(s.String(), s.Params())
 	rowQuery := db.Database.QueryRowContext(ctx, s.String(), s.Params()...)
 	if err = rowQuery.Scan(&result); err != nil {
 		logger.Error(err)
@@ -213,7 +283,7 @@ func (r *userTable) QueryUsers(ctx context.Context, selector UserSelector, pagin
 		s.WHERE("username=" + s.Param(selector.Username))
 	}
 
-	s.WHERE("deleted_time=" + s.Param(time.Now()))
+	s.WHERE("(deleted_time<CURRENT_TIMESTAMP OR deleted_time IS NULL)")
 
 	if pagination == nil {
 		pagination = &Pagination{}
@@ -221,7 +291,7 @@ func (r *userTable) QueryUsers(ctx context.Context, selector UserSelector, pagin
 
 	if pagination.Limit == nil {
 		// 默认为 100，防止刷爆
-		defaultLimit := uint64(100)
+		defaultLimit := int64(100)
 		pagination.Limit = &defaultLimit
 	}
 
@@ -239,6 +309,7 @@ func (r *userTable) QueryUsers(ctx context.Context, selector UserSelector, pagin
 		s.ORDER_BY(s.Param(sort.Key) + " " + sortType)
 	}
 
+	logger.Debug(s.String(), s.Params())
 	queryResult, err := db.Database.QueryContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		logger.Error(err)

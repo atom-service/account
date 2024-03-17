@@ -58,7 +58,7 @@ message QueryUsersRequest {
 
 message QueryUsersResponse {
   message DataType {
-    uint64 Total = 1;
+    int64 Total = 1;
     repeated User Users = 2;
   }
 
@@ -76,10 +76,149 @@ message DeleteUserResponse {
   string Message = 2;
 }
 
+message Secret {
+  string Key = 1;
+  string Value = 2;
+  int64  UserID = 3;
+  string Description = 4;
+  string CreatedTime = 5;
+  string UpdatedTime = 6;
+  optional string DeletedTime = 7;
+  optional string DisabledTime = 8;
+}
+
+message SecretSelector {
+  optional string Key = 1;
+  optional int64  UserID = 2;
+}
+
+message CreateSecretRequest {
+
+}
+
+message CreateSecretResponse {
+  State State = 1;
+  string Message = 2;
+}
+
+message DisableSecretRequest {
+  SecretSelector Selector = 1;
+}
+
+message DisableSecretResponse {
+  State State = 1;
+  string Message = 2;
+}
+
+message DeleteSecreteRequest {
+  SecretSelector Selector = 1;
+}
+
+message DeleteSecreteResponse {
+  State State = 1;
+  string Message = 2;
+}
+
+message QuerySecretsRequest {
+  SecretSelector Selector = 1;
+  optional SortOption Sort = 2;
+  optional PaginationOption Pagination = 3;
+}
+
+message QuerySecretsResponse {
+  message DataType {
+    int64 Total = 1;
+    repeated Secret Secrets = 2;
+  }
+
+  State State = 1;
+  string Message = 2;
+  DataType Data = 3;
+}
+
+message Setting {
+  int64 ID = 1;
+  string Key = 2;
+  string Value = 3;
+  int64  UserID = 4;
+  string Description = 5;
+  string CreatedTime = 6;
+  string UpdatedTime = 7;
+  optional string DeletedTime = 8;
+}
+
+message SettingSelector {
+  optional string ID = 1;
+  optional string Key = 2;
+  optional int64  UserID = 3;
+}
+
+message CreateSettingRequest {
+  string Key = 1;
+  string Value = 2;
+  int64  UserID = 3;
+}
+
+message CreateSettingResponse {
+  State State = 1;
+  string Message = 2;
+}
+
+message UpdateSettingRequest {
+  message UpdateData {
+    optional string Key = 1;
+    optional string Value = 2;
+  }
+
+  SettingSelector Selector = 1;
+  UpdateData Data = 2;
+}
+
+message UpdateSettingResponse {
+  State State = 1;
+  string Message = 2;
+}
+
+message DeleteSettingRequest {
+  SettingSelector Selector = 1;
+}
+
+message DeleteSettingResponse {
+  State State = 1;
+  string Message = 2;
+}
+
+message QuerySettingsRequest {
+  SettingSelector Selector = 1;
+  optional SortOption Sort = 2;
+  optional PaginationOption Pagination = 3;
+}
+
+message QuerySettingsResponse {
+  message DataType {
+    int64 Total = 1;
+    repeated Setting Settings = 2;
+  }
+
+  State State = 1;
+  string Message = 2;
+  DataType Data = 3;
+}
+
 service AccountService {
   rpc SignIn(SignInRequest)returns(SignInResponse){} // 登录
   rpc SignUp(SignUpRequest)returns(SignUpResponse){} // 注册
   rpc SignOut(SignOutRequest)returns(SignOutResponse){} // 登出
   rpc QueryUsers(QueryUsersRequest)returns(QueryUsersResponse){} // 查询用户
   rpc DeleteUser(DeleteUserRequest)returns(DeleteUserResponse){} // 删除用户
+
+  rpc CreateSecret(CreateSecretRequest)returns(CreateSecretResponse){}
+  rpc DisableSecret(DisableSecretRequest)returns(DisableSecretResponse){}
+  rpc DeleteSecret(DeleteSecreteRequest)returns(DeleteSecreteResponse){}
+  rpc QuerySecrets(QuerySecretsRequest)returns(QuerySecretsResponse){}
+
+  rpc CreateSetting(CreateSettingRequest)returns(CreateSettingResponse){}
+  rpc UpdateSetting(UpdateSettingRequest)returns(UpdateSettingResponse){}
+  rpc DeleteSetting(DeleteSettingRequest)returns(DeleteSettingResponse){}
+  rpc QuerySettings(QuerySettingsRequest)returns(QuerySettingsResponse){}
 }

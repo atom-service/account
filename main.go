@@ -11,7 +11,7 @@ import (
 )
 
 func init() {
-	config.Declare("port", "80", true, "服务监听的端口")
+	config.Declare("port", ":8080", true, "服务监听的端口")
 }
 
 func main() {
@@ -30,7 +30,6 @@ func main() {
 		grpc.ChainStreamInterceptor(),
 	)
 
-	protos.RegisterSecretServiceServer(grpcServer, server.NewSecretServer())
 	protos.RegisterAccountServiceServer(grpcServer, server.NewAccountServer())
 	protos.RegisterPermissionServiceServer(grpcServer, server.NewPermissionServer())
 	panic(grpcServer.Serve(listen))
