@@ -1,11 +1,12 @@
-package db
+package database
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
-	"os"
 
 	"github.com/atom-service/common/config"
+	"github.com/atom-service/common/logger"
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
@@ -15,23 +16,22 @@ func init() {
 	config.Declare("postgres_uri", "postgresql://postgres:password@localhost/account", true, "postgres 的数据库连接 uri")
 }
 
-func Init() {
+func Init(ctx context.Context) error {
 	newDB, err := sql.Open("pgx", config.MustGet("postgres_uri"))
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
-		os.Exit(1)
+		return fmt.Errorf("unable to connect to database: %v", err)
 	}
 
 	var version string
-	versionQuery := newDB.QueryRow("SELECT version()")
+	versionQuery := newDB.QueryRowContext(ctx, "SELECT version()")
 	if versionQuery.Scan(&version); err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to query database version: %v\n", err)
-		os.Exit(1)
+		return fmt.Errorf( "failed to query database version: %v", err)
 	}
 
-	fmt.Printf(version)
+	logger.Debugf("Server run on database: %s\n", version)
 
 	newDB.SetMaxOpenConns(10)
 	newDB.SetMaxIdleConns(3)
 	Database = newDB
+	return nil
 }

@@ -6,18 +6,9 @@ import (
 	"slices"
 	"testing"
 	"testing/quick"
+
+	"github.com/atom-service/account/internal/helper"
 )
-
-func generateRandomString(length int) string {
-	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	randomString := make([]byte, length)
-	for i := 0; i < length; i++ {
-		index := rand.Intn(len(charset))
-		randomString[i] = charset[index]
-	}
-
-	return string(randomString)
-}
 
 func TestUserTable(t *testing.T) {
 	// 创建一个用户表实例
@@ -43,8 +34,8 @@ func TestUserTable(t *testing.T) {
 
 	// create test & check result
 	if err := quick.Check(func() bool {
-		username := generateRandomString(64)
-		password := generateRandomString(128)
+		username := helper.GenerateRandomString(64)
+		password := helper.GenerateRandomString(128)
 
 		testUser := User{
 			Username: &username,
@@ -84,7 +75,7 @@ func TestUserTable(t *testing.T) {
 		}
 
 		// update test & check result
-		newPassword := generateRandomString(64)
+		newPassword := helper.GenerateRandomString(64)
 		err = userTable.UpdateUser(context, UserSelector{Username: &username}, &User{
 			Password: &newPassword,
 		})

@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/atom-service/account/internal/db"
+	"github.com/atom-service/account/internal/database"
 	"github.com/atom-service/account/package/protos"
 	"github.com/atom-service/common/logger"
 	"github.com/yinxulai/sqls"
@@ -17,7 +17,6 @@ import (
 
 var userSchemaName = "\"user\""
 var userTableName = userSchemaName + ".\"users\""
-var userSettingTableName = userSchemaName + ".\"settings\""
 
 type userTable struct{}
 
@@ -42,6 +41,9 @@ type User struct {
 }
 
 func (srv *User) LoadProtoStruct(user *protos.User) (err error) {
+	if (user == nil) {
+		return nil
+	}
 	srv.ID = &user.ID
 	srv.Username = &user.Username
 	srv.Password = &user.Password
@@ -85,7 +87,7 @@ func (srv *User) LoadProtoStruct(user *protos.User) (err error) {
 func (srv *User) OutProtoStruct() *protos.User {
 	user := new(protos.User)
 	user.ID = *srv.ID
-	// user.Password = srv.Password.String
+
 	user.Username = *srv.Username
 	user.CreatedTime = srv.CreatedTime.String()
 	user.UpdatedTime = srv.UpdatedTime.String()
@@ -109,6 +111,10 @@ type UserSelector struct {
 }
 
 func (srv *UserSelector) LoadProtoStruct(data *protos.UserSelector) {
+	if (data == nil) {
+		return
+	}
+
 	srv.ID = data.ID
 	srv.Username = data.Username
 }
@@ -124,7 +130,7 @@ func (srv *UserSelector) OutProtoStruct() *protos.UserSelector {
 var UserTable = &userTable{}
 
 func (t *userTable) CreateTable(ctx context.Context) error {
-	tx, err := db.Database.BeginTx(ctx, &sql.TxOptions{ReadOnly: false})
+	tx, err := database.Database.BeginTx(ctx, &sql.TxOptions{ReadOnly: false})
 	if err != nil {
 		return err
 	}
@@ -164,7 +170,7 @@ func (t *userTable) CreateTable(ctx context.Context) error {
 }
 
 func (t *userTable) TruncateTable(ctx context.Context) error {
-	_, err := db.Database.ExecContext(ctx, sqls.TRUNCATE_TABLE(userTableName).String())
+	_, err := database.Database.ExecContext(ctx, sqls.TRUNCATE_TABLE(userTableName).String())
 	return err
 }
 
@@ -175,7 +181,7 @@ func (r *userTable) CreateUser(ctx context.Context, newUser User) (err error) {
 	s.VALUES("password", s.Param(newUser.Password))
 
 	logger.Debug(s.String(), s.Params())
-	_, err = db.Database.ExecContext(ctx, s.String(), s.Params()...)
+	_, err = database.Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		logger.Error(err)
 		return
@@ -201,7 +207,7 @@ func (r *userTable) DeleteUser(ctx context.Context, selector UserSelector) (err 
 	s.SET("deleted_time", s.Param(time.Now()))
 
 	logger.Debug(s.String(), s.Params())
-	_, err = db.Database.ExecContext(ctx, s.String(), s.Params()...)
+	_, err = database.Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		logger.Error(err)
 	}
@@ -235,7 +241,7 @@ func (r *userTable) UpdateUser(ctx context.Context, selector UserSelector, user 
 	s.SET("updated_time", s.Param(time.Now()))
 
 	logger.Debug(s.String(), s.Params())
-	_, err = db.Database.ExecContext(ctx, s.String(), s.Params()...)
+	_, err = database.Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		logger.Error(err)
 	}
@@ -256,7 +262,7 @@ func (r *userTable) CountUsers(ctx context.Context, selector UserSelector) (resu
 	s.WHERE("(deleted_time<CURRENT_TIMESTAMP OR deleted_time IS NULL)")
 
 	logger.Debug(s.String(), s.Params())
-	rowQuery := db.Database.QueryRowContext(ctx, s.String(), s.Params()...)
+	rowQuery := database.Database.QueryRowContext(ctx, s.String(), s.Params()...)
 	if err = rowQuery.Scan(&result); err != nil {
 		logger.Error(err)
 	}
@@ -310,7 +316,7 @@ func (r *userTable) QueryUsers(ctx context.Context, selector UserSelector, pagin
 	}
 
 	logger.Debug(s.String(), s.Params())
-	queryResult, err := db.Database.QueryContext(ctx, s.String(), s.Params()...)
+	queryResult, err := database.Database.QueryContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		logger.Error(err)
 		return

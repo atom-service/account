@@ -7,6 +7,8 @@ import (
 	"slices"
 	"testing"
 	"testing/quick"
+
+	"github.com/atom-service/account/internal/helper"
 )
 
 func TestSecretTable(t *testing.T) {
@@ -32,7 +34,7 @@ func TestSecretTable(t *testing.T) {
 
 	// create test & check result
 	if err := quick.Check(func() bool {
-		description := generateRandomString(128)
+		description := helper.GenerateRandomString(128)
 
 		testCreateParams := CreateSecretParams{
 			UserID:      rand.Int63n(math.MaxInt32),

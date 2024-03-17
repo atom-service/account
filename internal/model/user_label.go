@@ -12,10 +12,10 @@ import (
 	"github.com/yinxulai/sqls"
 )
 
-var userSettingTableName = userSchemaName + ".\"settings\""
-var SettingTable = &settingTable{}
+var userLabelTableName = userSchemaName + ".\"labels\""
+var LabelTable = &labelTable{}
 
-type Setting struct {
+type Label struct {
 	ID          *int64
 	Key         string
 	Value       *string
@@ -26,15 +26,15 @@ type Setting struct {
 	DeletedTime *time.Time
 }
 
-type SettingSelector struct {
+type LabelSelector struct {
 	ID     *int64
 	Key    *string
 	UserID *int64
 }
 
-type settingTable struct{}
+type labelTable struct{}
 
-func (t *settingTable) CreateTable(ctx context.Context) error {
+func (t *labelTable) CreateTable(ctx context.Context) error {
 	tx, err := database.Database.BeginTx(ctx, &sql.TxOptions{ReadOnly: false})
 	if err != nil {
 		return err
@@ -47,7 +47,7 @@ func (t *settingTable) CreateTable(ctx context.Context) error {
 		return err
 	}
 	// 创建 table
-	s := sqls.CREATE_TABLE(userSettingTableName).IF_NOT_EXISTS()
+	s := sqls.CREATE_TABLE(userLabelTableName).IF_NOT_EXISTS()
 	s.COLUMN("id serial NOT NULL")
 	s.COLUMN("user_id int NOT NULL")
 	s.COLUMN("key character varying(64) NOT NULL")
@@ -73,17 +73,17 @@ func (t *settingTable) CreateTable(ctx context.Context) error {
 	return nil
 }
 
-func (t *settingTable) TruncateTable(ctx context.Context) error {
-	_, err := database.Database.ExecContext(ctx, sqls.TRUNCATE_TABLE(userSettingTableName).String())
+func (t *labelTable) TruncateTable(ctx context.Context) error {
+	_, err := database.Database.ExecContext(ctx, sqls.TRUNCATE_TABLE(userLabelTableName).String())
 	return err
 }
 
-func (r *settingTable) CreateSetting(ctx context.Context, newSetting Setting) (err error) {
-	s := sqls.INSERT_INTO(userSettingTableName)
-	s.VALUES("key", s.Param(newSetting.Key))
-	s.VALUES("value", s.Param(newSetting.Value))
-	s.VALUES("user_id", s.Param(newSetting.UserID))
-	s.VALUES("description", s.Param(newSetting.Description))
+func (r *labelTable) CreateLabel(ctx context.Context, newLabel Label) (err error) {
+	s := sqls.INSERT_INTO(userLabelTableName)
+	s.VALUES("key", s.Param(newLabel.Key))
+	s.VALUES("value", s.Param(newLabel.Value))
+	s.VALUES("user_id", s.Param(newLabel.UserID))
+	s.VALUES("description", s.Param(newLabel.Description))
 
 	logger.Debug(s.String())
 	_, err = database.Database.ExecContext(ctx, s.String(), s.Params()...)
@@ -95,8 +95,8 @@ func (r *settingTable) CreateSetting(ctx context.Context, newSetting Setting) (e
 	return
 }
 
-func (r *settingTable) UpdateSetting(ctx context.Context, selector SettingSelector, role *Setting) (err error) {
-	s := sqls.UPDATE(userSettingTableName)
+func (r *labelTable) UpdateLabel(ctx context.Context, selector LabelSelector, role *Label) (err error) {
+	s := sqls.UPDATE(userLabelTableName)
 
 	if selector.ID == nil && selector.UserID == nil && selector.Key == nil {
 		return fmt.Errorf("elector conditions cannot all be empty")
@@ -137,8 +137,8 @@ func (r *settingTable) UpdateSetting(ctx context.Context, selector SettingSelect
 	return
 }
 
-func (r *settingTable) DeleteSetting(ctx context.Context, selector SettingSelector) (err error) {
-	s := sqls.UPDATE(userSettingTableName)
+func (r *labelTable) DeleteLabel(ctx context.Context, selector LabelSelector) (err error) {
+	s := sqls.UPDATE(userLabelTableName)
 
 	if selector.ID == nil && selector.UserID == nil && selector.Key == nil {
 		return fmt.Errorf("elector conditions cannot all be empty")
@@ -167,8 +167,8 @@ func (r *settingTable) DeleteSetting(ctx context.Context, selector SettingSelect
 	return
 }
 
-func (r *settingTable) CountSettings(ctx context.Context, selector SettingSelector) (result int64, err error) {
-	s := sqls.SELECT("COUNT(*) AS count").FROM(userSettingTableName)
+func (r *labelTable) CountLabels(ctx context.Context, selector LabelSelector) (result int64, err error) {
+	s := sqls.SELECT("COUNT(*) AS count").FROM(userLabelTableName)
 
 	if selector.ID != nil {
 		s.WHERE("id=" + s.Param(selector.ID))
@@ -193,7 +193,7 @@ func (r *settingTable) CountSettings(ctx context.Context, selector SettingSelect
 	return
 }
 
-func (r *settingTable) QuerySettings(ctx context.Context, selector SettingSelector, pagination *Pagination, sort *Sort) (result []*Setting, err error) {
+func (r *labelTable) QueryLabels(ctx context.Context, selector LabelSelector, pagination *Pagination, sort *Sort) (result []*Label, err error) {
 	s := sqls.SELECT(
 		"id",
 		"key",
@@ -203,7 +203,7 @@ func (r *settingTable) QuerySettings(ctx context.Context, selector SettingSelect
 		"created_time",
 		"updated_time",
 		"deleted_time",
-	).FROM(userSettingTableName)
+	).FROM(userLabelTableName)
 
 	if selector.ID != nil {
 		s.WHERE("id=" + s.Param(selector.ID))
@@ -252,21 +252,21 @@ func (r *settingTable) QuerySettings(ctx context.Context, selector SettingSelect
 
 	defer queryResult.Close()
 	for queryResult.Next() {
-		setting := Setting{}
+		label := Label{}
 		if err = queryResult.Scan(
-			&setting.ID,
-			&setting.Key,
-			&setting.Value,
-			&setting.UserID,
-			&setting.Description,
-			&setting.CreatedTime,
-			&setting.UpdatedTime,
-			&setting.DeletedTime,
+			&label.ID,
+			&label.Key,
+			&label.Value,
+			&label.UserID,
+			&label.Description,
+			&label.CreatedTime,
+			&label.UpdatedTime,
+			&label.DeletedTime,
 		); err != nil {
 			logger.Error(err)
 			return
 		}
-		result = append(result, &setting)
+		result = append(result, &label)
 	}
 	if err = queryResult.Err(); err != nil {
 		logger.Error(err)

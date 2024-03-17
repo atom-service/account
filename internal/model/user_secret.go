@@ -2,14 +2,13 @@ package model
 
 import (
 	"context"
-	"crypto/rand"
 	"database/sql"
 	"errors"
 	"fmt"
-	"math/big"
 	"time"
 
-	"github.com/atom-service/account/internal/db"
+	"github.com/atom-service/account/internal/database"
+	"github.com/atom-service/account/internal/helper"
 	"github.com/atom-service/account/package/protos"
 	"github.com/atom-service/common/logger"
 	"github.com/yinxulai/sqls"
@@ -23,17 +22,22 @@ var (
 )
 
 type Secret struct {
-	Key         *string
-	Type        *string
-	Value       *string
-	UserID     *int64
-	Description *string
-	CreatedTime *time.Time
-	UpdatedTime *time.Time
-	DeletedTime *time.Time
+	Key          *string
+	Type         *string
+	Value        *string
+	UserID       *int64
+	Description  *string
+	CreatedTime  *time.Time
+	UpdatedTime  *time.Time
+	DeletedTime  *time.Time
+	DisabledTime *time.Time
 }
 
 func (srv *Secret) LoadProtoStruct(secret *protos.Secret) (err error) {
+	if (secret == nil) {
+		return nil
+	}
+
 	srv.Key = &secret.Key
 	srv.Value = &secret.Value
 	srv.UserID = &secret.UserID
@@ -65,15 +69,28 @@ func (srv *Secret) LoadProtoStruct(secret *protos.Secret) (err error) {
 	return
 }
 
-// OutProtoStruct OutProtoStruct
 func (srv *Secret) OutProtoStruct() *protos.Secret {
 	secret := new(protos.Secret)
-	secret.Key = *srv.Key
-	secret.Value = *srv.Value
-	secret.UserID = *srv.UserID
-	secret.Description = *srv.Description
-	secret.CreatedTime = srv.CreatedTime.String()
-	secret.UpdatedTime = srv.UpdatedTime.String()
+	if srv.Key != nil {
+		secret.Key = *srv.Key
+	}
+	if srv.Value != nil {
+		secret.Value = *srv.Value
+	}
+	if srv.UserID != nil {
+		secret.UserID = *srv.UserID
+	}
+	if srv.Description != nil {
+		secret.Description = *srv.Description
+	}
+
+	if srv.CreatedTime != nil {
+		secret.CreatedTime = srv.CreatedTime.String()
+	}
+
+	if srv.UpdatedTime != nil {
+		secret.UpdatedTime = srv.UpdatedTime.String()
+	}
 
 	if srv.DeletedTime != nil {
 		timeString := srv.DeletedTime.String()
@@ -83,15 +100,29 @@ func (srv *Secret) OutProtoStruct() *protos.Secret {
 	return secret
 }
 
+func (srv *Secret) IsDisabled() bool {
+	if srv.DisabledTime == nil {
+		return false
+	}
+
+	if srv.DisabledTime.Before(time.Now()) {
+		return true
+	}
+
+	return false
+}
+
 type SecretSelector struct {
-	Key     *string
-	Type    *string
+	Key    *string
+	Type   *string
 	UserID *int64
 }
 
 func (srv *SecretSelector) LoadProtoStruct(data *protos.SecretSelector) {
-	srv.Key = data.Key
-	srv.UserID = data.UserID
+	if (data != nil) {
+		srv.Key = data.Key
+		srv.UserID = data.UserID
+	}
 }
 
 // OutProtoStruct OutProtoStruct
@@ -107,7 +138,7 @@ type secretTable struct{}
 var SecretTable = &secretTable{}
 
 func (t *secretTable) CreateTable(ctx context.Context) error {
-	tx, err := db.Database.BeginTx(ctx, &sql.TxOptions{ReadOnly: false})
+	tx, err := database.Database.BeginTx(ctx, &sql.TxOptions{ReadOnly: false})
 	if err != nil {
 		return err
 	}
@@ -129,6 +160,7 @@ func (t *secretTable) CreateTable(ctx context.Context) error {
 	s.COLUMN("description character varying(128) NULL")
 	s.COLUMN("created_time timestamp without time zone NULL DEFAULT now()")
 	s.COLUMN("updated_time timestamp without time zone NULL DEFAULT now()")
+	s.COLUMN("disabled_time timestamp without time zone NULL")
 	s.COLUMN("deleted_time timestamp without time zone NULL")
 	logger.Debug(s.String())
 
@@ -148,41 +180,22 @@ func (t *secretTable) CreateTable(ctx context.Context) error {
 }
 
 func (t *secretTable) TruncateTable(ctx context.Context) error {
-	_, err := db.Database.ExecContext(ctx, sqls.TRUNCATE_TABLE(secretTableName).String())
+	_, err := database.Database.ExecContext(ctx, sqls.TRUNCATE_TABLE(secretTableName).String())
 	return err
 }
 
 type CreateSecretParams struct {
 	Type        string
-	UserID     int64
+	UserID      int64
 	Description *string
 }
 
 func (r *secretTable) CreateSecret(ctx context.Context, createParams CreateSecretParams) (err error) {
-	generateRandomString := func(length int) (string, error) {
-		const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-		charsetLength := big.NewInt(int64(len(charset)))
-
-		randomString := make([]byte, length)
-		for i := 0; i < length; i++ {
-			index, err := rand.Int(rand.Reader, charsetLength)
-			if err != nil {
-				return "", err
-			}
-			randomString[i] = charset[index.Int64()]
-		}
-
-		return string(randomString), nil
-	}
-
 	var key string
 
 	// TODO 并发加快速度
 	for {
-		key, err = generateRandomString(64)
-		if err != nil {
-			return err
-		}
+		key = helper.GenerateRandomString(64)
 
 		count, err := r.CountSecrets(ctx, SecretSelector{Key: &key})
 		if err != nil {
@@ -196,10 +209,7 @@ func (r *secretTable) CreateSecret(ctx context.Context, createParams CreateSecre
 		}
 	}
 
-	value, err := generateRandomString(64)
-	if err != nil {
-		return err
-	}
+	value := helper.GenerateRandomString(64)
 
 	s := sqls.INSERT_INTO(secretTableName)
 	s.VALUES("key", s.Param(key))
@@ -209,7 +219,7 @@ func (r *secretTable) CreateSecret(ctx context.Context, createParams CreateSecre
 	s.VALUES("description", s.Param(createParams.Description))
 
 	logger.Debug(s.String(), s.Params())
-	_, err = db.Database.ExecContext(ctx, s.String(), s.Params()...)
+	_, err = database.Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		logger.Error(err)
 		return
@@ -239,7 +249,7 @@ func (r *secretTable) DeleteSecret(ctx context.Context, selector SecretSelector)
 	s.SET("deleted_time", s.Param(time.Now()))
 
 	logger.Debug(s.String(), s.Params())
-	_, err = db.Database.ExecContext(ctx, s.String(), s.Params()...)
+	_, err = database.Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		logger.Error(err)
 	}
@@ -263,7 +273,7 @@ func (r *secretTable) CountSecrets(ctx context.Context, selector SecretSelector)
 	s.WHERE("(deleted_time<CURRENT_TIMESTAMP OR deleted_time IS NULL)")
 
 	logger.Debug(s.String(), s.Params())
-	rowQuery := db.Database.QueryRowContext(ctx, s.String(), s.Params()...)
+	rowQuery := database.Database.QueryRowContext(ctx, s.String(), s.Params()...)
 	if err = rowQuery.Scan(&result); err != nil {
 		logger.Error(err)
 	}
@@ -280,6 +290,7 @@ func (r *secretTable) QuerySecrets(ctx context.Context, selector SecretSelector,
 		"description",
 		"created_time",
 		"updated_time",
+		"disabled_time",
 		"deleted_time",
 	).FROM(secretTableName)
 
@@ -322,7 +333,7 @@ func (r *secretTable) QuerySecrets(ctx context.Context, selector SecretSelector,
 	}
 
 	logger.Debug(s.String(), s.Params())
-	queryResult, err := db.Database.QueryContext(ctx, s.String(), s.Params()...)
+	queryResult, err := database.Database.QueryContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		logger.Error(err)
 		return
@@ -339,6 +350,7 @@ func (r *secretTable) QuerySecrets(ctx context.Context, selector SecretSelector,
 			&secret.Description,
 			&secret.CreatedTime,
 			&secret.UpdatedTime,
+			&secret.DisabledTime,
 			&secret.DeletedTime,
 		); err != nil {
 			logger.Error(err)

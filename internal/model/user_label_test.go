@@ -11,18 +11,18 @@ import (
 	"github.com/atom-service/account/internal/helper"
 )
 
-func TestUserSettingTable(t *testing.T) {
-	settingTable := &settingTable{}
+func TestUserLabelTable(t *testing.T) {
+	labelTable := &labelTable{}
 
 	context := context.TODO()
 
 	// 创建表
-	if err := settingTable.CreateTable(context); err != nil {
+	if err := labelTable.CreateTable(context); err != nil {
 		t.Errorf("Create table failed: %v", err)
 		return
 	}
 
-	if err := settingTable.TruncateTable(context); err != nil {
+	if err := labelTable.TruncateTable(context); err != nil {
 		t.Errorf("Create table failed: %v", err)
 		return
 	}
@@ -31,7 +31,7 @@ func TestUserSettingTable(t *testing.T) {
 		MaxCount: 100,
 	}
 
-	testRoles := []*Setting{}
+	testRoles := []*Label{}
 
 	// create test & check result
 	if err := quick.Check(func() bool {
@@ -39,24 +39,24 @@ func TestUserSettingTable(t *testing.T) {
 		value := helper.GenerateRandomString(128)
 		description := helper.GenerateRandomString(128)
 
-		testCreateParams := Setting{
+		testCreateParams := Label{
 			Key:         name,
 			Value:       &value,
 			Description: &description,
 			UserID:      rand.Int63n(math.MaxInt32),
 		}
 
-		roleSelector := SettingSelector{
+		roleSelector := LabelSelector{
 			Key:    &testCreateParams.Key,
 			UserID: &testCreateParams.UserID,
 		}
 
-		if err := settingTable.CreateSetting(context, testCreateParams); err != nil {
+		if err := labelTable.CreateLabel(context, testCreateParams); err != nil {
 			t.Errorf("Create failed: %v", err)
 			return false
 		}
 
-		countResult, err := settingTable.CountSettings(context, SettingSelector{})
+		countResult, err := labelTable.CountLabels(context, LabelSelector{})
 		if err != nil {
 			t.Errorf("Count failed: %v", err)
 			return false
@@ -67,7 +67,7 @@ func TestUserSettingTable(t *testing.T) {
 			return false
 		}
 
-		queryCreateResult, err := settingTable.QuerySettings(context, roleSelector, nil, nil)
+		queryCreateResult, err := labelTable.QueryLabels(context, roleSelector, nil, nil)
 		if err != nil {
 			t.Errorf("Query failed: %v", err)
 			return false
@@ -86,7 +86,7 @@ func TestUserSettingTable(t *testing.T) {
 		// update test & check result
 		newValue := helper.GenerateRandomString(128)
 		newDescription := helper.GenerateRandomString(128)
-		err = settingTable.UpdateSetting(context, roleSelector, &Setting{
+		err = labelTable.UpdateLabel(context, roleSelector, &Label{
 			Value:       &newValue,
 			Description: &newDescription,
 		})
@@ -95,7 +95,7 @@ func TestUserSettingTable(t *testing.T) {
 			return false
 		}
 
-		queryUpdatedResult, err := settingTable.QuerySettings(context, SettingSelector{ID: queryCreateResult[0].ID}, nil, nil)
+		queryUpdatedResult, err := labelTable.QueryLabels(context, LabelSelector{ID: queryCreateResult[0].ID}, nil, nil)
 		if err != nil {
 			t.Errorf("Query failed: %v", err)
 			return false
@@ -135,7 +135,7 @@ func TestUserSettingTable(t *testing.T) {
 		var offsetUint64 = int64(offsetInt)
 		var limitUint64 = int64(limitInt)
 
-		queryPaginationResult, err := settingTable.QuerySettings(context, SettingSelector{}, &Pagination{
+		queryPaginationResult, err := labelTable.QueryLabels(context, LabelSelector{}, &Pagination{
 			Offset: &offsetUint64,
 			Limit:  &limitUint64,
 		}, nil)
@@ -168,7 +168,7 @@ func TestUserSettingTable(t *testing.T) {
 
 	// delete test & check result
 	for _, testSecret := range testRoles {
-		selector := SettingSelector{}
+		selector := LabelSelector{}
 		randUseSeed := rand.Intn(2)
 		if randUseSeed == 0 {
 			selector.ID = testSecret.ID
@@ -179,13 +179,13 @@ func TestUserSettingTable(t *testing.T) {
 			selector.UserID = &testSecret.UserID
 		}
 
-		err := settingTable.DeleteSetting(context, selector)
+		err := labelTable.DeleteLabel(context, selector)
 		if err != nil {
 			t.Errorf("Delete failed: %v", err)
 			return
 		}
 
-		queryDeletedResult, err := settingTable.QuerySettings(context, selector, nil, nil)
+		queryDeletedResult, err := labelTable.QueryLabels(context, selector, nil, nil)
 		if err != nil {
 			t.Errorf("Query failed: %v", err)
 			return
@@ -196,7 +196,7 @@ func TestUserSettingTable(t *testing.T) {
 			return
 		}
 
-		countUpdateResult, err := settingTable.CountSettings(context, selector)
+		countUpdateResult, err := labelTable.CountLabels(context, selector)
 		if err != nil {
 			t.Errorf("Count failed: %v", err)
 			return

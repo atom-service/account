@@ -2,8 +2,10 @@ package server
 
 import (
 	"context"
+	"fmt"
 	"time"
 
+	"github.com/atom-service/account/internal/helper"
 	"github.com/atom-service/account/internal/model"
 	"github.com/atom-service/account/package/auth"
 	"github.com/atom-service/account/package/protos"
@@ -12,55 +14,82 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-type AccountServer struct {
+var AccountServer = &accountServer{}
+
+type accountServer struct {
 	protos.UnimplementedAccountServiceServer
 }
 
-func NewAccountServer() *AccountServer {
-	return &AccountServer{}
+func (s *accountServer) InitAdminUser(ctx context.Context) (err error) {
+	adminUserID := int64(1)
+	userSelector := model.UserSelector{ID: &adminUserID}
+	queryResult, err := model.UserTable.QueryUsers(ctx, userSelector, nil, nil)
+	if err != nil {
+		return err
+	}
+
+	if len(queryResult) > 0 {
+		return nil
+	}
+
+	adminUsername := helper.GenerateRandomString(64)
+	adminPassword := helper.GenerateRandomString(128)
+	signUpResponse, err := s.SignUp(ctx, &protos.SignUpRequest{Username: adminUsername, Password: adminPassword})
+	if err != nil {
+		return err
+	}
+
+	if signUpResponse.State != protos.State_SUCCESS {
+		return fmt.Errorf("create admin user failed: %s", signUpResponse.Message)
+	}
+
+	logger.Info("admin are created:")
+	logger.Infof("username: %s", adminUsername)
+	logger.Infof("password: %s", adminPassword)
+	return nil
 }
 
-func (s *AccountServer) SignIn(ctx context.Context, request *protos.SignInRequest) (result *protos.SignInResponse, err error) {
-	result = &protos.SignInResponse{}
+func (s *accountServer) SignIn(ctx context.Context, request *protos.SignInRequest) (response *protos.SignInResponse, err error) {
+	response = &protos.SignInResponse{}
 
 	var userSelector model.UserSelector
 	userSelector.LoadProtoStruct(request.Selector)
 	passwordHash := model.Password.Hash(request.Password)
 	queryResult, err := model.UserTable.QueryUsers(ctx, userSelector, nil, nil)
 	if err != nil {
-		result.State = protos.State_FAILURE
+		response.State = protos.State_FAILURE
 		logger.Error(err)
 		return
 	}
 
 	if err != nil {
-		result.State = protos.State_FAILURE
+		response.State = protos.State_FAILURE
 		logger.Error(err)
 		return
 	}
 
 	if len(queryResult) <= 0 {
-		result.State = protos.State_PARAMS_INVALID
+		response.State = protos.State_PARAMS_INVALID
 		return
 	}
 
 	// 验证密码是否正确
 	if *queryResult[0].Password != passwordHash {
-		result.State = protos.State_PARAMS_INVALID
+		response.State = protos.State_PARAMS_INVALID
 		return
 	}
 
 	querySecretResult, err := model.SecretTable.QuerySecrets(ctx, model.SecretSelector{UserID: queryResult[0].ID}, nil, nil)
 	if err != nil {
-		result.State = protos.State_FAILURE
+		response.State = protos.State_FAILURE
 		logger.Error(err)
 		return
 	}
 
 	if len(querySecretResult) <= 0 {
-		result.Message = "No Secret available"
-		result.State = protos.State_FAILURE
-		logger.Errorf(result.Message)
+		response.Message = "No Secret available"
+		response.State = protos.State_FAILURE
+		logger.Errorf(response.Message)
 		return
 	}
 
@@ -69,26 +98,26 @@ func (s *AccountServer) SignIn(ctx context.Context, request *protos.SignInReques
 		ExpiresAt: time.Now().Add(7 * 24 * time.Hour),
 	})
 
-	result.AuthenticationToken = token
-	result.State = protos.State_SUCCESS
+	response.AuthenticationToken = token
+	response.State = protos.State_SUCCESS
 	return
 }
 
-func (s *AccountServer) SignUp(ctx context.Context, request *protos.SignUpRequest) (result *protos.SignUpResponse, err error) {
-	result = &protos.SignUpResponse{}
+func (s *accountServer) SignUp(ctx context.Context, request *protos.SignUpRequest) (response *protos.SignUpResponse, err error) {
+	response = &protos.SignUpResponse{}
 
 	countResult, err := model.UserTable.CountUsers(ctx, model.UserSelector{
 		Username: &request.Username,
 	})
 
 	if err != nil {
-		result.State = protos.State_FAILURE
+		response.State = protos.State_FAILURE
 		logger.Error(err)
 		return
 	}
 
 	if countResult > 0 {
-		result.State = protos.State_PARAMS_INVALID
+		response.State = protos.State_PARAMS_INVALID
 		return
 	}
 
@@ -98,20 +127,20 @@ func (s *AccountServer) SignUp(ctx context.Context, request *protos.SignUpReques
 		Password: &passwordHash,
 	})
 	if err != nil {
-		result.State = protos.State_FAILURE
+		response.State = protos.State_FAILURE
 		logger.Error(err)
 		return
 	}
 
 	users, err := model.UserTable.QueryUsers(ctx, model.UserSelector{Username: &request.Username}, nil, nil)
 	if err != nil {
-		result.State = protos.State_FAILURE
+		response.State = protos.State_FAILURE
 		logger.Error(err)
 		return
 	}
 
 	if len(users) <= 0 {
-		result.State = protos.State_FAILURE
+		response.State = protos.State_FAILURE
 		return
 	}
 
@@ -122,34 +151,36 @@ func (s *AccountServer) SignUp(ctx context.Context, request *protos.SignUpReques
 	})
 
 	if err != nil {
-		result.State = protos.State_FAILURE
+		response.State = protos.State_FAILURE
 		logger.Error(err)
 		return
 	}
 
+	response.State = protos.State_SUCCESS
 	return
 }
 
-func (s *AccountServer) SignOut(ctx context.Context, request *protos.SignOutRequest) (result *protos.SignOutResponse, err error) {
-	result = &protos.SignOutResponse{}
+func (s *accountServer) SignOut(ctx context.Context, request *protos.SignOutRequest) (response *protos.SignOutResponse, err error) {
+	response = &protos.SignOutResponse{}
 
-	user := auth.ResolveUserFromIncomingContext(ctx)
-	if user == nil {
-		result.State = protos.State_NO_PERMISSION
-		result.Message = "Not logged in"
+	authData := auth.ResolveAuthFromIncomingContext(ctx)
+	if authData == nil || authData.User == nil {
+		response.State = protos.State_NO_PERMISSION
+		response.Message = "Not logged in"
 		return
 	}
 
 	return nil, status.Errorf(codes.Unimplemented, "method SignOut not implemented")
 }
 
-func (s *AccountServer) QueryUsers(ctx context.Context, request *protos.QueryUsersRequest) (result *protos.QueryUsersResponse, err error) {
-	result = &protos.QueryUsersResponse{}
-
-	user := auth.ResolveUserFromIncomingContext(ctx)
-	if user == nil {
-		result.State = protos.State_NO_PERMISSION
-		result.Message = "Not logged in"
+func (s *accountServer) QueryUsers(ctx context.Context, request *protos.QueryUsersRequest) (response *protos.QueryUsersResponse, err error) {
+	response = &protos.QueryUsersResponse{}
+	response.Data = &protos.QueryUsersResponse_DataType{}
+	
+	authData := auth.ResolveAuthFromIncomingContext(ctx)
+	if authData == nil || authData.User == nil {
+		response.State = protos.State_NO_PERMISSION
+		response.Message = "Not logged in"
 		return
 	}
 
@@ -159,80 +190,201 @@ func (s *AccountServer) QueryUsers(ctx context.Context, request *protos.QueryUse
 	sort.LoadProtoStruct(request.Sort)
 	pagination.LoadProtoStruct(request.Pagination)
 	userSelector.LoadProtoStruct(request.Selector)
+
+	// 先将 ID 范围设置为当前用户
+	userSelector.ID = &authData.User.ID
+	// 如果是内部调用则设置 ID 范围为参数范围
+	if helper.IsGodSecret(authData.Secret.Key, authData.Secret.Value) {
+		userSelector.ID = request.Selector.ID
+	}
+
 	query, err := model.UserTable.QueryUsers(ctx, userSelector, &pagination, &sort)
 	if err != nil {
-		result.State = protos.State_FAILURE
+		response.State = protos.State_FAILURE
 		logger.Error(err)
 		return
 	}
 
 	count, err := model.UserTable.CountUsers(ctx, userSelector)
 	if err != nil {
-		result.State = protos.State_FAILURE
+		response.State = protos.State_FAILURE
 		logger.Error(err)
 		return
 	}
 
 	for _, user := range query {
-		result.Data.Users = append(
-			result.Data.Users,
+		response.Data.Users = append(
+			response.Data.Users,
 			user.OutProtoStruct(),
 		)
 	}
 
-	result.Data.Total = count
-	result.State = protos.State_SUCCESS
+	response.Data.Total = count
+	response.State = protos.State_SUCCESS
 	return
 }
 
-func (s *AccountServer) DeleteUser(ctx context.Context, request *protos.DeleteUserRequest) (result *protos.DeleteUserResponse, err error) {
-	result = &protos.DeleteUserResponse{}
+func (s *accountServer) DeleteUser(ctx context.Context, request *protos.DeleteUserRequest) (response *protos.DeleteUserResponse, err error) {
+	response = &protos.DeleteUserResponse{}
 
-	user := auth.ResolveUserFromIncomingContext(ctx)
-	if user == nil {
-		result.State = protos.State_NO_PERMISSION
-		result.Message = "Not logged in"
+	authData := auth.ResolveAuthFromIncomingContext(ctx)
+	if authData == nil || authData.User == nil {
+		response.State = protos.State_NO_PERMISSION
+		response.Message = "Not logged in"
 		return
 	}
 
 	return nil, status.Errorf(codes.Unimplemented, "method SignOut not implemented")
 }
 
-func (s *AccountServer) CreateSecret(ctx context.Context, request *protos.CreateSecretRequest) (result *protos.CreateSecretResponse, err error) {
-	result = &protos.CreateSecretResponse{}
+func (s *accountServer) CreateSecret(ctx context.Context, request *protos.CreateSecretRequest) (response *protos.CreateSecretResponse, err error) {
+	response = &protos.CreateSecretResponse{}
 
-	user := auth.ResolveUserFromIncomingContext(ctx)
-	if user == nil {
-		result.State = protos.State_NO_PERMISSION
-		result.Message = "Not logged in"
+	authData := auth.ResolveAuthFromIncomingContext(ctx)
+	if authData == nil || authData.User == nil {
+		response.State = protos.State_NO_PERMISSION
+		response.Message = "Not logged in"
 		return
 	}
 
-	result = &protos.CreateSecretResponse{}
-
 	err = model.SecretTable.CreateSecret(ctx, model.CreateSecretParams{
-		UserID: *user.ID,
+		UserID: authData.User.ID,
 		Type:   model.UserSecretType,
 	})
 
 	if err != nil {
-		result.State = protos.State_FAILURE
+		response.State = protos.State_FAILURE
 		logger.Error(err)
 		return
 	}
 
-	result.State = protos.State_SUCCESS
+	response.State = protos.State_SUCCESS
 	return
 }
 
-func (s *AccountServer) DisableSecret(ctx context.Context, request *protos.DisableSecretRequest) (result *protos.DisableSecretResponse, err error) {
+func (s *accountServer) DisableSecret(ctx context.Context, request *protos.DisableSecretRequest) (response *protos.DisableSecretResponse, err error) {
+	response = &protos.DisableSecretResponse{}
+
+	authData := auth.ResolveAuthFromIncomingContext(ctx)
+	if authData == nil || authData.User == nil {
+		response.State = protos.State_NO_PERMISSION
+		response.Message = "Not logged in"
+		return
+	}
+
 	return nil, status.Errorf(codes.Unimplemented, "method DisableSecret not implemented")
 }
 
-func (s *AccountServer) DeleteSecret(ctx context.Context, request *protos.DeleteSecreteRequest) (result *protos.DeleteSecreteResponse, err error) {
+func (s *accountServer) DeleteSecret(ctx context.Context, request *protos.DeleteSecreteRequest) (response *protos.DeleteSecreteResponse, err error) {
+	response = &protos.DeleteSecreteResponse{}
+
+	authData := auth.ResolveAuthFromIncomingContext(ctx)
+	if authData == nil || authData.User == nil {
+		response.State = protos.State_NO_PERMISSION
+		response.Message = "Not logged in"
+		return
+	}
+
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteSecret not implemented")
 }
 
-func (s *AccountServer) QuerySecrets(ctx context.Context, request *protos.QuerySecretsRequest) (result *protos.QuerySecretsResponse, err error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QuerySecrets not implemented")
+func (s *accountServer) QuerySecrets(ctx context.Context, request *protos.QuerySecretsRequest) (response *protos.QuerySecretsResponse, err error) {
+	response = &protos.QuerySecretsResponse{}
+	response.Data = &protos.QuerySecretsResponse_DataType{}
+
+	authData := auth.ResolveAuthFromIncomingContext(ctx)
+	if authData == nil || authData.User == nil {
+		response.State = protos.State_NO_PERMISSION
+		response.Message = "Not logged in"
+		return
+	}
+
+	var sort model.Sort
+	var pagination model.Pagination
+	var selector model.SecretSelector
+	sort.LoadProtoStruct(request.Sort)
+	pagination.LoadProtoStruct(request.Pagination)
+	selector.LoadProtoStruct(request.Selector)
+
+	// 如果不是内部调用则将 UserID 范围设置为当前用户
+	if !helper.IsGodSecret(authData.Secret.Key, authData.Secret.Value) {
+		selector.UserID = &authData.User.ID
+	}
+
+	
+	query, err := model.SecretTable.QuerySecrets(ctx, selector, &pagination, &sort)
+	if err != nil {
+		response.State = protos.State_FAILURE
+		logger.Error(err)
+		return
+	}
+
+	count, err := model.SecretTable.CountSecrets(ctx, selector)
+	if err != nil {
+		response.State = protos.State_FAILURE
+		logger.Error(err)
+		return
+	}
+
+	for _, secret := range query {
+		response.Data.Secrets = append(
+			response.Data.Secrets,
+			secret.OutProtoStruct(),
+		)
+	}
+
+	response.Data.Total = count
+	response.State = protos.State_SUCCESS
+	return
+}
+
+func (s *accountServer) CreateSetting(ctx context.Context, request *protos.CreateSettingRequest) (response *protos.CreateSettingResponse, err error) {
+	response = &protos.CreateSettingResponse{}
+
+	authData := auth.ResolveAuthFromIncomingContext(ctx)
+	if authData == nil || authData.User == nil {
+		response.State = protos.State_NO_PERMISSION
+		response.Message = "Not logged in"
+		return
+	}
+
+	return nil, status.Errorf(codes.Unimplemented, "method CreateSetting not implemented")
+}
+
+func (s *accountServer) UpdateSetting(ctx context.Context, request *protos.UpdateSettingRequest) (response *protos.UpdateSettingResponse, err error) {
+	response = &protos.UpdateSettingResponse{}
+
+	authData := auth.ResolveAuthFromIncomingContext(ctx)
+	if authData == nil || authData.User == nil {
+		response.State = protos.State_NO_PERMISSION
+		response.Message = "Not logged in"
+		return
+	}
+
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateSetting not implemented")
+}
+
+func (s *accountServer) DeleteSetting(ctx context.Context, request *protos.DeleteSettingRequest) (response *protos.DeleteSettingResponse, err error) {
+	response = &protos.DeleteSettingResponse{}
+
+	authData := auth.ResolveAuthFromIncomingContext(ctx)
+	if authData == nil || authData.User == nil {
+		response.State = protos.State_NO_PERMISSION
+		response.Message = "Not logged in"
+		return
+	}
+
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteSetting not implemented")
+}
+
+func (s *accountServer) QuerySettings(ctx context.Context, request *protos.QuerySettingsRequest) (response *protos.QuerySettingsResponse, err error) {
+	response = &protos.QuerySettingsResponse{}
+
+	authData := auth.ResolveAuthFromIncomingContext(ctx)
+	if authData == nil || authData.User == nil {
+		response.State = protos.State_NO_PERMISSION
+		response.Message = "Not logged in"
+		return
+	}
+	return nil, status.Errorf(codes.Unimplemented, "method QuerySettings not implemented")
 }

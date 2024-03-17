@@ -19,7 +19,7 @@ func SignToken(SecretID string, SecretKey string, data SignData) string {
 	base64DataString := base64.URLEncoding.EncodeToString(dataString)
 
 	mac := hmac.New(sha256.New, []byte(SecretKey))
-	signString := string(mac.Sum([]byte(base64DataString)))
+	signString := base64.URLEncoding.EncodeToString(mac.Sum([]byte(base64DataString)))
 	return fmt.Sprintf("%s:%s:%s", SecretID, signString, base64DataString)
 }
 
@@ -34,7 +34,7 @@ func VerifyToken(SecretID string, SecretKey string, token string) bool {
 	}
 
 	mac := hmac.New(sha256.New, []byte(SecretKey))
-	validSignString := string(mac.Sum([]byte(fragment[2])))
+	validSignString := base64.URLEncoding.EncodeToString(mac.Sum([]byte(fragment[2])))
 	if validSignString != fragment[1] {
 		return false
 	}
@@ -53,8 +53,8 @@ func VerifyToken(SecretID string, SecretKey string, token string) bool {
 }
 
 type TokenInfo struct {
-	SecretID string
-	Data     SignData
+	SecretKey string
+	Data      SignData
 }
 
 func ParseToken(token string) (*TokenInfo, error) {
@@ -78,7 +78,7 @@ func ParseToken(token string) (*TokenInfo, error) {
 		return nil, err
 	}
 
-	tokenInfo.SecretID = SecretID
+	tokenInfo.SecretKey = SecretID
 	tokenInfo.Data = tokenData
 	return &tokenInfo, nil
 }

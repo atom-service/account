@@ -30,7 +30,8 @@ type PermissionServiceClient interface {
 	QueryResources(ctx context.Context, in *QueryResourcesRequest, opts ...grpc.CallOption) (*QueryResourcesResponse, error)
 	DeleteResource(ctx context.Context, in *DeleteResourceRequest, opts ...grpc.CallOption) (*DeleteResourceResponse, error)
 	UpdateResource(ctx context.Context, in *UpdateResourceRequest, opts ...grpc.CallOption) (*UpdateResourceResponse, error)
-	AddRoleForUser(ctx context.Context, in *AddRoleForUserRequest, opts ...grpc.CallOption) (*AddRoleForUserResponse, error)
+	SummaryForUser(ctx context.Context, in *SummaryForUserRequest, opts ...grpc.CallOption) (*SummaryForUserResponse, error)
+	ApplyRoleForUser(ctx context.Context, in *ApplyRoleForUserRequest, opts ...grpc.CallOption) (*ApplyRoleForUserResponse, error)
 	RemoveRoleForUser(ctx context.Context, in *RemoveRoleForUserRequest, opts ...grpc.CallOption) (*RemoveRoleForUserResponse, error)
 }
 
@@ -114,9 +115,18 @@ func (c *permissionServiceClient) UpdateResource(ctx context.Context, in *Update
 	return out, nil
 }
 
-func (c *permissionServiceClient) AddRoleForUser(ctx context.Context, in *AddRoleForUserRequest, opts ...grpc.CallOption) (*AddRoleForUserResponse, error) {
-	out := new(AddRoleForUserResponse)
-	err := c.cc.Invoke(ctx, "/PermissionService/AddRoleForUser", in, out, opts...)
+func (c *permissionServiceClient) SummaryForUser(ctx context.Context, in *SummaryForUserRequest, opts ...grpc.CallOption) (*SummaryForUserResponse, error) {
+	out := new(SummaryForUserResponse)
+	err := c.cc.Invoke(ctx, "/PermissionService/SummaryForUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *permissionServiceClient) ApplyRoleForUser(ctx context.Context, in *ApplyRoleForUserRequest, opts ...grpc.CallOption) (*ApplyRoleForUserResponse, error) {
+	out := new(ApplyRoleForUserResponse)
+	err := c.cc.Invoke(ctx, "/PermissionService/ApplyRoleForUser", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -144,7 +154,8 @@ type PermissionServiceServer interface {
 	QueryResources(context.Context, *QueryResourcesRequest) (*QueryResourcesResponse, error)
 	DeleteResource(context.Context, *DeleteResourceRequest) (*DeleteResourceResponse, error)
 	UpdateResource(context.Context, *UpdateResourceRequest) (*UpdateResourceResponse, error)
-	AddRoleForUser(context.Context, *AddRoleForUserRequest) (*AddRoleForUserResponse, error)
+	SummaryForUser(context.Context, *SummaryForUserRequest) (*SummaryForUserResponse, error)
+	ApplyRoleForUser(context.Context, *ApplyRoleForUserRequest) (*ApplyRoleForUserResponse, error)
 	RemoveRoleForUser(context.Context, *RemoveRoleForUserRequest) (*RemoveRoleForUserResponse, error)
 	mustEmbedUnimplementedPermissionServiceServer()
 }
@@ -177,8 +188,11 @@ func (UnimplementedPermissionServiceServer) DeleteResource(context.Context, *Del
 func (UnimplementedPermissionServiceServer) UpdateResource(context.Context, *UpdateResourceRequest) (*UpdateResourceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateResource not implemented")
 }
-func (UnimplementedPermissionServiceServer) AddRoleForUser(context.Context, *AddRoleForUserRequest) (*AddRoleForUserResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AddRoleForUser not implemented")
+func (UnimplementedPermissionServiceServer) SummaryForUser(context.Context, *SummaryForUserRequest) (*SummaryForUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SummaryForUser not implemented")
+}
+func (UnimplementedPermissionServiceServer) ApplyRoleForUser(context.Context, *ApplyRoleForUserRequest) (*ApplyRoleForUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ApplyRoleForUser not implemented")
 }
 func (UnimplementedPermissionServiceServer) RemoveRoleForUser(context.Context, *RemoveRoleForUserRequest) (*RemoveRoleForUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemoveRoleForUser not implemented")
@@ -340,20 +354,38 @@ func _PermissionService_UpdateResource_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
-func _PermissionService_AddRoleForUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AddRoleForUserRequest)
+func _PermissionService_SummaryForUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SummaryForUserRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(PermissionServiceServer).AddRoleForUser(ctx, in)
+		return srv.(PermissionServiceServer).SummaryForUser(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/PermissionService/AddRoleForUser",
+		FullMethod: "/PermissionService/SummaryForUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PermissionServiceServer).AddRoleForUser(ctx, req.(*AddRoleForUserRequest))
+		return srv.(PermissionServiceServer).SummaryForUser(ctx, req.(*SummaryForUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PermissionService_ApplyRoleForUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ApplyRoleForUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PermissionServiceServer).ApplyRoleForUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/PermissionService/ApplyRoleForUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PermissionServiceServer).ApplyRoleForUser(ctx, req.(*ApplyRoleForUserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -416,8 +448,12 @@ var PermissionService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _PermissionService_UpdateResource_Handler,
 		},
 		{
-			MethodName: "AddRoleForUser",
-			Handler:    _PermissionService_AddRoleForUser_Handler,
+			MethodName: "SummaryForUser",
+			Handler:    _PermissionService_SummaryForUser_Handler,
+		},
+		{
+			MethodName: "ApplyRoleForUser",
+			Handler:    _PermissionService_ApplyRoleForUser_Handler,
 		},
 		{
 			MethodName: "RemoveRoleForUser",

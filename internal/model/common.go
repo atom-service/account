@@ -1,6 +1,46 @@
 package model
 
-import "github.com/atom-service/account/package/protos"
+import (
+	"context"
+
+	"github.com/atom-service/account/package/protos"
+)
+
+func Init(ctx context.Context) error {
+	if err := UserTable.CreateTable(ctx);err!= nil {
+		return err
+	}
+
+	if err := SettingTable.CreateTable(ctx);err!= nil {
+		return err
+	}
+
+	if err := SecretTable.CreateTable(ctx);err!= nil {
+		return err
+	}
+
+	if err := LabelTable.CreateTable(ctx);err!= nil {
+		return err
+	}
+
+	if err := RoleTable.CreateTable(ctx);err!= nil {
+		return err
+	}
+	if err := UserRoleTable.CreateTable(ctx);err!= nil {
+		return err
+	}
+	if err := ResourceTable.CreateTable(ctx);err!= nil {
+		return err
+	}
+	if err := RoleResourceTable.CreateTable(ctx);err!= nil {
+		return err
+	}
+	if err := RoleResourceRuleTable.CreateTable(ctx);err!= nil {
+		return err
+	}
+
+	return nil
+}
 
 type Pagination struct {
 	Limit  *int64
@@ -8,8 +48,10 @@ type Pagination struct {
 }
 
 func (srv *Pagination) LoadProtoStruct(data *protos.PaginationOption) {
-	srv.Limit = data.Limit
-	srv.Offset = data.Offset
+	if (data != nil) {
+		srv.Limit = data.Limit
+		srv.Offset = data.Offset
+	}
 }
 
 func (srv *Pagination) OutProtoStruct() *protos.PaginationOption {
@@ -32,8 +74,10 @@ const (
 )
 
 func (srv *Sort) LoadProtoStruct(data *protos.SortOption) {
-	srv.Key = data.Key
-	srv.Type = int32(data.Type.Number())
+	if (data != nil) {
+		srv.Key = data.Key
+		srv.Type = int32(data.Type.Number())
+	}
 }
 
 func (srv *Sort) OutProtoStruct() *protos.SortOption {

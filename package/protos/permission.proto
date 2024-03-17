@@ -5,16 +5,16 @@ option go_package = "./protos";
 import "common.proto";
 import "account.proto";
 
-message RoleResource {
-  enum ActionType {
-    Insert = 0;
-    Delete = 1;
-    Update = 2;
-    Query  = 3;
-  }
+enum ResourceAction {
+  Insert = 0;
+  Delete = 1;
+  Update = 2;
+  Query  = 3;
+}
 
+message RoleResource {
   int64 ResourceID = 1;
-  ActionType Action = 2;
+  ResourceAction Action = 2;
   repeated string Rules = 3;
 }
 
@@ -154,12 +154,28 @@ message UpdateResourceResponse {
   string Message = 2;
 }
 
-message AddRoleForUserRequest {
+message UserResourceSummary {
+  string Name = 1;
+  ResourceAction Action = 2;
+  repeated string Rules = 3;
+}
+
+message SummaryForUserRequest {
+  UserSelector UserSelector = 1;
+}
+
+message SummaryForUserResponse {
+  State State = 1;
+  string Message = 2;
+  repeated UserResourceSummary Data = 3;
+}
+
+message ApplyRoleForUserRequest {
   UserSelector User = 1;
   repeated RoleSelector Roles = 2;
 }
 
-message AddRoleForUserResponse {
+message ApplyRoleForUserResponse {
   State State = 1;
   string Message = 2;
 }
@@ -185,6 +201,7 @@ service PermissionService {
   rpc DeleteResource(DeleteResourceRequest)returns(DeleteResourceResponse){}
   rpc UpdateResource(UpdateResourceRequest)returns(UpdateResourceResponse){}
 
-  rpc AddRoleForUser(AddRoleForUserRequest)returns(AddRoleForUserResponse){}
+  rpc SummaryForUser(SummaryForUserRequest)returns(SummaryForUserResponse){}
+  rpc ApplyRoleForUser(ApplyRoleForUserRequest)returns(ApplyRoleForUserResponse){}
   rpc RemoveRoleForUser(RemoveRoleForUserRequest)returns(RemoveRoleForUserResponse){}
 }
