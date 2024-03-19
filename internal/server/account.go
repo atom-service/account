@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/atom-service/account/internal/helper"
@@ -176,7 +177,7 @@ func (s *accountServer) SignOut(ctx context.Context, request *protos.SignOutRequ
 func (s *accountServer) QueryUsers(ctx context.Context, request *protos.QueryUsersRequest) (response *protos.QueryUsersResponse, err error) {
 	response = &protos.QueryUsersResponse{}
 	response.Data = &protos.QueryUsersResponse_DataType{}
-	
+
 	authData := auth.ResolveAuthFromIncomingContext(ctx)
 	if authData == nil || authData.User == nil {
 		response.State = protos.State_NO_PERMISSION
@@ -226,9 +227,11 @@ func (s *accountServer) QueryUsers(ctx context.Context, request *protos.QueryUse
 
 func (s *accountServer) DeleteUser(ctx context.Context, request *protos.DeleteUserRequest) (response *protos.DeleteUserResponse, err error) {
 	response = &protos.DeleteUserResponse{}
-
-	authData := auth.ResolveAuthFromIncomingContext(ctx)
-	if authData == nil || authData.User == nil {
+	if pass := ResolvePermissionFormIncomeContext(ctx, "User", func(rule PermissionRule) bool {
+		matchID := rule.ExactMatch(model.ActionDelete, "id", strconv.FormatInt(*request.Selectors.ID, 10))
+		matchName := rule.ExactMatch(model.ActionDelete, "username", *request.Selectors.Username)
+		return matchID || matchName
+	}); !pass {
 		response.State = protos.State_NO_PERMISSION
 		response.Message = "Not logged in"
 		return
@@ -311,7 +314,6 @@ func (s *accountServer) QuerySecrets(ctx context.Context, request *protos.QueryS
 		selector.UserID = &authData.User.ID
 	}
 
-	
 	query, err := model.SecretTable.QuerySecrets(ctx, selector, &pagination, &sort)
 	if err != nil {
 		response.State = protos.State_FAILURE

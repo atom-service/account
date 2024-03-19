@@ -16,14 +16,14 @@ var permissionSchema = "\"permission\""
 var roleTableName = permissionSchema + ".\"roles\""
 var userRoleTableName = permissionSchema + ".\"user_roles\""
 var resourceTableName = permissionSchema + ".\"resources\""
+var resourceRuleTableName = permissionSchema + ".\"resource_rules\""
 var roleResourceTableName = permissionSchema + ".\"role_resources\""
-var roleResourceRuleTableName = permissionSchema + ".\"role_resource_rules\""
 
 var RoleTable = &roleTable{}
 var UserRoleTable = &userRoleTable{}
 var ResourceTable = &resourceTable{}
 var RoleResourceTable = &roleResourceTable{}
-var RoleResourceRuleTable = &roleResourceRuleTable{}
+var RoleResourceRuleTable = &resourceRuleTable{}
 
 type Role struct {
 	ID           *int64
@@ -488,21 +488,23 @@ func (r *resourceTable) QueryResources(ctx context.Context, selector ResourceSel
 }
 
 const (
-	RoleResourceInsertAction = "Insert"
-	RoleResourceDeleteAction = "Delete"
-	RoleResourceUpdateAction = "Update"
-	RoleResourceQueryAction  = "Query"
+	ActionInsert = "Insert"
+	ActionDelete = "Delete"
+	ActionUpdate = "Update"
+	ActionQuery  = "Query"
 )
 
 type RoleResource struct {
 	ID         *int64
 	Action     string
+	RoleID     int64
 	ResourceID int64
 }
 
 type RoleResourceSelector struct {
 	ID         *int64
 	Action     *string
+	RoleID     *int64
 	ResourceID *int64
 }
 
@@ -526,6 +528,7 @@ func (t *roleResourceTable) CreateTable(ctx context.Context) error {
 	s.COLUMN("id serial NOT NULL")
 	s.COLUMN("action character varying(32) NOT NULL")
 	s.COLUMN("resource_id int NOT NULL")
+	s.COLUMN("role_id int NOT NULL")
 	logger.Debug(s.String())
 
 	if _, err = tx.ExecContext(ctx, s.String()); err != nil {
@@ -551,6 +554,7 @@ func (t *roleResourceTable) TruncateTable(ctx context.Context) error {
 func (r *roleResourceTable) CreateRoleResource(ctx context.Context, newResource RoleResource) (err error) {
 	s := sqls.INSERT_INTO(roleResourceTableName)
 	s.VALUES("action", s.Param(newResource.Action))
+	s.VALUES("role_id", s.Param(newResource.RoleID))
 	s.VALUES("resource_id", s.Param(newResource.ResourceID))
 
 	logger.Debug(s.String())
@@ -578,6 +582,10 @@ func (r *roleResourceTable) DeleteRoleResource(ctx context.Context, selector Rol
 		s.WHERE("action=" + s.Param(selector.Action))
 	}
 
+	if selector.RoleID != nil {
+		s.WHERE("role_id=" + s.Param(selector.RoleID))
+	}
+
 	if selector.ResourceID != nil {
 		s.WHERE("resource_id=" + s.Param(selector.ResourceID))
 	}
@@ -600,6 +608,9 @@ func (r *roleResourceTable) CountRoleResources(ctx context.Context, selector Rol
 	if selector.Action != nil {
 		s.WHERE("action=" + s.Param(selector.Action))
 	}
+	if selector.RoleID != nil {
+		s.WHERE("role_id=" + s.Param(selector.RoleID))
+	}
 	if selector.ResourceID != nil {
 		s.WHERE("resource_id=" + s.Param(selector.ResourceID))
 	}
@@ -616,6 +627,7 @@ func (r *roleResourceTable) CountRoleResources(ctx context.Context, selector Rol
 func (r *roleResourceTable) QueryRoleResources(ctx context.Context, selector RoleResourceSelector, pagination *Pagination, sort *Sort) (result []*RoleResource, err error) {
 	s := sqls.SELECT("id")
 	s.SELECT("action")
+	s.SELECT("role_id")
 	s.SELECT("resource_id")
 	s.FROM(roleResourceTableName)
 
@@ -625,6 +637,10 @@ func (r *roleResourceTable) QueryRoleResources(ctx context.Context, selector Rol
 	if selector.Action != nil {
 		s.WHERE("action=" + s.Param(selector.Action))
 	}
+	if selector.RoleID != nil {
+		s.WHERE("role_id=" + s.Param(selector.RoleID))
+	}
+
 	if selector.ResourceID != nil {
 		s.WHERE("resource_id=" + s.Param(selector.ResourceID))
 	}
@@ -666,6 +682,7 @@ func (r *roleResourceTable) QueryRoleResources(ctx context.Context, selector Rol
 		if err = queryResult.Scan(
 			&roleResource.ID,
 			&roleResource.Action,
+			&roleResource.RoleID,
 			&roleResource.ResourceID,
 		); err != nil {
 			logger.Error(err)
@@ -680,23 +697,23 @@ func (r *roleResourceTable) QueryRoleResources(ctx context.Context, selector Rol
 	return
 }
 
-type RoleResourceRule struct {
-	ID             *int64
-	Key            string
-	Value          string
-	RoleResourceID int64
+type ResourceRule struct {
+	ID         *int64
+	Key        string
+	Value      string
+	ResourceID int64
 }
 
-type RoleResourceRuleSelector struct {
+type ResourceRuleSelector struct {
 	ID             *int64
 	Key            *string
 	RoleResourceID *int64
 }
 
-type roleResourceRuleTable struct {
+type resourceRuleTable struct {
 }
 
-func (t *roleResourceRuleTable) CreateTable(ctx context.Context) error {
+func (t *resourceRuleTable) CreateTable(ctx context.Context) error {
 	tx, err := database.Database.BeginTx(ctx, &sql.TxOptions{ReadOnly: false})
 	if err != nil {
 		return err
@@ -710,11 +727,11 @@ func (t *roleResourceRuleTable) CreateTable(ctx context.Context) error {
 	}
 
 	// 创建 table
-	s := sqls.CREATE_TABLE(roleResourceRuleTableName).IF_NOT_EXISTS()
+	s := sqls.CREATE_TABLE(resourceRuleTableName).IF_NOT_EXISTS()
 	s.COLUMN("id serial NOT NULL")
+	s.COLUMN("resource_id int NOT NULL")
 	s.COLUMN("key character varying(64) NOT NULL")
 	s.COLUMN("value character varying(128) NOT NULL")
-	s.COLUMN("role_resource_id int NOT NULL")
 	logger.Debug(s.String())
 
 	if _, err = tx.ExecContext(ctx, s.String()); err != nil {
@@ -732,16 +749,16 @@ func (t *roleResourceRuleTable) CreateTable(ctx context.Context) error {
 	return nil
 }
 
-func (t *roleResourceRuleTable) TruncateTable(ctx context.Context) error {
-	_, err := database.Database.ExecContext(ctx, sqls.TRUNCATE_TABLE(roleResourceRuleTableName).String())
+func (t *resourceRuleTable) TruncateTable(ctx context.Context) error {
+	_, err := database.Database.ExecContext(ctx, sqls.TRUNCATE_TABLE(resourceRuleTableName).String())
 	return err
 }
 
-func (r *roleResourceRuleTable) CreateRoleResourceRule(ctx context.Context, newRule RoleResourceRule) (err error) {
-	s := sqls.INSERT_INTO(roleResourceRuleTableName)
+func (r *resourceRuleTable) CreateResourceRule(ctx context.Context, newRule ResourceRule) (err error) {
+	s := sqls.INSERT_INTO(resourceRuleTableName)
 	s.VALUES("key", s.Param(newRule.Key))
 	s.VALUES("value", s.Param(newRule.Value))
-	s.VALUES("role_resource_id", s.Param(newRule.RoleResourceID))
+	s.VALUES("resource_id", s.Param(newRule.ResourceID))
 
 	logger.Debug(s.String())
 	_, err = database.Database.ExecContext(ctx, s.String(), s.Params()...)
@@ -753,8 +770,8 @@ func (r *roleResourceRuleTable) CreateRoleResourceRule(ctx context.Context, newR
 	return
 }
 
-func (r *roleResourceRuleTable) DeleteRoleResourceRule(ctx context.Context, selector RoleResourceRuleSelector) (err error) {
-	s := sqls.DELETE_FROM(roleResourceRuleTableName)
+func (r *resourceRuleTable) DeleteResourceRule(ctx context.Context, selector ResourceRuleSelector) (err error) {
+	s := sqls.DELETE_FROM(resourceRuleTableName)
 
 	if selector.ID == nil && selector.RoleResourceID == nil && selector.Key == nil {
 		return fmt.Errorf("elector conditions cannot all be empty")
@@ -769,7 +786,7 @@ func (r *roleResourceRuleTable) DeleteRoleResourceRule(ctx context.Context, sele
 	}
 
 	if selector.RoleResourceID != nil {
-		s.WHERE("role_resource_id=" + s.Param(selector.RoleResourceID))
+		s.WHERE("resource_id=" + s.Param(selector.RoleResourceID))
 	}
 
 	logger.Debug(s.String(), s.Params())
@@ -781,8 +798,8 @@ func (r *roleResourceRuleTable) DeleteRoleResourceRule(ctx context.Context, sele
 	return
 }
 
-func (r *roleResourceRuleTable) CountRoleResourceRules(ctx context.Context, selector RoleResourceRuleSelector) (result int64, err error) {
-	s := sqls.SELECT("COUNT(*) AS count").FROM(roleResourceRuleTableName)
+func (r *resourceRuleTable) CountResourceRules(ctx context.Context, selector ResourceRuleSelector) (result int64, err error) {
+	s := sqls.SELECT("COUNT(*) AS count").FROM(resourceRuleTableName)
 
 	if selector.ID != nil {
 		s.WHERE("id=" + s.Param(selector.ID))
@@ -793,7 +810,7 @@ func (r *roleResourceRuleTable) CountRoleResourceRules(ctx context.Context, sele
 	}
 
 	if selector.RoleResourceID != nil {
-		s.WHERE("role_resource_id=" + s.Param(selector.RoleResourceID))
+		s.WHERE("resource_id=" + s.Param(selector.RoleResourceID))
 	}
 
 	logger.Debug(s.String())
@@ -805,12 +822,12 @@ func (r *roleResourceRuleTable) CountRoleResourceRules(ctx context.Context, sele
 	return
 }
 
-func (r *roleResourceRuleTable) QueryRoleResourceRules(ctx context.Context, selector RoleResourceRuleSelector, pagination *Pagination, sort *Sort) (result []*RoleResourceRule, err error) {
+func (r *resourceRuleTable) QueryResourceRules(ctx context.Context, selector ResourceRuleSelector, pagination *Pagination, sort *Sort) (result []*ResourceRule, err error) {
 	s := sqls.SELECT("id")
 	s.SELECT("key")
 	s.SELECT("value")
-	s.SELECT("role_resource_id")
-	s.FROM(roleResourceRuleTableName)
+	s.SELECT("resource_id")
+	s.FROM(resourceRuleTableName)
 
 	if selector.ID != nil {
 		s.WHERE("id=" + s.Param(selector.ID))
@@ -821,7 +838,7 @@ func (r *roleResourceRuleTable) QueryRoleResourceRules(ctx context.Context, sele
 	}
 
 	if selector.RoleResourceID != nil {
-		s.WHERE("role_resource_id=" + s.Param(selector.RoleResourceID))
+		s.WHERE("resource_id=" + s.Param(selector.RoleResourceID))
 	}
 
 	if pagination == nil {
@@ -857,12 +874,12 @@ func (r *roleResourceRuleTable) QueryRoleResourceRules(ctx context.Context, sele
 
 	defer queryResult.Close()
 	for queryResult.Next() {
-		roleResourceRule := RoleResourceRule{}
+		roleResourceRule := ResourceRule{}
 		if err = queryResult.Scan(
 			&roleResourceRule.ID,
 			&roleResourceRule.Key,
 			&roleResourceRule.Value,
-			&roleResourceRule.RoleResourceID,
+			&roleResourceRule.ResourceID,
 		); err != nil {
 			logger.Error(err)
 			return
@@ -1077,5 +1094,85 @@ func (r *userRoleTable) QueryUserRole(ctx context.Context, selector UserRoleSele
 		logger.Error(err)
 		return
 	}
+	return
+}
+
+type permission struct {
+}
+
+var Permission = &permission{}
+
+type UserResourceSummary struct {
+	Name   string
+	Action string
+	Rules  []struct {
+		Key   string
+		Value string
+	}
+}
+
+type UserResourceSummarySelector struct {
+	UserID int64
+}
+
+// 初始化管理员权限以及用户默认的配置
+func (r *permission) InitDefaultData(ctx context.Context) error {
+	adminName := "all"
+	adminDescription := "This represents all resources"
+	adminResource := Resource{Name: &adminName, Description: &adminDescription}
+
+	ownerName := "owner"
+	ownerDescription := "This represents the user’s own resources"
+	ownerResource := Resource{Name: &ownerName, Description: &ownerDescription}
+
+	ResourceTable.QueryResources(ctx, ResourceSelector{Name: &adminName}, nil, nil)
+
+	if err := ResourceTable.CreateResource(ctx, Resource{Name: &adminName, Description: &adminDescription}); err != nil {
+		return err
+	}
+
+	ResourceTable.QueryResources(ctx, ResourceSelector{Name: &adminName}, nil, nil)
+
+	return nil
+}
+
+func (r *permission) QueryUserResourceSummary(ctx context.Context, selector UserResourceSummarySelector) (result []*UserResourceSummary, err error) {
+	s := sqls.SELECT()
+	s.SELECT("d.name AS name")
+	s.SELECT("c.action AS action")
+	s.SELECT("e.key AS key")
+	s.SELECT("e.value AS value")
+	s.FROM(fmt.Sprintf("%s AS a", userRoleTableName))
+	s.LEFT_OUTER_JOIN(fmt.Sprintf("%s AS b ON a.role_id=b.id", roleTableName))
+	s.LEFT_OUTER_JOIN(fmt.Sprintf("%s AS c ON b.id=c.role_id", roleResourceTableName))
+	s.LEFT_OUTER_JOIN(fmt.Sprintf("%s AS d ON c.resource_id=d.id", resourceTableName))
+	s.LEFT_OUTER_JOIN(fmt.Sprintf("%s AS e ON d.id=e.resource_id", resourceRuleTableName))
+	s.WHERE(fmt.Sprintf("a.id=%s", s.Param(selector.UserID)))
+	logger.Debug(s.String())
+
+	queryResult, err := database.Database.QueryContext(ctx, s.String(), s.Params()...)
+	if err != nil {
+		logger.Error(err)
+		return
+	}
+
+	defer queryResult.Close()
+	for queryResult.Next() {
+		userResourceSummary := UserResourceSummary{}
+		if err = queryResult.Scan(
+			&userResourceSummary.Name,
+			&userResourceSummary.Action,
+			// TODO: Key,Value
+		); err != nil {
+			logger.Error(err)
+			return
+		}
+		result = append(result, &userResourceSummary)
+	}
+	if err = queryResult.Err(); err != nil {
+		logger.Error(err)
+		return
+	}
+
 	return
 }

@@ -427,16 +427,16 @@ func TestPermissionRoleResourceTable(t *testing.T) {
 
 		randUseSeed := rand.Intn(4)
 		if randUseSeed == 0 {
-			testCreateParams.Action = RoleResourceInsertAction
+			testCreateParams.Action = ActionInsert
 		}
 		if randUseSeed == 1 {
-			testCreateParams.Action = RoleResourceQueryAction
+			testCreateParams.Action = ActionQuery
 		}
 		if randUseSeed == 2 {
-			testCreateParams.Action = RoleResourceUpdateAction
+			testCreateParams.Action = ActionUpdate
 		}
 		if randUseSeed == 3 {
-			testCreateParams.Action = RoleResourceDeleteAction
+			testCreateParams.Action = ActionDelete
 		}
 
 		roleResourceSelector := RoleResourceSelector{
@@ -570,7 +570,7 @@ func TestPermissionRoleResourceTable(t *testing.T) {
 }
 
 func TestPermissionRoleResourceRuleTable(t *testing.T) {
-	roleResourceRuleTable := &roleResourceRuleTable{}
+	roleResourceRuleTable := &resourceRuleTable{}
 
 	context := context.TODO()
 
@@ -588,27 +588,27 @@ func TestPermissionRoleResourceRuleTable(t *testing.T) {
 		MaxCount: 100,
 	}
 
-	testRoleResourceRules := []*RoleResourceRule{}
+	testRoleResourceRules := []*ResourceRule{}
 
 	// create test & check result
 	if err := quick.Check(func() bool {
-		testCreateParams := RoleResourceRule{
+		testCreateParams := ResourceRule{
 			Key:            helper.GenerateRandomString(64),
 			Value:          helper.GenerateRandomString(128),
-			RoleResourceID: rand.Int63n(math.MaxInt32),
+			ResourceID: rand.Int63n(math.MaxInt32),
 		}
 
-		roleResourceRuleSelector := RoleResourceRuleSelector{
+		roleResourceRuleSelector := ResourceRuleSelector{
 			Key:            &testCreateParams.Key,
-			RoleResourceID: &testCreateParams.RoleResourceID,
+			RoleResourceID: &testCreateParams.ResourceID,
 		}
 
-		if err := roleResourceRuleTable.CreateRoleResourceRule(context, testCreateParams); err != nil {
+		if err := roleResourceRuleTable.CreateResourceRule(context, testCreateParams); err != nil {
 			t.Errorf("Create failed: %v", err)
 			return false
 		}
 
-		countResult, err := roleResourceRuleTable.CountRoleResourceRules(context, RoleResourceRuleSelector{})
+		countResult, err := roleResourceRuleTable.CountResourceRules(context, ResourceRuleSelector{})
 		if err != nil {
 			t.Errorf("Count failed: %v", err)
 			return false
@@ -619,7 +619,7 @@ func TestPermissionRoleResourceRuleTable(t *testing.T) {
 			return false
 		}
 
-		queryCreateResult, err := roleResourceRuleTable.QueryRoleResourceRules(context, roleResourceRuleSelector, nil, nil)
+		queryCreateResult, err := roleResourceRuleTable.QueryResourceRules(context, roleResourceRuleSelector, nil, nil)
 		if err != nil {
 			t.Errorf("Query failed: %v", err)
 			return false
@@ -640,7 +640,7 @@ func TestPermissionRoleResourceRuleTable(t *testing.T) {
 			return false
 		}
 
-		if queryCreateResult[0].RoleResourceID != testCreateParams.RoleResourceID {
+		if queryCreateResult[0].ResourceID != testCreateParams.ResourceID {
 			t.Errorf("Query result are incorrect: %v", queryCreateResult)
 			return false
 		}
@@ -659,7 +659,7 @@ func TestPermissionRoleResourceRuleTable(t *testing.T) {
 		var offsetUint64 = int64(offsetInt)
 		var limitUint64 = int64(limitInt)
 
-		queryPaginationResult, err := roleResourceRuleTable.QueryRoleResourceRules(context, RoleResourceRuleSelector{}, &Pagination{
+		queryPaginationResult, err := roleResourceRuleTable.QueryResourceRules(context, ResourceRuleSelector{}, &Pagination{
 			Offset: &offsetUint64,
 			Limit:  &limitUint64,
 		}, nil)
@@ -683,7 +683,7 @@ func TestPermissionRoleResourceRuleTable(t *testing.T) {
 				t.Errorf("Query result are incorrect: %v", queryPaginationResult)
 				return false
 			}
-			if queryPaginationResult[0].RoleResourceID != testRoleResourceRules[offsetInt].RoleResourceID {
+			if queryPaginationResult[0].ResourceID != testRoleResourceRules[offsetInt].ResourceID {
 				t.Errorf("Query result are incorrect: %v", queryPaginationResult)
 				return false
 			}
@@ -696,7 +696,7 @@ func TestPermissionRoleResourceRuleTable(t *testing.T) {
 
 	// delete test & check result
 	for _, testSecret := range testRoleResourceRules {
-		roleResourceRuleSelector := RoleResourceRuleSelector{}
+		roleResourceRuleSelector := ResourceRuleSelector{}
 		randUseSeed := rand.Intn(2)
 		if randUseSeed == 0 {
 			roleResourceRuleSelector.ID = testSecret.ID
@@ -704,16 +704,16 @@ func TestPermissionRoleResourceRuleTable(t *testing.T) {
 
 		if randUseSeed == 1 {
 			roleResourceRuleSelector.Key = &testSecret.Key
-			roleResourceRuleSelector.RoleResourceID = &testSecret.RoleResourceID
+			roleResourceRuleSelector.RoleResourceID = &testSecret.ResourceID
 		}
 
-		err := roleResourceRuleTable.DeleteRoleResourceRule(context, roleResourceRuleSelector)
+		err := roleResourceRuleTable.DeleteResourceRule(context, roleResourceRuleSelector)
 		if err != nil {
 			t.Errorf("Delete failed: %v", err)
 			return
 		}
 
-		queryDeletedResult, err := roleResourceRuleTable.QueryRoleResourceRules(context, roleResourceRuleSelector, nil, nil)
+		queryDeletedResult, err := roleResourceRuleTable.QueryResourceRules(context, roleResourceRuleSelector, nil, nil)
 		if err != nil {
 			t.Errorf("Query failed: %v", err)
 			return
@@ -724,7 +724,7 @@ func TestPermissionRoleResourceRuleTable(t *testing.T) {
 			return
 		}
 
-		countUpdateResult, err := roleResourceRuleTable.CountRoleResourceRules(context, roleResourceRuleSelector)
+		countUpdateResult, err := roleResourceRuleTable.CountResourceRules(context, roleResourceRuleSelector)
 		if err != nil {
 			t.Errorf("Count failed: %v", err)
 			return
@@ -894,4 +894,15 @@ func TestPermissionUserRoleTable(t *testing.T) {
 			return
 		}
 	}
+}
+
+func TestPermission(t *testing.T) {
+	context := context.TODO()
+	permission := &permission{}
+
+	// create test data
+
+
+
+	permission.QueryUserResourceSummary(context, UserResourceSummarySelector{})
 }
