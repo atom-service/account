@@ -696,9 +696,9 @@ func (r *roleResourceTable) QueryRoleResources(ctx context.Context, selector Rol
 }
 
 type ResourceRule struct {
-	ID         *int64
-	Key        string
-	Value      string
+	ID             *int64
+	Key            string
+	Value          string
 	RoleResourceID int64
 }
 
@@ -997,7 +997,7 @@ func (r *userRoleTable) DeleteUserRole(ctx context.Context, selector UserRoleSel
 	return
 }
 
-func (r *userRoleTable) CountUserRole(ctx context.Context, selector UserRoleSelector) (result int64, err error) {
+func (r *userRoleTable) CountUserRoles(ctx context.Context, selector UserRoleSelector) (result int64, err error) {
 	s := sqls.SELECT("COUNT(*) AS count").FROM(userRoleTableName)
 
 	if selector.ID != nil {
@@ -1021,7 +1021,7 @@ func (r *userRoleTable) CountUserRole(ctx context.Context, selector UserRoleSele
 	return
 }
 
-func (r *userRoleTable) QueryUserRole(ctx context.Context, selector UserRoleSelector, pagination *Pagination, sort *Sort) (result []*UserRole, err error) {
+func (r *userRoleTable) QueryUserRoles(ctx context.Context, selector UserRoleSelector, pagination *Pagination, sort *Sort) (result []*UserRole, err error) {
 	s := sqls.SELECT(
 		"id",
 		"user_id",
@@ -1103,6 +1103,7 @@ type permission struct {
 var Permission = &permission{}
 
 type UserResourceSummary struct {
+	ID     int64
 	Name   string
 	Action string
 	Rules  []struct {
@@ -1263,7 +1264,7 @@ func (r *permission) InitDefaultPermissions(ctx context.Context) (err error) {
 
 	createUserRole := func(userRole *UserRole) (*UserRole, error) {
 		selector := UserRoleSelector{UserID: userRole.ID, RoleID: &userRole.RoleID}
-		count, err := UserRoleTable.CountUserRole(ctx, selector)
+		count, err := UserRoleTable.CountUserRoles(ctx, selector)
 		if err != nil {
 			return nil, err
 		}
@@ -1272,7 +1273,7 @@ func (r *permission) InitDefaultPermissions(ctx context.Context) (err error) {
 				return nil, err
 			}
 		}
-		result, err := UserRoleTable.QueryUserRole(ctx, selector, nil, nil)
+		result, err := UserRoleTable.QueryUserRoles(ctx, selector, nil, nil)
 		if err != nil {
 			return nil, err
 		}
@@ -1292,8 +1293,9 @@ func (r *permission) InitDefaultPermissions(ctx context.Context) (err error) {
 	return nil
 }
 
-func (r *permission) QueryUserResourceSummary(ctx context.Context, selector UserResourceSummarySelector) (result []*UserResourceSummary, err error) {
+func (r *permission) QueryUserResourceSummaries(ctx context.Context, selector UserResourceSummarySelector) (result []*UserResourceSummary, err error) {
 	s := sqls.SELECT()
+	s.SELECT("a.id AS id")
 	s.SELECT("d.name AS name")
 	s.SELECT("c.action AS action")
 	s.SELECT("e.key AS key")
@@ -1313,20 +1315,32 @@ func (r *permission) QueryUserResourceSummary(ctx context.Context, selector User
 	}
 
 	defer queryResult.Close()
+	userResourceSummaryMap := make(map[string]*UserResourceSummary)
 	for queryResult.Next() {
-		var key interface{}
-		var value interface{}
-		userResourceSummary := UserResourceSummary{}
+		cacheRule := struct {
+			ID     int64
+			Name   string
+			Action string
+			Key    string
+			Value  string
+		}{}
+	
 		if err = queryResult.Scan(
-			&userResourceSummary.Name,
-			&userResourceSummary.Action,
-			&key,
-			&value,
+			&cacheRule.ID,
+			&cacheRule.Name,
+			&cacheRule.Action,
+			&cacheRule.Key,
+			&cacheRule.Value,
 		); err != nil {
 			logger.Error(err)
 			return
 		}
-		result = append(result, &userResourceSummary)
+		
+		cacheKey := fmt.Sprintf("%d-%s-%s", cacheRule.ID, cacheRule.Action, cacheRule.Name)
+		if userResourceSummaryMap[cacheKey] == nil {
+			
+		}
+		result = append(result, &cache)
 	}
 	if err = queryResult.Err(); err != nil {
 		logger.Error(err)

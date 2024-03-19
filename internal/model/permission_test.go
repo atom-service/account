@@ -776,7 +776,7 @@ func TestPermissionUserRoleTable(t *testing.T) {
 			return false
 		}
 
-		countResult, err := userRoleTable.CountUserRole(context, UserRoleSelector{})
+		countResult, err := userRoleTable.CountUserRoles(context, UserRoleSelector{})
 		if err != nil {
 			t.Errorf("Count failed: %v", err)
 			return false
@@ -787,7 +787,7 @@ func TestPermissionUserRoleTable(t *testing.T) {
 			return false
 		}
 
-		queryCreateResult, err := userRoleTable.QueryUserRole(context, userRoleSelector, nil, nil)
+		queryCreateResult, err := userRoleTable.QueryUserRoles(context, userRoleSelector, nil, nil)
 		if err != nil {
 			t.Errorf("Query failed: %v", err)
 			return false
@@ -822,7 +822,7 @@ func TestPermissionUserRoleTable(t *testing.T) {
 		var offsetUint64 = int64(offsetInt)
 		var limitUint64 = int64(limitInt)
 
-		queryPaginationResult, err := userRoleTable.QueryUserRole(context, UserRoleSelector{}, &Pagination{
+		queryPaginationResult, err := userRoleTable.QueryUserRoles(context, UserRoleSelector{}, &Pagination{
 			Offset: &offsetUint64,
 			Limit:  &limitUint64,
 		}, nil)
@@ -872,7 +872,7 @@ func TestPermissionUserRoleTable(t *testing.T) {
 			return
 		}
 
-		queryDeletedResult, err := userRoleTable.QueryUserRole(context, selector, nil, nil)
+		queryDeletedResult, err := userRoleTable.QueryUserRoles(context, selector, nil, nil)
 		if err != nil {
 			t.Errorf("Query failed: %v", err)
 			return
@@ -883,7 +883,7 @@ func TestPermissionUserRoleTable(t *testing.T) {
 			return
 		}
 
-		countUpdateResult, err := userRoleTable.CountUserRole(context, selector)
+		countUpdateResult, err := userRoleTable.CountUserRoles(context, selector)
 		if err != nil {
 			t.Errorf("Count failed: %v", err)
 			return
@@ -907,7 +907,7 @@ func TestPermission(t *testing.T) {
 		return
 	}
 
-	queryResult, err := permission.QueryUserResourceSummary(context, UserResourceSummarySelector{UserID: 0})
+	queryResult, err := permission.QueryUserResourceSummaries(context, UserResourceSummarySelector{UserID: 0})
 	if err != nil {
 		t.Errorf("QueryUserResourceSummary failed: %v", err)
 		return

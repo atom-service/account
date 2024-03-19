@@ -24,7 +24,7 @@ func ResolvePermissionFormIncomeContext(ctx context.Context, resourceName string
 	}
 
 	// 查询当前用户所有的权限信息并交给 ruleHandler 进行判断处理
-	userRoleResult, err := model.Permission.QueryUserResourceSummary(ctx, model.UserResourceSummarySelector{UserID: authData.User.ID})
+	userRoleResult, err := model.Permission.QueryUserResourceSummaries(ctx, model.UserResourceSummarySelector{UserID: authData.User.ID})
 	if err != nil || len(userRoleResult) == 0 {
 		return false
 	}
