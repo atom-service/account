@@ -34,7 +34,7 @@ func Init(ctx context.Context) error {
 	if err := RoleResourceRuleTable.CreateTable(ctx); err != nil {
 		return err
 	}
-	if err := Permission.InitDefaultData(ctx); err != nil {
+	if err := Permission.InitDefaultPermissions(ctx); err != nil {
 		return err
 	}
 	return nil

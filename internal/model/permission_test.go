@@ -595,12 +595,12 @@ func TestPermissionRoleResourceRuleTable(t *testing.T) {
 		testCreateParams := ResourceRule{
 			Key:            helper.GenerateRandomString(64),
 			Value:          helper.GenerateRandomString(128),
-			ResourceID: rand.Int63n(math.MaxInt32),
+			RoleResourceID: rand.Int63n(math.MaxInt32),
 		}
 
 		roleResourceRuleSelector := ResourceRuleSelector{
 			Key:            &testCreateParams.Key,
-			RoleResourceID: &testCreateParams.ResourceID,
+			RoleResourceID: &testCreateParams.RoleResourceID,
 		}
 
 		if err := roleResourceRuleTable.CreateResourceRule(context, testCreateParams); err != nil {
@@ -640,7 +640,7 @@ func TestPermissionRoleResourceRuleTable(t *testing.T) {
 			return false
 		}
 
-		if queryCreateResult[0].ResourceID != testCreateParams.ResourceID {
+		if queryCreateResult[0].RoleResourceID != testCreateParams.RoleResourceID {
 			t.Errorf("Query result are incorrect: %v", queryCreateResult)
 			return false
 		}
@@ -683,7 +683,7 @@ func TestPermissionRoleResourceRuleTable(t *testing.T) {
 				t.Errorf("Query result are incorrect: %v", queryPaginationResult)
 				return false
 			}
-			if queryPaginationResult[0].ResourceID != testRoleResourceRules[offsetInt].ResourceID {
+			if queryPaginationResult[0].RoleResourceID != testRoleResourceRules[offsetInt].RoleResourceID {
 				t.Errorf("Query result are incorrect: %v", queryPaginationResult)
 				return false
 			}
@@ -704,7 +704,7 @@ func TestPermissionRoleResourceRuleTable(t *testing.T) {
 
 		if randUseSeed == 1 {
 			roleResourceRuleSelector.Key = &testSecret.Key
-			roleResourceRuleSelector.RoleResourceID = &testSecret.ResourceID
+			roleResourceRuleSelector.RoleResourceID = &testSecret.RoleResourceID
 		}
 
 		err := roleResourceRuleTable.DeleteResourceRule(context, roleResourceRuleSelector)
@@ -901,8 +901,63 @@ func TestPermission(t *testing.T) {
 	permission := &permission{}
 
 	// create test data
+  err :=	permission.InitDefaultPermissions(context)
+	if err != nil {
+		t.Errorf("InitDefaultPermissions failed: %v", err)
+		return
+	}
 
+	queryResult, err := permission.QueryUserResourceSummary(context, UserResourceSummarySelector{UserID: 0})
+	if err != nil {
+		t.Errorf("QueryUserResourceSummary failed: %v", err)
+		return
+	}
 
+	hasInsertAdminResource := false
+	hasDeleteAdminResource := false
+	hasUpdateAdminResource := false
+	hasQueryAdminResource := false
 
-	permission.QueryUserResourceSummary(context, UserResourceSummarySelector{})
+	hasInsertOwnerResource := false
+	hasDeleteOwnerResource := false
+	hasUpdateOwnerResource := false
+	hasQueryOwnerResource := false
+
+	for _, userResourceSummary := range queryResult {
+		if (userResourceSummary.Name == "all") {
+			if (userResourceSummary.Action == ActionInsert) {
+				hasInsertAdminResource = true
+			}
+			if (userResourceSummary.Action == ActionDelete) {
+				hasDeleteAdminResource = true
+			}
+			if (userResourceSummary.Action == ActionUpdate) {
+				hasUpdateAdminResource = true
+			}
+			if (userResourceSummary.Action == ActionQuery) {
+				hasQueryAdminResource = true
+			}
+		}
+		if (userResourceSummary.Name == "owner") {
+			if (userResourceSummary.Action == ActionInsert) {
+				hasInsertOwnerResource = true
+			}
+			if (userResourceSummary.Action == ActionDelete) {
+				hasDeleteOwnerResource = true
+			}
+			if (userResourceSummary.Action == ActionUpdate) {
+				hasUpdateOwnerResource = true
+			}
+			if (userResourceSummary.Action == ActionQuery) {
+				hasQueryOwnerResource = true
+			}
+		}
+	}
+
+	allAdminPassed := hasInsertAdminResource && hasDeleteAdminResource && hasUpdateAdminResource && hasQueryAdminResource
+	allOwnerPassed := hasInsertOwnerResource && hasDeleteOwnerResource && hasUpdateOwnerResource && hasQueryOwnerResource
+
+	if (!allAdminPassed || !allOwnerPassed) {
+		t.Errorf("QueryUserResourceSummary result is not as expected")
+	}
 }

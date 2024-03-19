@@ -41,7 +41,7 @@ type User struct {
 }
 
 func (srv *User) LoadProtoStruct(user *protos.User) (err error) {
-	if (user == nil) {
+	if user == nil {
 		return nil
 	}
 	srv.ID = &user.ID
@@ -111,7 +111,7 @@ type UserSelector struct {
 }
 
 func (srv *UserSelector) LoadProtoStruct(data *protos.UserSelector) {
-	if (data == nil) {
+	if data == nil {
 		return
 	}
 
@@ -144,9 +144,9 @@ func (t *userTable) CreateTable(ctx context.Context) error {
 
 	// 创建 table
 	ct := sqls.CREATE_TABLE(userTableName).IF_NOT_EXISTS()
-	ct.COLUMN("id serial NOT NULL")
+	ct.COLUMN("id serial PRIMARY KEY NOT NULL")
 	ct.COLUMN("parent_id integer NULL")
-	ct.COLUMN("username character varying(64) NOT NULL")
+	ct.COLUMN("username character varying(64) UNIQUE NOT NULL")
 	ct.COLUMN("password character varying(256) NOT NULL")
 	ct.COLUMN("created_time timestamp without time zone NULL DEFAULT now()")
 	ct.COLUMN("updated_time timestamp without time zone NULL DEFAULT now()")

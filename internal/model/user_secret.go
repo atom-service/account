@@ -153,7 +153,8 @@ func (t *secretTable) CreateTable(ctx context.Context) error {
 
 	// 创建 table
 	s := sqls.CREATE_TABLE(secretTableName).IF_NOT_EXISTS()
-	s.COLUMN("key character varying(64) NOT NULL")
+	s.COLUMN("id serial PRIMARY KEY NOT NULL")
+	s.COLUMN("key character varying(64) UNIQUE NOT NULL")
 	s.COLUMN("type character varying(64) NOT NULL")
 	s.COLUMN("value character varying(64) NOT NULL")
 	s.COLUMN("user_id integer NOT NULL")
@@ -162,6 +163,7 @@ func (t *secretTable) CreateTable(ctx context.Context) error {
 	s.COLUMN("updated_time timestamp without time zone NULL DEFAULT now()")
 	s.COLUMN("disabled_time timestamp without time zone NULL")
 	s.COLUMN("deleted_time timestamp without time zone NULL")
+	s.OPTIONS("CONSTRAINT user_secret_union_unique_keys UNIQUE (user_id, key, type)")
 	logger.Debug(s.String())
 
 	if _, err := tx.ExecContext(ctx, s.String()); err != nil {

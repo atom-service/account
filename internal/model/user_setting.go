@@ -48,7 +48,7 @@ func (t *settingTable) CreateTable(ctx context.Context) error {
 	}
 	// 创建 table
 	s := sqls.CREATE_TABLE(userSettingTableName).IF_NOT_EXISTS()
-	s.COLUMN("id serial NOT NULL")
+	s.COLUMN("id serial PRIMARY KEY NOT NULL")
 	s.COLUMN("user_id int NOT NULL")
 	s.COLUMN("key character varying(64) NOT NULL")
 	s.COLUMN("value character varying(128) NOT NULL")
@@ -56,6 +56,7 @@ func (t *settingTable) CreateTable(ctx context.Context) error {
 	s.COLUMN("created_time timestamp without time zone NULL DEFAULT now()")
 	s.COLUMN("updated_time timestamp without time zone NULL DEFAULT now()")
 	s.COLUMN("deleted_time timestamp without time zone NULL")
+	s.OPTIONS("CONSTRAINT user_setting_union_unique_keys UNIQUE (user_id, key)")
 	logger.Debug(s.String())
 
 	if _, err = tx.ExecContext(ctx, s.String()); err != nil {

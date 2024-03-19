@@ -13,7 +13,7 @@ type PermissionRule struct {
 	Value  string
 }
 
-func (p *PermissionRule) ExactMatch(action string, key string, value string) bool {
+func (p *PermissionRule) ExactMatch(action string,  key string, value string) bool {
 	return p.Action == action && p.Key == key && p.Value == value
 }
 

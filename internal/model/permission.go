@@ -56,8 +56,8 @@ func (t *roleTable) CreateTable(ctx context.Context) error {
 	}
 	// 创建 table
 	s := sqls.CREATE_TABLE(roleTableName).IF_NOT_EXISTS()
-	s.COLUMN("id serial NOT NULL")
-	s.COLUMN("name character varying(64) NOT NULL")
+	s.COLUMN("id serial PRIMARY KEY NOT NULL")
+	s.COLUMN("name character varying(64) UNIQUE NOT NULL")
 	s.COLUMN("description character varying(128) NOT NULL")
 	s.COLUMN("created_time timestamp without time zone NULL DEFAULT now()")
 	s.COLUMN("updated_time timestamp without time zone NULL DEFAULT now()")
@@ -287,8 +287,8 @@ func (t *resourceTable) CreateTable(ctx context.Context) error {
 	}
 	// 创建 table
 	s := sqls.CREATE_TABLE(resourceTableName).IF_NOT_EXISTS()
-	s.COLUMN("id serial NOT NULL")
-	s.COLUMN("name character varying(64) NOT NULL")
+	s.COLUMN("id serial PRIMARY KEY NOT NULL")
+	s.COLUMN("name character varying(64) UNIQUE NOT NULL")
 	s.COLUMN("description character varying(128) NOT NULL")
 	s.COLUMN("created_time timestamp without time zone NULL DEFAULT now()")
 	s.COLUMN("updated_time timestamp without time zone NULL DEFAULT now()")
@@ -525,10 +525,11 @@ func (t *roleResourceTable) CreateTable(ctx context.Context) error {
 
 	// 创建 table
 	s := sqls.CREATE_TABLE(roleResourceTableName).IF_NOT_EXISTS()
-	s.COLUMN("id serial NOT NULL")
+	s.COLUMN("id serial PRIMARY KEY NOT NULL")
 	s.COLUMN("action character varying(32) NOT NULL")
 	s.COLUMN("resource_id int NOT NULL")
 	s.COLUMN("role_id int NOT NULL")
+	s.OPTIONS("CONSTRAINT role_resource_union_unique_keys UNIQUE (action, resource_id, role_id)")
 	logger.Debug(s.String())
 
 	if _, err = tx.ExecContext(ctx, s.String()); err != nil {
@@ -561,7 +562,6 @@ func (r *roleResourceTable) CreateRoleResource(ctx context.Context, newResource 
 	_, err = database.Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		logger.Error(err)
-		return
 	}
 
 	return
@@ -640,7 +640,6 @@ func (r *roleResourceTable) QueryRoleResources(ctx context.Context, selector Rol
 	if selector.RoleID != nil {
 		s.WHERE("role_id=" + s.Param(selector.RoleID))
 	}
-
 	if selector.ResourceID != nil {
 		s.WHERE("resource_id=" + s.Param(selector.ResourceID))
 	}
@@ -692,7 +691,6 @@ func (r *roleResourceTable) QueryRoleResources(ctx context.Context, selector Rol
 	}
 	if err = queryResult.Err(); err != nil {
 		logger.Error(err)
-		return
 	}
 	return
 }
@@ -701,7 +699,7 @@ type ResourceRule struct {
 	ID         *int64
 	Key        string
 	Value      string
-	ResourceID int64
+	RoleResourceID int64
 }
 
 type ResourceRuleSelector struct {
@@ -728,10 +726,11 @@ func (t *resourceRuleTable) CreateTable(ctx context.Context) error {
 
 	// 创建 table
 	s := sqls.CREATE_TABLE(resourceRuleTableName).IF_NOT_EXISTS()
-	s.COLUMN("id serial NOT NULL")
-	s.COLUMN("resource_id int NOT NULL")
+	s.COLUMN("id serial PRIMARY KEY NOT NULL")
+	s.COLUMN("role_resource_id int NOT NULL")
 	s.COLUMN("key character varying(64) NOT NULL")
 	s.COLUMN("value character varying(128) NOT NULL")
+	s.OPTIONS("CONSTRAINT resource_rule_union_unique_keys UNIQUE (role_resource_id, key)")
 	logger.Debug(s.String())
 
 	if _, err = tx.ExecContext(ctx, s.String()); err != nil {
@@ -758,7 +757,7 @@ func (r *resourceRuleTable) CreateResourceRule(ctx context.Context, newRule Reso
 	s := sqls.INSERT_INTO(resourceRuleTableName)
 	s.VALUES("key", s.Param(newRule.Key))
 	s.VALUES("value", s.Param(newRule.Value))
-	s.VALUES("resource_id", s.Param(newRule.ResourceID))
+	s.VALUES("role_resource_id", s.Param(newRule.RoleResourceID))
 
 	logger.Debug(s.String())
 	_, err = database.Database.ExecContext(ctx, s.String(), s.Params()...)
@@ -786,7 +785,7 @@ func (r *resourceRuleTable) DeleteResourceRule(ctx context.Context, selector Res
 	}
 
 	if selector.RoleResourceID != nil {
-		s.WHERE("resource_id=" + s.Param(selector.RoleResourceID))
+		s.WHERE("role_resource_id=" + s.Param(selector.RoleResourceID))
 	}
 
 	logger.Debug(s.String(), s.Params())
@@ -810,7 +809,7 @@ func (r *resourceRuleTable) CountResourceRules(ctx context.Context, selector Res
 	}
 
 	if selector.RoleResourceID != nil {
-		s.WHERE("resource_id=" + s.Param(selector.RoleResourceID))
+		s.WHERE("role_resource_id=" + s.Param(selector.RoleResourceID))
 	}
 
 	logger.Debug(s.String())
@@ -826,7 +825,7 @@ func (r *resourceRuleTable) QueryResourceRules(ctx context.Context, selector Res
 	s := sqls.SELECT("id")
 	s.SELECT("key")
 	s.SELECT("value")
-	s.SELECT("resource_id")
+	s.SELECT("role_resource_id")
 	s.FROM(resourceRuleTableName)
 
 	if selector.ID != nil {
@@ -838,7 +837,7 @@ func (r *resourceRuleTable) QueryResourceRules(ctx context.Context, selector Res
 	}
 
 	if selector.RoleResourceID != nil {
-		s.WHERE("resource_id=" + s.Param(selector.RoleResourceID))
+		s.WHERE("role_resource_id=" + s.Param(selector.RoleResourceID))
 	}
 
 	if pagination == nil {
@@ -879,7 +878,7 @@ func (r *resourceRuleTable) QueryResourceRules(ctx context.Context, selector Res
 			&roleResourceRule.ID,
 			&roleResourceRule.Key,
 			&roleResourceRule.Value,
-			&roleResourceRule.ResourceID,
+			&roleResourceRule.RoleResourceID,
 		); err != nil {
 			logger.Error(err)
 			return
@@ -926,12 +925,13 @@ func (t *userRoleTable) CreateTable(ctx context.Context) error {
 
 	// 创建 table
 	s := sqls.CREATE_TABLE(userRoleTableName).IF_NOT_EXISTS()
-	s.COLUMN("id serial NOT NULL")
+	s.COLUMN("id serial PRIMARY KEY NOT NULL")
 	s.COLUMN("user_id int NOT NULL")
 	s.COLUMN("role_id int NOT NULL")
 	s.COLUMN("created_time timestamp without time zone NULL DEFAULT now()")
 	s.COLUMN("updated_time timestamp without time zone NULL DEFAULT now()")
 	s.COLUMN("disabled_time timestamp without time zone NULL")
+	s.OPTIONS("CONSTRAINT user_role_union_unique_keys UNIQUE (user_id, role_id)")
 	logger.Debug(s.String())
 
 	if _, err = tx.ExecContext(ctx, s.String()); err != nil {
@@ -1116,23 +1116,179 @@ type UserResourceSummarySelector struct {
 }
 
 // 初始化管理员权限以及用户默认的配置
-func (r *permission) InitDefaultData(ctx context.Context) error {
+func (r *permission) InitDefaultPermissions(ctx context.Context) (err error) {
 	adminName := "all"
 	adminDescription := "This represents all resources"
-	adminResource := Resource{Name: &adminName, Description: &adminDescription}
+	adminResource := &Resource{Name: &adminName, Description: &adminDescription}
 
 	ownerName := "owner"
 	ownerDescription := "This represents the user’s own resources"
-	ownerResource := Resource{Name: &ownerName, Description: &ownerDescription}
+	ownerResource := &Resource{Name: &ownerName, Description: &ownerDescription}
 
-	ResourceTable.QueryResources(ctx, ResourceSelector{Name: &adminName}, nil, nil)
+	createResource := func(resource *Resource) (*Resource, error) {
+		selector := ResourceSelector{Name: resource.Name}
+		count, err := ResourceTable.CountResources(ctx, selector)
+		if err != nil {
+			return nil, err
+		}
+		if count <= 0 {
+			if err := ResourceTable.CreateResource(ctx, *resource); err != nil {
+				return nil, err
+			}
+		}
+		result, err := ResourceTable.QueryResources(ctx, selector, nil, nil)
+		if err != nil {
+			return nil, err
+		}
 
-	if err := ResourceTable.CreateResource(ctx, Resource{Name: &adminName, Description: &adminDescription}); err != nil {
+		return result[0], nil
+	}
+
+	adminResource, err = createResource(adminResource)
+	if err != nil {
 		return err
 	}
 
-	ResourceTable.QueryResources(ctx, ResourceSelector{Name: &adminName}, nil, nil)
+	ownerResource, err = createResource(ownerResource)
+	if err != nil {
+		return err
+	}
 
+	adminName = "admin"
+	adminDescription = "This represents all role"
+	adminRole := &Role{Name: &adminName, Description: &adminDescription}
+
+	ownerName = "owner"
+	ownerDescription = "This represents the user’s own role"
+	ownerRole := &Role{Name: &ownerName, Description: &ownerDescription}
+
+	createRole := func(role *Role) (*Role, error) {
+		selector := RoleSelector{Name: role.Name}
+		count, err := RoleTable.CountRoles(ctx, selector)
+		if err != nil {
+			return nil, err
+		}
+		if count <= 0 {
+			if err := RoleTable.CreateRole(ctx, *role); err != nil {
+				return nil, err
+			}
+		}
+		result, err := RoleTable.QueryRoles(ctx, selector, nil, nil)
+		if err != nil {
+			return nil, err
+		}
+
+		return result[0], nil
+	}
+
+	adminRole, err = createRole(adminRole)
+	if err != nil {
+		return err
+	}
+
+	ownerRole, err = createRole(ownerRole)
+	if err != nil {
+		return err
+	}
+
+	adminRoleResource := &RoleResource{RoleID: *adminRole.ID, ResourceID: *adminResource.ID}
+	ownerRoleResource := &RoleResource{RoleID: *ownerRole.ID, ResourceID: *ownerResource.ID}
+
+	createRoleResource := func(role *RoleResource) (*RoleResource, error) {
+		selector := RoleResourceSelector{RoleID: &role.RoleID, ResourceID: &role.ResourceID, Action: &role.Action}
+		count, err := RoleResourceTable.CountRoleResources(ctx, selector)
+		if err != nil {
+			return nil, err
+		}
+		if count <= 0 {
+			if err := RoleResourceTable.CreateRoleResource(ctx, *role); err != nil {
+				return nil, err
+			}
+		}
+		result, err := RoleResourceTable.QueryRoleResources(ctx, selector, nil, nil)
+		if err != nil {
+			return nil, err
+		}
+
+		return result[0], nil
+	}
+
+	adminRoleResource.Action = ActionInsert
+	_, err = createRoleResource(adminRoleResource)
+	if err != nil {
+		return err
+	}
+
+	adminRoleResource.Action = ActionDelete
+	_, err = createRoleResource(adminRoleResource)
+	if err != nil {
+		return err
+	}
+
+	adminRoleResource.Action = ActionUpdate
+	_, err = createRoleResource(adminRoleResource)
+	if err != nil {
+		return err
+	}
+
+	adminRoleResource.Action = ActionQuery
+	_, err = createRoleResource(adminRoleResource)
+	if err != nil {
+		return err
+	}
+
+	ownerRoleResource.Action = ActionInsert
+	_, err = createRoleResource(ownerRoleResource)
+	if err != nil {
+		return err
+	}
+
+	ownerRoleResource.Action = ActionDelete
+	_, err = createRoleResource(ownerRoleResource)
+	if err != nil {
+		return err
+	}
+
+	ownerRoleResource.Action = ActionUpdate
+	_, err = createRoleResource(ownerRoleResource)
+	if err != nil {
+		return err
+	}
+
+	ownerRoleResource.Action = ActionQuery
+	_, err = createRoleResource(ownerRoleResource)
+	if err != nil {
+		return err
+	}
+
+	createUserRole := func(userRole *UserRole) (*UserRole, error) {
+		selector := UserRoleSelector{UserID: userRole.ID, RoleID: &userRole.RoleID}
+		count, err := UserRoleTable.CountUserRole(ctx, selector)
+		if err != nil {
+			return nil, err
+		}
+		if count <= 0 {
+			if err := UserRoleTable.CreateUserRole(ctx, *userRole); err != nil {
+				return nil, err
+			}
+		}
+		result, err := UserRoleTable.QueryUserRole(ctx, selector, nil, nil)
+		if err != nil {
+			return nil, err
+		}
+
+		return result[0], nil
+	}
+
+	adminUserRole := &UserRole{UserID: 0, RoleID: *adminRole.ID}
+	if _, err := createUserRole(adminUserRole); err != nil {
+		return err
+	}
+
+	ownerUserRole := &UserRole{UserID: 0, RoleID: *ownerRole.ID}
+	if _, err := createUserRole(ownerUserRole); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -1146,8 +1302,8 @@ func (r *permission) QueryUserResourceSummary(ctx context.Context, selector User
 	s.LEFT_OUTER_JOIN(fmt.Sprintf("%s AS b ON a.role_id=b.id", roleTableName))
 	s.LEFT_OUTER_JOIN(fmt.Sprintf("%s AS c ON b.id=c.role_id", roleResourceTableName))
 	s.LEFT_OUTER_JOIN(fmt.Sprintf("%s AS d ON c.resource_id=d.id", resourceTableName))
-	s.LEFT_OUTER_JOIN(fmt.Sprintf("%s AS e ON d.id=e.resource_id", resourceRuleTableName))
-	s.WHERE(fmt.Sprintf("a.id=%s", s.Param(selector.UserID)))
+	s.LEFT_OUTER_JOIN(fmt.Sprintf("%s AS e ON c.id=e.role_resource_id", resourceRuleTableName))
+	s.WHERE(fmt.Sprintf("a.user_id=%s", s.Param(selector.UserID)))
 	logger.Debug(s.String())
 
 	queryResult, err := database.Database.QueryContext(ctx, s.String(), s.Params()...)
@@ -1158,11 +1314,14 @@ func (r *permission) QueryUserResourceSummary(ctx context.Context, selector User
 
 	defer queryResult.Close()
 	for queryResult.Next() {
+		var key interface{}
+		var value interface{}
 		userResourceSummary := UserResourceSummary{}
 		if err = queryResult.Scan(
 			&userResourceSummary.Name,
 			&userResourceSummary.Action,
-			// TODO: Key,Value
+			&key,
+			&value,
 		); err != nil {
 			logger.Error(err)
 			return
