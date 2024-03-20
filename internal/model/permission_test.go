@@ -897,67 +897,60 @@ func TestPermissionUserRoleTable(t *testing.T) {
 }
 
 func TestPermission(t *testing.T) {
-	context := context.TODO()
-	permission := &permission{}
+	ctx := context.TODO()
+	perm := &permission{}
 
-	// create test data
-  err :=	permission.InitDefaultPermissions(context)
-	if err != nil {
-		t.Errorf("InitDefaultPermissions failed: %v", err)
-		return
+	if err := perm.InitDefaultPermissions(ctx); err != nil {
+		t.Fatalf("InitDefaultPermissions failed: %v", err)
 	}
 
-	queryResult, err := permission.QueryUserResourceSummaries(context, UserResourceSummarySelector{UserID: 0})
+	queryResult, err := perm.QueryUserResourceSummaries(ctx, UserResourceSummarySelector{UserID: 0})
 	if err != nil {
-		t.Errorf("QueryUserResourceSummary failed: %v", err)
-		return
+		t.Fatalf("QueryUserResourceSummary failed: %v", err)
 	}
 
-	hasInsertAdminResource := false
-	hasDeleteAdminResource := false
-	hasUpdateAdminResource := false
-	hasQueryAdminResource := false
+	var (
+		hasInsertAll  = false
+		hasDeleteAll  = false
+		hasUpdateAll  = false
+		hasQueryAll   = false
+		hasInsertOwn = false
+		hasDeleteOwn = false
+		hasUpdateOwn = false
+		hasQueryOwn  = false
+	)
 
-	hasInsertOwnerResource := false
-	hasDeleteOwnerResource := false
-	hasUpdateOwnerResource := false
-	hasQueryOwnerResource := false
-
-	for _, userResourceSummary := range queryResult {
-		if (userResourceSummary.Name == "all") {
-			if (userResourceSummary.Action == ActionInsert) {
-				hasInsertAdminResource = true
+	for _, summary := range queryResult {
+		switch summary.Name {
+		case "all":
+			switch summary.Action {
+			case ActionInsert:
+				hasInsertAll = true
+			case ActionDelete:
+				hasDeleteAll = true
+			case ActionUpdate:
+				hasUpdateAll = true
+			case ActionQuery:
+				hasQueryAll = true
 			}
-			if (userResourceSummary.Action == ActionDelete) {
-				hasDeleteAdminResource = true
-			}
-			if (userResourceSummary.Action == ActionUpdate) {
-				hasUpdateAdminResource = true
-			}
-			if (userResourceSummary.Action == ActionQuery) {
-				hasQueryAdminResource = true
-			}
-		}
-		if (userResourceSummary.Name == "owner") {
-			if (userResourceSummary.Action == ActionInsert) {
-				hasInsertOwnerResource = true
-			}
-			if (userResourceSummary.Action == ActionDelete) {
-				hasDeleteOwnerResource = true
-			}
-			if (userResourceSummary.Action == ActionUpdate) {
-				hasUpdateOwnerResource = true
-			}
-			if (userResourceSummary.Action == ActionQuery) {
-				hasQueryOwnerResource = true
+		case "owner":
+			switch summary.Action {
+			case ActionInsert:
+				hasInsertOwn = true
+			case ActionDelete:
+				hasDeleteOwn = true
+			case ActionUpdate:
+				hasUpdateOwn = true
+			case ActionQuery:
+				hasQueryOwn = true
 			}
 		}
 	}
 
-	allAdminPassed := hasInsertAdminResource && hasDeleteAdminResource && hasUpdateAdminResource && hasQueryAdminResource
-	allOwnerPassed := hasInsertOwnerResource && hasDeleteOwnerResource && hasUpdateOwnerResource && hasQueryOwnerResource
+	allPassed := hasInsertAll && hasDeleteAll && hasUpdateAll && hasQueryAll
+	ownPassed := hasInsertOwn && hasDeleteOwn && hasUpdateOwn && hasQueryOwn
 
-	if (!allAdminPassed || !allOwnerPassed) {
-		t.Errorf("QueryUserResourceSummary result is not as expected")
+	if !allPassed || !ownPassed {
+		t.Fatal("QueryUserResourceSummary result is not as expected")
 	}
 }

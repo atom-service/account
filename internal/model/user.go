@@ -42,45 +42,42 @@ type User struct {
 
 func (srv *User) LoadProtoStruct(user *protos.User) (err error) {
 	if user == nil {
-		return nil
+		return fmt.Errorf("user is nil")
 	}
+
 	srv.ID = &user.ID
 	srv.Username = &user.Username
 	srv.Password = &user.Password
 
 	createdTime, err := time.Parse(time.RFC3339Nano, user.CreatedTime)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to parse created time: %v", err)
 	}
-
 	srv.CreatedTime = &createdTime
 
 	updatedTime, err := time.Parse(time.RFC3339Nano, user.UpdatedTime)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to parse updated time: %v", err)
 	}
-
 	srv.UpdatedTime = &updatedTime
 
 	if user.DeletedTime != nil {
 		deletedTime, err := time.Parse(time.RFC3339Nano, *user.DeletedTime)
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to parse deleted time: %v", err)
 		}
-
 		srv.DeletedTime = &deletedTime
 	}
 
 	if user.DisabledTime != nil {
 		disabledTime, err := time.Parse(time.RFC3339Nano, *user.DisabledTime)
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to parse disabled time: %v", err)
 		}
-
 		srv.DisabledTime = &disabledTime
 	}
 
-	return
+	return nil
 }
 
 // OutProtoStruct OutProtoStruct
@@ -88,7 +85,10 @@ func (srv *User) OutProtoStruct() *protos.User {
 	user := new(protos.User)
 	user.ID = *srv.ID
 
-	user.Username = *srv.Username
+	if srv.Username != nil {
+		user.Username = *srv.Username
+	}
+	
 	user.CreatedTime = srv.CreatedTime.String()
 	user.UpdatedTime = srv.UpdatedTime.String()
 
@@ -115,15 +115,22 @@ func (srv *UserSelector) LoadProtoStruct(data *protos.UserSelector) {
 		return
 	}
 
-	srv.ID = data.ID
-	srv.Username = data.Username
+	if data.ID != nil {
+		srv.ID = data.ID
+	}
+
+	if data.Username != nil {
+		srv.Username = data.Username
+	}
 }
 
 // OutProtoStruct OutProtoStruct
 func (srv *UserSelector) OutProtoStruct() *protos.UserSelector {
-	result := new(protos.UserSelector)
-	result.Username = srv.Username
-	result.ID = srv.ID
+	result := &protos.UserSelector{
+		Username: srv.Username,
+		ID:       srv.ID,
+	}
+	
 	return result
 }
 
@@ -132,14 +139,15 @@ var UserTable = &userTable{}
 func (t *userTable) CreateTable(ctx context.Context) error {
 	tx, err := database.Database.BeginTx(ctx, &sql.TxOptions{ReadOnly: false})
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
 
 	// 创建 schema
 	cs := sqls.CREATE_SCHEMA(userSchemaName).IF_NOT_EXISTS()
 	logger.Debug(cs.String())
-	if _, err = tx.ExecContext(ctx, cs.String()); err != nil {
-		return err
+	_, err = tx.ExecContext(ctx, cs.String())
+	if err != nil {
+		return fmt.Errorf("failed to create schema: %w", err)
 	}
 
 	// 创建 table
@@ -154,9 +162,9 @@ func (t *userTable) CreateTable(ctx context.Context) error {
 	ct.COLUMN("deleted_time timestamp without time zone NULL")
 
 	logger.Debug(ct.String())
-	if _, err = tx.ExecContext(ctx, ct.String()); err != nil {
-		tx.Rollback()
-		return err
+	_, err = tx.ExecContext(ctx, ct.String())
+	if err != nil {
+		return fmt.Errorf("failed to create table: %w", err)
 	}
 
 	if err := tx.Commit(); err != nil {

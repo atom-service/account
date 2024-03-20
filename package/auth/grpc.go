@@ -11,7 +11,8 @@ import (
 	metadata "google.golang.org/grpc/metadata"
 )
 
-type contextSymbol struct { name string }
+type contextSymbol struct{ name string }
+
 var (
 	ContextUserSymbol        = contextSymbol{"ContextUserSymbol"}
 	ContextSecretSymbol      = contextSymbol{"ContextSecretSymbol"}
@@ -92,17 +93,12 @@ func (ai *serverAuthInterceptor) resolveUserIncomingContext(ctx context.Context)
 	// 说明是 serverAuthInterceptor 自己的请求
 	// 比如下面代码中的 QuerySecrets、QueryUsers 等
 	// 如果是自己的请求，则直接构造一个 Secret，不然就死循环了
-	isSelfToken := VerifyToken(ai.secretKey, ai.secretValue, tokens[0])
-	if isSelfToken {
-		ctx = context.WithValue(ctx, ContextUserSymbol, &protos.User{
-			Username: "InternalRuntimeUser",
-		})
+	isSelfBackToken := VerifyToken(ai.secretKey, ai.secretValue, tokens[0])
+	if isSelfBackToken {
 		ctx = context.WithValue(ctx, ContextSecretSymbol, &protos.Secret{
 			Key:   ai.secretKey,
 			Value: ai.secretValue,
 		})
-
-		// TODO: 模拟一个全权限的用户
 		return ctx
 	}
 
@@ -145,9 +141,18 @@ func (ai *serverAuthInterceptor) resolveUserIncomingContext(ctx context.Context)
 	}
 
 	user := queryUserResponse.Data.Users[0]
-	permissions := summaryForUserResponse.Data
-	ctx = context.WithValue(ctx, ContextUserSymbol, user)
-	ctx = context.WithValue(ctx, ContextSecretSymbol, secret)
+	userModel := new(model.User)
+	userModel.LoadProtoStruct(user)
+
+	permissions := []*model.UserResourcePermissionSummary{}
+	for _, summary := range summaryForUserResponse.Data {
+		summaryMode := new(model.UserResourcePermissionSummary)
+		summaryMode.LoadProtoStruct(summary)
+		permissions = append(permissions, summaryMode)
+	}
+
+	ctx = context.WithValue(ctx, ContextUserSymbol, userModel)
+	ctx = context.WithValue(ctx, ContextSecretSymbol, secretModel)
 	ctx = context.WithValue(ctx, ContextPermissionsSymbol, permissions)
 	return ctx
 }
@@ -159,9 +164,9 @@ func (ai *serverAuthInterceptor) ServerUnary(ctx context.Context, req interface{
 }
 
 type AuthData struct {
-	User        *protos.User
-	Secret      *protos.Secret
-	Permissions []*protos.UserResourceSummary
+	User        *model.User
+	Secret      *model.Secret
+	Permissions []*model.UserResourcePermissionSummary
 }
 
 func ResolveAuthFromIncomingContext(ctx context.Context) *AuthData {
@@ -171,22 +176,22 @@ func ResolveAuthFromIncomingContext(ctx context.Context) *AuthData {
 	permissions := ctx.Value(ContextPermissionsSymbol)
 
 	if user != nil {
-		if passUser, ok := user.(*protos.User); ok {
+		if passUser, ok := user.(*model.User); ok {
 			data.User = passUser
 		}
 	}
 
 	if secret != nil {
-		if passSecret, ok := secret.(*protos.Secret); ok {
+		if passSecret, ok := secret.(*model.Secret); ok {
 			data.Secret = passSecret
 		}
 	}
 
 	if permissions != nil {
 		if passPermissions, ok := permissions.([]any); ok {
-			data.Permissions = make([]*protos.UserResourceSummary, len(passPermissions))
+			data.Permissions = make([]*model.UserResourcePermissionSummary, len(passPermissions))
 			for _, passPermission := range passPermissions {
-				if passUserResourceSummary, ok := passPermission.(*protos.UserResourceSummary); ok {
+				if passUserResourceSummary, ok := passPermission.(*model.UserResourcePermissionSummary); ok {
 					data.Permissions = append(data.Permissions, passUserResourceSummary)
 				}
 			}
@@ -194,4 +199,29 @@ func ResolveAuthFromIncomingContext(ctx context.Context) *AuthData {
 	}
 
 	return data
+}
+
+func ResolvePermissionFromIncomingContext(ctx context.Context, handler func(*model.User, *model.UserResourcePermissionSummary) bool) bool {
+	authData := ResolveAuthFromIncomingContext(ctx)
+
+	// 不一定都有，部分信息也可以处理
+	if authData == nil || authData.User == nil || authData.Secret == nil {
+		return false
+	}
+
+	userID := authData.User.ID
+
+	roles, err := model.Permission.QueryUserResourceSummaries(ctx, model.UserResourceSummarySelector{UserID: *userID})
+
+	if err != nil || len(roles) == 0 {
+		return false
+	}
+
+	for _, role := range roles {
+		if handler(authData.User, role) {
+			return true
+		}
+	}
+
+	return false
 }

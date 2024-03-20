@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/atom-service/account/internal/database"
+	"github.com/atom-service/account/package/protos"
 	"github.com/atom-service/common/logger"
 	"github.com/yinxulai/sqls"
 )
@@ -1102,13 +1103,47 @@ type permission struct {
 
 var Permission = &permission{}
 
-type UserResourceSummary struct {
-	ID     int64
+type UserResourcePermissionRule struct {
+	Key   string
+	Value string
+}
+
+type UserResourcePermissionSummary struct {
 	Name   string
 	Action string
-	Rules  []struct {
-		Key   string
-		Value string
+	Rules  []*UserResourcePermissionRule
+}
+
+func (p *UserResourcePermissionSummary) HasOwner() bool {
+		return p.Name == "owner"
+}
+
+func (src *UserResourcePermissionSummary) LoadProtoStruct(data *protos.UserResourceSummary) {
+	// 加载 data 信息到 src 上
+	src.Name = data.GetName()
+
+	if (data.Action == protos.ResourceAction_Insert) {
+		src.Action = ActionInsert
+	}
+
+	if (data.Action == protos.ResourceAction_Delete) {
+		src.Action = ActionDelete
+	}
+
+	if (data.Action == protos.ResourceAction_Update) {
+		src.Action = ActionUpdate
+	}
+
+	if (data.Action == protos.ResourceAction_Query) {
+		src.Action = ActionQuery
+	}
+
+	src.Rules = make([]*UserResourcePermissionRule, len(data.GetRules()))
+	for i, rule := range data.GetRules() {
+		src.Rules[i] = &UserResourcePermissionRule{
+			Key:   rule.GetKey(),
+			Value: rule.GetValue(),
+		}
 	}
 }
 
@@ -1293,9 +1328,9 @@ func (r *permission) InitDefaultPermissions(ctx context.Context) (err error) {
 	return nil
 }
 
-func (r *permission) QueryUserResourceSummaries(ctx context.Context, selector UserResourceSummarySelector) (result []*UserResourceSummary, err error) {
+func (r *permission) QueryUserResourceSummaries(ctx context.Context, selector UserResourceSummarySelector) (result []*UserResourcePermissionSummary, err error) {
+	// Build the SQL query to retrieve user resource summaries from the database.
 	s := sqls.SELECT()
-	s.SELECT("a.id AS id")
 	s.SELECT("d.name AS name")
 	s.SELECT("c.action AS action")
 	s.SELECT("e.key AS key")
@@ -1306,45 +1341,75 @@ func (r *permission) QueryUserResourceSummaries(ctx context.Context, selector Us
 	s.LEFT_OUTER_JOIN(fmt.Sprintf("%s AS d ON c.resource_id=d.id", resourceTableName))
 	s.LEFT_OUTER_JOIN(fmt.Sprintf("%s AS e ON c.id=e.role_resource_id", resourceRuleTableName))
 	s.WHERE(fmt.Sprintf("a.user_id=%s", s.Param(selector.UserID)))
+
+	// Log the query string for debugging purposes.
 	logger.Debug(s.String())
 
+	// Execute the query and retrieve the result set.
 	queryResult, err := database.Database.QueryContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		logger.Error(err)
-		return
+		return nil, err
 	}
 
+	// Close the result set once we are done.
 	defer queryResult.Close()
-	userResourceSummaryMap := make(map[string]*UserResourceSummary)
+
+	// Map to store the user resource summaries, keyed by the cache key.
+	userResourceSummaryMap := make(map[string]*UserResourcePermissionSummary)
+
+	// Iterate over the result set and populate the user resource summary map.
 	for queryResult.Next() {
 		cacheRule := struct {
-			ID     int64
 			Name   string
 			Action string
-			Key    string
-			Value  string
+			Key    *string
+			Value  *string
 		}{}
-	
+
+		// Scan the result set row into the cacheRule struct.
 		if err = queryResult.Scan(
-			&cacheRule.ID,
 			&cacheRule.Name,
 			&cacheRule.Action,
 			&cacheRule.Key,
 			&cacheRule.Value,
 		); err != nil {
 			logger.Error(err)
-			return
+			return nil, err
 		}
-		
-		cacheKey := fmt.Sprintf("%d-%s-%s", cacheRule.ID, cacheRule.Action, cacheRule.Name)
-		if userResourceSummaryMap[cacheKey] == nil {
-			
+
+		// Generate the cache key for the user resource summary.
+		cacheKey := fmt.Sprintf("%s-%s", cacheRule.Action, cacheRule.Name)
+
+		// If the cache key doesn't exist in the map, create a new UserResourceSummary object.
+		if _, has := userResourceSummaryMap[cacheKey]; !has {
+			userResourceSummaryMap[cacheKey] = &UserResourcePermissionSummary{
+				Name:   cacheRule.Name,
+				Action: cacheRule.Action,
+				Rules:  []*UserResourcePermissionRule{},
+			}
 		}
-		result = append(result, &cache)
+
+		// Add the user resource rule to the user resource summary.
+		userResourceSummary := userResourceSummaryMap[cacheKey]
+		rule := &UserResourcePermissionRule{}
+
+		if cacheRule.Key != nil {
+			rule.Key = *cacheRule.Key
+		}
+
+		if cacheRule.Value != nil {
+			rule.Value = *cacheRule.Value
+		}
+
+		if cacheRule.Key != nil || cacheRule.Value != nil {
+			userResourceSummary.Rules = append(userResourceSummary.Rules, rule)
+		}
 	}
-	if err = queryResult.Err(); err != nil {
-		logger.Error(err)
-		return
+
+	// Convert the user resource summary map to a list and return.
+	for _, data := range userResourceSummaryMap {
+		result = append(result, data)
 	}
 
 	return

@@ -154,10 +154,15 @@ message UpdateResourceResponse {
   string Message = 2;
 }
 
+message UserResourceRule {
+  string Key = 1;
+  string Value = 2;
+}
+
 message UserResourceSummary {
   string Name = 1;
   ResourceAction Action = 2;
-  repeated string Rules = 3;
+  repeated UserResourceRule Rules = 3;
 }
 
 message SummaryForUserRequest {

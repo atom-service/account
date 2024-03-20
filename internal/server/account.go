@@ -3,7 +3,6 @@ package server
 import (
 	"context"
 	"fmt"
-	"strconv"
 	"time"
 
 	"github.com/atom-service/account/internal/helper"
@@ -227,10 +226,12 @@ func (s *accountServer) QueryUsers(ctx context.Context, request *protos.QueryUse
 
 func (s *accountServer) DeleteUser(ctx context.Context, request *protos.DeleteUserRequest) (response *protos.DeleteUserResponse, err error) {
 	response = &protos.DeleteUserResponse{}
-	if pass := ResolvePermissionFormIncomeContext(ctx, "User", func(rule PermissionRule) bool {
-		matchID := rule.ExactMatch(model.ActionDelete, "id", strconv.FormatInt(*request.Selectors.ID, 10))
-		matchName := rule.ExactMatch(model.ActionDelete, "username", *request.Selectors.Username)
-		return matchID || matchName
+	if pass := auth.ResolvePermissionFromIncomingContext(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
+		permission.HasOwner() 
+		// matchID := rule.ExactMatch(model.ActionDelete, "id", strconv.FormatInt(*request.Selectors.ID, 10))
+		// matchName := rule.ExactMatch(model.ActionDelete, "username", *request.Selectors.Username)
+		// return matchID || matchName
+		return false
 	}); !pass {
 		response.State = protos.State_NO_PERMISSION
 		response.Message = "Not logged in"
