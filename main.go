@@ -10,8 +10,9 @@ import (
 	"github.com/atom-service/account/internal/model"
 	"github.com/atom-service/account/internal/server"
 	"github.com/atom-service/account/package/auth"
-	"github.com/atom-service/account/package/protos"
+	"github.com/atom-service/account/package/proto"
 	"github.com/atom-service/common/config"
+	"github.com/atom-service/common/logger"
 	"google.golang.org/grpc"
 )
 
@@ -22,6 +23,7 @@ func init() {
 func main() {
 	// 声明&初始化配置
 	config.MustLoad()
+	logger.SetLevel(logger.InfoLevel)
 
 	listenAddress := ":" + config.MustGet("port")
 	listen, err := net.Listen("tcp", listenAddress)
@@ -42,15 +44,10 @@ func main() {
 		panic(err)
 	}
 
-	// 初始化管理员账号
-	if err := server.AccountServer.InitAdminUser(context); err != nil {
-		panic(err)
-	}
-
 	serverAuth := auth.NewServerAuthInterceptor(listenAddress, helper.GodSecretKey, helper.GodSecretValue)
 	grpcServer := grpc.NewServer(grpc.ChainUnaryInterceptor(serverAuth.ServerUnary))
 
-	protos.RegisterAccountServiceServer(grpcServer, server.AccountServer)
-	protos.RegisterPermissionServiceServer(grpcServer, server.PermissionServer)
+	proto.RegisterAccountServiceServer(grpcServer, server.AccountServer)
+	proto.RegisterPermissionServiceServer(grpcServer, server.PermissionServer)
 	panic(grpcServer.Serve(listen))
 }

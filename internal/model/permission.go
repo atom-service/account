@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/atom-service/account/internal/database"
-	"github.com/atom-service/account/package/protos"
+	"github.com/atom-service/account/package/proto"
 	"github.com/atom-service/common/logger"
 	"github.com/yinxulai/sqls"
 )
@@ -41,6 +41,52 @@ type RoleSelector struct {
 	Name *string
 }
 
+func (r *RoleSelector) LoadProto(data *proto.RoleSelector) {
+	if data == nil {
+		return
+	}
+
+	if data.ID != nil {
+		r.ID = data.ID
+	}
+
+	if data.Name != nil {
+		r.Name = data.Name
+	}
+}
+
+func (srv *Role) ToProto() *proto.Role {
+	role := new(proto.Role)
+	if srv.ID != nil {
+		role.ID = *srv.ID
+	}
+	if srv.Name != nil {
+		role.Name = *srv.Name
+	}
+	if srv.Description != nil {
+		role.Description = *srv.Description
+	}
+
+	if srv.Description != nil {
+		role.Description = *srv.Description
+	}
+
+	if srv.CreatedTime != nil {
+		role.CreatedTime = srv.CreatedTime.String()
+	}
+
+	if srv.UpdatedTime != nil {
+		role.UpdatedTime = srv.UpdatedTime.String()
+	}
+
+	if srv.DeletedTime != nil {
+		timeString := srv.DeletedTime.String()
+		role.DeletedTime = &timeString
+	}
+
+	return role
+}
+
 type roleTable struct{}
 
 func (t *roleTable) CreateTable(ctx context.Context) error {
@@ -59,7 +105,7 @@ func (t *roleTable) CreateTable(ctx context.Context) error {
 	s := sqls.CREATE_TABLE(roleTableName).IF_NOT_EXISTS()
 	s.COLUMN("id serial PRIMARY KEY NOT NULL")
 	s.COLUMN("name character varying(64) UNIQUE NOT NULL")
-	s.COLUMN("description character varying(128) NOT NULL")
+	s.COLUMN("description character varying(128) NULL")
 	s.COLUMN("created_time timestamp without time zone NULL DEFAULT now()")
 	s.COLUMN("updated_time timestamp without time zone NULL DEFAULT now()")
 	s.COLUMN("disabled_time timestamp without time zone NULL")
@@ -105,7 +151,7 @@ func (r *roleTable) UpdateRole(ctx context.Context, selector RoleSelector, role 
 	s := sqls.UPDATE(roleTableName)
 
 	if selector.ID == nil && selector.Name == nil {
-		return fmt.Errorf("elector conditions cannot all be empty")
+		return fmt.Errorf("selector conditions cannot all be empty")
 	}
 
 	if selector.ID != nil {
@@ -143,7 +189,7 @@ func (r *roleTable) DeleteRole(ctx context.Context, selector RoleSelector) (err 
 	s := sqls.UPDATE(roleTableName)
 
 	if selector.ID == nil && selector.Name == nil {
-		return fmt.Errorf("elector conditions cannot all be empty")
+		return fmt.Errorf("selector conditions cannot all be empty")
 	}
 
 	if selector.ID != nil {
@@ -267,9 +313,38 @@ type Resource struct {
 	UpdatedTime *time.Time
 	DeletedTime *time.Time
 }
+
+func (srv *Resource) ToProto() *proto.Resource {
+	resource := new(proto.Resource)
+	resource.ID = *srv.ID
+
+	if srv.Name != nil {
+		resource.Name = *srv.Name
+	}
+
+	resource.CreatedTime = srv.CreatedTime.String()
+	resource.UpdatedTime = srv.UpdatedTime.String()
+
+	if srv.DeletedTime != nil {
+		timeString := srv.DeletedTime.String()
+		resource.DeletedTime = &timeString
+	}
+
+	return resource
+}
+
 type ResourceSelector struct {
 	ID   *int64
 	Name *string
+}
+
+func (r *ResourceSelector) LoadProto(data *proto.ResourceSelector) {
+	if data == nil {
+		return
+	}
+
+	r.ID = data.ID
+	r.Name = data.Name
 }
 
 type resourceTable struct{}
@@ -290,7 +365,7 @@ func (t *resourceTable) CreateTable(ctx context.Context) error {
 	s := sqls.CREATE_TABLE(resourceTableName).IF_NOT_EXISTS()
 	s.COLUMN("id serial PRIMARY KEY NOT NULL")
 	s.COLUMN("name character varying(64) UNIQUE NOT NULL")
-	s.COLUMN("description character varying(128) NOT NULL")
+	s.COLUMN("description character varying(128) NULL")
 	s.COLUMN("created_time timestamp without time zone NULL DEFAULT now()")
 	s.COLUMN("updated_time timestamp without time zone NULL DEFAULT now()")
 	s.COLUMN("deleted_time timestamp without time zone NULL")
@@ -335,7 +410,7 @@ func (r *resourceTable) UpdateResource(ctx context.Context, selector ResourceSel
 	s := sqls.UPDATE(resourceTableName)
 
 	if selector.ID == nil && selector.Name == nil {
-		return fmt.Errorf("elector conditions cannot all be empty")
+		return fmt.Errorf("selector conditions cannot all be empty")
 	}
 
 	if selector.ID != nil {
@@ -373,7 +448,7 @@ func (r *resourceTable) DeleteResource(ctx context.Context, selector ResourceSel
 	s := sqls.UPDATE(resourceTableName)
 
 	if selector.ID == nil && selector.Name == nil {
-		return fmt.Errorf("elector conditions cannot all be empty")
+		return fmt.Errorf("selector conditions cannot all be empty")
 	}
 
 	if selector.ID != nil {
@@ -502,11 +577,57 @@ type RoleResource struct {
 	ResourceID int64
 }
 
+func (srv *RoleResource) LoadProto(data *proto.RoleResource) {
+	if data == nil {
+		return
+	}
+
+	srv.RoleID = data.ResourceID
+
+	if data.Action == proto.ResourceAction_Insert {
+		srv.Action = ActionInsert
+	}
+
+	if data.Action == proto.ResourceAction_Delete {
+		srv.Action = ActionDelete
+	}
+
+	if data.Action == proto.ResourceAction_Update {
+		srv.Action = ActionUpdate
+	}
+
+	if data.Action == proto.ResourceAction_Query {
+		srv.Action = ActionQuery
+	}
+}
+
 type RoleResourceSelector struct {
 	ID         *int64
 	Action     *string
 	RoleID     *int64
 	ResourceID *int64
+}
+
+func (srv *RoleResourceSelector) LoadProtoAction(action proto.ResourceAction) {
+	if action == proto.ResourceAction_Insert {
+		var temp = ActionInsert
+		srv.Action = &temp
+	}
+
+	if action == proto.ResourceAction_Delete {
+		var temp = ActionDelete
+		srv.Action = &temp
+	}
+
+	if action == proto.ResourceAction_Update {
+		var temp = ActionUpdate
+		srv.Action = &temp
+	}
+
+	if action == proto.ResourceAction_Query {
+		var temp = ActionQuery
+		srv.Action = &temp
+	}
 }
 
 type roleResourceTable struct{}
@@ -570,10 +691,6 @@ func (r *roleResourceTable) CreateRoleResource(ctx context.Context, newResource 
 
 func (r *roleResourceTable) DeleteRoleResource(ctx context.Context, selector RoleResourceSelector) (err error) {
 	s := sqls.DELETE_FROM(roleResourceTableName)
-
-	if selector.ID == nil && selector.Action == nil && selector.ResourceID == nil {
-		return fmt.Errorf("elector conditions cannot all be empty")
-	}
 
 	if selector.ID != nil {
 		s.WHERE("id=" + s.Param(selector.ID))
@@ -703,6 +820,13 @@ type ResourceRule struct {
 	RoleResourceID int64
 }
 
+const (
+	// 代表匹配任何 key
+	ResourceRuleKeyOfAny = "*"
+	// 代表匹配任何 value
+	ResourceRuleValueOfAny = "*"
+)
+
 type ResourceRuleSelector struct {
 	ID             *int64
 	Key            *string
@@ -772,10 +896,6 @@ func (r *resourceRuleTable) CreateResourceRule(ctx context.Context, newRule Reso
 
 func (r *resourceRuleTable) DeleteResourceRule(ctx context.Context, selector ResourceRuleSelector) (err error) {
 	s := sqls.DELETE_FROM(resourceRuleTableName)
-
-	if selector.ID == nil && selector.RoleResourceID == nil && selector.Key == nil {
-		return fmt.Errorf("elector conditions cannot all be empty")
-	}
 
 	if selector.ID != nil {
 		s.WHERE("id=" + s.Param(selector.ID))
@@ -974,7 +1094,7 @@ func (r *userRoleTable) DeleteUserRole(ctx context.Context, selector UserRoleSel
 	s := sqls.DELETE_FROM(userRoleTableName)
 
 	if selector.ID == nil && selector.UserID == nil && selector.RoleID == nil {
-		return fmt.Errorf("elector conditions cannot all be empty")
+		return fmt.Errorf("selector conditions cannot all be empty")
 	}
 
 	if selector.ID != nil {
@@ -1114,27 +1234,72 @@ type UserResourcePermissionSummary struct {
 	Rules  []*UserResourcePermissionRule
 }
 
-func (p *UserResourcePermissionSummary) HasOwner() bool {
-		return p.Name == "owner"
+func (srv *UserResourcePermissionSummary) ToProto() *proto.UserResourceSummary {
+	result := &proto.UserResourceSummary{}
+	result.Name = srv.Name
+
+	if srv.Action == ActionInsert {
+		result.Action = proto.ResourceAction_Insert
+	}
+	if srv.Action == ActionDelete {
+		result.Action = proto.ResourceAction_Delete
+	}
+	if srv.Action == ActionUpdate {
+		result.Action = proto.ResourceAction_Update
+	}
+	if srv.Action == ActionQuery {
+		result.Action = proto.ResourceAction_Query
+	}
+
+	for _, rule := range srv.Rules {
+		result.Rules = append(result.Rules, &proto.UserResourceRule{
+			Key:   rule.Key,
+			Value: rule.Value,
+		})
+	}
+
+	return result
 }
 
-func (src *UserResourcePermissionSummary) LoadProtoStruct(data *protos.UserResourceSummary) {
+func (p *UserResourcePermissionSummary) HasOwner() bool {
+	return p.Name == "owner"
+}
+
+func (p *UserResourcePermissionSummary) MatchRules(name string, action string, rules ...UserResourcePermissionRule) bool {
+	if p.Name != name || p.Action != action {
+		return false
+	}
+
+	for _, targetRule := range rules {
+		for _, sourceRule := range p.Rules {
+			matchKey := targetRule.Key == sourceRule.Key
+			matchValue := targetRule.Value == sourceRule.Value
+			if matchKey && matchValue {
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
+func (src *UserResourcePermissionSummary) LoadProto(data *proto.UserResourceSummary) {
 	// 加载 data 信息到 src 上
 	src.Name = data.GetName()
 
-	if (data.Action == protos.ResourceAction_Insert) {
+	if data.Action == proto.ResourceAction_Insert {
 		src.Action = ActionInsert
 	}
 
-	if (data.Action == protos.ResourceAction_Delete) {
+	if data.Action == proto.ResourceAction_Delete {
 		src.Action = ActionDelete
 	}
 
-	if (data.Action == protos.ResourceAction_Update) {
+	if data.Action == proto.ResourceAction_Update {
 		src.Action = ActionUpdate
 	}
 
-	if (data.Action == protos.ResourceAction_Query) {
+	if data.Action == proto.ResourceAction_Query {
 		src.Action = ActionQuery
 	}
 
@@ -1148,7 +1313,8 @@ func (src *UserResourcePermissionSummary) LoadProtoStruct(data *protos.UserResou
 }
 
 type UserResourceSummarySelector struct {
-	UserID int64
+	RoleID *int64
+	UserID *int64
 }
 
 // 初始化管理员权限以及用户默认的配置
@@ -1316,12 +1482,12 @@ func (r *permission) InitDefaultPermissions(ctx context.Context) (err error) {
 		return result[0], nil
 	}
 
-	adminUserRole := &UserRole{UserID: 0, RoleID: *adminRole.ID}
+	adminUserRole := &UserRole{UserID: 1, RoleID: *adminRole.ID}
 	if _, err := createUserRole(adminUserRole); err != nil {
 		return err
 	}
 
-	ownerUserRole := &UserRole{UserID: 0, RoleID: *ownerRole.ID}
+	ownerUserRole := &UserRole{UserID: 1, RoleID: *ownerRole.ID}
 	if _, err := createUserRole(ownerUserRole); err != nil {
 		return err
 	}
@@ -1340,7 +1506,14 @@ func (r *permission) QueryUserResourceSummaries(ctx context.Context, selector Us
 	s.LEFT_OUTER_JOIN(fmt.Sprintf("%s AS c ON b.id=c.role_id", roleResourceTableName))
 	s.LEFT_OUTER_JOIN(fmt.Sprintf("%s AS d ON c.resource_id=d.id", resourceTableName))
 	s.LEFT_OUTER_JOIN(fmt.Sprintf("%s AS e ON c.id=e.role_resource_id", resourceRuleTableName))
-	s.WHERE(fmt.Sprintf("a.user_id=%s", s.Param(selector.UserID)))
+
+	if selector.UserID != nil {
+		s.WHERE(fmt.Sprintf("a.user_id=%s", s.Param(selector.UserID)))
+	}
+
+	if selector.RoleID != nil {
+		s.WHERE(fmt.Sprintf("a.role_id=%s", s.Param(selector.RoleID)))
+	}
 
 	// Log the query string for debugging purposes.
 	logger.Debug(s.String())

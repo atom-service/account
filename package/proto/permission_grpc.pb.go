@@ -4,7 +4,7 @@
 // - protoc             v3.21.8
 // source: permission.proto
 
-package protos
+package proto
 
 import (
 	context "context"

@@ -1,7 +1,7 @@
 syntax = "proto3";
 
-// 声明包为当前目录下的 protos
-option go_package = "./protos";
+// 声明包为当前目录下的 proto
+option go_package = "./proto";
 
 import  "common.proto";
 
@@ -25,10 +25,15 @@ message SignInRequest {
   string Password = 2;
 }
 
+message SignedInToken {
+  string Token = 1;
+  string ExpiredTime = 2;
+}
+
 message SignInResponse {
   State State = 1;
-  string Message = 2;
-  string AuthenticationToken = 3;
+  string Code = 2;
+  SignedInToken Token = 3;
 }
 
 message SignUpRequest {
@@ -38,7 +43,7 @@ message SignUpRequest {
 
 message SignUpResponse {
   State State = 1;
-  string Message = 2;
+  string Code = 2;
 }
 
 message SignOutRequest {
@@ -47,7 +52,7 @@ message SignOutRequest {
 
 message SignOutResponse {
   State State = 1;
-  string Message = 2;
+  string Code = 2;
 }
 
 message QueryUsersRequest {
@@ -63,17 +68,17 @@ message QueryUsersResponse {
   }
 
   State State = 1;
-  string Message = 2;
+  string Code = 2;
   DataType Data = 3;
 }
 
 message DeleteUserRequest {
-  UserSelector Selectors = 1;
+  UserSelector Selector = 1;
 }
 
 message DeleteUserResponse {
   State State = 1;
-  string Message = 2;
+  string Code = 2;
 }
 
 message Secret {
@@ -93,12 +98,12 @@ message SecretSelector {
 }
 
 message CreateSecretRequest {
-
+  UserSelector Selector = 1;
 }
 
 message CreateSecretResponse {
   State State = 1;
-  string Message = 2;
+  string Code = 2;
 }
 
 message DisableSecretRequest {
@@ -107,7 +112,7 @@ message DisableSecretRequest {
 
 message DisableSecretResponse {
   State State = 1;
-  string Message = 2;
+  string Code = 2;
 }
 
 message DeleteSecreteRequest {
@@ -116,7 +121,7 @@ message DeleteSecreteRequest {
 
 message DeleteSecreteResponse {
   State State = 1;
-  string Message = 2;
+  string Code = 2;
 }
 
 message QuerySecretsRequest {
@@ -132,7 +137,7 @@ message QuerySecretsResponse {
   }
 
   State State = 1;
-  string Message = 2;
+  string Code = 2;
   DataType Data = 3;
 }
 
@@ -148,7 +153,7 @@ message Setting {
 }
 
 message SettingSelector {
-  optional string ID = 1;
+  optional int64 ID = 1;
   optional string Key = 2;
   optional int64  UserID = 3;
 }
@@ -161,7 +166,7 @@ message CreateSettingRequest {
 
 message CreateSettingResponse {
   State State = 1;
-  string Message = 2;
+  string Code = 2;
 }
 
 message UpdateSettingRequest {
@@ -176,7 +181,7 @@ message UpdateSettingRequest {
 
 message UpdateSettingResponse {
   State State = 1;
-  string Message = 2;
+  string Code = 2;
 }
 
 message DeleteSettingRequest {
@@ -185,7 +190,7 @@ message DeleteSettingRequest {
 
 message DeleteSettingResponse {
   State State = 1;
-  string Message = 2;
+  string Code = 2;
 }
 
 message QuerySettingsRequest {
@@ -201,7 +206,7 @@ message QuerySettingsResponse {
   }
 
   State State = 1;
-  string Message = 2;
+  string Code = 2;
   DataType Data = 3;
 }
 

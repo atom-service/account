@@ -8,5 +8,8 @@
       "--go-grpc_out=${workspaceRoot}/package/protos",
       "--proto_path=${workspaceRoot}/package/protos"
     ]
-  }
+  },
+  "cSpell.words": [
+    "Infof"
+  ]
 }

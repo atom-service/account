@@ -904,7 +904,8 @@ func TestPermission(t *testing.T) {
 		t.Fatalf("InitDefaultPermissions failed: %v", err)
 	}
 
-	queryResult, err := perm.QueryUserResourceSummaries(ctx, UserResourceSummarySelector{UserID: 0})
+	testUserID := int64(1)
+	queryResult, err := perm.QueryUserResourceSummaries(ctx, UserResourceSummarySelector{UserID: &testUserID})
 	if err != nil {
 		t.Fatalf("QueryUserResourceSummary failed: %v", err)
 	}

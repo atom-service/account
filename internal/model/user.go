@@ -10,7 +10,8 @@ import (
 	"time"
 
 	"github.com/atom-service/account/internal/database"
-	"github.com/atom-service/account/package/protos"
+	"github.com/atom-service/account/internal/helper"
+	"github.com/atom-service/account/package/proto"
 	"github.com/atom-service/common/logger"
 	"github.com/yinxulai/sqls"
 )
@@ -40,7 +41,7 @@ type User struct {
 	DisabledTime *time.Time
 }
 
-func (srv *User) LoadProtoStruct(user *protos.User) (err error) {
+func (srv *User) LoadProto(user *proto.User) (err error) {
 	if user == nil {
 		return fmt.Errorf("user is nil")
 	}
@@ -80,15 +81,15 @@ func (srv *User) LoadProtoStruct(user *protos.User) (err error) {
 	return nil
 }
 
-// OutProtoStruct OutProtoStruct
-func (srv *User) OutProtoStruct() *protos.User {
-	user := new(protos.User)
+// ToProto ToProto
+func (srv *User) ToProto() *proto.User {
+	user := new(proto.User)
 	user.ID = *srv.ID
 
 	if srv.Username != nil {
 		user.Username = *srv.Username
 	}
-	
+
 	user.CreatedTime = srv.CreatedTime.String()
 	user.UpdatedTime = srv.UpdatedTime.String()
 
@@ -110,7 +111,7 @@ type UserSelector struct {
 	Username *string
 }
 
-func (srv *UserSelector) LoadProtoStruct(data *protos.UserSelector) {
+func (srv *UserSelector) LoadProto(data *proto.UserSelector) {
 	if data == nil {
 		return
 	}
@@ -122,16 +123,6 @@ func (srv *UserSelector) LoadProtoStruct(data *protos.UserSelector) {
 	if data.Username != nil {
 		srv.Username = data.Username
 	}
-}
-
-// OutProtoStruct OutProtoStruct
-func (srv *UserSelector) OutProtoStruct() *protos.UserSelector {
-	result := &protos.UserSelector{
-		Username: srv.Username,
-		ID:       srv.ID,
-	}
-	
-	return result
 }
 
 var UserTable = &userTable{}
@@ -202,7 +193,16 @@ func (r *userTable) DeleteUser(ctx context.Context, selector UserSelector) (err 
 	s := sqls.UPDATE(userTableName)
 
 	if selector.ID == nil && selector.Username == nil {
-		return fmt.Errorf("elector conditions cannot all be empty")
+		return fmt.Errorf("selector conditions cannot all be empty")
+	}
+
+	// 特殊的 admin 账号禁止删除
+	if selector.ID != nil && *selector.ID == 1 {
+		return fmt.Errorf("selector conditions cannot be admin user")
+	}
+
+	if selector.Username != nil && *selector.Username == "admin" {
+		return fmt.Errorf("selector conditions cannot be admin user")
 	}
 
 	if selector.ID != nil {
@@ -227,7 +227,7 @@ func (r *userTable) UpdateUser(ctx context.Context, selector UserSelector, user 
 	s := sqls.UPDATE(userTableName)
 
 	if selector.ID == nil && selector.Username == nil {
-		return fmt.Errorf("elector conditions cannot all be empty")
+		return fmt.Errorf("selector conditions cannot all be empty")
 	}
 
 	if selector.ID != nil {
@@ -353,4 +353,36 @@ func (r *userTable) QueryUsers(ctx context.Context, selector UserSelector, pagin
 		return
 	}
 	return
+}
+
+func (s *userTable) InitAdminUser(ctx context.Context) (err error) {
+	adminUserID := int64(1)
+	userSelector := UserSelector{ID: &adminUserID}
+	queryResult, err := s.QueryUsers(ctx, userSelector, nil, nil)
+	if err != nil {
+		return err
+	}
+
+	adminUsername := helper.GenerateRandomString(64)
+	adminPassword := helper.GenerateRandomString(128)
+	adminPasswordHash := Password.Hash(adminPassword)
+	adminUser := &User{Username: &adminUsername, Password: &adminPasswordHash}
+
+	if len(queryResult) > 0 {
+		adminUsername = *queryResult[0].Username
+		err = s.UpdateUser(ctx, UserSelector{ID: &adminUserID}, adminUser)
+		if err != nil {
+			return err
+		}
+	} else {
+		err = s.CreateUser(ctx, *adminUser)
+		if err != nil {
+			return err
+		}
+	}
+
+	logger.Info("admin user are upsert:")
+	logger.Infof("username: %s", adminUsername)
+	logger.Infof("password: %s", adminPassword)
+	return nil
 }

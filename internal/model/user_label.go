@@ -15,6 +15,12 @@ import (
 var userLabelTableName = userSchemaName + ".\"labels\""
 var LabelTable = &labelTable{}
 
+const (
+	LabelLastSignInTime = "last_sign_in_time" // 最近一次登录时间
+	LabelLastVerifyTime = "last_verify_auth_time" // 最近一次身份验证时间
+)
+
+
 type Label struct {
 	ID          *int64
 	Key         string
@@ -52,7 +58,7 @@ func (t *labelTable) CreateTable(ctx context.Context) error {
 	s.COLUMN("user_id int NOT NULL")
 	s.COLUMN("key character varying(64) NOT NULL")
 	s.COLUMN("value character varying(128) NOT NULL")
-	s.COLUMN("description character varying(128) NOT NULL")
+	s.COLUMN("description character varying(128) NULL")
 	s.COLUMN("created_time timestamp without time zone NULL DEFAULT now()")
 	s.COLUMN("updated_time timestamp without time zone NULL DEFAULT now()")
 	s.COLUMN("deleted_time timestamp without time zone NULL")
@@ -79,14 +85,17 @@ func (t *labelTable) TruncateTable(ctx context.Context) error {
 	return err
 }
 
-func (r *labelTable) CreateLabel(ctx context.Context, newLabel Label) (err error) {
+func (r *labelTable) UpsertLabel(ctx context.Context, newLabel Label) (err error) {
 	s := sqls.INSERT_INTO(userLabelTableName)
 	s.VALUES("key", s.Param(newLabel.Key))
 	s.VALUES("value", s.Param(newLabel.Value))
 	s.VALUES("user_id", s.Param(newLabel.UserID))
 	s.VALUES("description", s.Param(newLabel.Description))
+	s.ON_CONFLICT("user_id, key")
+	s.DO_UPDATE_SET("value", s.Param(newLabel.Value))
+	s.DO_UPDATE_SET("description", s.Param(newLabel.Description))
 
-	logger.Debug(s.String())
+	logger.Debug(s.String(), s.Params())
 	_, err = database.Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		logger.Error(err)
@@ -96,53 +105,11 @@ func (r *labelTable) CreateLabel(ctx context.Context, newLabel Label) (err error
 	return
 }
 
-func (r *labelTable) UpdateLabel(ctx context.Context, selector LabelSelector, role *Label) (err error) {
-	s := sqls.UPDATE(userLabelTableName)
-
-	if selector.ID == nil && selector.UserID == nil && selector.Key == nil {
-		return fmt.Errorf("elector conditions cannot all be empty")
-	}
-
-	if selector.ID != nil {
-		s.WHERE("id=" + s.Param(selector.ID))
-	}
-
-	if selector.Key != nil {
-		s.WHERE("key=" + s.Param(selector.Key))
-	}
-
-	if selector.UserID != nil {
-		s.WHERE("user_id=" + s.Param(selector.UserID))
-	}
-
-	if role.Value != nil {
-		s.SET("value", s.Param(*role.Value))
-	}
-
-	if role.Description != nil {
-		s.SET("description", s.Param(*role.Description))
-	}
-
-	if role.DeletedTime != nil {
-		s.SET("disabled_time", s.Param(*role.DeletedTime))
-	}
-
-	s.SET("updated_time", s.Param(time.Now()))
-
-	logger.Debug(s.String(), s.Params())
-	_, err = database.Database.ExecContext(ctx, s.String(), s.Params()...)
-	if err != nil {
-		logger.Error(err)
-	}
-
-	return
-}
-
 func (r *labelTable) DeleteLabel(ctx context.Context, selector LabelSelector) (err error) {
 	s := sqls.UPDATE(userLabelTableName)
 
 	if selector.ID == nil && selector.UserID == nil && selector.Key == nil {
-		return fmt.Errorf("elector conditions cannot all be empty")
+		return fmt.Errorf("selector conditions cannot all be empty")
 	}
 
 	if selector.ID != nil {

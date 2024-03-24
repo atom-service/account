@@ -1,7 +1,7 @@
 syntax = "proto3";
 
-// 声明包为当前目录下的 protos
-option go_package = "./protos";
+// 声明包为当前目录下的 proto
+option go_package = "./proto";
 
 message PaginationOption {
   optional int64 Limit = 1;

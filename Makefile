@@ -18,14 +18,14 @@ dev:
 ## build/proto: build the proto files
 .PHONY: build/proto
 build/proto:
-	rm -f package/protos/*.go
+	rm -f package/proto/*.go
 	protoc \
-		--go_out=package/protos \
+		--go_out=package/proto \
 		--go_opt=paths=source_relative \
-		--go-grpc_out=package/protos \
+		--go-grpc_out=package/proto \
 		--go-grpc_opt=paths=source_relative \
-		--proto_path=package/protos \
-		package/protos/* 
+		--proto_path=package/proto \
+		package/proto/* 
 
 ## build: build the application
 .PHONY: build
@@ -48,4 +48,4 @@ tidy:
 clean:
 	go clean
 	rm -f ${BINARY_NAME}
-	rm -f package/protos/*.go
+	rm -f package/proto/*.go

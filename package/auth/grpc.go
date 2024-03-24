@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/atom-service/account/internal/model"
-	protos "github.com/atom-service/account/package/protos"
+	proto "github.com/atom-service/account/package/proto"
 	grpc "google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	metadata "google.golang.org/grpc/metadata"
@@ -53,8 +53,8 @@ func (x *AuthWithSecretCredentials) RequireTransportSecurity() bool {
 type serverAuthInterceptor struct {
 	secretKey        string
 	secretValue      string
-	accountClient    protos.AccountServiceClient
-	permissionClient protos.PermissionServiceClient
+	accountClient    proto.AccountServiceClient
+	permissionClient proto.PermissionServiceClient
 }
 
 func NewServerAuthInterceptor(accountServerHost, secretKey, secretValue string) *serverAuthInterceptor {
@@ -68,8 +68,8 @@ func NewServerAuthInterceptor(accountServerHost, secretKey, secretValue string) 
 	return &serverAuthInterceptor{
 		secretKey:        secretKey,
 		secretValue:      secretValue,
-		accountClient:    protos.NewAccountServiceClient(conn),
-		permissionClient: protos.NewPermissionServiceClient(conn),
+		accountClient:    proto.NewAccountServiceClient(conn),
+		permissionClient: proto.NewPermissionServiceClient(conn),
 	}
 }
 
@@ -95,7 +95,7 @@ func (ai *serverAuthInterceptor) resolveUserIncomingContext(ctx context.Context)
 	// 如果是自己的请求，则直接构造一个 Secret，不然就死循环了
 	isSelfBackToken := VerifyToken(ai.secretKey, ai.secretValue, tokens[0])
 	if isSelfBackToken {
-		ctx = context.WithValue(ctx, ContextSecretSymbol, &protos.Secret{
+		ctx = context.WithValue(ctx, ContextSecretSymbol, &proto.Secret{
 			Key:   ai.secretKey,
 			Value: ai.secretValue,
 		})
@@ -103,11 +103,11 @@ func (ai *serverAuthInterceptor) resolveUserIncomingContext(ctx context.Context)
 	}
 
 	paginationLimit := int64(1)
-	secretSelector := &protos.SecretSelector{Key: &tokenInfo.SecretKey}
-	paginationOption := &protos.PaginationOption{Limit: &paginationLimit}
-	querySecretsRequest := &protos.QuerySecretsRequest{Selector: secretSelector, Pagination: paginationOption}
+	secretSelector := &proto.SecretSelector{Key: &tokenInfo.SecretKey}
+	paginationOption := &proto.PaginationOption{Limit: &paginationLimit}
+	querySecretsRequest := &proto.QuerySecretsRequest{Selector: secretSelector, Pagination: paginationOption}
 	querySecretsResponse, err := ai.accountClient.QuerySecrets(ctx, querySecretsRequest)
-	if err != nil || querySecretsResponse.State != protos.State_SUCCESS {
+	if err != nil || querySecretsResponse.State != proto.State_SUCCESS {
 		return ctx
 	}
 	if querySecretsResponse.Data.Total == 0 {
@@ -119,7 +119,7 @@ func (ai *serverAuthInterceptor) resolveUserIncomingContext(ctx context.Context)
 
 	// 是否已经被禁用
 	secretModel := new(model.Secret)
-	secretModel.LoadProtoStruct(secret)
+	secretModel.LoadProto(secret)
 	if secretModel.IsDisabled() {
 		return ctx
 	}
@@ -128,26 +128,26 @@ func (ai *serverAuthInterceptor) resolveUserIncomingContext(ctx context.Context)
 		return ctx
 	}
 
-	userSelector := &protos.UserSelector{ID: &secret.UserID}
-	queryUserResponse, err := ai.accountClient.QueryUsers(ctx, &protos.QueryUsersRequest{Selector: userSelector})
-	if err != nil || queryUserResponse.State != protos.State_SUCCESS || querySecretsResponse.Data.Total == 0 {
+	userSelector := &proto.UserSelector{ID: &secret.UserID}
+	queryUserResponse, err := ai.accountClient.QueryUsers(ctx, &proto.QueryUsersRequest{Selector: userSelector})
+	if err != nil || queryUserResponse.State != proto.State_SUCCESS || querySecretsResponse.Data.Total == 0 {
 		return ctx
 	}
 
-	summaryForUserRequest := &protos.SummaryForUserRequest{UserSelector: userSelector}
+	summaryForUserRequest := &proto.SummaryForUserRequest{UserSelector: userSelector}
 	summaryForUserResponse, err := ai.permissionClient.SummaryForUser(ctx, summaryForUserRequest)
-	if err != nil || queryUserResponse.State != protos.State_SUCCESS {
+	if err != nil || queryUserResponse.State != proto.State_SUCCESS {
 		return ctx
 	}
 
 	user := queryUserResponse.Data.Users[0]
 	userModel := new(model.User)
-	userModel.LoadProtoStruct(user)
+	userModel.LoadProto(user)
 
 	permissions := []*model.UserResourcePermissionSummary{}
 	for _, summary := range summaryForUserResponse.Data {
 		summaryMode := new(model.UserResourcePermissionSummary)
-		summaryMode.LoadProtoStruct(summary)
+		summaryMode.LoadProto(summary)
 		permissions = append(permissions, summaryMode)
 	}
 
@@ -169,7 +169,7 @@ type AuthData struct {
 	Permissions []*model.UserResourcePermissionSummary
 }
 
-func ResolveAuthFromIncomingContext(ctx context.Context) *AuthData {
+func ResolveAuth(ctx context.Context) *AuthData {
 	data := &AuthData{}
 	user := ctx.Value(ContextUserSymbol)
 	secret := ctx.Value(ContextSecretSymbol)
@@ -201,8 +201,8 @@ func ResolveAuthFromIncomingContext(ctx context.Context) *AuthData {
 	return data
 }
 
-func ResolvePermissionFromIncomingContext(ctx context.Context, handler func(*model.User, *model.UserResourcePermissionSummary) bool) bool {
-	authData := ResolveAuthFromIncomingContext(ctx)
+func ResolvePermission(ctx context.Context, handler func(*model.User, *model.UserResourcePermissionSummary) bool) bool {
+	authData := ResolveAuth(ctx)
 
 	// 不一定都有，部分信息也可以处理
 	if authData == nil || authData.User == nil || authData.Secret == nil {
@@ -211,14 +211,14 @@ func ResolvePermissionFromIncomingContext(ctx context.Context, handler func(*mod
 
 	userID := authData.User.ID
 
-	roles, err := model.Permission.QueryUserResourceSummaries(ctx, model.UserResourceSummarySelector{UserID: *userID})
+	resourcePermission, err := model.Permission.QueryUserResourceSummaries(ctx, model.UserResourceSummarySelector{UserID: userID})
 
-	if err != nil || len(roles) == 0 {
+	if err != nil || len(resourcePermission) == 0 {
 		return false
 	}
 
-	for _, role := range roles {
-		if handler(authData.User, role) {
+	for _, permission := range resourcePermission {
+		if handler(authData.User, permission) {
 			return true
 		}
 	}

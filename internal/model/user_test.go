@@ -191,3 +191,33 @@ func TestUserTable(t *testing.T) {
 		}
 	}
 }
+
+func TestAdminUserInit(t *testing.T) {
+	// 创建一个用户表实例
+	userTable := &userTable{}
+
+	context := context.TODO()
+
+	if err := userTable.CreateTable(context); err != nil {
+		t.Errorf("Create table failed: %v", err)
+		return
+	}
+
+	if err := userTable.InitAdminUser(context); err != nil {
+		t.Errorf("Init admin user failed: %v", err)
+		return
+	}
+
+	selectID := int64(0)
+	selector := UserSelector{ID: &selectID}
+	queryDeletedResult, err := userTable.QueryUsers(context, selector, nil, nil)
+	if err != nil {
+		t.Errorf("Query failed: %v", err)
+		return
+	}
+
+	if len(queryDeletedResult) != 0 {
+		t.Errorf("Unexpected results after deleted: %v", queryDeletedResult)
+		return
+	}
+}

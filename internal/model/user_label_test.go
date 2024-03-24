@@ -35,12 +35,12 @@ func TestUserLabelTable(t *testing.T) {
 
 	// create test & check result
 	if err := quick.Check(func() bool {
-		name := helper.GenerateRandomString(64)
+		key := helper.GenerateRandomString(64)
 		value := helper.GenerateRandomString(128)
 		description := helper.GenerateRandomString(128)
 
 		testCreateParams := Label{
-			Key:         name,
+			Key:         key,
 			Value:       &value,
 			Description: &description,
 			UserID:      rand.Int63n(math.MaxInt32),
@@ -51,8 +51,8 @@ func TestUserLabelTable(t *testing.T) {
 			UserID: &testCreateParams.UserID,
 		}
 
-		if err := labelTable.CreateLabel(context, testCreateParams); err != nil {
-			t.Errorf("Create failed: %v", err)
+		if err := labelTable.UpsertLabel(context, testCreateParams); err != nil {
+			t.Errorf("Upsert on create failed: %v", err)
 			return false
 		}
 
@@ -86,12 +86,14 @@ func TestUserLabelTable(t *testing.T) {
 		// update test & check result
 		newValue := helper.GenerateRandomString(128)
 		newDescription := helper.GenerateRandomString(128)
-		err = labelTable.UpdateLabel(context, roleSelector, &Label{
+		err = labelTable.UpsertLabel(context, Label{
+			UserID:      queryCreateResult[0].UserID,
+			Key:         testCreateParams.Key,
 			Value:       &newValue,
 			Description: &newDescription,
 		})
 		if err != nil {
-			t.Errorf("Update failed: %v", err)
+			t.Errorf("Upsert on update failed: %v", err)
 			return false
 		}
 

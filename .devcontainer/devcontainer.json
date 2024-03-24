@@ -23,7 +23,7 @@
 				"cSpell.words": [
 					"proto",
 					"protoc",
-					"protos",
+					"proto",
 					"yinxulai",
 					"devcontainer",
 					"Debugf",
@@ -36,9 +36,9 @@
 					"options": [
 						"--go_opt=paths=source_relative",
 						"--go-grpc_opt=paths=source_relative",
-						"--go_out=${workspaceRoot}/package/protos",
-						"--go-grpc_out=${workspaceRoot}/package/protos",
-						"--proto_path=${workspaceRoot}/package/protos"
+						"--go_out=${workspaceRoot}/package/proto",
+						"--go-grpc_out=${workspaceRoot}/package/proto",
+						"--proto_path=${workspaceRoot}/package/proto"
 					]
 				}
 			}

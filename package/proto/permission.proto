@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "./protos";
+option go_package = "./proto";
 
 import "common.proto";
 import "account.proto";
@@ -12,10 +12,15 @@ enum ResourceAction {
   Query  = 3;
 }
 
+message RoleResourceRule {
+  string Key = 1;
+  string Value = 2;
+}
+
 message RoleResource {
   int64 ResourceID = 1;
   ResourceAction Action = 2;
-  repeated string Rules = 3;
+  repeated RoleResourceRule Rules = 3;
 }
 
 message Role {
@@ -41,11 +46,12 @@ message Resource {
 message CreateRoleRequest {
   string Name = 1;
   string Description = 2;
+  repeated RoleResource Resources = 3;
 }
 
 message CreateRoleResponse {
   State State = 1;
-  string Message = 2;
+  string Code = 2;
   optional Role Data = 3;
 }
 
@@ -67,7 +73,7 @@ message QueryRolesResponse {
   }
 
   State State = 1;
-  string Message = 2;
+  string Code = 2;
   DataType Data = 3;
 }
 
@@ -84,7 +90,7 @@ message UpdateRoleRequest {
 
 message UpdateRoleResponse {
   State State = 1;
-  string Message = 2;
+  string Code = 2;
   Role Data = 3;
 }
 
@@ -94,7 +100,7 @@ message DeleteRoleRequest {
 
 message DeleteRoleResponse {
   State State = 1;
-  string Message = 2;
+  string Code = 2;
 }
 
 message CreateResourceRequest {
@@ -104,7 +110,7 @@ message CreateResourceRequest {
 
 message CreateResourceResponse {
   State State = 1;
-  string Message = 2;
+  string Code = 2;
   Resource Data = 3;
 }
 
@@ -126,17 +132,17 @@ message QueryResourcesResponse {
   }
 
   State State = 1;
-  string Message = 2;
+  string Code = 2;
   DataType Data = 3;
 }
 
 message DeleteResourceRequest {
-  RoleSelector Selector = 1;
+  ResourceSelector Selector = 1;
 }
 
 message DeleteResourceResponse {
   State State = 1;
-  string Message = 2;
+  string Code = 2;
 }
 
 message UpdateResourceRequest {
@@ -145,13 +151,13 @@ message UpdateResourceRequest {
     optional string Description = 2;
   }
 
-  RoleSelector Selector = 1;
+  ResourceSelector Selector = 1;
   UpdateData Data = 2;
 }
 
 message UpdateResourceResponse {
   State State = 1;
-  string Message = 2;
+  string Code = 2;
 }
 
 message UserResourceRule {
@@ -171,28 +177,28 @@ message SummaryForUserRequest {
 
 message SummaryForUserResponse {
   State State = 1;
-  string Message = 2;
+  string Code = 2;
   repeated UserResourceSummary Data = 3;
 }
 
 message ApplyRoleForUserRequest {
   UserSelector User = 1;
-  repeated RoleSelector Roles = 2;
+  RoleSelector Role = 2;
 }
 
 message ApplyRoleForUserResponse {
   State State = 1;
-  string Message = 2;
+  string Code = 2;
 }
 
 message RemoveRoleForUserRequest {
   UserSelector User = 1;
-  repeated RoleSelector Roles = 2;
+  RoleSelector Role = 2;
 }
 
 message RemoveRoleForUserResponse {
   State State = 1;
-  string Message = 2;
+  string Code = 2;
 }
 
 service PermissionService {

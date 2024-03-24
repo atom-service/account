@@ -9,7 +9,7 @@ import (
 
 	"github.com/atom-service/account/internal/database"
 	"github.com/atom-service/account/internal/helper"
-	"github.com/atom-service/account/package/protos"
+	"github.com/atom-service/account/package/proto"
 	"github.com/atom-service/common/logger"
 	"github.com/yinxulai/sqls"
 )
@@ -33,8 +33,8 @@ type Secret struct {
 	DisabledTime *time.Time
 }
 
-func (srv *Secret) LoadProtoStruct(secret *protos.Secret) (err error) {
-	if (secret == nil) {
+func (srv *Secret) LoadProto(secret *proto.Secret) (err error) {
+	if secret == nil {
 		return nil
 	}
 
@@ -69,8 +69,8 @@ func (srv *Secret) LoadProtoStruct(secret *protos.Secret) (err error) {
 	return
 }
 
-func (srv *Secret) OutProtoStruct() *protos.Secret {
-	secret := new(protos.Secret)
+func (srv *Secret) ToProto() *proto.Secret {
+	secret := new(proto.Secret)
 	if srv.Key != nil {
 		secret.Key = *srv.Key
 	}
@@ -118,19 +118,11 @@ type SecretSelector struct {
 	UserID *int64
 }
 
-func (srv *SecretSelector) LoadProtoStruct(data *protos.SecretSelector) {
-	if (data != nil) {
+func (srv *SecretSelector) LoadProto(data *proto.SecretSelector) {
+	if data != nil {
 		srv.Key = data.Key
 		srv.UserID = data.UserID
 	}
-}
-
-// OutProtoStruct OutProtoStruct
-func (srv *SecretSelector) OutProtoStruct() *protos.SecretSelector {
-	result := new(protos.SecretSelector)
-	result.Key = srv.Key
-	result.UserID = srv.UserID
-	return result
 }
 
 type secretTable struct{}
@@ -234,7 +226,7 @@ func (r *secretTable) DeleteSecret(ctx context.Context, selector SecretSelector)
 	s := sqls.UPDATE(secretTableName)
 
 	if selector.Key == nil && selector.UserID == nil && selector.Type == nil {
-		return fmt.Errorf("elector conditions cannot all be empty")
+		return fmt.Errorf("selector conditions cannot all be empty")
 	}
 
 	if selector.Key != nil {
@@ -249,6 +241,31 @@ func (r *secretTable) DeleteSecret(ctx context.Context, selector SecretSelector)
 	}
 
 	s.SET("deleted_time", s.Param(time.Now()))
+
+	logger.Debug(s.String(), s.Params())
+	_, err = database.Database.ExecContext(ctx, s.String(), s.Params()...)
+	if err != nil {
+		logger.Error(err)
+	}
+
+	return
+}
+
+func (r *secretTable) UpdateSecret(ctx context.Context, selector SecretSelector, user *Secret) (err error) {
+	s := sqls.UPDATE(secretTableName)
+
+	if selector.UserID == nil || selector.Key == nil {
+		return fmt.Errorf("selector conditions cannot be empty")
+	}
+
+	s.WHERE("key=" + s.Param(selector.Key))
+	s.WHERE("user_id=" + s.Param(selector.UserID))
+
+	if user.DisabledTime != nil {
+		s.SET("disabled_time", s.Param(*user.DisabledTime))
+	}
+
+	s.SET("updated_time", s.Param(time.Now()))
 
 	logger.Debug(s.String(), s.Params())
 	_, err = database.Database.ExecContext(ctx, s.String(), s.Params()...)

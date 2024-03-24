@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/atom-service/account/internal/database"
+	"github.com/atom-service/account/package/proto"
 	"github.com/atom-service/common/logger"
 	"github.com/yinxulai/sqls"
 )
@@ -26,13 +27,49 @@ type Setting struct {
 	DeletedTime *time.Time
 }
 
+func (srv *Setting) ToProto() *proto.Setting {
+	setting := new(proto.Setting)
+	setting.ID = *srv.ID
+
+	if srv.ID != nil {
+		setting.ID = *srv.ID
+	}
+
+	if srv.DeletedTime != nil {
+		timeString := srv.DeletedTime.String()
+		setting.DeletedTime = &timeString
+	}
+
+	if srv.CreatedTime != nil {
+		timeString := srv.CreatedTime.String()
+		setting.CreatedTime = timeString
+	}
+
+	if srv.UpdatedTime != nil {
+		timeString := srv.UpdatedTime.String()
+		setting.UpdatedTime = timeString
+	}
+
+	return setting
+}
+
+type settingTable struct{}
+
 type SettingSelector struct {
 	ID     *int64
 	Key    *string
 	UserID *int64
 }
 
-type settingTable struct{}
+func (sel *SettingSelector) LoadProto(data *proto.SettingSelector) {
+	if data == nil {
+		return
+	}
+
+	sel.ID = data.ID
+	sel.Key = data.Key
+	sel.UserID = data.UserID
+}
 
 func (t *settingTable) CreateTable(ctx context.Context) error {
 	tx, err := database.Database.BeginTx(ctx, &sql.TxOptions{ReadOnly: false})
@@ -52,7 +89,7 @@ func (t *settingTable) CreateTable(ctx context.Context) error {
 	s.COLUMN("user_id int NOT NULL")
 	s.COLUMN("key character varying(64) NOT NULL")
 	s.COLUMN("value character varying(128) NOT NULL")
-	s.COLUMN("description character varying(128) NOT NULL")
+	s.COLUMN("description character varying(128) NULL")
 	s.COLUMN("created_time timestamp without time zone NULL DEFAULT now()")
 	s.COLUMN("updated_time timestamp without time zone NULL DEFAULT now()")
 	s.COLUMN("deleted_time timestamp without time zone NULL")
@@ -100,7 +137,7 @@ func (r *settingTable) UpdateSetting(ctx context.Context, selector SettingSelect
 	s := sqls.UPDATE(userSettingTableName)
 
 	if selector.ID == nil && selector.UserID == nil && selector.Key == nil {
-		return fmt.Errorf("elector conditions cannot all be empty")
+		return fmt.Errorf("selector conditions cannot all be empty")
 	}
 
 	if selector.ID != nil {
@@ -142,7 +179,7 @@ func (r *settingTable) DeleteSetting(ctx context.Context, selector SettingSelect
 	s := sqls.UPDATE(userSettingTableName)
 
 	if selector.ID == nil && selector.UserID == nil && selector.Key == nil {
-		return fmt.Errorf("elector conditions cannot all be empty")
+		return fmt.Errorf("selector conditions cannot all be empty")
 	}
 
 	if selector.ID != nil {
