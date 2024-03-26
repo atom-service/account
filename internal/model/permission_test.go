@@ -35,8 +35,8 @@ func TestPermissionRoleTable(t *testing.T) {
 
 	// create test & check result
 	if err := quick.Check(func() bool {
-		name := helper.GenerateRandomString(64)
-		description := helper.GenerateRandomString(128)
+		name := helper.GenerateRandomString(64, nil)
+		description := helper.GenerateRandomString(128, nil)
 
 		testCreateParams := Role{
 			Name:        &name,
@@ -78,8 +78,8 @@ func TestPermissionRoleTable(t *testing.T) {
 		}
 
 		// update test & check result
-		newName := helper.GenerateRandomString(64)
-		newDescription := helper.GenerateRandomString(128)
+		newName := helper.GenerateRandomString(64, nil)
+		newDescription := helper.GenerateRandomString(128, nil)
 		err = roleTable.UpdateRole(context, roleSelector, &Role{
 			Name:        &newName,
 			Description: &newDescription,
@@ -230,8 +230,8 @@ func TestPermissionResourceTable(t *testing.T) {
 
 	// create test & check result
 	if err := quick.Check(func() bool {
-		name := helper.GenerateRandomString(64)
-		description := helper.GenerateRandomString(128)
+		name := helper.GenerateRandomString(64, nil)
+		description := helper.GenerateRandomString(128, nil)
 
 		testCreateParams := Resource{
 			Name:        &name,
@@ -273,8 +273,8 @@ func TestPermissionResourceTable(t *testing.T) {
 		}
 
 		// update test & check result
-		newName := helper.GenerateRandomString(64)
-		newDescription := helper.GenerateRandomString(128)
+		newName := helper.GenerateRandomString(64, nil)
+		newDescription := helper.GenerateRandomString(128, nil)
 		err = resourceTable.UpdateResource(context, resourceSelector, &Resource{
 			Name:        &newName,
 			Description: &newDescription,
@@ -593,8 +593,8 @@ func TestPermissionRoleResourceRuleTable(t *testing.T) {
 	// create test & check result
 	if err := quick.Check(func() bool {
 		testCreateParams := ResourceRule{
-			Key:            helper.GenerateRandomString(64),
-			Value:          helper.GenerateRandomString(128),
+			Key:            helper.GenerateRandomString(64, nil),
+			Value:          helper.GenerateRandomString(128, nil),
 			RoleResourceID: rand.Int63n(math.MaxInt32),
 		}
 

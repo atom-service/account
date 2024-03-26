@@ -2,17 +2,14 @@ module github.com/atom-service/account
 
 go 1.22.1
 
-toolchain go1.22.1
-
 require google.golang.org/grpc v1.62.0
 
 require (
-	github.com/huandu/go-sqlbuilder v1.25.0 // indirect
 	github.com/huandu/xstrings v1.3.2 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
-	github.com/yinxulai/sqls v0.0.0-20240315080552-f0d2223c16aa // indirect
+	github.com/yinxulai/sqls v0.0.0-20240324005609-f9b3b8894c7a // indirect
 	golang.org/x/crypto v0.18.0 // indirect
 	golang.org/x/sync v0.6.0 // indirect
 )

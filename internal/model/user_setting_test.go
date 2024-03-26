@@ -35,9 +35,9 @@ func TestUserSettingTable(t *testing.T) {
 
 	// create test & check result
 	if err := quick.Check(func() bool {
-		name := helper.GenerateRandomString(64)
-		value := helper.GenerateRandomString(128)
-		description := helper.GenerateRandomString(128)
+		name := helper.GenerateRandomString(64, nil)
+		value := helper.GenerateRandomString(128, nil)
+		description := helper.GenerateRandomString(128, nil)
 
 		testCreateParams := Setting{
 			Key:         name,
@@ -84,8 +84,8 @@ func TestUserSettingTable(t *testing.T) {
 		}
 
 		// update test & check result
-		newValue := helper.GenerateRandomString(128)
-		newDescription := helper.GenerateRandomString(128)
+		newValue := helper.GenerateRandomString(128, nil)
+		newDescription := helper.GenerateRandomString(128, nil)
 		err = settingTable.UpdateSetting(context, roleSelector, &Setting{
 			Value:       &newValue,
 			Description: &newDescription,

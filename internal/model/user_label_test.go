@@ -35,9 +35,9 @@ func TestUserLabelTable(t *testing.T) {
 
 	// create test & check result
 	if err := quick.Check(func() bool {
-		key := helper.GenerateRandomString(64)
-		value := helper.GenerateRandomString(128)
-		description := helper.GenerateRandomString(128)
+		key := helper.GenerateRandomString(64, nil)
+		value := helper.GenerateRandomString(128, nil)
+		description := helper.GenerateRandomString(128, nil)
 
 		testCreateParams := Label{
 			Key:         key,
@@ -84,8 +84,8 @@ func TestUserLabelTable(t *testing.T) {
 		}
 
 		// update test & check result
-		newValue := helper.GenerateRandomString(128)
-		newDescription := helper.GenerateRandomString(128)
+		newValue := helper.GenerateRandomString(128, nil)
+		newDescription := helper.GenerateRandomString(128, nil)
 		err = labelTable.UpsertLabel(context, Label{
 			UserID:      queryCreateResult[0].UserID,
 			Key:         testCreateParams.Key,

@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/atom-service/account/internal/database"
 	"github.com/atom-service/account/package/proto"
 	"github.com/atom-service/common/logger"
 	"github.com/yinxulai/sqls"
@@ -25,6 +24,11 @@ var UserRoleTable = &userRoleTable{}
 var ResourceTable = &resourceTable{}
 var RoleResourceTable = &roleResourceTable{}
 var RoleResourceRuleTable = &resourceRuleTable{}
+
+var OwnerRoleName = "OWNER"
+var AdminRoleName = "ADMIN"
+var AllResourceName = "ALL"
+var OwnerResourceName = "OWNER"
 
 type Role struct {
 	ID           *int64
@@ -90,7 +94,7 @@ func (srv *Role) ToProto() *proto.Role {
 type roleTable struct{}
 
 func (t *roleTable) CreateTable(ctx context.Context) error {
-	tx, err := database.Database.BeginTx(ctx, &sql.TxOptions{ReadOnly: false})
+	tx, err := Database.BeginTx(ctx, &sql.TxOptions{ReadOnly: false})
 	if err != nil {
 		return err
 	}
@@ -128,7 +132,7 @@ func (t *roleTable) CreateTable(ctx context.Context) error {
 }
 
 func (t *roleTable) TruncateTable(ctx context.Context) error {
-	_, err := database.Database.ExecContext(ctx, sqls.TRUNCATE_TABLE(roleTableName).String())
+	_, err := Database.ExecContext(ctx, sqls.TRUNCATE_TABLE(roleTableName).String())
 	return err
 }
 
@@ -138,7 +142,7 @@ func (r *roleTable) CreateRole(ctx context.Context, newRole Role) (err error) {
 	s.VALUES("description", s.Param(newRole.Description))
 
 	logger.Debug(s.String())
-	_, err = database.Database.ExecContext(ctx, s.String(), s.Params()...)
+	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		logger.Error(err)
 		return
@@ -177,7 +181,7 @@ func (r *roleTable) UpdateRole(ctx context.Context, selector RoleSelector, role 
 	s.SET("updated_time", s.Param(time.Now()))
 
 	logger.Debug(s.String(), s.Params())
-	_, err = database.Database.ExecContext(ctx, s.String(), s.Params()...)
+	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		logger.Error(err)
 	}
@@ -202,7 +206,7 @@ func (r *roleTable) DeleteRole(ctx context.Context, selector RoleSelector) (err 
 	s.SET("deleted_time", s.Param(time.Now()))
 
 	logger.Debug(s.String(), s.Params())
-	_, err = database.Database.ExecContext(ctx, s.String(), s.Params()...)
+	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		logger.Error(err)
 	}
@@ -223,7 +227,7 @@ func (r *roleTable) CountRoles(ctx context.Context, selector RoleSelector) (resu
 	s.WHERE("(deleted_time<CURRENT_TIMESTAMP OR deleted_time IS NULL)")
 
 	logger.Debug(s.String())
-	rowQuery := database.Database.QueryRowContext(ctx, s.String(), s.Params()...)
+	rowQuery := Database.QueryRowContext(ctx, s.String(), s.Params()...)
 	if err = rowQuery.Scan(&result); err != nil {
 		logger.Error(err)
 	}
@@ -275,7 +279,7 @@ func (r *roleTable) QueryRoles(ctx context.Context, selector RoleSelector, pagin
 		s.ORDER_BY(s.Param(sort.Key) + " " + sortType)
 	}
 
-	queryResult, err := database.Database.QueryContext(ctx, s.String(), s.Params()...)
+	queryResult, err := Database.QueryContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		logger.Error(err)
 		return
@@ -350,7 +354,7 @@ func (r *ResourceSelector) LoadProto(data *proto.ResourceSelector) {
 type resourceTable struct{}
 
 func (t *resourceTable) CreateTable(ctx context.Context) error {
-	tx, err := database.Database.BeginTx(ctx, &sql.TxOptions{ReadOnly: false})
+	tx, err := Database.BeginTx(ctx, &sql.TxOptions{ReadOnly: false})
 	if err != nil {
 		return err
 	}
@@ -387,7 +391,7 @@ func (t *resourceTable) CreateTable(ctx context.Context) error {
 }
 
 func (t *resourceTable) TruncateTable(ctx context.Context) error {
-	_, err := database.Database.ExecContext(ctx, sqls.TRUNCATE_TABLE(resourceTableName).String())
+	_, err := Database.ExecContext(ctx, sqls.TRUNCATE_TABLE(resourceTableName).String())
 	return err
 }
 
@@ -397,7 +401,7 @@ func (r *resourceTable) CreateResource(ctx context.Context, newResource Resource
 	s.VALUES("description", s.Param(newResource.Description))
 
 	logger.Debug(s.String())
-	_, err = database.Database.ExecContext(ctx, s.String(), s.Params()...)
+	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		logger.Error(err)
 		return
@@ -436,7 +440,7 @@ func (r *resourceTable) UpdateResource(ctx context.Context, selector ResourceSel
 	s.SET("updated_time", s.Param(time.Now()))
 
 	logger.Debug(s.String(), s.Params())
-	_, err = database.Database.ExecContext(ctx, s.String(), s.Params()...)
+	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		logger.Error(err)
 	}
@@ -462,7 +466,7 @@ func (r *resourceTable) DeleteResource(ctx context.Context, selector ResourceSel
 	s.SET("deleted_time", s.Param(time.Now()))
 
 	logger.Debug(s.String(), s.Params())
-	_, err = database.Database.ExecContext(ctx, s.String(), s.Params()...)
+	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		logger.Error(err)
 	}
@@ -483,7 +487,7 @@ func (r *resourceTable) CountResources(ctx context.Context, selector ResourceSel
 	s.WHERE("(deleted_time<CURRENT_TIMESTAMP OR deleted_time IS NULL)")
 
 	logger.Debug(s.String())
-	rowQuery := database.Database.QueryRowContext(ctx, s.String(), s.Params()...)
+	rowQuery := Database.QueryRowContext(ctx, s.String(), s.Params()...)
 	if err = rowQuery.Scan(&result); err != nil {
 		logger.Error(err)
 	}
@@ -534,7 +538,7 @@ func (r *resourceTable) QueryResources(ctx context.Context, selector ResourceSel
 		s.ORDER_BY(s.Param(sort.Key) + " " + sortType)
 	}
 
-	queryResult, err := database.Database.QueryContext(ctx, s.String(), s.Params()...)
+	queryResult, err := Database.QueryContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		logger.Error(err)
 		return
@@ -633,7 +637,7 @@ func (srv *RoleResourceSelector) LoadProtoAction(action proto.ResourceAction) {
 type roleResourceTable struct{}
 
 func (t *roleResourceTable) CreateTable(ctx context.Context) error {
-	tx, err := database.Database.BeginTx(ctx, &sql.TxOptions{ReadOnly: false})
+	tx, err := Database.BeginTx(ctx, &sql.TxOptions{ReadOnly: false})
 	if err != nil {
 		return err
 	}
@@ -670,7 +674,7 @@ func (t *roleResourceTable) CreateTable(ctx context.Context) error {
 }
 
 func (t *roleResourceTable) TruncateTable(ctx context.Context) error {
-	_, err := database.Database.ExecContext(ctx, sqls.TRUNCATE_TABLE(roleResourceTableName).String())
+	_, err := Database.ExecContext(ctx, sqls.TRUNCATE_TABLE(roleResourceTableName).String())
 	return err
 }
 
@@ -681,7 +685,7 @@ func (r *roleResourceTable) CreateRoleResource(ctx context.Context, newResource 
 	s.VALUES("resource_id", s.Param(newResource.ResourceID))
 
 	logger.Debug(s.String())
-	_, err = database.Database.ExecContext(ctx, s.String(), s.Params()...)
+	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		logger.Error(err)
 	}
@@ -709,7 +713,7 @@ func (r *roleResourceTable) DeleteRoleResource(ctx context.Context, selector Rol
 	}
 
 	logger.Debug(s.String(), s.Params())
-	_, err = database.Database.ExecContext(ctx, s.String(), s.Params()...)
+	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		logger.Error(err)
 	}
@@ -734,7 +738,7 @@ func (r *roleResourceTable) CountRoleResources(ctx context.Context, selector Rol
 	}
 
 	logger.Debug(s.String())
-	rowQuery := database.Database.QueryRowContext(ctx, s.String(), s.Params()...)
+	rowQuery := Database.QueryRowContext(ctx, s.String(), s.Params()...)
 	if err = rowQuery.Scan(&result); err != nil {
 		logger.Error(err)
 	}
@@ -787,7 +791,7 @@ func (r *roleResourceTable) QueryRoleResources(ctx context.Context, selector Rol
 		s.ORDER_BY(s.Param(sort.Key) + " " + sortType)
 	}
 
-	queryResult, err := database.Database.QueryContext(ctx, s.String(), s.Params()...)
+	queryResult, err := Database.QueryContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		logger.Error(err)
 		return
@@ -837,7 +841,7 @@ type resourceRuleTable struct {
 }
 
 func (t *resourceRuleTable) CreateTable(ctx context.Context) error {
-	tx, err := database.Database.BeginTx(ctx, &sql.TxOptions{ReadOnly: false})
+	tx, err := Database.BeginTx(ctx, &sql.TxOptions{ReadOnly: false})
 	if err != nil {
 		return err
 	}
@@ -874,7 +878,7 @@ func (t *resourceRuleTable) CreateTable(ctx context.Context) error {
 }
 
 func (t *resourceRuleTable) TruncateTable(ctx context.Context) error {
-	_, err := database.Database.ExecContext(ctx, sqls.TRUNCATE_TABLE(resourceRuleTableName).String())
+	_, err := Database.ExecContext(ctx, sqls.TRUNCATE_TABLE(resourceRuleTableName).String())
 	return err
 }
 
@@ -885,7 +889,7 @@ func (r *resourceRuleTable) CreateResourceRule(ctx context.Context, newRule Reso
 	s.VALUES("role_resource_id", s.Param(newRule.RoleResourceID))
 
 	logger.Debug(s.String())
-	_, err = database.Database.ExecContext(ctx, s.String(), s.Params()...)
+	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		logger.Error(err)
 		return
@@ -910,7 +914,7 @@ func (r *resourceRuleTable) DeleteResourceRule(ctx context.Context, selector Res
 	}
 
 	logger.Debug(s.String(), s.Params())
-	_, err = database.Database.ExecContext(ctx, s.String(), s.Params()...)
+	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		logger.Error(err)
 	}
@@ -934,7 +938,7 @@ func (r *resourceRuleTable) CountResourceRules(ctx context.Context, selector Res
 	}
 
 	logger.Debug(s.String())
-	rowQuery := database.Database.QueryRowContext(ctx, s.String(), s.Params()...)
+	rowQuery := Database.QueryRowContext(ctx, s.String(), s.Params()...)
 	if err = rowQuery.Scan(&result); err != nil {
 		logger.Error(err)
 	}
@@ -986,7 +990,7 @@ func (r *resourceRuleTable) QueryResourceRules(ctx context.Context, selector Res
 		s.ORDER_BY(s.Param(sort.Key) + " " + sortType)
 	}
 
-	queryResult, err := database.Database.QueryContext(ctx, s.String(), s.Params()...)
+	queryResult, err := Database.QueryContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		logger.Error(err)
 		return
@@ -1032,7 +1036,7 @@ type userRoleTable struct {
 }
 
 func (t *userRoleTable) CreateTable(ctx context.Context) error {
-	tx, err := database.Database.BeginTx(ctx, &sql.TxOptions{ReadOnly: false})
+	tx, err := Database.BeginTx(ctx, &sql.TxOptions{ReadOnly: false})
 	if err != nil {
 		return err
 	}
@@ -1071,7 +1075,7 @@ func (t *userRoleTable) CreateTable(ctx context.Context) error {
 }
 
 func (t *userRoleTable) TruncateTable(ctx context.Context) error {
-	_, err := database.Database.ExecContext(ctx, sqls.TRUNCATE_TABLE(userRoleTableName).String())
+	_, err := Database.ExecContext(ctx, sqls.TRUNCATE_TABLE(userRoleTableName).String())
 	return err
 }
 
@@ -1081,7 +1085,7 @@ func (r *userRoleTable) CreateUserRole(ctx context.Context, newRule UserRole) (e
 	s.VALUES("role_id", s.Param(newRule.RoleID))
 
 	logger.Debug(s.String())
-	_, err = database.Database.ExecContext(ctx, s.String(), s.Params()...)
+	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		logger.Error(err)
 		return
@@ -1110,7 +1114,7 @@ func (r *userRoleTable) DeleteUserRole(ctx context.Context, selector UserRoleSel
 	}
 
 	logger.Debug(s.String(), s.Params())
-	_, err = database.Database.ExecContext(ctx, s.String(), s.Params()...)
+	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		logger.Error(err)
 	}
@@ -1134,7 +1138,7 @@ func (r *userRoleTable) CountUserRoles(ctx context.Context, selector UserRoleSel
 	}
 
 	logger.Debug(s.String())
-	rowQuery := database.Database.QueryRowContext(ctx, s.String(), s.Params()...)
+	rowQuery := Database.QueryRowContext(ctx, s.String(), s.Params()...)
 	if err = rowQuery.Scan(&result); err != nil {
 		logger.Error(err)
 	}
@@ -1189,7 +1193,7 @@ func (r *userRoleTable) QueryUserRoles(ctx context.Context, selector UserRoleSel
 		s.ORDER_BY(s.Param(sort.Key) + " " + sortType)
 	}
 
-	queryResult, err := database.Database.QueryContext(ctx, s.String(), s.Params()...)
+	queryResult, err := Database.QueryContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		logger.Error(err)
 		return
@@ -1262,7 +1266,7 @@ func (srv *UserResourcePermissionSummary) ToProto() *proto.UserResourceSummary {
 }
 
 func (p *UserResourcePermissionSummary) HasOwner() bool {
-	return p.Name == "owner"
+	return p.Name == OwnerResourceName
 }
 
 func (p *UserResourcePermissionSummary) MatchRules(name string, action string, rules ...UserResourcePermissionRule) bool {
@@ -1319,13 +1323,11 @@ type UserResourceSummarySelector struct {
 
 // 初始化管理员权限以及用户默认的配置
 func (r *permission) InitDefaultPermissions(ctx context.Context) (err error) {
-	adminName := "all"
 	adminDescription := "This represents all resources"
-	adminResource := &Resource{Name: &adminName, Description: &adminDescription}
+	adminResource := &Resource{Name: &AllResourceName, Description: &adminDescription}
 
-	ownerName := "owner"
 	ownerDescription := "This represents the user’s own resources"
-	ownerResource := &Resource{Name: &ownerName, Description: &ownerDescription}
+	ownerResource := &Resource{Name: &OwnerResourceName, Description: &ownerDescription}
 
 	createResource := func(resource *Resource) (*Resource, error) {
 		selector := ResourceSelector{Name: resource.Name}
@@ -1356,13 +1358,11 @@ func (r *permission) InitDefaultPermissions(ctx context.Context) (err error) {
 		return err
 	}
 
-	adminName = "admin"
 	adminDescription = "This represents all role"
-	adminRole := &Role{Name: &adminName, Description: &adminDescription}
+	adminRole := &Role{Name: &AdminRoleName, Description: &adminDescription}
 
-	ownerName = "owner"
 	ownerDescription = "This represents the user’s own role"
-	ownerRole := &Role{Name: &ownerName, Description: &ownerDescription}
+	ownerRole := &Role{Name: &OwnerRoleName, Description: &ownerDescription}
 
 	createRole := func(role *Role) (*Role, error) {
 		selector := RoleSelector{Name: role.Name}
@@ -1519,7 +1519,7 @@ func (r *permission) QueryUserResourceSummaries(ctx context.Context, selector Us
 	logger.Debug(s.String())
 
 	// Execute the query and retrieve the result set.
-	queryResult, err := database.Database.QueryContext(ctx, s.String(), s.Params()...)
+	queryResult, err := Database.QueryContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		logger.Error(err)
 		return nil, err

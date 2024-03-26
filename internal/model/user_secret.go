@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/atom-service/account/internal/database"
 	"github.com/atom-service/account/internal/helper"
 	"github.com/atom-service/account/package/proto"
 	"github.com/atom-service/common/logger"
@@ -130,7 +129,7 @@ type secretTable struct{}
 var SecretTable = &secretTable{}
 
 func (t *secretTable) CreateTable(ctx context.Context) error {
-	tx, err := database.Database.BeginTx(ctx, &sql.TxOptions{ReadOnly: false})
+	tx, err := Database.BeginTx(ctx, &sql.TxOptions{ReadOnly: false})
 	if err != nil {
 		return err
 	}
@@ -174,7 +173,7 @@ func (t *secretTable) CreateTable(ctx context.Context) error {
 }
 
 func (t *secretTable) TruncateTable(ctx context.Context) error {
-	_, err := database.Database.ExecContext(ctx, sqls.TRUNCATE_TABLE(secretTableName).String())
+	_, err := Database.ExecContext(ctx, sqls.TRUNCATE_TABLE(secretTableName).String())
 	return err
 }
 
@@ -189,7 +188,7 @@ func (r *secretTable) CreateSecret(ctx context.Context, createParams CreateSecre
 
 	// TODO 并发加快速度
 	for {
-		key = helper.GenerateRandomString(64)
+		key = helper.GenerateRandomString(64, nil)
 
 		count, err := r.CountSecrets(ctx, SecretSelector{Key: &key})
 		if err != nil {
@@ -203,7 +202,7 @@ func (r *secretTable) CreateSecret(ctx context.Context, createParams CreateSecre
 		}
 	}
 
-	value := helper.GenerateRandomString(64)
+	value := helper.GenerateRandomString(64, nil)
 
 	s := sqls.INSERT_INTO(secretTableName)
 	s.VALUES("key", s.Param(key))
@@ -213,7 +212,7 @@ func (r *secretTable) CreateSecret(ctx context.Context, createParams CreateSecre
 	s.VALUES("description", s.Param(createParams.Description))
 
 	logger.Debug(s.String(), s.Params())
-	_, err = database.Database.ExecContext(ctx, s.String(), s.Params()...)
+	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		logger.Error(err)
 		return
@@ -243,7 +242,7 @@ func (r *secretTable) DeleteSecret(ctx context.Context, selector SecretSelector)
 	s.SET("deleted_time", s.Param(time.Now()))
 
 	logger.Debug(s.String(), s.Params())
-	_, err = database.Database.ExecContext(ctx, s.String(), s.Params()...)
+	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		logger.Error(err)
 	}
@@ -268,7 +267,7 @@ func (r *secretTable) UpdateSecret(ctx context.Context, selector SecretSelector,
 	s.SET("updated_time", s.Param(time.Now()))
 
 	logger.Debug(s.String(), s.Params())
-	_, err = database.Database.ExecContext(ctx, s.String(), s.Params()...)
+	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		logger.Error(err)
 	}
@@ -292,7 +291,7 @@ func (r *secretTable) CountSecrets(ctx context.Context, selector SecretSelector)
 	s.WHERE("(deleted_time<CURRENT_TIMESTAMP OR deleted_time IS NULL)")
 
 	logger.Debug(s.String(), s.Params())
-	rowQuery := database.Database.QueryRowContext(ctx, s.String(), s.Params()...)
+	rowQuery := Database.QueryRowContext(ctx, s.String(), s.Params()...)
 	if err = rowQuery.Scan(&result); err != nil {
 		logger.Error(err)
 	}
@@ -352,7 +351,7 @@ func (r *secretTable) QuerySecrets(ctx context.Context, selector SecretSelector,
 	}
 
 	logger.Debug(s.String(), s.Params())
-	queryResult, err := database.Database.QueryContext(ctx, s.String(), s.Params()...)
+	queryResult, err := Database.QueryContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		logger.Error(err)
 		return

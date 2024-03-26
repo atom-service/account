@@ -12,13 +12,13 @@ import (
 	"github.com/atom-service/common/logger"
 )
 
-var AccountServer = &accountServer{}
+var AccountServer = &accountClient{}
 
-type accountServer struct {
+type accountClient struct {
 	proto.UnimplementedAccountServiceServer
 }
 
-func (s *accountServer) SignIn(ctx context.Context, request *proto.SignInRequest) (response *proto.SignInResponse, err error) {
+func (s *accountClient) SignIn(ctx context.Context, request *proto.SignInRequest) (response *proto.SignInResponse, err error) {
 	response = &proto.SignInResponse{}
 
 	var userSelector model.UserSelector
@@ -73,9 +73,12 @@ func (s *accountServer) SignIn(ctx context.Context, request *proto.SignInRequest
 	})
 
 	go func() {
+		localContext, cancel := context.WithTimeout(context.Background(), time.Minute)
+		defer cancel()
+
 		// 异步更新一下 label 上的状态
 		currentTime := time.Now().String()
-		if err = model.LabelTable.UpsertLabel(ctx, model.Label{
+		if err = model.LabelTable.UpsertLabel(localContext, model.Label{
 			UserID: *queryResult[0].ID,
 			Key:    model.LabelLastSignInTime,
 			Value:  &currentTime,
@@ -83,7 +86,7 @@ func (s *accountServer) SignIn(ctx context.Context, request *proto.SignInRequest
 			logger.Errorf("Update last sign in time failed: %s", err)
 		}
 
-		if err = model.LabelTable.UpsertLabel(ctx, model.Label{
+		if err = model.LabelTable.UpsertLabel(localContext, model.Label{
 			UserID: *queryResult[0].ID,
 			Key:    model.LabelLastVerifyTime,
 			Value:  &currentTime,
@@ -94,13 +97,14 @@ func (s *accountServer) SignIn(ctx context.Context, request *proto.SignInRequest
 
 	response.Token = &proto.SignedInToken{
 		ExpiredTime: ExpiredTime.String(),
+		UserID:      *queryResult[0].ID,
 		Token:       token,
 	}
 	response.State = proto.State_SUCCESS
 	return
 }
 
-func (s *accountServer) SignUp(ctx context.Context, request *proto.SignUpRequest) (response *proto.SignUpResponse, err error) {
+func (s *accountClient) SignUp(ctx context.Context, request *proto.SignUpRequest) (response *proto.SignUpResponse, err error) {
 	response = &proto.SignUpResponse{}
 
 	countResult, err := model.UserTable.CountUsers(ctx, model.UserSelector{
@@ -130,21 +134,21 @@ func (s *accountServer) SignUp(ctx context.Context, request *proto.SignUpRequest
 		return
 	}
 
-	users, err := model.UserTable.QueryUsers(ctx, model.UserSelector{Username: &request.Username}, nil, nil)
+	queryUserResult, err := model.UserTable.QueryUsers(ctx, model.UserSelector{Username: &request.Username}, nil, nil)
 	if err != nil {
 		response.State = proto.State_FAILURE
 		logger.Error(err)
 		return
 	}
 
-	if len(users) <= 0 {
+	if len(queryUserResult) <= 0 {
 		response.State = proto.State_FAILURE
 		return
 	}
 
 	// 创建一组 system AK/SK
 	err = model.SecretTable.CreateSecret(ctx, model.CreateSecretParams{
-		UserID: *users[0].ID,
+		UserID: *queryUserResult[0].ID,
 		Type:   model.SystemSecretType,
 	})
 
@@ -154,13 +158,42 @@ func (s *accountServer) SignUp(ctx context.Context, request *proto.SignUpRequest
 		return
 	}
 
+	// 赋予基本的 owner 权限
+	roleSelector := model.RoleSelector{}
+	roleSelector.Name = &model.OwnerRoleName
+	roleQueryResult, err := model.RoleTable.QueryRoles(ctx, roleSelector, nil, nil)
+	if err != nil {
+		response.State = proto.State_FAILURE
+		logger.Error(err)
+		return
+	}
+
+	if len(roleQueryResult) <= 0 {
+		response.State = proto.State_FAILURE
+		response.Code = code.PERMISSION_ROLE_NOT_EXIST
+		return
+	}
+
+	err = model.UserRoleTable.CreateUserRole(ctx, model.UserRole{
+		UserID: *queryUserResult[0].ID,
+		RoleID: *roleQueryResult[0].ID,
+	})
+	if err != nil {
+		response.State = proto.State_FAILURE
+		logger.Error(err)
+		return
+	}
+
 	go func() {
+		localContext, cancel := context.WithTimeout(context.Background(), time.Minute)
+		defer cancel()
+
 		// 异步更新一下 label 上的状态
 		currentTime := time.Now().String()
-		if err = model.LabelTable.UpsertLabel(ctx, model.Label{
-			UserID: *users[0].ID,
-			Key:    model.LabelLastVerifyTime,
+		if err = model.LabelTable.UpsertLabel(localContext, model.Label{
+			UserID: *queryUserResult[0].ID,
 			Value:  &currentTime,
+			Key:    model.LabelLastVerifyTime,
 		}); err != nil {
 			logger.Errorf("Update last sign in time failed: %s", err)
 		}
@@ -170,7 +203,7 @@ func (s *accountServer) SignUp(ctx context.Context, request *proto.SignUpRequest
 	return
 }
 
-func (s *accountServer) SignOut(ctx context.Context, request *proto.SignOutRequest) (response *proto.SignOutResponse, err error) {
+func (s *accountClient) SignOut(ctx context.Context, request *proto.SignOutRequest) (response *proto.SignOutResponse, err error) {
 	response = &proto.SignOutResponse{}
 
 	authData := auth.ResolveAuth(ctx)
@@ -182,7 +215,7 @@ func (s *accountServer) SignOut(ctx context.Context, request *proto.SignOutReque
 	return nil, nil
 }
 
-func (s *accountServer) QueryUsers(ctx context.Context, request *proto.QueryUsersRequest) (response *proto.QueryUsersResponse, err error) {
+func (s *accountClient) QueryUsers(ctx context.Context, request *proto.QueryUsersRequest) (response *proto.QueryUsersResponse, err error) {
 	response = &proto.QueryUsersResponse{}
 	response.Data = &proto.QueryUsersResponse_DataType{}
 
@@ -243,7 +276,7 @@ func (s *accountServer) QueryUsers(ctx context.Context, request *proto.QueryUser
 	return
 }
 
-func (s *accountServer) DeleteUser(ctx context.Context, request *proto.DeleteUserRequest) (response *proto.DeleteUserResponse, err error) {
+func (s *accountClient) DeleteUser(ctx context.Context, request *proto.DeleteUserRequest) (response *proto.DeleteUserResponse, err error) {
 	response = &proto.DeleteUserResponse{}
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
 		matchRules := []model.UserResourcePermissionRule{}
@@ -284,26 +317,25 @@ func (s *accountServer) DeleteUser(ctx context.Context, request *proto.DeleteUse
 	return
 }
 
-func (s *accountServer) CreateSecret(ctx context.Context, request *proto.CreateSecretRequest) (response *proto.CreateSecretResponse, err error) {
+func (s *accountClient) CreateSecret(ctx context.Context, request *proto.CreateSecretRequest) (response *proto.CreateSecretResponse, err error) {
 	response = &proto.CreateSecretResponse{}
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
 		matchRules := []model.UserResourcePermissionRule{}
-		// 检查用户是否操作的是自己
-		if request.Selector != nil && request.Selector.ID != nil {
-			if permission.HasOwner() && *request.Selector.ID == *user.ID {
-				return true
-			}
-			matchRules = append(matchRules, model.UserResourcePermissionRule{
-				Key:   "id",
-				Value: strconv.FormatInt(*request.Selector.ID, 10),
-			})
+
+		// 如果未指定，则默认为自己
+		if request.UserID == nil {
+			request.UserID = user.ID
 		}
 
-		if request.Selector != nil && request.Selector.Username != nil {
-			if permission.HasOwner() && *request.Selector.Username == *user.Username {
-				return true
-			}
+		// 检查用户是否操作的是自己
+		if permission.HasOwner() && *request.UserID == *user.ID {
+			return true
 		}
+		matchRules = append(matchRules, model.UserResourcePermissionRule{
+			Key:   "id",
+			Value: strconv.FormatInt(*request.UserID, 10),
+		})
+
 		return permission.MatchRules("secret", model.ActionInsert, matchRules...)
 	}); !pass {
 		response.State = proto.State_NO_PERMISSION
@@ -311,7 +343,7 @@ func (s *accountServer) CreateSecret(ctx context.Context, request *proto.CreateS
 	}
 
 	count, err := model.SecretTable.CountSecrets(ctx, model.SecretSelector{
-		UserID: request.Selector.ID,
+		UserID: request.UserID,
 		Type:   &model.UserSecretType,
 	})
 
@@ -329,7 +361,7 @@ func (s *accountServer) CreateSecret(ctx context.Context, request *proto.CreateS
 	}
 
 	err = model.SecretTable.CreateSecret(ctx, model.CreateSecretParams{
-		UserID: *request.Selector.ID,
+		UserID: *request.UserID,
 		Type:   model.UserSecretType,
 	})
 
@@ -343,21 +375,26 @@ func (s *accountServer) CreateSecret(ctx context.Context, request *proto.CreateS
 	return
 }
 
-func (s *accountServer) DisableSecret(ctx context.Context, request *proto.DisableSecretRequest) (response *proto.DisableSecretResponse, err error) {
+func (s *accountClient) DisableSecret(ctx context.Context, request *proto.DisableSecretRequest) (response *proto.DisableSecretResponse, err error) {
 	response = &proto.DisableSecretResponse{}
 
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
 		matchRules := []model.UserResourcePermissionRule{}
 		// 检查用户是否操作的是自己
-		if request.Selector != nil && request.Selector.UserID != nil {
-			if permission.HasOwner() && *request.Selector.UserID == *user.ID {
-				return true
+		if request.Selector == nil {
+			request.Selector = &proto.SecretSelector{
+				UserID: user.ID,
 			}
-			matchRules = append(matchRules, model.UserResourcePermissionRule{
-				Key:   "user_id",
-				Value: strconv.FormatInt(*request.Selector.UserID, 10),
-			})
 		}
+
+		if permission.HasOwner() && *request.Selector.UserID == *user.ID {
+			return true
+		}
+
+		matchRules = append(matchRules, model.UserResourcePermissionRule{
+			Key:   "user_id",
+			Value: strconv.FormatInt(*request.Selector.UserID, 10),
+		})
 		return permission.MatchRules("secret", model.ActionUpdate, matchRules...)
 	}); !pass {
 		response.State = proto.State_NO_PERMISSION
@@ -383,7 +420,7 @@ func (s *accountServer) DisableSecret(ctx context.Context, request *proto.Disabl
 	}
 
 	disabledTime := time.Now()
-	err = model.SecretTable.UpdateSecret(ctx, selector, &model.Secret{DeletedTime: &disabledTime})
+	err = model.SecretTable.UpdateSecret(ctx, selector, &model.Secret{DisabledTime: &disabledTime})
 
 	if err != nil {
 		response.State = proto.State_FAILURE
@@ -395,21 +432,26 @@ func (s *accountServer) DisableSecret(ctx context.Context, request *proto.Disabl
 	return
 }
 
-func (s *accountServer) DeleteSecret(ctx context.Context, request *proto.DeleteSecreteRequest) (response *proto.DeleteSecreteResponse, err error) {
+func (s *accountClient) DeleteSecret(ctx context.Context, request *proto.DeleteSecreteRequest) (response *proto.DeleteSecreteResponse, err error) {
 	response = &proto.DeleteSecreteResponse{}
 
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
 		matchRules := []model.UserResourcePermissionRule{}
 		// 检查用户是否操作的是自己
-		if request.Selector != nil && request.Selector.UserID != nil {
-			if permission.HasOwner() && *request.Selector.UserID == *user.ID {
-				return true
+		if request.Selector == nil {
+			request.Selector = &proto.SecretSelector{
+				UserID: user.ID,
 			}
-			matchRules = append(matchRules, model.UserResourcePermissionRule{
-				Key:   "user_id",
-				Value: strconv.FormatInt(*request.Selector.UserID, 10),
-			})
 		}
+
+		if permission.HasOwner() && *request.Selector.UserID == *user.ID {
+			return true
+		}
+
+		matchRules = append(matchRules, model.UserResourcePermissionRule{
+			Key:   "user_id",
+			Value: strconv.FormatInt(*request.Selector.UserID, 10),
+		})
 		return permission.MatchRules("secret", model.ActionDelete, matchRules...)
 	}); !pass {
 		response.State = proto.State_NO_PERMISSION
@@ -434,11 +476,17 @@ func (s *accountServer) DeleteSecret(ctx context.Context, request *proto.DeleteS
 		return
 	}
 
+	if queryResult[0].DisabledTime == nil {
+		response.State = proto.State_FAILURE
+		response.Code = code.USER_SECRET_NOT_DISABLED
+		return
+	}
+
 	if queryResult[0].DisabledTime != nil {
 		if queryResult[0].DisabledTime.Before(time.Now()) {
 			response.State = proto.State_FAILURE
 			response.Code = code.USER_SECRET_NOT_DISABLED
-			logger.Error(err)
+			return
 		}
 	}
 
@@ -453,22 +501,30 @@ func (s *accountServer) DeleteSecret(ctx context.Context, request *proto.DeleteS
 	return
 }
 
-func (s *accountServer) QuerySecrets(ctx context.Context, request *proto.QuerySecretsRequest) (response *proto.QuerySecretsResponse, err error) {
+func (s *accountClient) QuerySecrets(ctx context.Context, request *proto.QuerySecretsRequest) (response *proto.QuerySecretsResponse, err error) {
 	response = &proto.QuerySecretsResponse{}
 	response.Data = &proto.QuerySecretsResponse_DataType{}
 
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
 		matchRules := []model.UserResourcePermissionRule{}
-		// 检查用户是否操作的是自己
-		if request.Selector != nil && request.Selector.UserID != nil {
-			if permission.HasOwner() && *request.Selector.UserID == *user.ID {
-				return true
+		// 不指定则操作当前账号
+		if request.Selector == nil {
+			request.Selector = &proto.SecretSelector{
+				UserID: user.ID,
 			}
-			matchRules = append(matchRules, model.UserResourcePermissionRule{
-				Key:   "user_id",
-				Value: strconv.FormatInt(*request.Selector.UserID, 10),
-			})
 		}
+
+		// 检查用户是否拥有 owner 权限并且正在操作自己的资源
+		if permission.HasOwner() && *request.Selector.UserID == *user.ID {
+			return true
+		}
+
+		// 检查是否有指定的其他 uid 的权限
+		matchRules = append(matchRules, model.UserResourcePermissionRule{
+			Key:   "user_id",
+			Value: strconv.FormatInt(*request.Selector.UserID, 10),
+		})
+
 		return permission.MatchRules("secret", model.ActionQuery, matchRules...)
 	}); !pass {
 		response.State = proto.State_NO_PERMISSION
@@ -508,21 +564,25 @@ func (s *accountServer) QuerySecrets(ctx context.Context, request *proto.QuerySe
 	return
 }
 
-func (s *accountServer) CreateSetting(ctx context.Context, request *proto.CreateSettingRequest) (response *proto.CreateSettingResponse, err error) {
+func (s *accountClient) CreateSetting(ctx context.Context, request *proto.CreateSettingRequest) (response *proto.CreateSettingResponse, err error) {
 	response = &proto.CreateSettingResponse{}
 
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
 		matchRules := []model.UserResourcePermissionRule{}
-		// 检查用户是否操作的是自己
-		if request != nil {
-			if permission.HasOwner() && request.UserID == *user.ID {
-				return true
-			}
-			matchRules = append(matchRules, model.UserResourcePermissionRule{
-				Key:   "user_id",
-				Value: strconv.FormatInt(request.UserID, 10),
-			})
+
+		if request.UserID == nil {
+			request.UserID = user.ID
 		}
+
+		// 检查用户是否操作的是自己
+		if permission.HasOwner() && *request.UserID == *user.ID {
+			return true
+		}
+
+		matchRules = append(matchRules, model.UserResourcePermissionRule{
+			Key:   "user_id",
+			Value: strconv.FormatInt(*request.UserID, 10),
+		})
 		return permission.MatchRules("setting", model.ActionInsert, matchRules...)
 	}); !pass {
 		response.State = proto.State_NO_PERMISSION
@@ -531,7 +591,7 @@ func (s *accountServer) CreateSetting(ctx context.Context, request *proto.Create
 
 	selector := model.SettingSelector{}
 	selector.Key = &request.Key
-	selector.UserID = &request.UserID
+	selector.UserID = request.UserID
 
 	count, err := model.SettingTable.CountSettings(ctx, selector)
 	if err != nil {
@@ -549,7 +609,7 @@ func (s *accountServer) CreateSetting(ctx context.Context, request *proto.Create
 	err = model.SettingTable.CreateSetting(ctx, model.Setting{
 		Key:    request.Key,
 		Value:  &request.Value,
-		UserID: request.UserID,
+		UserID: *request.UserID,
 	})
 	if err != nil {
 		response.State = proto.State_FAILURE
@@ -561,21 +621,29 @@ func (s *accountServer) CreateSetting(ctx context.Context, request *proto.Create
 	return
 }
 
-func (s *accountServer) UpdateSetting(ctx context.Context, request *proto.UpdateSettingRequest) (response *proto.UpdateSettingResponse, err error) {
+func (s *accountClient) UpdateSetting(ctx context.Context, request *proto.UpdateSettingRequest) (response *proto.UpdateSettingResponse, err error) {
 	response = &proto.UpdateSettingResponse{}
 
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
 		matchRules := []model.UserResourcePermissionRule{}
-		// 检查用户是否操作的是自己
-		if request != nil && request.Selector.UserID != nil {
-			if permission.HasOwner() && *request.Selector.UserID == *user.ID {
-				return true
+		// 不指定则操作当前账号
+		if request.Selector == nil {
+			request.Selector = &proto.SettingSelector{
+				UserID: user.ID,
 			}
-			matchRules = append(matchRules, model.UserResourcePermissionRule{
-				Key:   "user_id",
-				Value: strconv.FormatInt(*request.Selector.UserID, 10),
-			})
 		}
+
+		if request.Selector.UserID == nil {
+			request.Selector.UserID = user.ID
+		}
+
+		if permission.HasOwner() && *request.Selector.UserID == *user.ID {
+			return true
+		}
+		matchRules = append(matchRules, model.UserResourcePermissionRule{
+			Key:   "user_id",
+			Value: strconv.FormatInt(*request.Selector.UserID, 10),
+		})
 		return permission.MatchRules("setting", model.ActionInsert, matchRules...)
 	}); !pass {
 		response.State = proto.State_NO_PERMISSION
@@ -593,15 +661,15 @@ func (s *accountServer) UpdateSetting(ctx context.Context, request *proto.Update
 		return
 	}
 
-	if count > 0 {
+	if count <= 0 {
 		response.State = proto.State_FAILURE
 		response.Code = code.SETTING_NOT_EXIST
 		return
 	}
 
-	err = model.SettingTable.CreateSetting(ctx, model.Setting{
+	err = model.SettingTable.UpdateSetting(ctx, selector, &model.Setting{
+		Key:    *request.Data.Key,
 		Value:  request.Data.Value,
-		Key:    *request.Selector.Key,
 		UserID: *request.Selector.UserID,
 	})
 	if err != nil {
@@ -614,21 +682,28 @@ func (s *accountServer) UpdateSetting(ctx context.Context, request *proto.Update
 	return
 }
 
-func (s *accountServer) DeleteSetting(ctx context.Context, request *proto.DeleteSettingRequest) (response *proto.DeleteSettingResponse, err error) {
+func (s *accountClient) DeleteSetting(ctx context.Context, request *proto.DeleteSettingRequest) (response *proto.DeleteSettingResponse, err error) {
 	response = &proto.DeleteSettingResponse{}
 
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
 		matchRules := []model.UserResourcePermissionRule{}
-		// 检查用户是否操作的是自己
-		if request != nil && request.Selector.UserID != nil {
-			if permission.HasOwner() && *request.Selector.UserID == *user.ID {
-				return true
+		// 不指定则操作当前账号
+		if request.Selector == nil {
+			request.Selector = &proto.SettingSelector{
+				UserID: user.ID,
 			}
-			matchRules = append(matchRules, model.UserResourcePermissionRule{
-				Key:   "user_id",
-				Value: strconv.FormatInt(*request.Selector.UserID, 10),
-			})
 		}
+		if request.Selector.UserID == nil {
+			request.Selector.UserID = user.ID
+		}
+
+		if permission.HasOwner() && *request.Selector.UserID == *user.ID {
+			return true
+		}
+		matchRules = append(matchRules, model.UserResourcePermissionRule{
+			Key:   "user_id",
+			Value: strconv.FormatInt(*request.Selector.UserID, 10),
+		})
 		return permission.MatchRules("setting", model.ActionDelete, matchRules...)
 	}); !pass {
 		response.State = proto.State_NO_PERMISSION
@@ -649,22 +724,31 @@ func (s *accountServer) DeleteSetting(ctx context.Context, request *proto.Delete
 	return
 }
 
-func (s *accountServer) QuerySettings(ctx context.Context, request *proto.QuerySettingsRequest) (response *proto.QuerySettingsResponse, err error) {
+func (s *accountClient) QuerySettings(ctx context.Context, request *proto.QuerySettingsRequest) (response *proto.QuerySettingsResponse, err error) {
 	response = &proto.QuerySettingsResponse{}
 	response.Data = &proto.QuerySettingsResponse_DataType{}
 
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
 		matchRules := []model.UserResourcePermissionRule{}
-		// 检查用户是否操作的是自己
-		if request != nil && request.Selector.UserID != nil {
-			if permission.HasOwner() && *request.Selector.UserID == *user.ID {
-				return true
+		// 不指定则操作当前账号
+		if request.Selector == nil {
+			request.Selector = &proto.SettingSelector{
+				UserID: user.ID,
 			}
-			matchRules = append(matchRules, model.UserResourcePermissionRule{
-				Key:   "user_id",
-				Value: strconv.FormatInt(*request.Selector.UserID, 10),
-			})
 		}
+
+		if request.Selector.UserID == nil {
+			request.Selector.UserID = user.ID
+		}
+
+		if permission.HasOwner() && *request.Selector.UserID == *user.ID {
+			return true
+		}
+
+		matchRules = append(matchRules, model.UserResourcePermissionRule{
+			Key:   "user_id",
+			Value: strconv.FormatInt(*request.Selector.UserID, 10),
+		})
 		return permission.MatchRules("setting", model.ActionQuery, matchRules...)
 	}); !pass {
 		response.State = proto.State_NO_PERMISSION

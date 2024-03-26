@@ -34,7 +34,7 @@ func TestSecretTable(t *testing.T) {
 
 	// create test & check result
 	if err := quick.Check(func() bool {
-		description := helper.GenerateRandomString(128)
+		description := helper.GenerateRandomString(128, nil)
 
 		testCreateParams := CreateSecretParams{
 			UserID:      rand.Int63n(math.MaxInt32),

@@ -34,8 +34,8 @@ func TestUserTable(t *testing.T) {
 
 	// create test & check result
 	if err := quick.Check(func() bool {
-		username := helper.GenerateRandomString(64)
-		password := helper.GenerateRandomString(128)
+		username := helper.GenerateRandomString(64, nil)
+		password := helper.GenerateRandomString(128, nil)
 
 		testUser := User{
 			Username: &username,
@@ -75,7 +75,7 @@ func TestUserTable(t *testing.T) {
 		}
 
 		// update test & check result
-		newPassword := helper.GenerateRandomString(64)
+		newPassword := helper.GenerateRandomString(64, nil)
 		err = userTable.UpdateUser(context, UserSelector{Username: &username}, &User{
 			Password: &newPassword,
 		})

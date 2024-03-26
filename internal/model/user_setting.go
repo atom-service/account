@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/atom-service/account/internal/database"
 	"github.com/atom-service/account/package/proto"
 	"github.com/atom-service/common/logger"
 	"github.com/yinxulai/sqls"
@@ -30,9 +29,15 @@ type Setting struct {
 func (srv *Setting) ToProto() *proto.Setting {
 	setting := new(proto.Setting)
 	setting.ID = *srv.ID
+	setting.Key = srv.Key
+	setting.UserID = srv.UserID
 
 	if srv.ID != nil {
 		setting.ID = *srv.ID
+	}
+
+	if srv.Value != nil {
+		setting.Value = *srv.Value
 	}
 
 	if srv.DeletedTime != nil {
@@ -72,7 +77,7 @@ func (sel *SettingSelector) LoadProto(data *proto.SettingSelector) {
 }
 
 func (t *settingTable) CreateTable(ctx context.Context) error {
-	tx, err := database.Database.BeginTx(ctx, &sql.TxOptions{ReadOnly: false})
+	tx, err := Database.BeginTx(ctx, &sql.TxOptions{ReadOnly: false})
 	if err != nil {
 		return err
 	}
@@ -88,7 +93,7 @@ func (t *settingTable) CreateTable(ctx context.Context) error {
 	s.COLUMN("id serial PRIMARY KEY NOT NULL")
 	s.COLUMN("user_id int NOT NULL")
 	s.COLUMN("key character varying(64) NOT NULL")
-	s.COLUMN("value character varying(128) NOT NULL")
+	s.COLUMN("value character varying(513) NOT NULL")
 	s.COLUMN("description character varying(128) NULL")
 	s.COLUMN("created_time timestamp without time zone NULL DEFAULT now()")
 	s.COLUMN("updated_time timestamp without time zone NULL DEFAULT now()")
@@ -112,7 +117,7 @@ func (t *settingTable) CreateTable(ctx context.Context) error {
 }
 
 func (t *settingTable) TruncateTable(ctx context.Context) error {
-	_, err := database.Database.ExecContext(ctx, sqls.TRUNCATE_TABLE(userSettingTableName).String())
+	_, err := Database.ExecContext(ctx, sqls.TRUNCATE_TABLE(userSettingTableName).String())
 	return err
 }
 
@@ -124,7 +129,7 @@ func (r *settingTable) CreateSetting(ctx context.Context, newSetting Setting) (e
 	s.VALUES("description", s.Param(newSetting.Description))
 
 	logger.Debug(s.String())
-	_, err = database.Database.ExecContext(ctx, s.String(), s.Params()...)
+	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		logger.Error(err)
 		return
@@ -152,6 +157,8 @@ func (r *settingTable) UpdateSetting(ctx context.Context, selector SettingSelect
 		s.WHERE("user_id=" + s.Param(selector.UserID))
 	}
 
+	s.SET("key", s.Param(role.Key))
+
 	if role.Value != nil {
 		s.SET("value", s.Param(*role.Value))
 	}
@@ -161,13 +168,13 @@ func (r *settingTable) UpdateSetting(ctx context.Context, selector SettingSelect
 	}
 
 	if role.DeletedTime != nil {
-		s.SET("disabled_time", s.Param(*role.DeletedTime))
+		s.SET("deleted_time", s.Param(*role.DeletedTime))
 	}
 
 	s.SET("updated_time", s.Param(time.Now()))
 
 	logger.Debug(s.String(), s.Params())
-	_, err = database.Database.ExecContext(ctx, s.String(), s.Params()...)
+	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		logger.Error(err)
 	}
@@ -197,7 +204,7 @@ func (r *settingTable) DeleteSetting(ctx context.Context, selector SettingSelect
 	s.SET("deleted_time", s.Param(time.Now()))
 
 	logger.Debug(s.String(), s.Params())
-	_, err = database.Database.ExecContext(ctx, s.String(), s.Params()...)
+	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		logger.Error(err)
 	}
@@ -223,7 +230,7 @@ func (r *settingTable) CountSettings(ctx context.Context, selector SettingSelect
 	s.WHERE("(deleted_time<CURRENT_TIMESTAMP OR deleted_time IS NULL)")
 
 	logger.Debug(s.String())
-	rowQuery := database.Database.QueryRowContext(ctx, s.String(), s.Params()...)
+	rowQuery := Database.QueryRowContext(ctx, s.String(), s.Params()...)
 	if err = rowQuery.Scan(&result); err != nil {
 		logger.Error(err)
 	}
@@ -282,7 +289,7 @@ func (r *settingTable) QuerySettings(ctx context.Context, selector SettingSelect
 		s.ORDER_BY(s.Param(sort.Key) + " " + sortType)
 	}
 
-	queryResult, err := database.Database.QueryContext(ctx, s.String(), s.Params()...)
+	queryResult, err := Database.QueryContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		logger.Error(err)
 		return

@@ -571,7 +571,7 @@ func (s *permissionServer) ApplyRoleForUser(ctx context.Context, request *proto.
 
 	_, err = model.UserRoleTable.CountUserRoles(ctx, model.UserRoleSelector{
 		UserID: userQueryResult[0].ID,
-		RoleID: request.Role.ID,
+		RoleID: roleQueryResult[0].ID,
 	})
 	if err != nil {
 		response.State = proto.State_FAILURE
@@ -636,5 +636,4 @@ func (s *permissionServer) RemoveRoleForUser(ctx context.Context, request *proto
 
 	response.State = proto.State_SUCCESS
 	return
-
 }

@@ -5,13 +5,18 @@ import (
 	"time"
 )
 
-func GenerateRandomString(length int) string {
+var defaultCharset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+func GenerateRandomString(length int, charset *string) string {
 	newRand := rand.New(rand.NewSource(time.Now().UnixNano()))
-	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	if charset == nil {
+		charset = &defaultCharset
+	}
+
 	randomString := make([]byte, length)
 	for i := 0; i < length; i++ {
-		index := newRand.Intn(len(charset))
-		randomString[i] = charset[index]
+		index := newRand.Intn(len(*charset))
+		randomString[i] = (*charset)[index]
 	}
 
 	return string(randomString)

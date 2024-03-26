@@ -41,7 +41,7 @@ type AuthWithSecretCredentials struct {
 func (x *AuthWithSecretCredentials) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
 	return map[string]string{
 		"authorization": SignToken(x.SecretKey, x.SecretValue, SignData{
-			ExpiresAt: time.Now().Add(10 * time.Minute),
+			ExpiresAt: time.Now().Add(24 * 7 * time.Hour), // 1 周有效期
 		}),
 	}, nil
 }
@@ -188,13 +188,8 @@ func ResolveAuth(ctx context.Context) *AuthData {
 	}
 
 	if permissions != nil {
-		if passPermissions, ok := permissions.([]any); ok {
-			data.Permissions = make([]*model.UserResourcePermissionSummary, len(passPermissions))
-			for _, passPermission := range passPermissions {
-				if passUserResourceSummary, ok := passPermission.(*model.UserResourcePermissionSummary); ok {
-					data.Permissions = append(data.Permissions, passUserResourceSummary)
-				}
-			}
+		if passPermissions, ok := permissions.([]*model.UserResourcePermissionSummary); ok {
+			data.Permissions = passPermissions
 		}
 	}
 
@@ -204,22 +199,19 @@ func ResolveAuth(ctx context.Context) *AuthData {
 func ResolvePermission(ctx context.Context, handler func(*model.User, *model.UserResourcePermissionSummary) bool) bool {
 	authData := ResolveAuth(ctx)
 
-	// 不一定都有，部分信息也可以处理
-	if authData == nil || authData.User == nil || authData.Secret == nil {
+	if authData == nil || authData.User == nil || authData.Secret == nil || authData.Permissions == nil {
 		return false
 	}
 
-	userID := authData.User.ID
+	if len(authData.Permissions) != 0 {
+		for _, permission := range authData.Permissions {
+			if permission.Name == model.AllResourceName {
+				return true
+			}
 
-	resourcePermission, err := model.Permission.QueryUserResourceSummaries(ctx, model.UserResourceSummarySelector{UserID: userID})
-
-	if err != nil || len(resourcePermission) == 0 {
-		return false
-	}
-
-	for _, permission := range resourcePermission {
-		if handler(authData.User, permission) {
-			return true
+			if handler(authData.User, permission) {
+				return true
+			}
 		}
 	}
 

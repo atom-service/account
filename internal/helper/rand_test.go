@@ -6,7 +6,7 @@ import (
 
 func TestGenerateRandomString(t *testing.T) {
 	// Test that the function returns a string of the correct length.
-	str1 := GenerateRandomString(10)
+	str1 := GenerateRandomString(10, nil)
 	if len(str1) != 10 {
 		t.Errorf("Expected string length 10, got %d", len(str1))
 	}
@@ -20,7 +20,7 @@ func TestGenerateRandomString(t *testing.T) {
 	}
 
 	// Test that the function returns a different string each time it is called.
-	str2 := GenerateRandomString(10)
+	str2 := GenerateRandomString(10, nil)
 	if str1 == str2 {
 		t.Error("Expected different strings, but they were the same")
 	}

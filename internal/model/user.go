@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/atom-service/account/internal/database"
 	"github.com/atom-service/account/internal/helper"
 	"github.com/atom-service/account/package/proto"
 	"github.com/atom-service/common/logger"
@@ -128,7 +127,7 @@ func (srv *UserSelector) LoadProto(data *proto.UserSelector) {
 var UserTable = &userTable{}
 
 func (t *userTable) CreateTable(ctx context.Context) error {
-	tx, err := database.Database.BeginTx(ctx, &sql.TxOptions{ReadOnly: false})
+	tx, err := Database.BeginTx(ctx, &sql.TxOptions{ReadOnly: false})
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
@@ -169,7 +168,7 @@ func (t *userTable) CreateTable(ctx context.Context) error {
 }
 
 func (t *userTable) TruncateTable(ctx context.Context) error {
-	_, err := database.Database.ExecContext(ctx, sqls.TRUNCATE_TABLE(userTableName).String())
+	_, err := Database.ExecContext(ctx, sqls.TRUNCATE_TABLE(userTableName).String())
 	return err
 }
 
@@ -180,7 +179,7 @@ func (r *userTable) CreateUser(ctx context.Context, newUser User) (err error) {
 	s.VALUES("password", s.Param(newUser.Password))
 
 	logger.Debug(s.String(), s.Params())
-	_, err = database.Database.ExecContext(ctx, s.String(), s.Params()...)
+	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		logger.Error(err)
 		return
@@ -215,7 +214,7 @@ func (r *userTable) DeleteUser(ctx context.Context, selector UserSelector) (err 
 	s.SET("deleted_time", s.Param(time.Now()))
 
 	logger.Debug(s.String(), s.Params())
-	_, err = database.Database.ExecContext(ctx, s.String(), s.Params()...)
+	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		logger.Error(err)
 	}
@@ -249,7 +248,7 @@ func (r *userTable) UpdateUser(ctx context.Context, selector UserSelector, user 
 	s.SET("updated_time", s.Param(time.Now()))
 
 	logger.Debug(s.String(), s.Params())
-	_, err = database.Database.ExecContext(ctx, s.String(), s.Params()...)
+	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		logger.Error(err)
 	}
@@ -270,7 +269,7 @@ func (r *userTable) CountUsers(ctx context.Context, selector UserSelector) (resu
 	s.WHERE("(deleted_time<CURRENT_TIMESTAMP OR deleted_time IS NULL)")
 
 	logger.Debug(s.String(), s.Params())
-	rowQuery := database.Database.QueryRowContext(ctx, s.String(), s.Params()...)
+	rowQuery := Database.QueryRowContext(ctx, s.String(), s.Params()...)
 	if err = rowQuery.Scan(&result); err != nil {
 		logger.Error(err)
 	}
@@ -324,7 +323,7 @@ func (r *userTable) QueryUsers(ctx context.Context, selector UserSelector, pagin
 	}
 
 	logger.Debug(s.String(), s.Params())
-	queryResult, err := database.Database.QueryContext(ctx, s.String(), s.Params()...)
+	queryResult, err := Database.QueryContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		logger.Error(err)
 		return
@@ -363,8 +362,8 @@ func (s *userTable) InitAdminUser(ctx context.Context) (err error) {
 		return err
 	}
 
-	adminUsername := helper.GenerateRandomString(64)
-	adminPassword := helper.GenerateRandomString(128)
+	adminUsername := helper.GenerateRandomString(64, nil)
+	adminPassword := helper.GenerateRandomString(128, nil)
 	adminPasswordHash := Password.Hash(adminPassword)
 	adminUser := &User{Username: &adminUsername, Password: &adminPasswordHash}
 

@@ -13,8 +13,8 @@ func TestToken(t *testing.T) {
 		MaxCount: 100,
 	}
 	if err := quick.Check(func() bool {
-		ak := helper.GenerateRandomString(64)
-		sk := helper.GenerateRandomString(64)
+		ak := helper.GenerateRandomString(64, nil)
+		sk := helper.GenerateRandomString(64, nil)
 
 		token:= SignToken(ak, sk, SignData{
 			ExpiresAt: time.Now().Add(time.Second),

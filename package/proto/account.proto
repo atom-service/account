@@ -26,8 +26,9 @@ message SignInRequest {
 }
 
 message SignedInToken {
-  string Token = 1;
-  string ExpiredTime = 2;
+  int64 UserID = 1;
+  string Token = 2;
+  string ExpiredTime = 3;
 }
 
 message SignInResponse {
@@ -98,7 +99,7 @@ message SecretSelector {
 }
 
 message CreateSecretRequest {
-  UserSelector Selector = 1;
+  optional int64  UserID = 1;
 }
 
 message CreateSecretResponse {
@@ -161,7 +162,7 @@ message SettingSelector {
 message CreateSettingRequest {
   string Key = 1;
   string Value = 2;
-  int64  UserID = 3;
+  optional int64  UserID = 3;
 }
 
 message CreateSettingResponse {
