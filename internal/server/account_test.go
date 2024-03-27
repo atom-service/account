@@ -10,7 +10,7 @@ import (
 	"github.com/atom-service/account/package/proto"
 )
 
-func TestPermissionUserRoleTable(t *testing.T) {
+func TestAccountServer(t *testing.T) {
 	context := context.TODO()
 	testServer := createTestServer()
 	accountClient := testServer.CreateAccountClientWithToken("")
@@ -57,6 +57,32 @@ func TestPermissionUserRoleTable(t *testing.T) {
 		return true
 	}, config); err != nil {
 		t.Errorf("Test failed: %v", err)
+	}
+
+	// pagination test & check result
+	for _, user := range signedInTokenUsers {
+		var offsetUint64 = int64(0)
+		var limitUint64 = int64(1)
+
+		selector := &proto.UserSelector{ID: &user.UserID}
+		pagination := &proto.PaginationOption{Offset: &offsetUint64, Limit: &limitUint64}
+		accountClientWithUserAuth := testServer.CreateAccountClientWithToken(user.Token)
+		request := &proto.QueryUsersRequest{Selector: selector, Pagination: pagination}
+		queryPaginationResult, err := accountClientWithUserAuth.QueryUsers(context, request)
+		if err != nil || queryPaginationResult.State != proto.State_SUCCESS {
+			t.Errorf("Query failed: %v", err)
+			return
+		}
+
+		if queryPaginationResult.Data.Total != int64(1) {
+			t.Errorf("Query result length are incorrect: %v", queryPaginationResult)
+			return
+		}
+
+		if queryPaginationResult.Data.Users[0].ID != user.UserID {
+			t.Errorf("Query result length are incorrect: %v", queryPaginationResult)
+			return
+		}
 	}
 
 	for _, user := range signedInTokenUsers {
