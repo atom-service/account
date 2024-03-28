@@ -23,7 +23,7 @@ type testServer struct {
 	address string
 }
 
-func (t *testServer) CreateAccountClientWithToken(token string) proto.AccountServiceClient {
+func (t *testServer) CreateClientConn(token string) *grpc.ClientConn {
 	authCredentials := grpc.WithPerRPCCredentials(&auth.AuthWithTokenCredentials{Token: token})
 	nonSafeCredentials := grpc.WithTransportCredentials(insecure.NewCredentials())
 	conn, err := grpc.Dial(t.address, authCredentials, nonSafeCredentials)
@@ -31,7 +31,15 @@ func (t *testServer) CreateAccountClientWithToken(token string) proto.AccountSer
 		panic(err)
 	}
 
-	return proto.NewAccountServiceClient(conn)
+	return conn
+}
+
+func (t *testServer) CreateAccountClientWithToken(token string) proto.AccountServiceClient {
+	return proto.NewAccountServiceClient(t.CreateClientConn(token))
+}
+
+func (t *testServer) CreatePermissionClientWithToken(token string) proto.PermissionServiceClient {
+	return proto.NewPermissionServiceClient(t.CreateClientConn(token))
 }
 
 func createTestServer() *testServer {

@@ -4,8 +4,11 @@ import (
 	"context"
 	"testing"
 	"testing/quick"
+	"time"
 
 	"github.com/atom-service/account/internal/helper"
+	"github.com/atom-service/account/internal/model"
+	"github.com/atom-service/account/package/auth"
 	"github.com/atom-service/account/package/code"
 	"github.com/atom-service/account/package/proto"
 )
@@ -13,7 +16,24 @@ import (
 func TestAccountServer(t *testing.T) {
 	context := context.TODO()
 	testServer := createTestServer()
-	accountClient := testServer.CreateAccountClientWithToken("")
+
+	rootAdminUserID := int64(1) // admin user 是 model 在 init 初始化好的
+	adminSecretSelector := model.SecretSelector{UserID: &rootAdminUserID}
+	adminSecret, err := model.SecretTable.QuerySecrets(context, adminSecretSelector, nil, nil)
+	if err != nil {
+		t.Errorf("Query admin secret failed: %v", err)
+		return
+	}
+	if len(adminSecret) == 0 {
+		t.Errorf("Query admin secret failed: %v", err)
+		return
+	}
+
+	token := auth.SignToken(*adminSecret[0].Key, *adminSecret[0].Value, auth.SignData{
+		ExpiresAt: time.Now().Add(time.Hour),
+	})
+
+	adminAccountClient := testServer.CreateAccountClientWithToken(token)
 
 	config := &quick.Config{
 		MaxCount: 100,
@@ -27,7 +47,7 @@ func TestAccountServer(t *testing.T) {
 		username := helper.GenerateRandomString(64, nil)
 		password := helper.GenerateRandomString(128, nil)
 
-		signUpResponse, err := accountClient.SignUp(context, &proto.SignUpRequest{
+		signUpResponse, err := adminAccountClient.SignUp(context, &proto.SignUpRequest{
 			Username: username,
 			Password: password,
 		})
@@ -40,7 +60,7 @@ func TestAccountServer(t *testing.T) {
 			return false
 		}
 
-		signInResponse, err := accountClient.SignIn(context, &proto.SignInRequest{
+		signInResponse, err := adminAccountClient.SignIn(context, &proto.SignInRequest{
 			Selector: &proto.UserSelector{Username: &username},
 			Password: password,
 		})
@@ -259,5 +279,4 @@ func TestAccountServer(t *testing.T) {
 			return
 		}
 	}
-
 }
