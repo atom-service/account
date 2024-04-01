@@ -136,7 +136,7 @@ func (s *secretTable) initData(ctx context.Context) (err error) {
 		return err
 	}
 
-	if len(queryResult) > 0 {
+	if len(queryResult) == 0 {
 		return s.CreateSecret(ctx, CreateSecretParams{
 			UserID: adminUserID,
 			Type:   SystemSecretType,
