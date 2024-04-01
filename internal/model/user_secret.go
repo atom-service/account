@@ -128,7 +128,26 @@ type secretTable struct{}
 
 var SecretTable = &secretTable{}
 
-func (t *secretTable) CreateTable(ctx context.Context) error {
+func (s *secretTable) initData(ctx context.Context) (err error) {
+	adminUserID := int64(1)
+	selector := SecretSelector{UserID: &adminUserID}
+	queryResult, err := s.QuerySecrets(ctx, selector, nil, nil)
+	if err != nil {
+		return err
+	}
+
+	if len(queryResult) > 0 {
+		return s.CreateSecret(ctx, CreateSecretParams{
+			UserID: adminUserID,
+			Type:   SystemSecretType,
+		})
+	}
+
+	return nil
+}
+
+
+func (t *secretTable) InitTable(ctx context.Context) error {
 	tx, err := Database.BeginTx(ctx, &sql.TxOptions{ReadOnly: false})
 	if err != nil {
 		return err
@@ -169,7 +188,7 @@ func (t *secretTable) CreateTable(ctx context.Context) error {
 		return err
 	}
 
-	return nil
+	return t.initData(ctx)
 }
 
 func (t *secretTable) TruncateTable(ctx context.Context) error {

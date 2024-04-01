@@ -76,7 +76,7 @@ func (sel *SettingSelector) LoadProto(data *proto.SettingSelector) {
 	sel.UserID = data.UserID
 }
 
-func (t *settingTable) CreateTable(ctx context.Context) error {
+func (t *settingTable) InitTable(ctx context.Context) error {
 	tx, err := Database.BeginTx(ctx, &sql.TxOptions{ReadOnly: false})
 	if err != nil {
 		return err

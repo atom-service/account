@@ -93,7 +93,7 @@ func (srv *Role) ToProto() *proto.Role {
 
 type roleTable struct{}
 
-func (t *roleTable) CreateTable(ctx context.Context) error {
+func (t *roleTable) InitTable(ctx context.Context) error {
 	tx, err := Database.BeginTx(ctx, &sql.TxOptions{ReadOnly: false})
 	if err != nil {
 		return err
@@ -353,7 +353,7 @@ func (r *ResourceSelector) LoadProto(data *proto.ResourceSelector) {
 
 type resourceTable struct{}
 
-func (t *resourceTable) CreateTable(ctx context.Context) error {
+func (t *resourceTable) InitTable(ctx context.Context) error {
 	tx, err := Database.BeginTx(ctx, &sql.TxOptions{ReadOnly: false})
 	if err != nil {
 		return err
@@ -636,7 +636,7 @@ func (srv *RoleResourceSelector) LoadProtoAction(action proto.ResourceAction) {
 
 type roleResourceTable struct{}
 
-func (t *roleResourceTable) CreateTable(ctx context.Context) error {
+func (t *roleResourceTable) InitTable(ctx context.Context) error {
 	tx, err := Database.BeginTx(ctx, &sql.TxOptions{ReadOnly: false})
 	if err != nil {
 		return err
@@ -840,7 +840,7 @@ type ResourceRuleSelector struct {
 type resourceRuleTable struct {
 }
 
-func (t *resourceRuleTable) CreateTable(ctx context.Context) error {
+func (t *resourceRuleTable) InitTable(ctx context.Context) error {
 	tx, err := Database.BeginTx(ctx, &sql.TxOptions{ReadOnly: false})
 	if err != nil {
 		return err
@@ -1035,7 +1035,7 @@ type UserRoleSelector struct {
 type userRoleTable struct {
 }
 
-func (t *userRoleTable) CreateTable(ctx context.Context) error {
+func (t *userRoleTable) InitTable(ctx context.Context) error {
 	tx, err := Database.BeginTx(ctx, &sql.TxOptions{ReadOnly: false})
 	if err != nil {
 		return err

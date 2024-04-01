@@ -17,7 +17,7 @@ func TestUserLabelTable(t *testing.T) {
 	context := context.TODO()
 
 	// 创建表
-	if err := labelTable.CreateTable(context); err != nil {
+	if err := labelTable.InitTable(context); err != nil {
 		t.Errorf("Create table failed: %v", err)
 		return
 	}

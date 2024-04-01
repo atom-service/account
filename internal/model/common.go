@@ -41,34 +41,31 @@ func Init(ctx context.Context) error {
 	if err := InitDB(ctx); err != nil {
 		return err
 	}
-	if err := UserTable.CreateTable(ctx); err != nil {
+	if err := UserTable.InitTable(ctx); err != nil {
 		return err
 	}
-	if err := UserTable.InitAdminUser(ctx); err != nil {
+	if err := SettingTable.InitTable(ctx); err != nil {
 		return err
 	}
-	if err := SettingTable.CreateTable(ctx); err != nil {
+	if err := SecretTable.InitTable(ctx); err != nil {
 		return err
 	}
-	if err := SecretTable.CreateTable(ctx); err != nil {
+	if err := LabelTable.InitTable(ctx); err != nil {
 		return err
 	}
-	if err := LabelTable.CreateTable(ctx); err != nil {
+	if err := RoleTable.InitTable(ctx); err != nil {
 		return err
 	}
-	if err := RoleTable.CreateTable(ctx); err != nil {
+	if err := UserRoleTable.InitTable(ctx); err != nil {
 		return err
 	}
-	if err := UserRoleTable.CreateTable(ctx); err != nil {
+	if err := ResourceTable.InitTable(ctx); err != nil {
 		return err
 	}
-	if err := ResourceTable.CreateTable(ctx); err != nil {
+	if err := RoleResourceTable.InitTable(ctx); err != nil {
 		return err
 	}
-	if err := RoleResourceTable.CreateTable(ctx); err != nil {
-		return err
-	}
-	if err := RoleResourceRuleTable.CreateTable(ctx); err != nil {
+	if err := RoleResourceRuleTable.InitTable(ctx); err != nil {
 		return err
 	}
 	if err := Permission.InitDefaultPermissions(ctx); err != nil {

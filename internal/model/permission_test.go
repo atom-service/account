@@ -17,7 +17,7 @@ func TestPermissionRoleTable(t *testing.T) {
 	context := context.TODO()
 
 	// 创建表
-	if err := roleTable.CreateTable(context); err != nil {
+	if err := roleTable.InitTable(context); err != nil {
 		t.Errorf("Create table failed: %v", err)
 		return
 	}
@@ -213,7 +213,7 @@ func TestPermissionResourceTable(t *testing.T) {
 	context := context.TODO()
 
 	// 创建表
-	if err := resourceTable.CreateTable(context); err != nil {
+	if err := resourceTable.InitTable(context); err != nil {
 		t.Errorf("Create table failed: %v", err)
 		return
 	}
@@ -404,7 +404,7 @@ func TestPermissionRoleResourceTable(t *testing.T) {
 	context := context.TODO()
 
 	// 创建表
-	if err := roleResourceTable.CreateTable(context); err != nil {
+	if err := roleResourceTable.InitTable(context); err != nil {
 		t.Errorf("Create table failed: %v", err)
 		return
 	}
@@ -575,7 +575,7 @@ func TestPermissionRoleResourceRuleTable(t *testing.T) {
 	context := context.TODO()
 
 	// 创建表
-	if err := roleResourceRuleTable.CreateTable(context); err != nil {
+	if err := roleResourceRuleTable.InitTable(context); err != nil {
 		t.Errorf("Create table failed: %v", err)
 		return
 	}
@@ -743,7 +743,7 @@ func TestPermissionUserRoleTable(t *testing.T) {
 	context := context.TODO()
 
 	// 创建表
-	if err := userRoleTable.CreateTable(context); err != nil {
+	if err := userRoleTable.InitTable(context); err != nil {
 		t.Errorf("Create table failed: %v", err)
 		return
 	}

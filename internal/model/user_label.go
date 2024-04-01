@@ -39,7 +39,7 @@ type LabelSelector struct {
 
 type labelTable struct{}
 
-func (t *labelTable) CreateTable(ctx context.Context) error {
+func (t *labelTable) InitTable(ctx context.Context) error {
 	tx, err := Database.BeginTx(ctx, &sql.TxOptions{ReadOnly: false})
 	if err != nil {
 		return err

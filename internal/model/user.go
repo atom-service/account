@@ -126,7 +126,39 @@ func (srv *UserSelector) LoadProto(data *proto.UserSelector) {
 
 var UserTable = &userTable{}
 
-func (t *userTable) CreateTable(ctx context.Context) error {
+func (s *userTable) initData(ctx context.Context) (err error) {
+	adminUserID := int64(1)
+	userSelector := UserSelector{ID: &adminUserID}
+	queryResult, err := s.QueryUsers(ctx, userSelector, nil, nil)
+	if err != nil {
+		return err
+	}
+
+	adminUsername := helper.GenerateRandomString(64, nil)
+	adminPassword := helper.GenerateRandomString(128, nil)
+	adminPasswordHash := Password.Hash(adminPassword)
+	adminUser := &User{Username: &adminUsername, Password: &adminPasswordHash}
+
+	if len(queryResult) > 0 {
+		adminUsername = *queryResult[0].Username
+		err = s.UpdateUser(ctx, UserSelector{ID: &adminUserID}, adminUser)
+		if err != nil {
+			return err
+		}
+	} else {
+		err = s.CreateUser(ctx, *adminUser)
+		if err != nil {
+			return err
+		}
+	}
+
+	logger.Info("admin user are upsert:")
+	logger.Infof("username: %s", adminUsername)
+	logger.Infof("password: %s", adminPassword)
+	return nil
+}
+
+func (t *userTable) InitTable(ctx context.Context) error {
 	tx, err := Database.BeginTx(ctx, &sql.TxOptions{ReadOnly: false})
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
@@ -164,7 +196,7 @@ func (t *userTable) CreateTable(ctx context.Context) error {
 		return err
 	}
 
-	return nil
+	return t.initData(ctx)
 }
 
 func (t *userTable) TruncateTable(ctx context.Context) error {
@@ -352,36 +384,4 @@ func (r *userTable) QueryUsers(ctx context.Context, selector UserSelector, pagin
 		return
 	}
 	return
-}
-
-func (s *userTable) InitAdminUser(ctx context.Context) (err error) {
-	adminUserID := int64(1)
-	userSelector := UserSelector{ID: &adminUserID}
-	queryResult, err := s.QueryUsers(ctx, userSelector, nil, nil)
-	if err != nil {
-		return err
-	}
-
-	adminUsername := helper.GenerateRandomString(64, nil)
-	adminPassword := helper.GenerateRandomString(128, nil)
-	adminPasswordHash := Password.Hash(adminPassword)
-	adminUser := &User{Username: &adminUsername, Password: &adminPasswordHash}
-
-	if len(queryResult) > 0 {
-		adminUsername = *queryResult[0].Username
-		err = s.UpdateUser(ctx, UserSelector{ID: &adminUserID}, adminUser)
-		if err != nil {
-			return err
-		}
-	} else {
-		err = s.CreateUser(ctx, *adminUser)
-		if err != nil {
-			return err
-		}
-	}
-
-	logger.Info("admin user are upsert:")
-	logger.Infof("username: %s", adminUsername)
-	logger.Infof("password: %s", adminPassword)
-	return nil
 }

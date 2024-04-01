@@ -17,7 +17,7 @@ func TestSecretTable(t *testing.T) {
 	context := context.TODO()
 
 	// 创建表
-	if err := secretTable.CreateTable(context); err != nil {
+	if err := secretTable.InitTable(context); err != nil {
 		t.Errorf("Create table failed: %v", err)
 		return
 	}
