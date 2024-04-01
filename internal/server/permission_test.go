@@ -4,8 +4,11 @@ import (
 	"context"
 	"testing"
 	"testing/quick"
+	"time"
 
 	"github.com/atom-service/account/internal/helper"
+	"github.com/atom-service/account/internal/model"
+	"github.com/atom-service/account/package/auth"
 	"github.com/atom-service/account/package/proto"
 )
 
@@ -13,8 +16,23 @@ func TestPermissionServer(t *testing.T) {
 	context := context.TODO()
 	testServer := createTestServer()
 
-	// TODO: 得 admin 的 token
-	permissionClient := testServer.CreatePermissionClientWithToken("")
+	rootAdminUserID := int64(1) // admin user 是 model 在 init 初始化好的
+	adminSecretSelector := model.SecretSelector{UserID: &rootAdminUserID}
+	adminSecret, err := model.SecretTable.QuerySecrets(context, adminSecretSelector, nil, nil)
+	if err != nil {
+		t.Errorf("Query admin secret failed: %v", err)
+		return
+	}
+	if len(adminSecret) == 0 {
+		t.Errorf("Query admin secret failed: %v", err)
+		return
+	}
+
+	token := auth.SignToken(*adminSecret[0].Key, *adminSecret[0].Value, auth.SignData{
+		ExpiresAt: time.Now().Add(time.Hour),
+	})
+
+	permissionClient := testServer.CreatePermissionClientWithToken(token)
 
 	config := &quick.Config{
 		MaxCount: 100,

@@ -105,6 +105,7 @@ func TestAccountServer(t *testing.T) {
 		}
 	}
 
+	// test setting create & query & delete
 	for _, user := range signedInTokenUsers {
 		testKey := helper.GenerateRandomString(64, nil)
 		testValue := helper.GenerateRandomString(512, nil)
@@ -190,6 +191,99 @@ func TestAccountServer(t *testing.T) {
 		deleteResponse, err := accountClientWithUserAuth.DeleteSetting(context, &proto.DeleteSettingRequest{
 			Selector: &proto.SettingSelector{
 				Key: &queryResponse.Data.Settings[0].Key,
+			},
+		})
+		if err != nil {
+			t.Errorf("Unexpected results after deleted: %v", err)
+			return
+		}
+		if deleteResponse.State != proto.State_SUCCESS {
+			t.Errorf("Unexpected results after deleted: %v", err)
+			return
+		}
+	}
+
+	// test label create & query & delete
+	for _, user := range signedInTokenUsers {
+		testKey := helper.GenerateRandomString(64, nil)
+		testValue := helper.GenerateRandomString(512, nil)
+
+		accountClientWithUserAuth := testServer.CreateAccountClientWithToken(user.Token)
+		createResponse, err := accountClientWithUserAuth.UpsertLabel(context, &proto.UpsertLabelRequest{
+			Key:   &testKey,
+			Value: &testValue,
+		})
+		if err != nil {
+			t.Errorf("UpsertLabel failed: %v", err)
+			return
+		}
+		if createResponse.State != proto.State_SUCCESS {
+			t.Errorf("UpsertLabel failed: %v", err)
+			return
+		}
+
+		queryResponse, err := accountClientWithUserAuth.QueryLabels(context, &proto.QueryLabelsRequest{})
+		if err != nil {
+			t.Errorf("Unexpected results after query: %v", err)
+			return
+		}
+		if queryResponse.State != proto.State_SUCCESS {
+			t.Errorf("Unexpected results after query: %s", queryResponse.State.String())
+			return
+		}
+
+		if queryResponse.Data.Total == 0 {
+			t.Errorf("Unexpected results after query")
+			return
+		}
+
+		newTestKey := helper.GenerateRandomString(64, nil)
+		newTestValue := helper.GenerateRandomString(128, nil)
+		updateResponse, err := accountClientWithUserAuth.UpsertLabel(context, &proto.UpsertLabelRequest{
+			Key:   &newTestKey,
+			Value: &newTestValue,
+		})
+		if err != nil {
+			t.Errorf("Unexpected results on update: %v", err)
+			return
+		}
+		if updateResponse.State != proto.State_SUCCESS {
+			t.Errorf("Unexpected results on update: %v", err)
+			return
+		}
+
+		queryResponse2, err := accountClientWithUserAuth.QueryLabels(context, &proto.QueryLabelsRequest{
+			Selector: &proto.LabelSelector{
+				Key: &newTestKey,
+			},
+		})
+		if err != nil {
+			t.Errorf("Unexpected results after updated: %v", err)
+			return
+		}
+		if queryResponse2.State != proto.State_SUCCESS {
+			t.Errorf("Unexpected results after updated: %s", queryResponse.State.String())
+			return
+		}
+
+		if queryResponse2.Data.Total == 0 {
+			t.Errorf("Unexpected results after updated")
+			return
+		}
+
+		if queryResponse2.Data.Labels[0].Key != newTestKey {
+			t.Errorf("Unexpected results after updated")
+			return
+		}
+
+		if queryResponse2.Data.Labels[0].Value != newTestValue {
+			t.Errorf("Unexpected results after updated")
+			return
+		}
+
+		deleteResponse, err := accountClientWithUserAuth.DeleteLabel(context, &proto.DeleteLabelRequest{
+			Selector: &proto.LabelSelector{
+				Key: &newTestKey,
 			},
 		})
 		if err != nil {

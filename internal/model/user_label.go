@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/atom-service/account/package/proto"
 	"github.com/atom-service/common/logger"
 	"github.com/yinxulai/sqls"
 )
@@ -15,10 +16,9 @@ var userLabelTableName = userSchemaName + ".\"labels\""
 var LabelTable = &labelTable{}
 
 const (
-	LabelLastSignInTime = "last_sign_in_time" // 最近一次登录时间
+	LabelLastSignInTime = "last_sign_in_time"     // 最近一次登录时间
 	LabelLastVerifyTime = "last_verify_auth_time" // 最近一次身份验证时间
 )
-
 
 type Label struct {
 	ID          *int64
@@ -31,10 +31,47 @@ type Label struct {
 	DeletedTime *time.Time
 }
 
+func (srv *Label) ToProto() *proto.Label {
+	secret := new(proto.Label)
+	secret.Key = srv.Key
+	secret.UserID = &srv.UserID
+
+	if srv.Value != nil {
+		secret.Value = *srv.Value
+	}
+	if srv.Description != nil {
+		secret.Description = srv.Description
+	}
+
+	if srv.CreatedTime != nil {
+		timeString := srv.CreatedTime.String()
+		secret.CreatedTime = &timeString
+	}
+
+	if srv.UpdatedTime != nil {
+		timeString := srv.UpdatedTime.String()
+		secret.UpdatedTime = &timeString
+	}
+
+	if srv.DeletedTime != nil {
+		timeString := srv.DeletedTime.String()
+		secret.DeletedTime = &timeString
+	}
+
+	return secret
+}
+
 type LabelSelector struct {
 	ID     *int64
 	Key    *string
 	UserID *int64
+}
+
+func (srv *LabelSelector) LoadProto(data *proto.LabelSelector) {
+	if data != nil {
+		srv.Key = data.Key
+		srv.UserID = data.UserID
+	}
 }
 
 type labelTable struct{}

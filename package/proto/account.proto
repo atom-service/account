@@ -142,6 +142,59 @@ message QuerySecretsResponse {
   DataType Data = 3;
 }
 
+message Label {
+  string Key = 1;
+  string Value = 2;
+  optional int64  UserID = 3;
+  optional string Description = 4;
+  optional string CreatedTime = 5;
+  optional string UpdatedTime = 6;
+  optional string DeletedTime = 7;
+}
+
+message LabelSelector {
+  optional string Key = 1;
+  optional int64  UserID = 2;
+}
+
+message UpsertLabelRequest {
+  optional string Key = 1;
+  optional string Value = 2;
+  optional int64  UserID = 3;
+}
+
+message UpsertLabelResponse {
+  State State = 1;
+  string Code = 2;
+}
+
+message DeleteLabelRequest {
+  LabelSelector Selector = 1;
+}
+
+message DeleteLabelResponse {
+  State State = 1;
+  string Code = 2;
+}
+
+message QueryLabelsRequest {
+  LabelSelector Selector = 1;
+  optional SortOption Sort = 2;
+  optional PaginationOption Pagination = 3;
+}
+
+message QueryLabelsResponse {
+  message DataType {
+    int64 Total = 1;
+    repeated Label Labels = 2;
+  }
+
+  State State = 1;
+  string Code = 2;
+  DataType Data = 3;
+}
+
+
 message Setting {
   int64 ID = 1;
   string Key = 2;
@@ -218,11 +271,18 @@ service AccountService {
   rpc QueryUsers(QueryUsersRequest)returns(QueryUsersResponse){} // 查询用户
   rpc DeleteUser(DeleteUserRequest)returns(DeleteUserResponse){} // 删除用户
 
+  // 密钥系统用于用户管理 API 调用的凭证
   rpc CreateSecret(CreateSecretRequest)returns(CreateSecretResponse){}
+  rpc QuerySecrets(QuerySecretsRequest)returns(QuerySecretsResponse){}
   rpc DisableSecret(DisableSecretRequest)returns(DisableSecretResponse){}
   rpc DeleteSecret(DeleteSecreteRequest)returns(DeleteSecreteResponse){}
-  rpc QuerySecrets(QuerySecretsRequest)returns(QuerySecretsResponse){}
 
+  // 标签系统用于保存一些用户状态之类的数据（侧重于用户不直接可见可改）
+  rpc UpsertLabel(UpsertLabelRequest)returns(UpsertLabelResponse){}
+  rpc QueryLabels(QueryLabelsRequest)returns(QueryLabelsResponse){}
+  rpc DeleteLabel(DeleteLabelRequest)returns(DeleteLabelResponse){}
+
+  // 设置系统用于保存一些用户偏好设置之类的数据（侧重于用户直接可见可改）
   rpc CreateSetting(CreateSettingRequest)returns(CreateSettingResponse){}
   rpc UpdateSetting(UpdateSettingRequest)returns(UpdateSettingResponse){}
   rpc DeleteSetting(DeleteSettingRequest)returns(DeleteSettingResponse){}

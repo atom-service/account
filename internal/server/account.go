@@ -564,6 +564,140 @@ func (s *accountClient) QuerySecrets(ctx context.Context, request *proto.QuerySe
 	return
 }
 
+func (s *accountClient) UpsertLabel(ctx context.Context, request *proto.UpsertLabelRequest) (response *proto.UpsertLabelResponse, err error) {
+	response = &proto.UpsertLabelResponse{}
+
+	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
+		matchRules := []model.UserResourcePermissionRule{}
+		// 不指定则操作当前账号
+		if request.UserID == nil {
+			request.UserID = user.ID
+		}
+
+		if permission.HasOwner() && *request.UserID == *user.ID {
+			return true
+		}
+		matchRules = append(matchRules, model.UserResourcePermissionRule{
+			Key:   "user_id",
+			Value: strconv.FormatInt(*request.UserID, 10),
+		})
+		return permission.MatchRules("label", model.ActionInsert, matchRules...)
+	}); !pass {
+		response.State = proto.State_NO_PERMISSION
+		return
+	}
+
+	err = model.LabelTable.UpsertLabel(ctx, model.Label{
+		Key:    *request.Key,
+		Value:  request.Value,
+		UserID: *request.UserID,
+	})
+	if err != nil {
+		response.State = proto.State_FAILURE
+		logger.Error(err)
+		return
+	}
+
+	response.State = proto.State_SUCCESS
+	return
+}
+
+func (s *accountClient) QueryLabels(ctx context.Context, request *proto.QueryLabelsRequest) (response *proto.QueryLabelsResponse, err error) {
+	response = &proto.QueryLabelsResponse{}
+	response.Data = &proto.QueryLabelsResponse_DataType{}
+
+	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
+		matchRules := []model.UserResourcePermissionRule{}
+		// 不指定则操作当前账号
+		if request.Selector.UserID == nil {
+			request.Selector.UserID = user.ID
+		}
+
+		if permission.HasOwner() && *request.Selector.UserID == *user.ID {
+			return true
+		}
+
+		matchRules = append(matchRules, model.UserResourcePermissionRule{
+			Key:   "user_id",
+			Value: strconv.FormatInt(*request.Selector.UserID, 10),
+		})
+		return permission.MatchRules("setting", model.ActionQuery, matchRules...)
+	}); !pass {
+		response.State = proto.State_NO_PERMISSION
+		return
+	}
+
+	var sort model.Sort
+	sort.LoadProto(request.Sort)
+	var pagination model.Pagination
+	pagination.LoadProto(request.Pagination)
+	selector := model.LabelSelector{}
+	selector.LoadProto(request.Selector)
+
+	count, err := model.LabelTable.CountLabels(ctx, selector)
+	if err != nil {
+		response.State = proto.State_FAILURE
+		logger.Error(err)
+		return
+	}
+
+	queryResult, err := model.LabelTable.QueryLabels(ctx, selector, &pagination, &sort)
+	if err != nil {
+		response.State = proto.State_FAILURE
+		logger.Error(err)
+		return
+	}
+
+	for _, label := range queryResult {
+		response.Data.Labels = append(
+			response.Data.Labels,
+			label.ToProto(),
+		)
+	}
+
+	response.Data.Total = count
+	response.State = proto.State_SUCCESS
+	return
+}
+
+func (s *accountClient) DeleteLabel(ctx context.Context, request *proto.DeleteLabelRequest) (response *proto.DeleteLabelResponse, err error) {
+	response = &proto.DeleteLabelResponse{}
+
+	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
+		matchRules := []model.UserResourcePermissionRule{}
+		// 不指定则操作当前账号
+		if request.Selector.UserID == nil {
+			request.Selector.UserID = user.ID
+		}
+
+		if permission.HasOwner() && *request.Selector.UserID == *user.ID {
+			return true
+		}
+
+		matchRules = append(matchRules, model.UserResourcePermissionRule{
+			Key:   "user_id",
+			Value: strconv.FormatInt(*request.Selector.UserID, 10),
+		})
+		return permission.MatchRules("setting", model.ActionQuery, matchRules...)
+	}); !pass {
+		response.State = proto.State_NO_PERMISSION
+		return
+	}
+
+	selector := model.LabelSelector{}
+	selector.LoadProto(request.Selector)
+
+	err = model.LabelTable.DeleteLabel(ctx, selector)
+	if err != nil {
+		response.State = proto.State_FAILURE
+		logger.Error(err)
+		return
+	}
+
+	response.State = proto.State_SUCCESS
+	return
+}
+
 func (s *accountClient) CreateSetting(ctx context.Context, request *proto.CreateSettingRequest) (response *proto.CreateSettingResponse, err error) {
 	response = &proto.CreateSettingResponse{}
 

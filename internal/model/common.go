@@ -26,7 +26,7 @@ func InitDB(ctx context.Context) error {
 	var version string
 	versionQuery := newDB.QueryRowContext(ctx, "SELECT version()")
 	if versionQuery.Scan(&version); err != nil {
-		return fmt.Errorf( "failed to query database version: %v", err)
+		return fmt.Errorf("failed to query database version: %v", err)
 	}
 
 	logger.Debugf("Server run on database: %s\n", version)
@@ -41,18 +41,13 @@ func Init(ctx context.Context) error {
 	if err := InitDB(ctx); err != nil {
 		return err
 	}
+
+	// 先初始化用户表
 	if err := UserTable.InitTable(ctx); err != nil {
 		return err
 	}
-	if err := SettingTable.InitTable(ctx); err != nil {
-		return err
-	}
-	if err := SecretTable.InitTable(ctx); err != nil {
-		return err
-	}
-	if err := LabelTable.InitTable(ctx); err != nil {
-		return err
-	}
+
+	// 再初始化权限表
 	if err := RoleTable.InitTable(ctx); err != nil {
 		return err
 	}
@@ -69,6 +64,17 @@ func Init(ctx context.Context) error {
 		return err
 	}
 	if err := Permission.InitDefaultPermissions(ctx); err != nil {
+		return err
+	}
+
+	// 最后初始化用户信息表
+	if err := SettingTable.InitTable(ctx); err != nil {
+		return err
+	}
+	if err := SecretTable.InitTable(ctx); err != nil {
+		return err
+	}
+	if err := LabelTable.InitTable(ctx); err != nil {
 		return err
 	}
 	return nil
