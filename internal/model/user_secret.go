@@ -146,7 +146,6 @@ func (s *secretTable) initData(ctx context.Context) (err error) {
 	return nil
 }
 
-
 func (t *secretTable) InitTable(ctx context.Context) error {
 	tx, err := Database.BeginTx(ctx, &sql.TxOptions{ReadOnly: false})
 	if err != nil {

@@ -19,8 +19,9 @@ message RoleResourceRule {
 
 message RoleResource {
   int64 ResourceID = 1;
-  ResourceAction Action = 2;
-  repeated RoleResourceRule Rules = 3;
+  string ResourceName = 2;
+  ResourceAction Action = 3;
+  repeated RoleResourceRule Rules = 4;
 }
 
 message Role {
@@ -160,17 +161,6 @@ message UpdateResourceResponse {
   string Code = 2;
 }
 
-message UserResourceRule {
-  string Key = 1;
-  string Value = 2;
-}
-
-message UserResourceSummary {
-  string Name = 1;
-  ResourceAction Action = 2;
-  repeated UserResourceRule Rules = 3;
-}
-
 message SummaryForUserRequest {
   UserSelector UserSelector = 1;
 }
@@ -178,7 +168,7 @@ message SummaryForUserRequest {
 message SummaryForUserResponse {
   State State = 1;
   string Code = 2;
-  repeated UserResourceSummary Data = 3;
+  repeated RoleResource Data = 3;
 }
 
 message ApplyRoleForUserRequest {

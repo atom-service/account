@@ -144,9 +144,9 @@ func (ai *serverAuthInterceptor) resolveUserIncomingContext(ctx context.Context)
 	userModel := new(model.User)
 	userModel.LoadProto(user)
 
-	permissions := []*model.UserResourcePermissionSummary{}
+	permissions := []*model.RoleResource{}
 	for _, summary := range summaryForUserResponse.Data {
-		summaryMode := new(model.UserResourcePermissionSummary)
+		summaryMode := new(model.RoleResource)
 		summaryMode.LoadProto(summary)
 		permissions = append(permissions, summaryMode)
 	}
@@ -205,7 +205,7 @@ func ResolvePermission(ctx context.Context, handler func(*model.User, *model.Use
 
 	if len(authData.Permissions) != 0 {
 		for _, permission := range authData.Permissions {
-			if permission.Name == model.AllResourceName {
+			if permission.ResourceName == model.AllResourceName {
 				return true
 			}
 

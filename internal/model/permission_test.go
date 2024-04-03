@@ -922,7 +922,7 @@ func TestPermission(t *testing.T) {
 	)
 
 	for _, summary := range queryResult {
-		switch summary.Name {
+		switch summary.ResourceName {
 		case "all":
 			switch summary.Action {
 			case ActionInsert:

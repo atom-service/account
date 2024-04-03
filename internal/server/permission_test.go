@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"slices"
 	"testing"
 	"testing/quick"
 	"time"
@@ -38,7 +39,6 @@ func TestPermissionServer(t *testing.T) {
 		MaxCount: 100,
 	}
 
-	roleList := []*proto.Role{}
 	resourceList := []*proto.Resource{}
 
 	// create resource
@@ -99,7 +99,7 @@ func TestPermissionServer(t *testing.T) {
 		}
 
 		queryUpdatedResponse, err := permissionClient.QueryResources(context, &proto.QueryResourcesRequest{
-			Selector: &selector,
+			Selector: &proto.ResourceSelector{Name: &newName},
 		})
 		if err != nil {
 			t.Errorf("Unexpected results after updated: %v", err)
@@ -114,7 +114,7 @@ func TestPermissionServer(t *testing.T) {
 			return false
 		}
 
-		if queryUpdatedResponse.Data.Resources[0].Name != newDescription {
+		if queryUpdatedResponse.Data.Resources[0].Name != newName {
 			t.Errorf("Unexpected results after updated")
 			return false
 		}
@@ -123,8 +123,10 @@ func TestPermissionServer(t *testing.T) {
 		return true
 	}, config); err != nil {
 		t.Errorf("Test failed: %v", err)
+		return
 	}
 
+	roleList := []*proto.Role{}
 	// create role
 	if err := quick.Check(func() bool {
 		name := helper.GenerateRandomString(64, nil)
@@ -207,7 +209,7 @@ func TestPermissionServer(t *testing.T) {
 		}
 
 		queryUpdatedResponse, err := permissionClient.QueryRoles(context, &proto.QueryRolesRequest{
-			Selector: &selector,
+			Selector: &proto.RoleSelector{Name: &newName},
 		})
 		if err != nil {
 			t.Errorf("Unexpected results after updated: %v", err)
@@ -222,7 +224,7 @@ func TestPermissionServer(t *testing.T) {
 			return false
 		}
 
-		if queryUpdatedResponse.Data.Roles[0].Name != newDescription {
+		if queryUpdatedResponse.Data.Roles[0].Name != newName {
 			t.Errorf("Unexpected results after updated")
 			return false
 		}
@@ -233,8 +235,63 @@ func TestPermissionServer(t *testing.T) {
 		t.Errorf("Test failed: %v", err)
 	}
 
-	// test bound resource into role
-	// for _, role := range roleList {
+	// test bound role into user
+	for _, role := range roleList {
+		userID := int64(1) // 直接用  admin 账号测试
+		applyResponse, err := permissionClient.ApplyRoleForUser(context, &proto.ApplyRoleForUserRequest{
+			Role: &proto.RoleSelector{ID: &role.ID},
+			User: &proto.UserSelector{ID: &userID},
+		})
+		if err != nil {
+			t.Errorf("ApplyRoleForUser failed: %v", err)
+			return
+		}
+		if applyResponse.State != proto.State_SUCCESS {
+			t.Errorf("ApplyRoleForUser failed: %v", err)
+			return
+		}
 
-	// }
+		summaryResponse, err := permissionClient.SummaryForUser(context, &proto.SummaryForUserRequest{
+			UserSelector: &proto.UserSelector{ID: &userID},
+		})
+		if err != nil {
+			t.Errorf("SummaryForUser failed: %v", err)
+			return
+		}
+		if summaryResponse.State != proto.State_SUCCESS {
+			t.Errorf("SummaryForUser failed: %v", err)
+			return
+		}
+
+		if len(summaryResponse.Data) <= 0 {
+			t.Errorf("SummaryForUser failed: %v", err)
+			return
+		}
+
+		// 检查查询到的权限是否与 role 一致
+		for _, resources := range role.Resources {
+			// 检查能否再 summaryResponse 找到当前这条 resource
+			fined := slices.ContainsFunc[[]*proto.RoleResource](summaryResponse.Data, func(summary *proto.RoleResource) bool {
+				// 如果 resource 和 action 对的上就进一步比对 rules
+				if summary.ResourceID == resources.ResourceID && summary.Action == resources.Action {
+					same := slices.EqualFunc[[]*proto.RoleResourceRule, []*proto.RoleResourceRule](summary.Rules, resources.Rules, func(a, b *proto.RoleResourceRule) bool {
+						return a.Key == b.Key && a.Value == b.Value
+					})
+
+					// 两个 slice 不完全相同
+					if !same {
+						t.Errorf("SummaryForUser failed: %v", err)
+						return false
+					}
+				}
+				return true
+			})
+
+			if !fined {
+				// 找不到说明有问题
+				t.Errorf("SummaryForUser failed: %v", err)
+				return
+			}
+		}
+	}
 }

@@ -574,6 +574,27 @@ const (
 	ActionQuery  = "Query"
 )
 
+func ActionToProto(action string) proto.ResourceAction {
+	if action == ActionInsert {
+		return proto.ResourceAction_Insert
+	}
+
+	if action == ActionDelete {
+		return proto.ResourceAction_Delete
+	}
+
+	if action == ActionUpdate {
+		return proto.ResourceAction_Update
+	}
+
+	if action == ActionQuery {
+		return proto.ResourceAction_Query
+	}
+
+	logger.Errorf("Unknown action: %s", action)
+	return proto.ResourceAction_Insert
+}
+
 type RoleResource struct {
 	ID         *int64
 	Action     string
@@ -1233,14 +1254,16 @@ type UserResourcePermissionRule struct {
 }
 
 type UserResourcePermissionSummary struct {
-	Name   string
-	Action string
-	Rules  []*UserResourcePermissionRule
+	ResourceID   int64
+	ResourceName string
+	Action       string
+	Rules        []*UserResourcePermissionRule
 }
 
-func (srv *UserResourcePermissionSummary) ToProto() *proto.UserResourceSummary {
-	result := &proto.UserResourceSummary{}
-	result.Name = srv.Name
+func (srv *UserResourcePermissionSummary) ToProto() *proto.RoleResource {
+	result := &proto.RoleResource{}
+	result.ResourceID = srv.ResourceID
+	result.ResourceName = srv.ResourceName
 
 	if srv.Action == ActionInsert {
 		result.Action = proto.ResourceAction_Insert
@@ -1256,7 +1279,7 @@ func (srv *UserResourcePermissionSummary) ToProto() *proto.UserResourceSummary {
 	}
 
 	for _, rule := range srv.Rules {
-		result.Rules = append(result.Rules, &proto.UserResourceRule{
+		result.Rules = append(result.Rules, &proto.RoleResourceRule{
 			Key:   rule.Key,
 			Value: rule.Value,
 		})
@@ -1266,11 +1289,11 @@ func (srv *UserResourcePermissionSummary) ToProto() *proto.UserResourceSummary {
 }
 
 func (p *UserResourcePermissionSummary) HasOwner() bool {
-	return p.Name == OwnerResourceName
+	return p.ResourceName == OwnerResourceName
 }
 
 func (p *UserResourcePermissionSummary) MatchRules(name string, action string, rules ...UserResourcePermissionRule) bool {
-	if p.Name != name || p.Action != action {
+	if p.ResourceName != name || p.Action != action {
 		return false
 	}
 
@@ -1287,9 +1310,9 @@ func (p *UserResourcePermissionSummary) MatchRules(name string, action string, r
 	return false
 }
 
-func (src *UserResourcePermissionSummary) LoadProto(data *proto.UserResourceSummary) {
+func (src *UserResourcePermissionSummary) LoadProto(data *proto.RoleResource) {
 	// 加载 data 信息到 src 上
-	src.Name = data.GetName()
+	src.ResourceName = data.ResourceName
 
 	if data.Action == proto.ResourceAction_Insert {
 		src.Action = ActionInsert
@@ -1497,7 +1520,8 @@ func (r *permission) InitDefaultPermissions(ctx context.Context) (err error) {
 func (r *permission) QueryUserResourceSummaries(ctx context.Context, selector UserResourceSummarySelector) (result []*UserResourcePermissionSummary, err error) {
 	// Build the SQL query to retrieve user resource summaries from the database.
 	s := sqls.SELECT()
-	s.SELECT("d.name AS name")
+	s.SELECT("d.ID AS resourceID")
+	s.SELECT("d.name AS resourceName")
 	s.SELECT("c.action AS action")
 	s.SELECT("e.key AS key")
 	s.SELECT("e.value AS value")
@@ -1534,15 +1558,17 @@ func (r *permission) QueryUserResourceSummaries(ctx context.Context, selector Us
 	// Iterate over the result set and populate the user resource summary map.
 	for queryResult.Next() {
 		cacheRule := struct {
-			Name   string
-			Action string
-			Key    *string
-			Value  *string
+			ResourceID   int64
+			ResourceName string
+			Action       string
+			Key          *string
+			Value        *string
 		}{}
 
 		// Scan the result set row into the cacheRule struct.
 		if err = queryResult.Scan(
-			&cacheRule.Name,
+			&cacheRule.ResourceID,
+			&cacheRule.ResourceName,
 			&cacheRule.Action,
 			&cacheRule.Key,
 			&cacheRule.Value,
@@ -1552,14 +1578,15 @@ func (r *permission) QueryUserResourceSummaries(ctx context.Context, selector Us
 		}
 
 		// Generate the cache key for the user resource summary.
-		cacheKey := fmt.Sprintf("%s-%s", cacheRule.Action, cacheRule.Name)
+		cacheKey := fmt.Sprintf("%s-%s", cacheRule.Action, cacheRule.ResourceName)
 
 		// If the cache key doesn't exist in the map, create a new UserResourceSummary object.
 		if _, has := userResourceSummaryMap[cacheKey]; !has {
 			userResourceSummaryMap[cacheKey] = &UserResourcePermissionSummary{
-				Name:   cacheRule.Name,
-				Action: cacheRule.Action,
-				Rules:  []*UserResourcePermissionRule{},
+				ResourceID:   cacheRule.ResourceID,
+				ResourceName: cacheRule.ResourceName,
+				Action:       cacheRule.Action,
+				Rules:        []*UserResourcePermissionRule{},
 			}
 		}
 

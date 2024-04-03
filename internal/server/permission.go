@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"sync"
 
 	"github.com/atom-service/account/internal/model"
 	"github.com/atom-service/account/package/auth"
@@ -20,7 +21,7 @@ func (s *permissionServer) CreateRole(ctx context.Context, request *proto.Create
 	response = &proto.CreateRoleResponse{}
 
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
-		return permission.Name == "permission.role" && permission.Action == model.ActionInsert
+		return permission.ResourceName == "permission.role" && permission.Action == model.ActionInsert
 	}); !pass {
 		response.State = proto.State_NO_PERMISSION
 		return
@@ -51,6 +52,7 @@ func (s *permissionServer) CreateRole(ctx context.Context, request *proto.Create
 		return
 	}
 
+	// 简单插入 role 基本信息
 	createdRoleResult, err := model.RoleTable.QueryRoles(ctx, selector, nil, nil)
 	if err != nil {
 		response.State = proto.State_FAILURE
@@ -58,7 +60,7 @@ func (s *permissionServer) CreateRole(ctx context.Context, request *proto.Create
 		return
 	}
 
-	if countResult <= 0 {
+	if len(createdRoleResult) <= 0 {
 		response.State = proto.State_FAILURE
 		return
 	}
@@ -76,6 +78,11 @@ func (s *permissionServer) CreateRole(ctx context.Context, request *proto.Create
 		Name: createdRoleResult[0].Name,
 	}
 
+	updateRoleRequest.Data = &proto.UpdateRoleRequest_UpdateData{
+		Resources: request.Resources,
+	}
+
+	// 通过 UpdateRole 来完善所有信息
 	updateResult, err := s.UpdateRole(ctx, updateRoleRequest)
 	if err != nil {
 		response.State = proto.State_FAILURE
@@ -89,8 +96,24 @@ func (s *permissionServer) CreateRole(ctx context.Context, request *proto.Create
 		return
 	}
 
-	response.Data = updateResult.Data
+	// 通过 QueryRoles 再查询完整信息
+	roleResponse, err := s.QueryRoles(ctx, &proto.QueryRolesRequest{
+		Selector: &proto.RoleSelector{ID: createdRoleResult[0].ID},
+	})
+	if err != nil {
+		response.State = proto.State_FAILURE
+		logger.Error(err)
+		return
+	}
+
+	if roleResponse.State != proto.State_SUCCESS {
+		response.State = roleResponse.State
+		response.Code = roleResponse.Code
+		return
+	}
+
 	response.State = proto.State_SUCCESS
+	response.Data = roleResponse.Data.Roles[0]
 	return
 }
 
@@ -99,7 +122,7 @@ func (s *permissionServer) QueryRoles(ctx context.Context, request *proto.QueryR
 	response.Data = &proto.QueryRolesResponse_DataType{}
 
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
-		return permission.Name == "permission.role" && permission.Action == model.ActionQuery
+		return permission.ResourceName == "permission.role" && permission.Action == model.ActionQuery
 	}); !pass {
 		response.State = proto.State_NO_PERMISSION
 		return
@@ -126,11 +149,55 @@ func (s *permissionServer) QueryRoles(ctx context.Context, request *proto.QueryR
 		return
 	}
 
+	// 循环查询 role 绑定的 resource
+	var mu sync.Mutex
+	var wg sync.WaitGroup
 	for _, role := range query {
-		response.Data.Roles = append(
-			response.Data.Roles,
-			role.ToProto(),
-		)
+		wg.Add(1)
+		go func(role *model.Role) {
+			defer wg.Done()
+			localResponse, localErr := model.Permission.QueryUserResourceSummaries(ctx, model.UserResourceSummarySelector{
+				RoleID: role.ID,
+			})
+			if localErr != nil {
+				logger.Error(err)
+				mu.Lock()
+				err = localErr
+				mu.Unlock()
+				return
+			}
+
+			roleModel := role.ToProto()
+			for _, item := range localResponse {
+				roleResource := &proto.RoleResource{
+					ResourceID: item.ResourceID,
+					Action:     model.ActionToProto(item.Action),
+					Rules:      make([]*proto.RoleResourceRule, len(item.Rules)),
+				}
+
+				for _, rule := range item.Rules {
+					roleResource.Rules = append(roleResource.Rules, &proto.RoleResourceRule{
+						Key:   rule.Key,
+						Value: rule.Value,
+					})
+				}
+				roleModel.Resources = append(roleModel.Resources, roleResource)
+			}
+
+			mu.Lock()
+			response.Data.Roles = append(
+				response.Data.Roles,
+				roleModel,
+			)
+			mu.Unlock()
+		}(role)
+	}
+
+	wg.Wait()
+	if err != nil {
+		response.State = proto.State_FAILURE
+		logger.Error(err)
+		return
 	}
 
 	response.Data.Total = count
@@ -142,7 +209,7 @@ func (s *permissionServer) UpdateRole(ctx context.Context, request *proto.Update
 	response = &proto.UpdateRoleResponse{}
 
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
-		return permission.Name == "permission.role" && permission.Action == model.ActionUpdate
+		return permission.ResourceName == "permission.role" && permission.Action == model.ActionUpdate
 	}); !pass {
 		response.State = proto.State_NO_PERMISSION
 		return
@@ -257,7 +324,24 @@ func (s *permissionServer) UpdateRole(ctx context.Context, request *proto.Update
 		}
 	}
 
+	// 通过 QueryRoles 再查询完整信息
+	roleResponse, err := s.QueryRoles(ctx, &proto.QueryRolesRequest{
+		Selector: &proto.RoleSelector{ID: queryRoleResult[0].ID},
+	})
+	if err != nil {
+		response.State = proto.State_FAILURE
+		logger.Error(err)
+		return
+	}
+
+	if roleResponse.State != proto.State_SUCCESS {
+		response.State = roleResponse.State
+		response.Code = roleResponse.Code
+		return
+	}
+
 	response.State = proto.State_SUCCESS
+	response.Data = roleResponse.Data.Roles[0]
 	return
 }
 
@@ -265,7 +349,7 @@ func (s *permissionServer) DeleteRole(ctx context.Context, request *proto.Delete
 	response = &proto.DeleteRoleResponse{}
 
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
-		return permission.Name == "permission.role" && permission.Action == model.ActionDelete
+		return permission.ResourceName == "permission.role" && permission.Action == model.ActionDelete
 	}); !pass {
 		response.State = proto.State_NO_PERMISSION
 		return
@@ -322,7 +406,7 @@ func (s *permissionServer) CreateResource(ctx context.Context, request *proto.Cr
 	response = &proto.CreateResourceResponse{}
 
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
-		return permission.Name == "permission.resource" && permission.Action == model.ActionInsert
+		return permission.ResourceName == "permission.resource" && permission.Action == model.ActionInsert
 	}); !pass {
 		response.State = proto.State_NO_PERMISSION
 		return
@@ -360,12 +444,13 @@ func (s *permissionServer) CreateResource(ctx context.Context, request *proto.Cr
 		return
 	}
 
-	if countResult <= 0 {
+	if len(queryResult) <= 0 {
 		response.State = proto.State_FAILURE
 		return
 	}
 
 	response.Data = queryResult[0].ToProto()
+	response.State = proto.State_SUCCESS
 	return
 }
 
@@ -374,7 +459,7 @@ func (s *permissionServer) QueryResources(ctx context.Context, request *proto.Qu
 	response.Data = &proto.QueryResourcesResponse_DataType{}
 
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
-		return permission.Name == "permission.resource" && permission.Action == model.ActionQuery
+		return permission.ResourceName == "permission.resource" && permission.Action == model.ActionQuery
 	}); !pass {
 		response.State = proto.State_NO_PERMISSION
 		return
@@ -417,7 +502,7 @@ func (s *permissionServer) DeleteResource(ctx context.Context, request *proto.De
 	response = &proto.DeleteResourceResponse{}
 
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
-		return permission.Name == "permission.resource" && permission.Action == model.ActionDelete
+		return permission.ResourceName == "permission.resource" && permission.Action == model.ActionDelete
 	}); !pass {
 		response.State = proto.State_NO_PERMISSION
 		return
@@ -461,7 +546,7 @@ func (s *permissionServer) UpdateResource(ctx context.Context, request *proto.Up
 	response = &proto.UpdateResourceResponse{}
 
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
-		return permission.Name == "permission.resource" && permission.Action == model.ActionInsert
+		return permission.ResourceName == "permission.resource" && permission.Action == model.ActionInsert
 	}); !pass {
 		response.State = proto.State_NO_PERMISSION
 		return
@@ -477,9 +562,9 @@ func (s *permissionServer) UpdateResource(ctx context.Context, request *proto.Up
 		return
 	}
 
-	if countResult > 0 {
+	if countResult <= 0 {
 		response.State = proto.State_FAILURE
-		response.Code = code.PERMISSION_RESOURCE_ALREADY_EXISTS
+		response.Code = code.PERMISSION_RESOURCE_NOT_EXIST
 		return
 	}
 
@@ -501,7 +586,7 @@ func (s *permissionServer) SummaryForUser(ctx context.Context, request *proto.Su
 	response = &proto.SummaryForUserResponse{}
 
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
-		return permission.Name == "permission" && permission.Action == model.ActionInsert
+		return permission.ResourceName == "permission" && permission.Action == model.ActionInsert
 	}); !pass {
 		response.State = proto.State_NO_PERMISSION
 		return
@@ -531,7 +616,7 @@ func (s *permissionServer) ApplyRoleForUser(ctx context.Context, request *proto.
 	response = &proto.ApplyRoleForUserResponse{}
 
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
-		return permission.Name == "permission" && permission.Action == model.ActionUpdate
+		return permission.ResourceName == "permission" && permission.Action == model.ActionUpdate
 	}); !pass {
 		response.State = proto.State_NO_PERMISSION
 		return
@@ -603,7 +688,7 @@ func (s *permissionServer) RemoveRoleForUser(ctx context.Context, request *proto
 	response = &proto.RemoveRoleForUserResponse{}
 
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
-		return permission.Name == "permission" && permission.Action == model.ActionUpdate
+		return permission.ResourceName == "permission" && permission.Action == model.ActionUpdate
 	}); !pass {
 		response.State = proto.State_NO_PERMISSION
 		return
