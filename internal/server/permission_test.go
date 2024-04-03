@@ -278,8 +278,8 @@ func TestPermissionServer(t *testing.T) {
 						return a.Key == b.Key && a.Value == b.Value
 					})
 
-					// 两个 slice 不完全相同
 					if !same {
+						// 不匹配有问题！
 						t.Errorf("SummaryForUser failed: %v", err)
 						return false
 					}
@@ -289,6 +289,45 @@ func TestPermissionServer(t *testing.T) {
 
 			if !fined {
 				// 找不到说明有问题
+				t.Errorf("SummaryForUser failed: %v", err)
+				return
+			}
+		}
+
+		removeResponse, err := permissionClient.RemoveRoleForUser(context, &proto.RemoveRoleForUserRequest{
+			Role: &proto.RoleSelector{ID: &role.ID},
+			User: &proto.UserSelector{ID: &userID},
+		})
+		if err != nil {
+			t.Errorf("ApplyRoleForUser failed: %v", err)
+			return
+		}
+		if removeResponse.State != proto.State_SUCCESS {
+			t.Errorf("ApplyRoleForUser failed: %v", err)
+			return
+		}
+
+		summary2Response, err := permissionClient.SummaryForUser(context, &proto.SummaryForUserRequest{
+			UserSelector: &proto.UserSelector{ID: &userID},
+		})
+		if err != nil {
+			t.Errorf("SummaryForUser failed: %v", err)
+			return
+		}
+		if summary2Response.State != proto.State_SUCCESS {
+			t.Errorf("SummaryForUser failed: %v", err)
+			return
+		}
+
+		// 检查查询到的权限是否与 role 一致
+		for _, resources := range role.Resources {
+			// 检查能否再 summaryResponse 找到当前这条 resource
+			fined := slices.ContainsFunc[[]*proto.RoleResource](summary2Response.Data, func(summary *proto.RoleResource) bool {
+				return summary.ResourceID == resources.ResourceID && summary.Action == resources.Action
+			})
+
+			if fined {
+				// 找到说明有问题
 				t.Errorf("SummaryForUser failed: %v", err)
 				return
 			}
