@@ -6,18 +6,16 @@ import (
 
 	"github.com/atom-service/account/internal/model"
 	"github.com/atom-service/account/internal/server"
-	"github.com/atom-service/common/config"
-	"github.com/atom-service/common/logger"
+	"github.com/yinxulai/goconf"
 )
 
 func init() {
-	config.Declare("port", "8080", true, "服务监听的端口")
+	goconf.Declare("port", "8080", true, "服务监听的端口")
 }
 
 func main() {
 	// 声明&初始化配置
-	config.MustLoad()
-	logger.SetLevel(logger.InfoLevel)
+	goconf.MustLoad()
 
 	context, cancel := context.WithTimeout(context.TODO(), time.Minute)
 	defer cancel()
@@ -27,6 +25,6 @@ func main() {
 		panic(err)
 	}
 
-	listenAddress := ":" + config.MustGet("port")
+	listenAddress := ":" + goconf.MustGet("port")
 	panic(server.StartServer(listenAddress))
 }

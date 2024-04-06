@@ -7,18 +7,18 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"log/slog"
 	"time"
 
 	"github.com/atom-service/account/internal/helper"
 	"github.com/atom-service/account/package/proto"
-	"github.com/atom-service/common/config"
-	"github.com/atom-service/common/logger"
+	"github.com/yinxulai/goconf"
 	"github.com/yinxulai/sqls"
 )
 
 func init() {
-	config.Declare("init_admin_password", helper.GenerateRandomString(12, nil), true, "admin 用户的初始密码")
-	config.Declare("init_admin_username", helper.GenerateRandomString(12, nil), true, "admin 用户的初始账号名")
+	goconf.Declare("init_admin_password", helper.GenerateRandomString(12, nil), true, "admin 用户的初始密码")
+	goconf.Declare("init_admin_username", helper.GenerateRandomString(12, nil), true, "admin 用户的初始账号名")
 }
 
 var userSchemaName = "\"user\""
@@ -140,8 +140,8 @@ func (s *userTable) initData(ctx context.Context) (err error) {
 		return err
 	}
 
-	adminUsername := config.MustGet("init_admin_username")
-	adminPassword := config.MustGet("init_admin_password")
+	adminUsername := goconf.MustGet("init_admin_username")
+	adminPassword := goconf.MustGet("init_admin_password")
 	adminPasswordHash := Password.Hash(adminPassword)
 	adminUser := &User{Username: &adminUsername, Password: &adminPasswordHash}
 
@@ -158,9 +158,9 @@ func (s *userTable) initData(ctx context.Context) (err error) {
 		}
 	}
 
-	logger.Info("admin user are upsert:")
-	logger.Infof("username: %s", adminUsername)
-	logger.Infof("password: %s", adminPassword)
+	slog.InfoContext(ctx, "admin user are upsert:")
+	slog.InfoContext(ctx, "username: %s", adminUsername)
+	slog.InfoContext(ctx, "password: %s", adminPassword)
 	return nil
 }
 
@@ -172,7 +172,7 @@ func (t *userTable) InitTable(ctx context.Context) error {
 
 	// 创建 schema
 	cs := sqls.CREATE_SCHEMA(userSchemaName).IF_NOT_EXISTS()
-	logger.Debug(cs.String())
+	slog.DebugContext(ctx, cs.String())
 	_, err = tx.ExecContext(ctx, cs.String())
 	if err != nil {
 		return fmt.Errorf("failed to create schema: %w", err)
@@ -189,7 +189,7 @@ func (t *userTable) InitTable(ctx context.Context) error {
 	ct.COLUMN("disabled_time timestamp without time zone NULL")
 	ct.COLUMN("deleted_time timestamp without time zone NULL")
 
-	logger.Debug(ct.String())
+	slog.DebugContext(ctx, ct.String())
 	_, err = tx.ExecContext(ctx, ct.String())
 	if err != nil {
 		return fmt.Errorf("failed to create table: %w", err)
@@ -211,10 +211,10 @@ func (r *userTable) CreateUser(ctx context.Context, newUser User) (err error) {
 	s.VALUES("username", s.Param(newUser.Username))
 	s.VALUES("password", s.Param(newUser.Password))
 
-	logger.Debug(s.String(), s.Params())
+	slog.DebugContext(ctx, s.String(), s.Params())
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "CreateUser failed", err)
 		return
 	}
 
@@ -246,10 +246,10 @@ func (r *userTable) DeleteUser(ctx context.Context, selector UserSelector) (err 
 
 	s.SET("deleted_time", s.Param(time.Now()))
 
-	logger.Debug(s.String(), s.Params())
+	slog.DebugContext(ctx, s.String(), s.Params())
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "DeleteUser failed", err)
 	}
 
 	return
@@ -280,10 +280,10 @@ func (r *userTable) UpdateUser(ctx context.Context, selector UserSelector, user 
 
 	s.SET("updated_time", s.Param(time.Now()))
 
-	logger.Debug(s.String(), s.Params())
+	slog.DebugContext(ctx, s.String(), s.Params())
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "UpdateUser failed", err)
 	}
 
 	return
@@ -301,10 +301,10 @@ func (r *userTable) CountUsers(ctx context.Context, selector UserSelector) (resu
 
 	s.WHERE("(deleted_time<CURRENT_TIMESTAMP OR deleted_time IS NULL)")
 
-	logger.Debug(s.String(), s.Params())
+	slog.DebugContext(ctx, s.String(), s.Params())
 	rowQuery := Database.QueryRowContext(ctx, s.String(), s.Params()...)
 	if err = rowQuery.Scan(&result); err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "CountUsers failed", err)
 	}
 
 	return
@@ -355,10 +355,10 @@ func (r *userTable) QueryUsers(ctx context.Context, selector UserSelector, pagin
 		s.ORDER_BY(s.Param(sort.Key) + " " + sortType)
 	}
 
-	logger.Debug(s.String(), s.Params())
+	slog.DebugContext(ctx, s.String(), s.Params())
 	queryResult, err := Database.QueryContext(ctx, s.String(), s.Params()...)
 	if err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "QueryUsers failed", err)
 		return
 	}
 
@@ -375,13 +375,13 @@ func (r *userTable) QueryUsers(ctx context.Context, selector UserSelector, pagin
 			&user.DeletedTime,
 			&user.DisabledTime,
 		); err != nil {
-			logger.Error(err)
+			slog.ErrorContext(ctx, "QueryUsers failed to scan row", err)
 			return
 		}
 		result = append(result, &user)
 	}
 	if err = queryResult.Err(); err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "QueryUsers failed to iterate result", err)
 		return
 	}
 	return

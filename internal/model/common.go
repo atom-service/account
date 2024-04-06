@@ -4,21 +4,21 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log/slog"
 
 	"github.com/atom-service/account/package/proto"
-	"github.com/atom-service/common/config"
-	"github.com/atom-service/common/logger"
 	_ "github.com/jackc/pgx/v5/stdlib"
+	"github.com/yinxulai/goconf"
 )
 
 var Database *sql.DB
 
 func init() {
-	config.Declare("postgres_uri", "postgresql://postgres:password@localhost/account", true, "postgres 的数据库连接 uri")
+	goconf.Declare("postgres_uri", "postgresql://postgres:password@localhost/account", true, "postgres 的数据库连接 uri")
 }
 
 func InitDB(ctx context.Context) error {
-	newDB, err := sql.Open("pgx", config.MustGet("postgres_uri"))
+	newDB, err := sql.Open("pgx", goconf.MustGet("postgres_uri"))
 	if err != nil {
 		return fmt.Errorf("unable to connect to database: %v", err)
 	}
@@ -29,7 +29,7 @@ func InitDB(ctx context.Context) error {
 		return fmt.Errorf("failed to query database version: %v", err)
 	}
 
-	logger.Debugf("Server run on database: %s\n", version)
+	slog.DebugContext(ctx, "Server run on database: %s\n", version)
 
 	newDB.SetMaxOpenConns(10)
 	newDB.SetMaxIdleConns(3)

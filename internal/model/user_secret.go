@@ -5,11 +5,11 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log/slog"
 	"time"
 
 	"github.com/atom-service/account/internal/helper"
 	"github.com/atom-service/account/package/proto"
-	"github.com/atom-service/common/logger"
 	"github.com/yinxulai/sqls"
 )
 
@@ -154,7 +154,7 @@ func (t *secretTable) InitTable(ctx context.Context) error {
 
 	// 创建 schema
 	cs := sqls.CREATE_SCHEMA(userSchemaName).IF_NOT_EXISTS()
-	logger.Debug(cs.String())
+	slog.DebugContext(ctx, cs.String())
 	if _, err = tx.ExecContext(ctx, cs.String()); err != nil {
 		tx.Rollback()
 		return err
@@ -173,7 +173,7 @@ func (t *secretTable) InitTable(ctx context.Context) error {
 	s.COLUMN("disabled_time timestamp without time zone NULL")
 	s.COLUMN("deleted_time timestamp without time zone NULL")
 	s.OPTIONS("CONSTRAINT user_secret_union_unique_keys UNIQUE (user_id, key, type)")
-	logger.Debug(s.String())
+	slog.DebugContext(ctx, s.String())
 
 	if _, err := tx.ExecContext(ctx, s.String()); err != nil {
 		tx.Rollback()
@@ -224,10 +224,10 @@ func (r *secretTable) CreateSecret(ctx context.Context, createParams CreateSecre
 	s.VALUES("user_id", s.Param(createParams.UserID))
 	s.VALUES("description", s.Param(createParams.Description))
 
-	logger.Debug(s.String(), s.Params())
+	slog.DebugContext(ctx, s.String(), s.Params())
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "CreateSecret failed", err)
 		return
 	}
 
@@ -254,10 +254,10 @@ func (r *secretTable) DeleteSecret(ctx context.Context, selector SecretSelector)
 
 	s.SET("deleted_time", s.Param(time.Now()))
 
-	logger.Debug(s.String(), s.Params())
+	slog.DebugContext(ctx, s.String(), s.Params())
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "DeleteSecret failed", err)
 	}
 
 	return
@@ -279,10 +279,10 @@ func (r *secretTable) UpdateSecret(ctx context.Context, selector SecretSelector,
 
 	s.SET("updated_time", s.Param(time.Now()))
 
-	logger.Debug(s.String(), s.Params())
+	slog.DebugContext(ctx, s.String(), s.Params())
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "UpdateSecret failed", err)
 	}
 
 	return
@@ -303,10 +303,10 @@ func (r *secretTable) CountSecrets(ctx context.Context, selector SecretSelector)
 
 	s.WHERE("(deleted_time<CURRENT_TIMESTAMP OR deleted_time IS NULL)")
 
-	logger.Debug(s.String(), s.Params())
+	slog.DebugContext(ctx, s.String(), s.Params())
 	rowQuery := Database.QueryRowContext(ctx, s.String(), s.Params()...)
 	if err = rowQuery.Scan(&result); err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "CountSecrets failed", err)
 	}
 
 	return
@@ -363,10 +363,10 @@ func (r *secretTable) QuerySecrets(ctx context.Context, selector SecretSelector,
 		s.ORDER_BY(s.Param(sort.Key) + " " + sortType)
 	}
 
-	logger.Debug(s.String(), s.Params())
+	slog.DebugContext(ctx, s.String(), s.Params())
 	queryResult, err := Database.QueryContext(ctx, s.String(), s.Params()...)
 	if err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "QuerySecrets failed", err)
 		return
 	}
 
@@ -384,13 +384,13 @@ func (r *secretTable) QuerySecrets(ctx context.Context, selector SecretSelector,
 			&secret.DisabledTime,
 			&secret.DeletedTime,
 		); err != nil {
-			logger.Error(err)
+			slog.ErrorContext(ctx, "QuerySecrets failed", err)
 			return
 		}
 		result = append(result, &secret)
 	}
 	if err = queryResult.Err(); err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "QuerySecrets failed", err)
 		return
 	}
 	return

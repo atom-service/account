@@ -5,10 +5,10 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log/slog"
 	"time"
 
 	"github.com/atom-service/account/package/proto"
-	"github.com/atom-service/common/logger"
 	"github.com/yinxulai/sqls"
 )
 
@@ -99,7 +99,7 @@ func (t *labelTable) InitTable(ctx context.Context) error {
 	s.COLUMN("updated_time timestamp without time zone NULL DEFAULT now()")
 	s.COLUMN("deleted_time timestamp without time zone NULL")
 	s.OPTIONS("CONSTRAINT user_label_union_unique_keys UNIQUE (user_id, key)")
-	logger.Debug(s.String())
+	slog.DebugContext(ctx, s.String())
 
 	if _, err = tx.ExecContext(ctx, s.String()); err != nil {
 		tx.Rollback()
@@ -126,10 +126,10 @@ func (r *labelTable) UpsertLabel(ctx context.Context, newLabel Label) (err error
 	s.DO_UPDATE_SET("value", s.Param(newLabel.Value))
 	s.DO_UPDATE_SET("description", s.Param(newLabel.Description))
 
-	logger.Debug(s.String(), s.Params())
+	slog.DebugContext(ctx, s.String(), s.Params())
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "UpsertLabel failed", err)
 		return
 	}
 
@@ -157,10 +157,10 @@ func (r *labelTable) DeleteLabel(ctx context.Context, selector LabelSelector) (e
 
 	s.SET("deleted_time", s.Param(time.Now()))
 
-	logger.Debug(s.String(), s.Params())
+	slog.DebugContext(ctx, s.String(), s.Params())
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "DeleteLabel failed", err)
 	}
 
 	return
@@ -183,10 +183,10 @@ func (r *labelTable) CountLabels(ctx context.Context, selector LabelSelector) (r
 
 	s.WHERE("(deleted_time<CURRENT_TIMESTAMP OR deleted_time IS NULL)")
 
-	logger.Debug(s.String())
+	slog.DebugContext(ctx, s.String())
 	rowQuery := Database.QueryRowContext(ctx, s.String(), s.Params()...)
 	if err = rowQuery.Scan(&result); err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "CountLabels failed", err)
 	}
 
 	return
@@ -245,7 +245,7 @@ func (r *labelTable) QueryLabels(ctx context.Context, selector LabelSelector, pa
 
 	queryResult, err := Database.QueryContext(ctx, s.String(), s.Params()...)
 	if err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "QueryLabels failed", err)
 		return
 	}
 
@@ -262,13 +262,13 @@ func (r *labelTable) QueryLabels(ctx context.Context, selector LabelSelector, pa
 			&label.UpdatedTime,
 			&label.DeletedTime,
 		); err != nil {
-			logger.Error(err)
+			slog.ErrorContext(ctx, "QueryLabels failed", err)
 			return
 		}
 		result = append(result, &label)
 	}
 	if err = queryResult.Err(); err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "QueryLabels failed", err)
 		return
 	}
 	return

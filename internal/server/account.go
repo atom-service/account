@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"log/slog"
 	"strconv"
 	"time"
 
@@ -9,7 +10,6 @@ import (
 	"github.com/atom-service/account/package/auth"
 	"github.com/atom-service/account/package/code"
 	"github.com/atom-service/account/package/proto"
-	"github.com/atom-service/common/logger"
 )
 
 var AccountServer = &accountClient{}
@@ -27,7 +27,7 @@ func (s *accountClient) SignIn(ctx context.Context, request *proto.SignInRequest
 	queryResult, err := model.UserTable.QueryUsers(ctx, userSelector, nil, nil)
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "QueryUsers failed: %s", err)
 		return
 	}
 
@@ -55,14 +55,14 @@ func (s *accountClient) SignIn(ctx context.Context, request *proto.SignInRequest
 	}, nil, nil)
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "QuerySecrets failed", err)
 		return
 	}
 
 	if len(querySecretResult) <= 0 {
 		response.Code = code.USER_SECRET_NOT_EXIST
 		response.State = proto.State_FAILURE
-		logger.Errorf("No Secret available")
+		slog.ErrorContext(ctx, "No Secret available")
 		return
 	}
 
@@ -83,7 +83,7 @@ func (s *accountClient) SignIn(ctx context.Context, request *proto.SignInRequest
 			Key:    model.LabelLastSignInTime,
 			Value:  &currentTime,
 		}); err != nil {
-			logger.Errorf("Update last sign in time failed: %s", err)
+			slog.ErrorContext(localContext, "Update last sign in time failed: %s", err)
 		}
 
 		if err = model.LabelTable.UpsertLabel(localContext, model.Label{
@@ -91,7 +91,7 @@ func (s *accountClient) SignIn(ctx context.Context, request *proto.SignInRequest
 			Key:    model.LabelLastVerifyTime,
 			Value:  &currentTime,
 		}); err != nil {
-			logger.Errorf("Update last sign in time failed: %s", err)
+			slog.ErrorContext(localContext,"Update last sign in time failed: %s", err)
 		}
 	}()
 
@@ -113,7 +113,7 @@ func (s *accountClient) SignUp(ctx context.Context, request *proto.SignUpRequest
 
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -130,14 +130,14 @@ func (s *accountClient) SignUp(ctx context.Context, request *proto.SignUpRequest
 	})
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
 	queryUserResult, err := model.UserTable.QueryUsers(ctx, model.UserSelector{Username: &request.Username}, nil, nil)
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -154,7 +154,7 @@ func (s *accountClient) SignUp(ctx context.Context, request *proto.SignUpRequest
 
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -164,7 +164,7 @@ func (s *accountClient) SignUp(ctx context.Context, request *proto.SignUpRequest
 	roleQueryResult, err := model.RoleTable.QueryRoles(ctx, roleSelector, nil, nil)
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -180,7 +180,7 @@ func (s *accountClient) SignUp(ctx context.Context, request *proto.SignUpRequest
 	})
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -195,7 +195,7 @@ func (s *accountClient) SignUp(ctx context.Context, request *proto.SignUpRequest
 			Value:  &currentTime,
 			Key:    model.LabelLastVerifyTime,
 		}); err != nil {
-			logger.Errorf("Update last sign in time failed: %s", err)
+			slog.ErrorContext(localContext,"Update last sign in time failed: %s", err)
 		}
 	}()
 
@@ -253,14 +253,14 @@ func (s *accountClient) QueryUsers(ctx context.Context, request *proto.QueryUser
 	query, err := model.UserTable.QueryUsers(ctx, userSelector, &pagination, &sort)
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
 	count, err := model.UserTable.CountUsers(ctx, userSelector)
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -309,7 +309,7 @@ func (s *accountClient) DeleteUser(ctx context.Context, request *proto.DeleteUse
 	err = model.UserTable.DeleteUser(ctx, userSelector)
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -349,14 +349,14 @@ func (s *accountClient) CreateSecret(ctx context.Context, request *proto.CreateS
 
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
 	if count > 30 {
 		response.State = proto.State_FAILURE
 		response.Code = code.TOO_MANY_SECRETS
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -367,7 +367,7 @@ func (s *accountClient) CreateSecret(ctx context.Context, request *proto.CreateS
 
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -408,14 +408,14 @@ func (s *accountClient) DisableSecret(ctx context.Context, request *proto.Disabl
 
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
 	if count == 0 {
 		response.State = proto.State_FAILURE
 		response.Code = code.USER_SECRET_NOT_EXIST
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -424,7 +424,7 @@ func (s *accountClient) DisableSecret(ctx context.Context, request *proto.Disabl
 
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -465,14 +465,14 @@ func (s *accountClient) DeleteSecret(ctx context.Context, request *proto.DeleteS
 
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
 	if len(queryResult) == 0 {
 		response.State = proto.State_FAILURE
 		response.Code = code.USER_SECRET_NOT_EXIST
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -493,7 +493,7 @@ func (s *accountClient) DeleteSecret(ctx context.Context, request *proto.DeleteS
 	err = model.SecretTable.DeleteSecret(ctx, selector)
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -541,14 +541,14 @@ func (s *accountClient) QuerySecrets(ctx context.Context, request *proto.QuerySe
 	query, err := model.SecretTable.QuerySecrets(ctx, selector, &pagination, &sort)
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
 	count, err := model.SecretTable.CountSecrets(ctx, selector)
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -594,7 +594,7 @@ func (s *accountClient) UpsertLabel(ctx context.Context, request *proto.UpsertLa
 	})
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -614,7 +614,7 @@ func (s *accountClient) QueryLabels(ctx context.Context, request *proto.QueryLab
 				UserID: user.ID,
 			}
 		}
-		
+
 		if request.Selector.UserID == nil {
 			request.Selector.UserID = user.ID
 		}
@@ -643,14 +643,14 @@ func (s *accountClient) QueryLabels(ctx context.Context, request *proto.QueryLab
 	count, err := model.LabelTable.CountLabels(ctx, selector)
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
 	queryResult, err := model.LabelTable.QueryLabels(ctx, selector, &pagination, &sort)
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -696,7 +696,7 @@ func (s *accountClient) DeleteLabel(ctx context.Context, request *proto.DeleteLa
 	err = model.LabelTable.DeleteLabel(ctx, selector)
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -736,7 +736,7 @@ func (s *accountClient) CreateSetting(ctx context.Context, request *proto.Create
 	count, err := model.SettingTable.CountSettings(ctx, selector)
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -753,7 +753,7 @@ func (s *accountClient) CreateSetting(ctx context.Context, request *proto.Create
 	})
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -797,7 +797,7 @@ func (s *accountClient) UpdateSetting(ctx context.Context, request *proto.Update
 	count, err := model.SettingTable.CountSettings(ctx, selector)
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -814,7 +814,7 @@ func (s *accountClient) UpdateSetting(ctx context.Context, request *proto.Update
 	})
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -856,7 +856,7 @@ func (s *accountClient) DeleteSetting(ctx context.Context, request *proto.Delete
 	err = model.SettingTable.DeleteSetting(ctx, selector)
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -905,14 +905,14 @@ func (s *accountClient) QuerySettings(ctx context.Context, request *proto.QueryS
 	count, err := model.SettingTable.CountSettings(ctx, selector)
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
 	queryResult, err := model.SettingTable.QuerySettings(ctx, selector, &pagination, &sort)
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 

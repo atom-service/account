@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/atom-service/common/logger"
 	"github.com/yinxulai/sqls"
 )
 
@@ -32,7 +31,6 @@ func dropTables(ctx context.Context) (err error) {
 }
 
 func TestMain(m *testing.M) {
-	logger.SetLevel(logger.ErrorLevel)
 	InitDB(context.TODO())
 	dropTables(context.TODO())
 	m.Run()

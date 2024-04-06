@@ -9,13 +9,11 @@ import (
 	"github.com/atom-service/account/internal/model"
 	"github.com/atom-service/account/package/auth"
 	"github.com/atom-service/account/package/proto"
-	"github.com/atom-service/common/logger"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
 func TestMain(m *testing.M) {
-	logger.SetLevel(logger.ErrorLevel)
 	model.Init(context.TODO())
 	m.Run()
 }

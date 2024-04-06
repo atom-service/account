@@ -2,13 +2,13 @@ package server
 
 import (
 	"context"
+	"log/slog"
 	"sync"
 
 	"github.com/atom-service/account/internal/model"
 	"github.com/atom-service/account/package/auth"
 	"github.com/atom-service/account/package/code"
 	"github.com/atom-service/account/package/proto"
-	"github.com/atom-service/common/logger"
 )
 
 var PermissionServer = &permissionServer{}
@@ -32,7 +32,7 @@ func (s *permissionServer) CreateRole(ctx context.Context, request *proto.Create
 	countResult, err := model.RoleTable.CountRoles(ctx, selector)
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -48,7 +48,7 @@ func (s *permissionServer) CreateRole(ctx context.Context, request *proto.Create
 	})
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -56,7 +56,7 @@ func (s *permissionServer) CreateRole(ctx context.Context, request *proto.Create
 	createdRoleResult, err := model.RoleTable.QueryRoles(ctx, selector, nil, nil)
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -86,7 +86,7 @@ func (s *permissionServer) CreateRole(ctx context.Context, request *proto.Create
 	updateResult, err := s.UpdateRole(ctx, updateRoleRequest)
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -102,7 +102,7 @@ func (s *permissionServer) CreateRole(ctx context.Context, request *proto.Create
 	})
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -138,14 +138,14 @@ func (s *permissionServer) QueryRoles(ctx context.Context, request *proto.QueryR
 	query, err := model.RoleTable.QueryRoles(ctx, selector, &pagination, &sort)
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
 	count, err := model.RoleTable.CountRoles(ctx, selector)
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -160,7 +160,7 @@ func (s *permissionServer) QueryRoles(ctx context.Context, request *proto.QueryR
 				RoleID: role.ID,
 			})
 			if localErr != nil {
-				logger.Error(err)
+				slog.ErrorContext(ctx, "", err)
 				mu.Lock()
 				err = localErr
 				mu.Unlock()
@@ -196,7 +196,7 @@ func (s *permissionServer) QueryRoles(ctx context.Context, request *proto.QueryR
 	wg.Wait()
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -221,14 +221,14 @@ func (s *permissionServer) UpdateRole(ctx context.Context, request *proto.Update
 	queryRoleResult, err := model.RoleTable.QueryRoles(ctx, selector, nil, nil)
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
 	if len(queryRoleResult) == 0 {
 		response.State = proto.State_FAILURE
 		response.Code = code.PERMISSION_ROLE_NOT_EXIST
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -240,7 +240,7 @@ func (s *permissionServer) UpdateRole(ctx context.Context, request *proto.Update
 
 		if err != nil {
 			response.State = proto.State_FAILURE
-			logger.Error(err)
+			slog.ErrorContext(ctx, "", err)
 			return
 		}
 	}
@@ -256,7 +256,7 @@ func (s *permissionServer) UpdateRole(ctx context.Context, request *proto.Update
 	queryRoleResourceResult, err := model.RoleResourceTable.QueryRoleResources(ctx, roleResourceSelector, nil, nil)
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -266,7 +266,7 @@ func (s *permissionServer) UpdateRole(ctx context.Context, request *proto.Update
 		err = model.RoleResourceRuleTable.DeleteResourceRule(ctx, model.ResourceRuleSelector{RoleResourceID: roleResource.ID})
 		if err != nil {
 			response.State = proto.State_FAILURE
-			logger.Error(err)
+			slog.ErrorContext(ctx, "", err)
 			return
 		}
 
@@ -278,7 +278,7 @@ func (s *permissionServer) UpdateRole(ctx context.Context, request *proto.Update
 		})
 		if err != nil {
 			response.State = proto.State_FAILURE
-			logger.Error(err)
+			slog.ErrorContext(ctx, "", err)
 			return
 		}
 	}
@@ -297,14 +297,14 @@ func (s *permissionServer) UpdateRole(ctx context.Context, request *proto.Update
 		})
 		if err != nil {
 			response.State = proto.State_FAILURE
-			logger.Error(err)
+			slog.ErrorContext(ctx, "", err)
 			return
 		}
 
 		queryResult, err := model.RoleResourceTable.QueryRoleResources(ctx, selector, nil, nil)
 		if err != nil {
 			response.State = proto.State_FAILURE
-			logger.Error(err)
+			slog.ErrorContext(ctx, "", err)
 			return response, err
 		}
 
@@ -317,7 +317,7 @@ func (s *permissionServer) UpdateRole(ctx context.Context, request *proto.Update
 				})
 				if err != nil {
 					response.State = proto.State_FAILURE
-					logger.Error(err)
+					slog.ErrorContext(ctx, "", err)
 					return response, err
 				}
 			}
@@ -330,7 +330,7 @@ func (s *permissionServer) UpdateRole(ctx context.Context, request *proto.Update
 	})
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -360,7 +360,7 @@ func (s *permissionServer) DeleteRole(ctx context.Context, request *proto.Delete
 	queryRoleResult, err := model.RoleTable.QueryRoles(ctx, roleSelector, nil, nil)
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -370,7 +370,7 @@ func (s *permissionServer) DeleteRole(ctx context.Context, request *proto.Delete
 	queryRoleResourceResult, err := model.RoleResourceTable.QueryRoleResources(ctx, roleResourceSelector, nil, nil)
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -379,7 +379,7 @@ func (s *permissionServer) DeleteRole(ctx context.Context, request *proto.Delete
 		err = model.RoleResourceRuleTable.DeleteResourceRule(ctx, model.ResourceRuleSelector{RoleResourceID: roleResource.ID})
 		if err != nil {
 			response.State = proto.State_FAILURE
-			logger.Error(err)
+			slog.ErrorContext(ctx, "", err)
 			return
 		}
 	}
@@ -387,14 +387,14 @@ func (s *permissionServer) DeleteRole(ctx context.Context, request *proto.Delete
 	err = model.RoleResourceTable.DeleteRoleResource(ctx, roleResourceSelector)
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
 	err = model.RoleTable.DeleteRole(ctx, roleSelector)
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -417,7 +417,7 @@ func (s *permissionServer) CreateResource(ctx context.Context, request *proto.Cr
 	countResult, err := model.ResourceTable.CountResources(ctx, selector)
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -433,14 +433,14 @@ func (s *permissionServer) CreateResource(ctx context.Context, request *proto.Cr
 	})
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
 	queryResult, err := model.ResourceTable.QueryResources(ctx, selector, nil, nil)
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -475,14 +475,14 @@ func (s *permissionServer) QueryResources(ctx context.Context, request *proto.Qu
 	query, err := model.ResourceTable.QueryResources(ctx, selector, &pagination, &sort)
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
 	count, err := model.ResourceTable.CountResources(ctx, selector)
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -514,14 +514,14 @@ func (s *permissionServer) DeleteResource(ctx context.Context, request *proto.De
 	queryResult, err := model.ResourceTable.QueryResources(ctx, selector, nil, nil)
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
 	resourceRule, err := model.RoleResourceTable.QueryRoleResources(ctx, model.RoleResourceSelector{ResourceID: queryResult[0].ID}, nil, nil)
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -534,7 +534,7 @@ func (s *permissionServer) DeleteResource(ctx context.Context, request *proto.De
 	err = model.ResourceTable.DeleteResource(ctx, selector)
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -558,7 +558,7 @@ func (s *permissionServer) UpdateResource(ctx context.Context, request *proto.Up
 	countResult, err := model.ResourceTable.CountResources(ctx, selector)
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -574,7 +574,7 @@ func (s *permissionServer) UpdateResource(ctx context.Context, request *proto.Up
 	})
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -597,7 +597,7 @@ func (s *permissionServer) SummaryForUser(ctx context.Context, request *proto.Su
 	queryResult, err := model.Permission.QueryUserResourceSummaries(ctx, selector)
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -628,7 +628,7 @@ func (s *permissionServer) ApplyRoleForUser(ctx context.Context, request *proto.
 	userQueryResult, err := model.UserTable.QueryUsers(ctx, userSelector, nil, nil)
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -644,7 +644,7 @@ func (s *permissionServer) ApplyRoleForUser(ctx context.Context, request *proto.
 	roleQueryResult, err := model.RoleTable.QueryRoles(ctx, roleSelector, nil, nil)
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -660,7 +660,7 @@ func (s *permissionServer) ApplyRoleForUser(ctx context.Context, request *proto.
 	})
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -676,7 +676,7 @@ func (s *permissionServer) ApplyRoleForUser(ctx context.Context, request *proto.
 	})
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -700,7 +700,7 @@ func (s *permissionServer) RemoveRoleForUser(ctx context.Context, request *proto
 	})
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 
@@ -715,7 +715,7 @@ func (s *permissionServer) RemoveRoleForUser(ctx context.Context, request *proto
 	})
 	if err != nil {
 		response.State = proto.State_FAILURE
-		logger.Error(err)
+		slog.ErrorContext(ctx, "", err)
 		return
 	}
 

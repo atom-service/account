@@ -5,10 +5,10 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log/slog"
 	"time"
 
 	"github.com/atom-service/account/package/proto"
-	"github.com/atom-service/common/logger"
 	"github.com/yinxulai/sqls"
 )
 
@@ -99,7 +99,7 @@ func (t *settingTable) InitTable(ctx context.Context) error {
 	s.COLUMN("updated_time timestamp without time zone NULL DEFAULT now()")
 	s.COLUMN("deleted_time timestamp without time zone NULL")
 	s.OPTIONS("CONSTRAINT user_setting_union_unique_keys UNIQUE (user_id, key)")
-	logger.Debug(s.String())
+	slog.DebugContext(ctx, s.String())
 
 	if _, err = tx.ExecContext(ctx, s.String()); err != nil {
 		tx.Rollback()
@@ -123,10 +123,10 @@ func (r *settingTable) CreateSetting(ctx context.Context, newSetting Setting) (e
 	s.VALUES("user_id", s.Param(newSetting.UserID))
 	s.VALUES("description", s.Param(newSetting.Description))
 
-	logger.Debug(s.String())
+	slog.DebugContext(ctx, s.String())
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "CreateSetting failed", err)
 		return
 	}
 
@@ -168,10 +168,10 @@ func (r *settingTable) UpdateSetting(ctx context.Context, selector SettingSelect
 
 	s.SET("updated_time", s.Param(time.Now()))
 
-	logger.Debug(s.String(), s.Params())
+	slog.DebugContext(ctx, s.String(), s.Params())
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "UpdateSetting failed", err)
 	}
 
 	return
@@ -198,10 +198,10 @@ func (r *settingTable) DeleteSetting(ctx context.Context, selector SettingSelect
 
 	s.SET("deleted_time", s.Param(time.Now()))
 
-	logger.Debug(s.String(), s.Params())
+	slog.DebugContext(ctx, s.String(), s.Params())
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "DeleteSetting failed", err)
 	}
 
 	return
@@ -224,10 +224,10 @@ func (r *settingTable) CountSettings(ctx context.Context, selector SettingSelect
 
 	s.WHERE("(deleted_time<CURRENT_TIMESTAMP OR deleted_time IS NULL)")
 
-	logger.Debug(s.String())
+	slog.DebugContext(ctx, s.String())
 	rowQuery := Database.QueryRowContext(ctx, s.String(), s.Params()...)
 	if err = rowQuery.Scan(&result); err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "CountSettings failed", err)
 	}
 
 	return
@@ -286,7 +286,7 @@ func (r *settingTable) QuerySettings(ctx context.Context, selector SettingSelect
 
 	queryResult, err := Database.QueryContext(ctx, s.String(), s.Params()...)
 	if err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "QuerySettings failed", err)
 		return
 	}
 
@@ -303,13 +303,13 @@ func (r *settingTable) QuerySettings(ctx context.Context, selector SettingSelect
 			&setting.UpdatedTime,
 			&setting.DeletedTime,
 		); err != nil {
-			logger.Error(err)
+			slog.ErrorContext(ctx, "QuerySettings failed", err)
 			return
 		}
 		result = append(result, &setting)
 	}
 	if err = queryResult.Err(); err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "QuerySettings failed", err)
 		return
 	}
 	return

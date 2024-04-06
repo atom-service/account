@@ -1,11 +1,11 @@
 package server
 
 import (
+	"log/slog"
 	"net"
 
 	"github.com/atom-service/account/internal/auth"
 	"github.com/atom-service/account/package/proto"
-	"github.com/atom-service/common/logger"
 	"google.golang.org/grpc"
 )
 
@@ -20,6 +20,6 @@ func StartServer(addr string) error {
 
 	proto.RegisterAccountServiceServer(grpcServer, AccountServer)
 	proto.RegisterPermissionServiceServer(grpcServer, PermissionServer)
-	logger.Infof("start server at: %s", addr)
+	slog.Info("start server at: %s", addr)
 	return grpcServer.Serve(listen)
 }

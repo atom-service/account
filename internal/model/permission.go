@@ -5,10 +5,10 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log/slog"
 	"time"
 
 	"github.com/atom-service/account/package/proto"
-	"github.com/atom-service/common/logger"
 	"github.com/yinxulai/sqls"
 )
 
@@ -114,7 +114,7 @@ func (t *roleTable) InitTable(ctx context.Context) error {
 	s.COLUMN("updated_time timestamp without time zone NULL DEFAULT now()")
 	s.COLUMN("disabled_time timestamp without time zone NULL")
 	s.COLUMN("deleted_time timestamp without time zone NULL")
-	logger.Debug(s.String())
+	slog.DebugContext(ctx, s.String())
 
 	if _, err = tx.ExecContext(ctx, s.String()); err != nil {
 		tx.Rollback()
@@ -136,10 +136,10 @@ func (r *roleTable) CreateRole(ctx context.Context, newRole Role) (err error) {
 	s.VALUES("name", s.Param(newRole.Name))
 	s.VALUES("description", s.Param(newRole.Description))
 
-	logger.Debug(s.String())
+	slog.DebugContext(ctx, s.String())
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "CreateRole failed", err)
 		return
 	}
 
@@ -175,10 +175,10 @@ func (r *roleTable) UpdateRole(ctx context.Context, selector RoleSelector, role 
 
 	s.SET("updated_time", s.Param(time.Now()))
 
-	logger.Debug(s.String(), s.Params())
+	slog.DebugContext(ctx, s.String(), s.Params())
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "UpdateRole failed", err)
 	}
 
 	return
@@ -200,10 +200,10 @@ func (r *roleTable) DeleteRole(ctx context.Context, selector RoleSelector) (err 
 
 	s.SET("deleted_time", s.Param(time.Now()))
 
-	logger.Debug(s.String(), s.Params())
+	slog.DebugContext(ctx, s.String(), s.Params())
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "DeleteRole failed", err)
 	}
 
 	return
@@ -221,10 +221,10 @@ func (r *roleTable) CountRoles(ctx context.Context, selector RoleSelector) (resu
 
 	s.WHERE("(deleted_time<CURRENT_TIMESTAMP OR deleted_time IS NULL)")
 
-	logger.Debug(s.String())
+	slog.DebugContext(ctx, s.String())
 	rowQuery := Database.QueryRowContext(ctx, s.String(), s.Params()...)
 	if err = rowQuery.Scan(&result); err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "CountRoles failed", err)
 	}
 
 	return
@@ -276,7 +276,7 @@ func (r *roleTable) QueryRoles(ctx context.Context, selector RoleSelector, pagin
 
 	queryResult, err := Database.QueryContext(ctx, s.String(), s.Params()...)
 	if err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "QueryRoles failed", err)
 		return
 	}
 
@@ -292,13 +292,13 @@ func (r *roleTable) QueryRoles(ctx context.Context, selector RoleSelector, pagin
 			&role.DisabledTime,
 			&role.DeletedTime,
 		); err != nil {
-			logger.Error(err)
+			slog.ErrorContext(ctx, "QueryRoles failed", err)
 			return
 		}
 		result = append(result, &role)
 	}
 	if err = queryResult.Err(); err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "QueryRoles failed", err)
 		return
 	}
 	return
@@ -368,7 +368,7 @@ func (t *resourceTable) InitTable(ctx context.Context) error {
 	s.COLUMN("created_time timestamp without time zone NULL DEFAULT now()")
 	s.COLUMN("updated_time timestamp without time zone NULL DEFAULT now()")
 	s.COLUMN("deleted_time timestamp without time zone NULL")
-	logger.Debug(s.String())
+	slog.DebugContext(ctx, s.String())
 
 	if _, err = tx.ExecContext(ctx, s.String()); err != nil {
 		tx.Rollback()
@@ -390,10 +390,10 @@ func (r *resourceTable) CreateResource(ctx context.Context, newResource Resource
 	s.VALUES("name", s.Param(newResource.Name))
 	s.VALUES("description", s.Param(newResource.Description))
 
-	logger.Debug(s.String())
+	slog.DebugContext(ctx, s.String())
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "CreateResource failed", err)
 		return
 	}
 
@@ -429,10 +429,10 @@ func (r *resourceTable) UpdateResource(ctx context.Context, selector ResourceSel
 
 	s.SET("updated_time", s.Param(time.Now()))
 
-	logger.Debug(s.String(), s.Params())
+	slog.DebugContext(ctx, s.String(), s.Params())
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "UpdateResource failed", err)
 	}
 
 	return
@@ -455,10 +455,10 @@ func (r *resourceTable) DeleteResource(ctx context.Context, selector ResourceSel
 
 	s.SET("deleted_time", s.Param(time.Now()))
 
-	logger.Debug(s.String(), s.Params())
+	slog.DebugContext(ctx, s.String(), s.Params())
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "DeleteResource failed", err)
 	}
 
 	return
@@ -476,10 +476,10 @@ func (r *resourceTable) CountResources(ctx context.Context, selector ResourceSel
 
 	s.WHERE("(deleted_time<CURRENT_TIMESTAMP OR deleted_time IS NULL)")
 
-	logger.Debug(s.String())
+	slog.DebugContext(ctx, s.String())
 	rowQuery := Database.QueryRowContext(ctx, s.String(), s.Params()...)
 	if err = rowQuery.Scan(&result); err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "CountResources failed", err)
 	}
 
 	return
@@ -530,7 +530,7 @@ func (r *resourceTable) QueryResources(ctx context.Context, selector ResourceSel
 
 	queryResult, err := Database.QueryContext(ctx, s.String(), s.Params()...)
 	if err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "QueryResources failed", err)
 		return
 	}
 
@@ -545,13 +545,13 @@ func (r *resourceTable) QueryResources(ctx context.Context, selector ResourceSel
 			&resource.UpdatedTime,
 			&resource.DeletedTime,
 		); err != nil {
-			logger.Error(err)
+			slog.ErrorContext(ctx, "QueryResources failed", err)
 			return
 		}
 		result = append(result, &resource)
 	}
 	if err = queryResult.Err(); err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "QueryResources failed", err)
 		return
 	}
 	return
@@ -581,7 +581,7 @@ func ActionToProto(action string) proto.ResourceAction {
 		return proto.ResourceAction_Query
 	}
 
-	logger.Errorf("Unknown action: %s", action)
+	slog.Error("Unknown action: %s", action)
 	return proto.ResourceAction_Insert
 }
 
@@ -667,7 +667,7 @@ func (t *roleResourceTable) InitTable(ctx context.Context) error {
 	s.COLUMN("resource_id int NOT NULL")
 	s.COLUMN("role_id int NOT NULL")
 	s.OPTIONS("CONSTRAINT role_resource_union_unique_keys UNIQUE (action, resource_id, role_id)")
-	logger.Debug(s.String())
+	slog.DebugContext(ctx, s.String())
 
 	if _, err = tx.ExecContext(ctx, s.String()); err != nil {
 		tx.Rollback()
@@ -690,10 +690,10 @@ func (r *roleResourceTable) CreateRoleResource(ctx context.Context, newResource 
 	s.VALUES("role_id", s.Param(newResource.RoleID))
 	s.VALUES("resource_id", s.Param(newResource.ResourceID))
 
-	logger.Debug(s.String())
+	slog.DebugContext(ctx, s.String())
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "CreateRoleResource failed", err)
 	}
 
 	return
@@ -718,10 +718,10 @@ func (r *roleResourceTable) DeleteRoleResource(ctx context.Context, selector Rol
 		s.WHERE("resource_id=" + s.Param(selector.ResourceID))
 	}
 
-	logger.Debug(s.String(), s.Params())
+	slog.DebugContext(ctx, s.String(), s.Params())
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "DeleteRoleResource failed", err)
 	}
 
 	return
@@ -743,10 +743,10 @@ func (r *roleResourceTable) CountRoleResources(ctx context.Context, selector Rol
 		s.WHERE("resource_id=" + s.Param(selector.ResourceID))
 	}
 
-	logger.Debug(s.String())
+	slog.DebugContext(ctx, s.String())
 	rowQuery := Database.QueryRowContext(ctx, s.String(), s.Params()...)
 	if err = rowQuery.Scan(&result); err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "CountRoleResources failed", err)
 	}
 
 	return
@@ -799,7 +799,7 @@ func (r *roleResourceTable) QueryRoleResources(ctx context.Context, selector Rol
 
 	queryResult, err := Database.QueryContext(ctx, s.String(), s.Params()...)
 	if err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "QueryRoleResources failed", err)
 		return
 	}
 
@@ -812,13 +812,13 @@ func (r *roleResourceTable) QueryRoleResources(ctx context.Context, selector Rol
 			&roleResource.RoleID,
 			&roleResource.ResourceID,
 		); err != nil {
-			logger.Error(err)
+			slog.ErrorContext(ctx, "QueryRoleResources failed", err)
 			return
 		}
 		result = append(result, &roleResource)
 	}
 	if err = queryResult.Err(); err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "QueryRoleResources failed", err)
 	}
 	return
 }
@@ -866,7 +866,7 @@ func (t *resourceRuleTable) InitTable(ctx context.Context) error {
 	s.COLUMN("key character varying(64) NOT NULL")
 	s.COLUMN("value character varying(128) NOT NULL")
 	s.OPTIONS("CONSTRAINT resource_rule_union_unique_keys UNIQUE (role_resource_id, key)")
-	logger.Debug(s.String())
+	slog.DebugContext(ctx, s.String())
 
 	if _, err = tx.ExecContext(ctx, s.String()); err != nil {
 		tx.Rollback()
@@ -889,10 +889,10 @@ func (r *resourceRuleTable) CreateResourceRule(ctx context.Context, newRule Reso
 	s.VALUES("value", s.Param(newRule.Value))
 	s.VALUES("role_resource_id", s.Param(newRule.RoleResourceID))
 
-	logger.Debug(s.String())
+	slog.DebugContext(ctx, s.String())
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "CreateResourceRule failed", err)
 		return
 	}
 
@@ -914,10 +914,10 @@ func (r *resourceRuleTable) DeleteResourceRule(ctx context.Context, selector Res
 		s.WHERE("role_resource_id=" + s.Param(selector.RoleResourceID))
 	}
 
-	logger.Debug(s.String(), s.Params())
+	slog.DebugContext(ctx, s.String(), s.Params())
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "DeleteResourceRule failed", err)
 	}
 
 	return
@@ -938,10 +938,10 @@ func (r *resourceRuleTable) CountResourceRules(ctx context.Context, selector Res
 		s.WHERE("role_resource_id=" + s.Param(selector.RoleResourceID))
 	}
 
-	logger.Debug(s.String())
+	slog.DebugContext(ctx, s.String())
 	rowQuery := Database.QueryRowContext(ctx, s.String(), s.Params()...)
 	if err = rowQuery.Scan(&result); err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "CountResourceRules failed", err)
 	}
 
 	return
@@ -993,7 +993,7 @@ func (r *resourceRuleTable) QueryResourceRules(ctx context.Context, selector Res
 
 	queryResult, err := Database.QueryContext(ctx, s.String(), s.Params()...)
 	if err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "QueryResourceRules failed", err)
 		return
 	}
 
@@ -1006,13 +1006,13 @@ func (r *resourceRuleTable) QueryResourceRules(ctx context.Context, selector Res
 			&roleResourceRule.Value,
 			&roleResourceRule.RoleResourceID,
 		); err != nil {
-			logger.Error(err)
+			slog.ErrorContext(ctx, "QueryResourceRules failed", err)
 			return
 		}
 		result = append(result, &roleResourceRule)
 	}
 	if err = queryResult.Err(); err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "QueryResourceRules failed", err)
 		return
 	}
 	return
@@ -1058,7 +1058,7 @@ func (t *userRoleTable) InitTable(ctx context.Context) error {
 	s.COLUMN("updated_time timestamp without time zone NULL DEFAULT now()")
 	s.COLUMN("disabled_time timestamp without time zone NULL")
 	s.OPTIONS("CONSTRAINT user_role_union_unique_keys UNIQUE (user_id, role_id)")
-	logger.Debug(s.String())
+	slog.DebugContext(ctx, s.String())
 
 	if _, err = tx.ExecContext(ctx, s.String()); err != nil {
 		tx.Rollback()
@@ -1080,10 +1080,10 @@ func (r *userRoleTable) CreateUserRole(ctx context.Context, newRule UserRole) (e
 	s.VALUES("user_id", s.Param(newRule.UserID))
 	s.VALUES("role_id", s.Param(newRule.RoleID))
 
-	logger.Debug(s.String())
+	slog.DebugContext(ctx, s.String())
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "CreateUserRole failed", err)
 		return
 	}
 
@@ -1109,10 +1109,10 @@ func (r *userRoleTable) DeleteUserRole(ctx context.Context, selector UserRoleSel
 		s.WHERE("role_id=" + s.Param(selector.RoleID))
 	}
 
-	logger.Debug(s.String(), s.Params())
+	slog.DebugContext(ctx, s.String(), s.Params())
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "DeleteUserRole failed", err)
 	}
 
 	return
@@ -1133,10 +1133,10 @@ func (r *userRoleTable) CountUserRoles(ctx context.Context, selector UserRoleSel
 		s.WHERE("role_id=" + s.Param(selector.RoleID))
 	}
 
-	logger.Debug(s.String())
+	slog.DebugContext(ctx, s.String())
 	rowQuery := Database.QueryRowContext(ctx, s.String(), s.Params()...)
 	if err = rowQuery.Scan(&result); err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "CountUserRoles failed", err)
 	}
 
 	return
@@ -1191,7 +1191,7 @@ func (r *userRoleTable) QueryUserRoles(ctx context.Context, selector UserRoleSel
 
 	queryResult, err := Database.QueryContext(ctx, s.String(), s.Params()...)
 	if err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "QueryUserRoles failed", err)
 		return
 	}
 
@@ -1206,13 +1206,13 @@ func (r *userRoleTable) QueryUserRoles(ctx context.Context, selector UserRoleSel
 			&userRole.UpdatedTime,
 			&userRole.DisabledTime,
 		); err != nil {
-			logger.Error(err)
+			slog.ErrorContext(ctx, "QueryUserRoles failed", err)
 			return
 		}
 		result = append(result, &userRole)
 	}
 	if err = queryResult.Err(); err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "QueryUserRoles failed", err)
 		return
 	}
 	return
@@ -1515,12 +1515,12 @@ func (r *permission) QueryUserResourceSummaries(ctx context.Context, selector Us
 	}
 
 	// Log the query string for debugging purposes.
-	logger.Debug(s.String())
+	slog.DebugContext(ctx, s.String())
 
 	// Execute the query and retrieve the result set.
 	queryResult, err := Database.QueryContext(ctx, s.String(), s.Params()...)
 	if err != nil {
-		logger.Error(err)
+		slog.ErrorContext(ctx, "Failed to execute query", err)
 		return nil, err
 	}
 
@@ -1548,7 +1548,7 @@ func (r *permission) QueryUserResourceSummaries(ctx context.Context, selector Us
 			&cacheRule.Key,
 			&cacheRule.Value,
 		); err != nil {
-			logger.Error(err)
+			slog.ErrorContext(ctx, "Failed to scan query result", err)
 			return nil, err
 		}
 
