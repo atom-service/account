@@ -1,6 +1,6 @@
 module github.com/atom-service/account
 
-go 1.22.1
+go 1.21.9
 
 require google.golang.org/grpc v1.62.0
 

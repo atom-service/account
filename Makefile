@@ -1,4 +1,4 @@
-BINARY_NAME=account
+BINARY_NAME=main
 
 ## help: print this help message
 .PHONY: help
