@@ -1,7 +1,7 @@
 package server
 
 import (
-	"log/slog"
+	"log"
 	"net"
 
 	"github.com/atom-service/account/internal/auth"
@@ -20,6 +20,6 @@ func StartServer(addr string) error {
 
 	proto.RegisterAccountServiceServer(grpcServer, AccountServer)
 	proto.RegisterPermissionServiceServer(grpcServer, PermissionServer)
-	slog.Info("start server at: %s", addr)
+	log.Printf("start server at: %s", addr)
 	return grpcServer.Serve(listen)
 }

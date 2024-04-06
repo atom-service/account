@@ -91,7 +91,7 @@ func (s *accountClient) SignIn(ctx context.Context, request *proto.SignInRequest
 			Key:    model.LabelLastVerifyTime,
 			Value:  &currentTime,
 		}); err != nil {
-			slog.ErrorContext(localContext,"Update last sign in time failed: %s", err)
+			slog.ErrorContext(localContext, "Update last sign in time failed: %s", err)
 		}
 	}()
 
@@ -195,7 +195,7 @@ func (s *accountClient) SignUp(ctx context.Context, request *proto.SignUpRequest
 			Value:  &currentTime,
 			Key:    model.LabelLastVerifyTime,
 		}); err != nil {
-			slog.ErrorContext(localContext,"Update last sign in time failed: %s", err)
+			slog.ErrorContext(localContext, "Update last sign in time failed: %s", err)
 		}
 	}()
 

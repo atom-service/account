@@ -126,7 +126,7 @@ func (r *labelTable) UpsertLabel(ctx context.Context, newLabel Label) (err error
 	s.DO_UPDATE_SET("value", s.Param(newLabel.Value))
 	s.DO_UPDATE_SET("description", s.Param(newLabel.Description))
 
-	slog.DebugContext(ctx, s.String(), s.Params())
+	slog.DebugContext(ctx, s.String(), slog.Any("params", s.Params()))
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		slog.ErrorContext(ctx, "UpsertLabel failed", err)
@@ -157,7 +157,7 @@ func (r *labelTable) DeleteLabel(ctx context.Context, selector LabelSelector) (e
 
 	s.SET("deleted_time", s.Param(time.Now()))
 
-	slog.DebugContext(ctx, s.String(), s.Params())
+	slog.DebugContext(ctx, s.String(), slog.Any("params", s.Params()))
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		slog.ErrorContext(ctx, "DeleteLabel failed", err)

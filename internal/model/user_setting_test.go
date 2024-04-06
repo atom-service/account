@@ -22,13 +22,12 @@ func TestUserSettingTable(t *testing.T) {
 		return
 	}
 
-		// 获取已初始化的数量，用于下方测试设置偏移
-		preInitedCount, err := settingTable.CountSettings(context, SettingSelector{})
-		if err != nil {
-			t.Errorf("Count failed: %v", err)
-			return
-		}
-	
+	// 获取已初始化的数量，用于下方测试设置偏移
+	preInitedCount, err := settingTable.CountSettings(context, SettingSelector{})
+	if err != nil {
+		t.Errorf("Count failed: %v", err)
+		return
+	}
 
 	config := &quick.Config{
 		MaxCount: 100,
@@ -65,7 +64,7 @@ func TestUserSettingTable(t *testing.T) {
 			return false
 		}
 
-		if countResult != int64(len(testSettings)+1) + preInitedCount {
+		if countResult != int64(len(testSettings)+1)+preInitedCount {
 			t.Errorf("Count result are incorrect: %v", err)
 			return false
 		}

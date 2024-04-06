@@ -158,9 +158,12 @@ func (s *userTable) initData(ctx context.Context) (err error) {
 		}
 	}
 
-	slog.InfoContext(ctx, "admin user are upsert:")
-	slog.InfoContext(ctx, "username: %s", adminUsername)
-	slog.InfoContext(ctx, "password: %s", adminPassword)
+	slog.InfoContext(
+		ctx, "admin user are upsert",
+		slog.String("username", adminUsername),
+		slog.String("password", adminPassword),
+	)
+
 	return nil
 }
 
@@ -211,7 +214,7 @@ func (r *userTable) CreateUser(ctx context.Context, newUser User) (err error) {
 	s.VALUES("username", s.Param(newUser.Username))
 	s.VALUES("password", s.Param(newUser.Password))
 
-	slog.DebugContext(ctx, s.String(), s.Params())
+	slog.DebugContext(ctx, s.String(), slog.Any("params", s.Params()))
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		slog.ErrorContext(ctx, "CreateUser failed", err)
@@ -246,7 +249,7 @@ func (r *userTable) DeleteUser(ctx context.Context, selector UserSelector) (err 
 
 	s.SET("deleted_time", s.Param(time.Now()))
 
-	slog.DebugContext(ctx, s.String(), s.Params())
+	slog.DebugContext(ctx, s.String(), slog.Any("params", s.Params()))
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		slog.ErrorContext(ctx, "DeleteUser failed", err)
@@ -280,7 +283,7 @@ func (r *userTable) UpdateUser(ctx context.Context, selector UserSelector, user 
 
 	s.SET("updated_time", s.Param(time.Now()))
 
-	slog.DebugContext(ctx, s.String(), s.Params())
+	slog.DebugContext(ctx, s.String(), slog.Any("params", s.Params()))
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		slog.ErrorContext(ctx, "UpdateUser failed", err)
@@ -301,7 +304,7 @@ func (r *userTable) CountUsers(ctx context.Context, selector UserSelector) (resu
 
 	s.WHERE("(deleted_time<CURRENT_TIMESTAMP OR deleted_time IS NULL)")
 
-	slog.DebugContext(ctx, s.String(), s.Params())
+	slog.DebugContext(ctx, s.String(), slog.Any("params", s.Params()))
 	rowQuery := Database.QueryRowContext(ctx, s.String(), s.Params()...)
 	if err = rowQuery.Scan(&result); err != nil {
 		slog.ErrorContext(ctx, "CountUsers failed", err)
@@ -355,7 +358,7 @@ func (r *userTable) QueryUsers(ctx context.Context, selector UserSelector, pagin
 		s.ORDER_BY(s.Param(sort.Key) + " " + sortType)
 	}
 
-	slog.DebugContext(ctx, s.String(), s.Params())
+	slog.DebugContext(ctx, s.String(), slog.Any("params", s.Params()))
 	queryResult, err := Database.QueryContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		slog.ErrorContext(ctx, "QueryUsers failed", err)

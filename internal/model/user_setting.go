@@ -168,7 +168,7 @@ func (r *settingTable) UpdateSetting(ctx context.Context, selector SettingSelect
 
 	s.SET("updated_time", s.Param(time.Now()))
 
-	slog.DebugContext(ctx, s.String(), s.Params())
+	slog.DebugContext(ctx, s.String(), slog.Any("params", s.Params()))
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		slog.ErrorContext(ctx, "UpdateSetting failed", err)
@@ -198,7 +198,7 @@ func (r *settingTable) DeleteSetting(ctx context.Context, selector SettingSelect
 
 	s.SET("deleted_time", s.Param(time.Now()))
 
-	slog.DebugContext(ctx, s.String(), s.Params())
+	slog.DebugContext(ctx, s.String(), slog.Any("params", s.Params()))
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		slog.ErrorContext(ctx, "DeleteSetting failed", err)

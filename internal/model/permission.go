@@ -175,7 +175,7 @@ func (r *roleTable) UpdateRole(ctx context.Context, selector RoleSelector, role 
 
 	s.SET("updated_time", s.Param(time.Now()))
 
-	slog.DebugContext(ctx, s.String(), s.Params())
+	slog.DebugContext(ctx, s.String(), slog.Any("params", s.Params()))
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		slog.ErrorContext(ctx, "UpdateRole failed", err)
@@ -200,7 +200,7 @@ func (r *roleTable) DeleteRole(ctx context.Context, selector RoleSelector) (err 
 
 	s.SET("deleted_time", s.Param(time.Now()))
 
-	slog.DebugContext(ctx, s.String(), s.Params())
+	slog.DebugContext(ctx, s.String(), slog.Any("params", s.Params()))
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		slog.ErrorContext(ctx, "DeleteRole failed", err)
@@ -429,7 +429,7 @@ func (r *resourceTable) UpdateResource(ctx context.Context, selector ResourceSel
 
 	s.SET("updated_time", s.Param(time.Now()))
 
-	slog.DebugContext(ctx, s.String(), s.Params())
+	slog.DebugContext(ctx, s.String(), slog.Any("params", s.Params()))
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		slog.ErrorContext(ctx, "UpdateResource failed", err)
@@ -455,7 +455,7 @@ func (r *resourceTable) DeleteResource(ctx context.Context, selector ResourceSel
 
 	s.SET("deleted_time", s.Param(time.Now()))
 
-	slog.DebugContext(ctx, s.String(), s.Params())
+	slog.DebugContext(ctx, s.String(), slog.Any("params", s.Params()))
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		slog.ErrorContext(ctx, "DeleteResource failed", err)
@@ -581,7 +581,7 @@ func ActionToProto(action string) proto.ResourceAction {
 		return proto.ResourceAction_Query
 	}
 
-	slog.Error("Unknown action: %s", action)
+	slog.Error("Unknown action", slog.String("action", action))
 	return proto.ResourceAction_Insert
 }
 
@@ -718,7 +718,7 @@ func (r *roleResourceTable) DeleteRoleResource(ctx context.Context, selector Rol
 		s.WHERE("resource_id=" + s.Param(selector.ResourceID))
 	}
 
-	slog.DebugContext(ctx, s.String(), s.Params())
+	slog.DebugContext(ctx, s.String(), slog.Any("params", s.Params()))
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		slog.ErrorContext(ctx, "DeleteRoleResource failed", err)
@@ -914,7 +914,7 @@ func (r *resourceRuleTable) DeleteResourceRule(ctx context.Context, selector Res
 		s.WHERE("role_resource_id=" + s.Param(selector.RoleResourceID))
 	}
 
-	slog.DebugContext(ctx, s.String(), s.Params())
+	slog.DebugContext(ctx, s.String(), slog.Any("params", s.Params()))
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		slog.ErrorContext(ctx, "DeleteResourceRule failed", err)
@@ -1109,7 +1109,7 @@ func (r *userRoleTable) DeleteUserRole(ctx context.Context, selector UserRoleSel
 		s.WHERE("role_id=" + s.Param(selector.RoleID))
 	}
 
-	slog.DebugContext(ctx, s.String(), s.Params())
+	slog.DebugContext(ctx, s.String(), slog.Any("params", s.Params()))
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		slog.ErrorContext(ctx, "DeleteUserRole failed", err)

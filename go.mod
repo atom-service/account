@@ -1,30 +1,27 @@
 module github.com/atom-service/account
 
-go 1.22
-
-toolchain go1.22.1
+go 1.21.0
 
 require (
 	github.com/yinxulai/goconf v0.0.2
-	github.com/yinxulai/sqls v0.0.0-20240324005609-f9b3b8894c7a
-	google.golang.org/grpc v1.62.0
+	github.com/yinxulai/sqls v0.0.0-20240406131616-61fdac9a1ad8
+	google.golang.org/grpc v1.63.0
 )
 
 require (
-	github.com/huandu/xstrings v1.3.2 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
-	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
+	github.com/jackc/pgservicefile v0.0.0-20231201235250-de7065d80cb9 // indirect
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
-	golang.org/x/crypto v0.18.0 // indirect
-	golang.org/x/sync v0.6.0 // indirect
+	github.com/stretchr/testify v1.9.0 // indirect
+	golang.org/x/crypto v0.22.0 // indirect
+	golang.org/x/sync v0.7.0 // indirect
 )
 
 require (
-	github.com/golang/protobuf v1.5.3 // indirect
-	github.com/jackc/pgx/v5 v5.5.3
-	golang.org/x/net v0.20.0 // indirect
-	golang.org/x/sys v0.16.0 // indirect
+	github.com/jackc/pgx/v5 v5.5.5
+	golang.org/x/net v0.24.0 // indirect
+	golang.org/x/sys v0.19.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240123012728-ef4313101c80 // indirect
-	google.golang.org/protobuf v1.32.0
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240401170217-c3f982113cda // indirect
+	google.golang.org/protobuf v1.33.0
 )

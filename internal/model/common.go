@@ -25,11 +25,11 @@ func InitDB(ctx context.Context) error {
 
 	var version string
 	versionQuery := newDB.QueryRowContext(ctx, "SELECT version()")
-	if versionQuery.Scan(&version); err != nil {
+	if err = versionQuery.Scan(&version); err != nil {
 		return fmt.Errorf("failed to query database version: %v", err)
 	}
 
-	slog.DebugContext(ctx, "Server run on database: %s\n", version)
+	slog.DebugContext(ctx, "Server run on database: %s\n", slog.String("version", version))
 
 	newDB.SetMaxOpenConns(10)
 	newDB.SetMaxIdleConns(3)

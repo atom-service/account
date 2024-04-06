@@ -224,7 +224,7 @@ func (r *secretTable) CreateSecret(ctx context.Context, createParams CreateSecre
 	s.VALUES("user_id", s.Param(createParams.UserID))
 	s.VALUES("description", s.Param(createParams.Description))
 
-	slog.DebugContext(ctx, s.String(), s.Params())
+	slog.DebugContext(ctx, s.String(), slog.Any("params", s.Params()))
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		slog.ErrorContext(ctx, "CreateSecret failed", err)
@@ -254,7 +254,7 @@ func (r *secretTable) DeleteSecret(ctx context.Context, selector SecretSelector)
 
 	s.SET("deleted_time", s.Param(time.Now()))
 
-	slog.DebugContext(ctx, s.String(), s.Params())
+	slog.DebugContext(ctx, s.String(), slog.Any("params", s.Params()))
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		slog.ErrorContext(ctx, "DeleteSecret failed", err)
@@ -279,7 +279,7 @@ func (r *secretTable) UpdateSecret(ctx context.Context, selector SecretSelector,
 
 	s.SET("updated_time", s.Param(time.Now()))
 
-	slog.DebugContext(ctx, s.String(), s.Params())
+	slog.DebugContext(ctx, s.String(), slog.Any("params", s.Params()))
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		slog.ErrorContext(ctx, "UpdateSecret failed", err)
@@ -303,7 +303,7 @@ func (r *secretTable) CountSecrets(ctx context.Context, selector SecretSelector)
 
 	s.WHERE("(deleted_time<CURRENT_TIMESTAMP OR deleted_time IS NULL)")
 
-	slog.DebugContext(ctx, s.String(), s.Params())
+	slog.DebugContext(ctx, s.String(), slog.Any("params", s.Params()))
 	rowQuery := Database.QueryRowContext(ctx, s.String(), s.Params()...)
 	if err = rowQuery.Scan(&result); err != nil {
 		slog.ErrorContext(ctx, "CountSecrets failed", err)
@@ -363,7 +363,7 @@ func (r *secretTable) QuerySecrets(ctx context.Context, selector SecretSelector,
 		s.ORDER_BY(s.Param(sort.Key) + " " + sortType)
 	}
 
-	slog.DebugContext(ctx, s.String(), s.Params())
+	slog.DebugContext(ctx, s.String(), slog.Any("params", s.Params()))
 	queryResult, err := Database.QueryContext(ctx, s.String(), s.Params()...)
 	if err != nil {
 		slog.ErrorContext(ctx, "QuerySecrets failed", err)
