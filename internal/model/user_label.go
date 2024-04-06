@@ -116,11 +116,6 @@ func (t *labelTable) InitTable(ctx context.Context) error {
 	return nil
 }
 
-func (t *labelTable) TruncateTable(ctx context.Context) error {
-	_, err := Database.ExecContext(ctx, sqls.TRUNCATE_TABLE(userLabelTableName).String())
-	return err
-}
-
 func (r *labelTable) UpsertLabel(ctx context.Context, newLabel Label) (err error) {
 	s := sqls.INSERT_INTO(userLabelTableName)
 	s.VALUES("key", s.Param(newLabel.Key))

@@ -16,26 +16,26 @@ func TestToken(t *testing.T) {
 		ak := helper.GenerateRandomString(64, nil)
 		sk := helper.GenerateRandomString(64, nil)
 
-		token:= SignToken(ak, sk, SignData{
+		token := SignToken(ak, sk, SignData{
 			ExpiresAt: time.Now().Add(time.Second),
 		})
 
 		tokenInfo, err := ParseToken(token)
-		if (err != nil) {
+		if err != nil {
 			t.Errorf("ParseToken failed: %v", err)
 			return false
 		}
 
-		if (tokenInfo.SecretKey != ak) {
+		if tokenInfo.SecretKey != ak {
 			t.Errorf("ParseToken result are incorrect: %v", tokenInfo)
 			return false
 		}
 
-		if  ok := VerifyToken(ak,sk, token); !ok {
+		if ok := VerifyToken(ak, sk, token); !ok {
 			t.Errorf("VerifyToken result are incorrect: %v", tokenInfo)
 			return false
 		}
-	
+
 		return true
 	}, config); err != nil {
 		t.Errorf("Test failed: %v", err)

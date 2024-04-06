@@ -22,8 +22,10 @@ func TestPermissionRoleTable(t *testing.T) {
 		return
 	}
 
-	if err := roleTable.TruncateTable(context); err != nil {
-		t.Errorf("Create table failed: %v", err)
+	// 获取已初始化的数量，用于下方测试设置偏移
+	preInitedCount, err := roleTable.CountRoles(context, RoleSelector{})
+	if err != nil {
+		t.Errorf("Count failed: %v", err)
 		return
 	}
 
@@ -56,8 +58,8 @@ func TestPermissionRoleTable(t *testing.T) {
 			return false
 		}
 
-		if countResult != int64(len(testRoles)+1) {
-			t.Errorf("Count result are incorrect: %v", err)
+		if countResult != int64(len(testRoles)+1)+preInitedCount {
+			t.Errorf("Count result are incorrect: %v", countResult)
 			return false
 		}
 
@@ -124,9 +126,9 @@ func TestPermissionRoleTable(t *testing.T) {
 
 	// pagination test & check result
 	if err := quick.Check(func() bool {
-		var offsetInt = rand.Intn(config.MaxCount)
 		var limitInt = rand.Intn(config.MaxCount)
-		var offsetUint64 = int64(offsetInt)
+		var offsetInt = rand.Intn(config.MaxCount)
+		var offsetUint64 = int64(offsetInt) + preInitedCount
 		var limitUint64 = int64(limitInt)
 
 		queryPaginationResult, err := roleTable.QueryRoles(context, RoleSelector{}, &Pagination{
@@ -218,8 +220,11 @@ func TestPermissionResourceTable(t *testing.T) {
 		return
 	}
 
-	if err := resourceTable.TruncateTable(context); err != nil {
-		t.Errorf("Truncate table failed: %v", err)
+	// 获取已初始化的数量，用于下方测试设置偏移
+	preInitedCount, err := resourceTable.CountResources(context, ResourceSelector{})
+	if err != nil {
+		t.Errorf("Count failed: %v", err)
+		return
 	}
 
 	config := &quick.Config{
@@ -251,7 +256,7 @@ func TestPermissionResourceTable(t *testing.T) {
 			return false
 		}
 
-		if countResult != int64(len(testResources)+1) {
+		if countResult != int64(len(testResources)+1)+preInitedCount {
 			t.Errorf("Count result are incorrect: %v", err)
 			return false
 		}
@@ -319,9 +324,9 @@ func TestPermissionResourceTable(t *testing.T) {
 
 	// pagination test & check result
 	if err := quick.Check(func() bool {
-		var offsetInt = rand.Intn(config.MaxCount)
 		var limitInt = rand.Intn(config.MaxCount)
-		var offsetUint64 = int64(offsetInt)
+		var offsetInt = rand.Intn(config.MaxCount)
+		var offsetUint64 = int64(offsetInt) + preInitedCount
 		var limitUint64 = int64(limitInt)
 
 		queryPaginationResult, err := resourceTable.QueryResources(context, ResourceSelector{}, &Pagination{
@@ -409,8 +414,11 @@ func TestPermissionRoleResourceTable(t *testing.T) {
 		return
 	}
 
-	if err := roleResourceTable.TruncateTable(context); err != nil {
-		t.Errorf("Truncate table failed: %v", err)
+	// 获取已初始化的数量，用于下方测试设置偏移
+	preInitedCount, err := roleResourceTable.CountRoleResources(context, RoleResourceSelector{})
+	if err != nil {
+		t.Errorf("Count failed: %v", err)
+		return
 	}
 
 	config := &quick.Config{
@@ -455,7 +463,7 @@ func TestPermissionRoleResourceTable(t *testing.T) {
 			return false
 		}
 
-		if countResult != int64(len(testRoleResources)+1) {
+		if countResult != int64(len(testRoleResources)+1)+preInitedCount {
 			t.Errorf("Count result are incorrect: %v", err)
 			return false
 		}
@@ -490,9 +498,9 @@ func TestPermissionRoleResourceTable(t *testing.T) {
 
 	// pagination test & check result
 	if err := quick.Check(func() bool {
-		var offsetInt = rand.Intn(config.MaxCount)
 		var limitInt = rand.Intn(config.MaxCount)
-		var offsetUint64 = int64(offsetInt)
+		var offsetInt = rand.Intn(config.MaxCount)
+		var offsetUint64 = int64(offsetInt) + preInitedCount
 		var limitUint64 = int64(limitInt)
 
 		queryPaginationResult, err := roleResourceTable.QueryRoleResources(context, RoleResourceSelector{}, &Pagination{
@@ -580,8 +588,11 @@ func TestPermissionRoleResourceRuleTable(t *testing.T) {
 		return
 	}
 
-	if err := roleResourceRuleTable.TruncateTable(context); err != nil {
-		t.Errorf("Truncate table failed: %v", err)
+	// 获取已初始化的数量，用于下方测试设置偏移
+	preInitedCount, err := roleResourceRuleTable.CountResourceRules(context, ResourceRuleSelector{})
+	if err != nil {
+		t.Errorf("Count failed: %v", err)
+		return
 	}
 
 	config := &quick.Config{
@@ -614,7 +625,7 @@ func TestPermissionRoleResourceRuleTable(t *testing.T) {
 			return false
 		}
 
-		if countResult != int64(len(testRoleResourceRules)+1) {
+		if countResult != int64(len(testRoleResourceRules)+1)+preInitedCount {
 			t.Errorf("Count result are incorrect: %v", err)
 			return false
 		}
@@ -654,9 +665,9 @@ func TestPermissionRoleResourceRuleTable(t *testing.T) {
 
 	// pagination test & check result
 	if err := quick.Check(func() bool {
-		var offsetInt = rand.Intn(config.MaxCount)
 		var limitInt = rand.Intn(config.MaxCount)
-		var offsetUint64 = int64(offsetInt)
+		var offsetInt = rand.Intn(config.MaxCount)
+		var offsetUint64 = int64(offsetInt) + preInitedCount
 		var limitUint64 = int64(limitInt)
 
 		queryPaginationResult, err := roleResourceRuleTable.QueryResourceRules(context, ResourceRuleSelector{}, &Pagination{
@@ -748,8 +759,10 @@ func TestPermissionUserRoleTable(t *testing.T) {
 		return
 	}
 
-	if err := userRoleTable.TruncateTable(context); err != nil {
-		t.Errorf("Create table failed: %v", err)
+	// 获取已初始化的数量，用于下方测试设置偏移
+	preInitedCount, err := userRoleTable.CountUserRoles(context, UserRoleSelector{})
+	if err != nil {
+		t.Errorf("Count failed: %v", err)
 		return
 	}
 
@@ -782,7 +795,7 @@ func TestPermissionUserRoleTable(t *testing.T) {
 			return false
 		}
 
-		if countResult != int64(len(testUserRoles)+1) {
+		if countResult != int64(len(testUserRoles)+1)+preInitedCount {
 			t.Errorf("Count result are incorrect: %v", err)
 			return false
 		}
@@ -817,9 +830,9 @@ func TestPermissionUserRoleTable(t *testing.T) {
 
 	// pagination test & check result
 	if err := quick.Check(func() bool {
-		var offsetInt = rand.Intn(config.MaxCount)
 		var limitInt = rand.Intn(config.MaxCount)
-		var offsetUint64 = int64(offsetInt)
+		var offsetInt = rand.Intn(config.MaxCount)
+		var offsetUint64 = int64(offsetInt) + preInitedCount
 		var limitUint64 = int64(limitInt)
 
 		queryPaginationResult, err := userRoleTable.QueryUserRoles(context, UserRoleSelector{}, &Pagination{
@@ -900,6 +913,10 @@ func TestPermission(t *testing.T) {
 	ctx := context.TODO()
 	perm := &permission{}
 
+	if err := Init(ctx); err != nil {
+		t.Fatalf("Init failed: %v", err)
+	}
+
 	if err := perm.InitDefaultPermissions(ctx); err != nil {
 		t.Fatalf("InitDefaultPermissions failed: %v", err)
 	}
@@ -911,10 +928,10 @@ func TestPermission(t *testing.T) {
 	}
 
 	var (
-		hasInsertAll  = false
-		hasDeleteAll  = false
-		hasUpdateAll  = false
-		hasQueryAll   = false
+		hasInsertAll = false
+		hasDeleteAll = false
+		hasUpdateAll = false
+		hasQueryAll  = false
 		hasInsertOwn = false
 		hasDeleteOwn = false
 		hasUpdateOwn = false
@@ -923,7 +940,7 @@ func TestPermission(t *testing.T) {
 
 	for _, summary := range queryResult {
 		switch summary.ResourceName {
-		case "all":
+		case AllResourceName:
 			switch summary.Action {
 			case ActionInsert:
 				hasInsertAll = true
@@ -934,7 +951,7 @@ func TestPermission(t *testing.T) {
 			case ActionQuery:
 				hasQueryAll = true
 			}
-		case "owner":
+		case OwnerResourceName:
 			switch summary.Action {
 			case ActionInsert:
 				hasInsertOwn = true

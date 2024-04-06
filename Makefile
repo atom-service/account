@@ -35,7 +35,7 @@ build:
 ## test: test the application
 .PHONY: test
 test:
-	go test -v -race -cover ./...
+	go test -v -race -cover -p 1 ./...
 
 ## tidy: format code and tidy modfile
 .PHONY: tidy

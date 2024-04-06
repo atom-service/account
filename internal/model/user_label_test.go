@@ -22,8 +22,10 @@ func TestUserLabelTable(t *testing.T) {
 		return
 	}
 
-	if err := labelTable.TruncateTable(context); err != nil {
-		t.Errorf("Create table failed: %v", err)
+	// 获取已初始化的数量，用于下方测试设置偏移
+	preInitedCount, err := labelTable.CountLabels(context, LabelSelector{})
+	if err != nil {
+		t.Errorf("Count failed: %v", err)
 		return
 	}
 
@@ -31,7 +33,7 @@ func TestUserLabelTable(t *testing.T) {
 		MaxCount: 100,
 	}
 
-	testRoles := []*Label{}
+	testLabels := []*Label{}
 
 	// create test & check result
 	if err := quick.Check(func() bool {
@@ -62,7 +64,7 @@ func TestUserLabelTable(t *testing.T) {
 			return false
 		}
 
-		if countResult != int64(len(testRoles)+1) {
+		if countResult != int64(len(testLabels)+1)+preInitedCount {
 			t.Errorf("Count result are incorrect: %v", err)
 			return false
 		}
@@ -124,7 +126,7 @@ func TestUserLabelTable(t *testing.T) {
 		}
 
 		// 最终的结果保存下来给后面的测试使用
-		testRoles = append(testRoles, queryUpdatedResult...)
+		testLabels = append(testLabels, queryUpdatedResult...)
 		return true
 	}, config); err != nil {
 		t.Errorf("Test failed: %v", err)
@@ -132,9 +134,9 @@ func TestUserLabelTable(t *testing.T) {
 
 	// pagination test & check result
 	if err := quick.Check(func() bool {
-		var offsetInt = rand.Intn(config.MaxCount)
 		var limitInt = rand.Intn(config.MaxCount)
-		var offsetUint64 = int64(offsetInt)
+		var offsetInt = rand.Intn(config.MaxCount)
+		var offsetUint64 = int64(offsetInt) + preInitedCount
 		var limitUint64 = int64(limitInt)
 
 		queryPaginationResult, err := labelTable.QueryLabels(context, LabelSelector{}, &Pagination{
@@ -153,11 +155,11 @@ func TestUserLabelTable(t *testing.T) {
 		}
 
 		if expectedSize > 0 { // 最后一条不需要检查了，删光了
-			if *queryPaginationResult[0].Value != *testRoles[offsetInt].Value {
+			if *queryPaginationResult[0].Value != *testLabels[offsetInt].Value {
 				t.Errorf("Query result are incorrect: %v", queryPaginationResult)
 				return false
 			}
-			if *queryPaginationResult[0].Description != *testRoles[offsetInt].Description {
+			if *queryPaginationResult[0].Description != *testLabels[offsetInt].Description {
 				t.Errorf("Query result are incorrect: %v", queryPaginationResult)
 				return false
 			}
@@ -169,7 +171,7 @@ func TestUserLabelTable(t *testing.T) {
 	}
 
 	// delete test & check result
-	for _, testSecret := range testRoles {
+	for _, testSecret := range testLabels {
 		selector := LabelSelector{}
 		randUseSeed := rand.Intn(2)
 		if randUseSeed == 0 {

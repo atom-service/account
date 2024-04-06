@@ -22,8 +22,11 @@ func TestSecretTable(t *testing.T) {
 		return
 	}
 
-	if err := secretTable.TruncateTable(context); err != nil {
-		t.Errorf("Truncate table failed: %v", err)
+	// 获取已初始化的数量，用于下方测试设置偏移
+	preInitedCount, err := secretTable.CountSecrets(context, SecretSelector{})
+	if err != nil {
+		t.Errorf("Count failed: %v", err)
+		return
 	}
 
 	config := &quick.Config{
@@ -61,7 +64,7 @@ func TestSecretTable(t *testing.T) {
 			return false
 		}
 
-		if countResult != int64(len(testSecrets)+1) {
+		if countResult != int64(len(testSecrets)+1)+preInitedCount {
 			t.Errorf("Count result are incorrect: %v", err)
 			return false
 		}
@@ -99,7 +102,7 @@ func TestSecretTable(t *testing.T) {
 	if err := quick.Check(func() bool {
 		var offsetInt = rand.Intn(config.MaxCount)
 		var limitInt = rand.Intn(config.MaxCount)
-		var offsetUint64 = int64(offsetInt)
+		var offsetUint64 = int64(offsetInt) + preInitedCount
 		var limitUint64 = int64(limitInt)
 
 		queryPaginationResult, err := secretTable.QuerySecrets(context, SecretSelector{}, &Pagination{

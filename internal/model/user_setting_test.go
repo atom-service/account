@@ -22,16 +22,19 @@ func TestUserSettingTable(t *testing.T) {
 		return
 	}
 
-	if err := settingTable.TruncateTable(context); err != nil {
-		t.Errorf("Create table failed: %v", err)
-		return
-	}
+		// 获取已初始化的数量，用于下方测试设置偏移
+		preInitedCount, err := settingTable.CountSettings(context, SettingSelector{})
+		if err != nil {
+			t.Errorf("Count failed: %v", err)
+			return
+		}
+	
 
 	config := &quick.Config{
 		MaxCount: 100,
 	}
 
-	testRoles := []*Setting{}
+	testSettings := []*Setting{}
 
 	// create test & check result
 	if err := quick.Check(func() bool {
@@ -62,7 +65,7 @@ func TestUserSettingTable(t *testing.T) {
 			return false
 		}
 
-		if countResult != int64(len(testRoles)+1) {
+		if countResult != int64(len(testSettings)+1) + preInitedCount {
 			t.Errorf("Count result are incorrect: %v", err)
 			return false
 		}
@@ -122,7 +125,7 @@ func TestUserSettingTable(t *testing.T) {
 		}
 
 		// 最终的结果保存下来给后面的测试使用
-		testRoles = append(testRoles, queryUpdatedResult...)
+		testSettings = append(testSettings, queryUpdatedResult...)
 		return true
 	}, config); err != nil {
 		t.Errorf("Test failed: %v", err)
@@ -132,7 +135,7 @@ func TestUserSettingTable(t *testing.T) {
 	if err := quick.Check(func() bool {
 		var offsetInt = rand.Intn(config.MaxCount)
 		var limitInt = rand.Intn(config.MaxCount)
-		var offsetUint64 = int64(offsetInt)
+		var offsetUint64 = int64(offsetInt) + preInitedCount
 		var limitUint64 = int64(limitInt)
 
 		queryPaginationResult, err := settingTable.QuerySettings(context, SettingSelector{}, &Pagination{
@@ -151,11 +154,11 @@ func TestUserSettingTable(t *testing.T) {
 		}
 
 		if expectedSize > 0 { // 最后一条不需要检查了，删光了
-			if *queryPaginationResult[0].Value != *testRoles[offsetInt].Value {
+			if *queryPaginationResult[0].Value != *testSettings[offsetInt].Value {
 				t.Errorf("Query result are incorrect: %v", queryPaginationResult)
 				return false
 			}
-			if *queryPaginationResult[0].Description != *testRoles[offsetInt].Description {
+			if *queryPaginationResult[0].Description != *testSettings[offsetInt].Description {
 				t.Errorf("Query result are incorrect: %v", queryPaginationResult)
 				return false
 			}
@@ -167,7 +170,7 @@ func TestUserSettingTable(t *testing.T) {
 	}
 
 	// delete test & check result
-	for _, testSecret := range testRoles {
+	for _, testSecret := range testSettings {
 		selector := SettingSelector{}
 		randUseSeed := rand.Intn(2)
 		if randUseSeed == 0 {

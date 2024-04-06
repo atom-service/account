@@ -24,7 +24,7 @@ func SliceDiff[S ~[]T, T comparable](source S, target S, cmp func(T, T) bool) (a
 			add = append(add, v)
 		}
 	}
-	
+
 	// Iterate over target and check if each element is in source using cmp
 	for _, v := range target {
 		found := false

@@ -116,11 +116,6 @@ func (t *settingTable) InitTable(ctx context.Context) error {
 	return nil
 }
 
-func (t *settingTable) TruncateTable(ctx context.Context) error {
-	_, err := Database.ExecContext(ctx, sqls.TRUNCATE_TABLE(userSettingTableName).String())
-	return err
-}
-
 func (r *settingTable) CreateSetting(ctx context.Context, newSetting Setting) (err error) {
 	s := sqls.INSERT_INTO(userSettingTableName)
 	s.VALUES("key", s.Param(newSetting.Key))

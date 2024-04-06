@@ -11,9 +11,15 @@ import (
 
 	"github.com/atom-service/account/internal/helper"
 	"github.com/atom-service/account/package/proto"
+	"github.com/atom-service/common/config"
 	"github.com/atom-service/common/logger"
 	"github.com/yinxulai/sqls"
 )
+
+func init() {
+	config.Declare("init_admin_password", helper.GenerateRandomString(12, nil), true, "admin 用户的初始密码")
+	config.Declare("init_admin_username", helper.GenerateRandomString(12, nil), true, "admin 用户的初始账号名")
+}
 
 var userSchemaName = "\"user\""
 var userTableName = userSchemaName + ".\"users\""
@@ -134,8 +140,8 @@ func (s *userTable) initData(ctx context.Context) (err error) {
 		return err
 	}
 
-	adminUsername := helper.GenerateRandomString(64, nil)
-	adminPassword := helper.GenerateRandomString(128, nil)
+	adminUsername := config.MustGet("init_admin_username")
+	adminPassword := config.MustGet("init_admin_password")
 	adminPasswordHash := Password.Hash(adminPassword)
 	adminUser := &User{Username: &adminUsername, Password: &adminPasswordHash}
 
@@ -197,11 +203,6 @@ func (t *userTable) InitTable(ctx context.Context) error {
 	}
 
 	return t.initData(ctx)
-}
-
-func (t *userTable) TruncateTable(ctx context.Context) error {
-	_, err := Database.ExecContext(ctx, sqls.TRUNCATE_TABLE(userTableName).String())
-	return err
 }
 
 func (r *userTable) CreateUser(ctx context.Context, newUser User) (err error) {

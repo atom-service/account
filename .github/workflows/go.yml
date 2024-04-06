@@ -25,4 +25,3 @@ jobs:
             make build/proto
             make build
             make test
-            make tidy

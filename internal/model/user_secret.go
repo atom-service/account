@@ -190,11 +190,6 @@ func (t *secretTable) InitTable(ctx context.Context) error {
 	return t.initData(ctx)
 }
 
-func (t *secretTable) TruncateTable(ctx context.Context) error {
-	_, err := Database.ExecContext(ctx, sqls.TRUNCATE_TABLE(secretTableName).String())
-	return err
-}
-
 type CreateSecretParams struct {
 	Type        string
 	UserID      int64

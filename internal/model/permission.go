@@ -131,11 +131,6 @@ func (t *roleTable) InitTable(ctx context.Context) error {
 	return nil
 }
 
-func (t *roleTable) TruncateTable(ctx context.Context) error {
-	_, err := Database.ExecContext(ctx, sqls.TRUNCATE_TABLE(roleTableName).String())
-	return err
-}
-
 func (r *roleTable) CreateRole(ctx context.Context, newRole Role) (err error) {
 	s := sqls.INSERT_INTO(roleTableName)
 	s.VALUES("name", s.Param(newRole.Name))
@@ -388,11 +383,6 @@ func (t *resourceTable) InitTable(ctx context.Context) error {
 	}
 
 	return nil
-}
-
-func (t *resourceTable) TruncateTable(ctx context.Context) error {
-	_, err := Database.ExecContext(ctx, sqls.TRUNCATE_TABLE(resourceTableName).String())
-	return err
 }
 
 func (r *resourceTable) CreateResource(ctx context.Context, newResource Resource) (err error) {
@@ -694,11 +684,6 @@ func (t *roleResourceTable) InitTable(ctx context.Context) error {
 	return nil
 }
 
-func (t *roleResourceTable) TruncateTable(ctx context.Context) error {
-	_, err := Database.ExecContext(ctx, sqls.TRUNCATE_TABLE(roleResourceTableName).String())
-	return err
-}
-
 func (r *roleResourceTable) CreateRoleResource(ctx context.Context, newResource RoleResource) (err error) {
 	s := sqls.INSERT_INTO(roleResourceTableName)
 	s.VALUES("action", s.Param(newResource.Action))
@@ -898,11 +883,6 @@ func (t *resourceRuleTable) InitTable(ctx context.Context) error {
 	return nil
 }
 
-func (t *resourceRuleTable) TruncateTable(ctx context.Context) error {
-	_, err := Database.ExecContext(ctx, sqls.TRUNCATE_TABLE(resourceRuleTableName).String())
-	return err
-}
-
 func (r *resourceRuleTable) CreateResourceRule(ctx context.Context, newRule ResourceRule) (err error) {
 	s := sqls.INSERT_INTO(resourceRuleTableName)
 	s.VALUES("key", s.Param(newRule.Key))
@@ -1093,11 +1073,6 @@ func (t *userRoleTable) InitTable(ctx context.Context) error {
 	}
 
 	return nil
-}
-
-func (t *userRoleTable) TruncateTable(ctx context.Context) error {
-	_, err := Database.ExecContext(ctx, sqls.TRUNCATE_TABLE(userRoleTableName).String())
-	return err
 }
 
 func (r *userRoleTable) CreateUserRole(ctx context.Context, newRule UserRole) (err error) {
@@ -1520,7 +1495,7 @@ func (r *permission) InitDefaultPermissions(ctx context.Context) (err error) {
 func (r *permission) QueryUserResourceSummaries(ctx context.Context, selector UserResourceSummarySelector) (result []*UserResourcePermissionSummary, err error) {
 	// Build the SQL query to retrieve user resource summaries from the database.
 	s := sqls.SELECT()
-	s.SELECT("d.ID AS resourceID")
+	s.SELECT("d.id AS resourceID")
 	s.SELECT("d.name AS resourceName")
 	s.SELECT("c.action AS action")
 	s.SELECT("e.key AS key")

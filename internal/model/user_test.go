@@ -22,9 +22,13 @@ func TestUserTable(t *testing.T) {
 		return
 	}
 
-	if err := userTable.TruncateTable(context); err != nil {
-		t.Errorf("Truncate table failed: %v", err)
-	}
+		// 获取已初始化的数量，用于下方测试设置偏移
+		preInitedCount, err := userTable.CountUsers(context, UserSelector{})
+		if err != nil {
+			t.Errorf("Count failed: %v", err)
+			return
+		}
+	
 
 	config := &quick.Config{
 		MaxCount: 100,
@@ -53,8 +57,8 @@ func TestUserTable(t *testing.T) {
 			return false
 		}
 
-		if countResult != int64(len(testUsers)+1) {
-			t.Errorf("Count result are incorrect: %v", err)
+		if countResult != int64(len(testUsers)+1) + preInitedCount {
+			t.Errorf("Count result are incorrect: %v", countResult)
 			return false
 		}
 
@@ -116,7 +120,7 @@ func TestUserTable(t *testing.T) {
 	if err := quick.Check(func() bool {
 		var offsetInt = rand.Intn(config.MaxCount)
 		var limitInt = rand.Intn(config.MaxCount)
-		var offsetUint64 = int64(offsetInt)
+		var offsetUint64 = int64(offsetInt) + preInitedCount
 		var limitUint64 = int64(limitInt)
 
 		queryPaginationResult, err := userTable.QueryUsers(context, UserSelector{}, &Pagination{
@@ -195,13 +199,7 @@ func TestUserTable(t *testing.T) {
 func TestAdminUserInit(t *testing.T) {
 	// 创建一个用户表实例
 	userTable := &userTable{}
-
 	context := context.TODO()
-
-	if err := userTable.InitTable(context); err != nil {
-		t.Errorf("Create table failed: %v", err)
-		return
-	}
 
 	// 检查 admin 用户是否初始化成功
 	selectID := int64(0)

@@ -28,5 +28,5 @@ func main() {
 	}
 
 	listenAddress := ":" + config.MustGet("port")
-	panic(server.StartServer(listenAddress)) 
+	panic(server.StartServer(listenAddress))
 }

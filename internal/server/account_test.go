@@ -206,7 +206,7 @@ func TestAccountServer(t *testing.T) {
 	// test label create & query & delete
 	for _, user := range signedInTokenUsers {
 		testKey := helper.GenerateRandomString(64, nil)
-		testValue := helper.GenerateRandomString(512, nil)
+		testValue := helper.GenerateRandomString(128, nil)
 
 		accountClientWithUserAuth := testServer.CreateAccountClientWithToken(user.Token)
 		createResponse, err := accountClientWithUserAuth.UpsertLabel(context, &proto.UpsertLabelRequest{

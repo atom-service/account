@@ -609,6 +609,12 @@ func (s *accountClient) QueryLabels(ctx context.Context, request *proto.QueryLab
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
 		matchRules := []model.UserResourcePermissionRule{}
 		// 不指定则操作当前账号
+		if request.Selector == nil {
+			request.Selector = &proto.LabelSelector{
+				UserID: user.ID,
+			}
+		}
+		
 		if request.Selector.UserID == nil {
 			request.Selector.UserID = user.ID
 		}
