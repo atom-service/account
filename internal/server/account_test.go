@@ -373,4 +373,33 @@ func TestAccountServer(t *testing.T) {
 			return
 		}
 	}
+
+	// test delete user
+	for _, user := range signedInTokenUsers {
+		selector := proto.UserSelector{ID: &user.UserID}
+		deleteResponse, err := adminAccountClient.DeleteUser(context, &proto.DeleteUserRequest{
+			Selector: &selector,
+		})
+		if err != nil {
+			t.Errorf("DeleteUser failed: %v", err)
+			return
+		}
+		if deleteResponse.State != proto.State_SUCCESS {
+			t.Errorf("DeleteUser failed: %v", err)
+			return
+		}
+
+		queryResponse, err := adminAccountClient.QueryUsers(context, &proto.QueryUsersRequest{
+			Selector: &selector,
+		})
+		if err != nil {
+			t.Errorf("Unexpected results after deleted: %v", err)
+			return
+		}
+		if queryResponse.State != proto.State_SUCCESS {
+			t.Errorf("Unexpected results after deleted")
+			return
+		}
+
+	}
 }

@@ -35,7 +35,9 @@ build:
 ## test: test the application
 .PHONY: test
 test:
-	go test -v -race -cover -p 1 ./...
+	mkdir -p .coverage
+	go test -v -race -cover -p 1 -coverprofile=.coverage/coverage.out ./...
+	go tool cover -html=.coverage/coverage.out -o .coverage/coverage.html
 
 ## tidy: format code and tidy modfile
 .PHONY: tidy

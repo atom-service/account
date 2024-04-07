@@ -1515,7 +1515,7 @@ func (r *permission) QueryUserResourceSummaries(ctx context.Context, selector Us
 	}
 
 	// Log the query string for debugging purposes.
-	slog.DebugContext(ctx, s.String())
+	slog.DebugContext(ctx, s.String(), slog.Any("params", s.Params()))
 
 	// Execute the query and retrieve the result set.
 	queryResult, err := Database.QueryContext(ctx, s.String(), s.Params()...)

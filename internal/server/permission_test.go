@@ -137,6 +137,7 @@ func TestPermissionServer(t *testing.T) {
 			Resources: []*proto.RoleResource{
 				{
 					ResourceID: resourceList[0].ID,
+					ResourceName: resourceList[0].Name,
 					Action:     proto.ResourceAction_Insert,
 					Rules: []*proto.RoleResourceRule{
 						{
@@ -188,6 +189,7 @@ func TestPermissionServer(t *testing.T) {
 				Resources: []*proto.RoleResource{
 					{
 						ResourceID: resourceList[0].ID,
+						ResourceName: resourceList[0].Name,
 						Action:     proto.ResourceAction_Insert,
 						Rules: []*proto.RoleResourceRule{
 							{
@@ -331,6 +333,53 @@ func TestPermissionServer(t *testing.T) {
 				t.Errorf("SummaryForUser failed: %v", err)
 				return
 			}
+		}
+	}
+
+	// test remove role
+	for _, role := range roleList {
+		removeResponse, err := permissionClient.DeleteRole(context, &proto.DeleteRoleRequest{
+			Selector: &proto.RoleSelector{ID: &role.ID},
+		})
+		if err != nil {
+			t.Errorf("RemoveRole failed: %v", err)
+			return
+		}
+		if removeResponse.State != proto.State_SUCCESS {
+			t.Errorf("RemoveRole failed: %v", err)
+			return
+		}
+	}
+
+	// test remove resource
+	for _, resource := range resourceList {
+		selector := proto.ResourceSelector{ID: &resource.ID}
+		removeResponse, err := permissionClient.DeleteResource(context, &proto.DeleteResourceRequest{
+			Selector: &selector,
+		})
+		if err != nil {
+			t.Errorf("RemoveResource failed: %v", err)
+			return
+		}
+		if removeResponse.State != proto.State_SUCCESS {
+			t.Errorf("RemoveResource failed: %v", err)
+			return
+		}
+
+		queryUpdatedResponse, err := permissionClient.QueryResources(context, &proto.QueryResourcesRequest{
+			Selector: &selector,
+		})
+		if err != nil {
+			t.Errorf("Unexpected results after deleted: %v", err)
+			return
+		}
+		if queryUpdatedResponse.State != proto.State_SUCCESS {
+			t.Errorf("Unexpected results after deleted")
+			return
+		}
+		if queryUpdatedResponse.Data.Total != 0 {
+			t.Errorf("Unexpected results after deleted")
+			return
 		}
 	}
 }

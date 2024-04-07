@@ -654,7 +654,7 @@ func (s *permissionServer) ApplyRoleForUser(ctx context.Context, request *proto.
 		return
 	}
 
-	_, err = model.UserRoleTable.CountUserRoles(ctx, model.UserRoleSelector{
+	userRoleCount, err := model.UserRoleTable.CountUserRoles(ctx, model.UserRoleSelector{
 		UserID: userQueryResult[0].ID,
 		RoleID: roleQueryResult[0].ID,
 	})
@@ -665,7 +665,7 @@ func (s *permissionServer) ApplyRoleForUser(ctx context.Context, request *proto.
 	}
 
 	// 不管什么原因,既然存在了,就视为应用成功
-	if len(userQueryResult) > 0 {
+	if userRoleCount > 0 {
 		response.State = proto.State_SUCCESS
 		return
 	}
