@@ -40,25 +40,6 @@ type Role struct {
 	DisabledTime *time.Time
 }
 
-type RoleSelector struct {
-	ID   *int64
-	Name *string
-}
-
-func (r *RoleSelector) LoadProto(data *proto.RoleSelector) {
-	if data == nil {
-		return
-	}
-
-	if data.ID != nil {
-		r.ID = data.ID
-	}
-
-	if data.Name != nil {
-		r.Name = data.Name
-	}
-}
-
 func (srv *Role) ToProto() *proto.Role {
 	role := new(proto.Role)
 	if srv.ID != nil {
@@ -89,6 +70,25 @@ func (srv *Role) ToProto() *proto.Role {
 	}
 
 	return role
+}
+
+type RoleSelector struct {
+	ID   *int64
+	Name *string
+}
+
+func (r *RoleSelector) LoadProto(data *proto.RoleSelector) {
+	if data == nil {
+		return
+	}
+
+	if data.ID != nil {
+		r.ID = data.ID
+	}
+
+	if data.Name != nil {
+		r.Name = data.Name
+	}
 }
 
 type roleTable struct{}
