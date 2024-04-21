@@ -17,16 +17,16 @@ func init() {
 	goconf.Declare("postgres_uri", "postgresql://postgres:password@localhost/account", true, "postgres 的数据库连接 uri")
 }
 
-func InitDB(ctx context.Context) error {
+func InitDB(ctx context.Context) {
 	newDB, err := sql.Open("pgx", goconf.MustGet("postgres_uri"))
 	if err != nil {
-		return fmt.Errorf("unable to connect to database: %v", err)
+		panic(fmt.Errorf("unable to connect to database: %v", err)) 
 	}
 
 	var version string
 	versionQuery := newDB.QueryRowContext(ctx, "SELECT version()")
 	if err = versionQuery.Scan(&version); err != nil {
-		return fmt.Errorf("failed to query database version: %v", err)
+		panic(fmt.Errorf("failed to query database version: %v", err)) 
 	}
 
 	slog.DebugContext(ctx, "Server run on database: %s\n", slog.String("version", version))
@@ -34,13 +34,10 @@ func InitDB(ctx context.Context) error {
 	newDB.SetMaxOpenConns(10)
 	newDB.SetMaxIdleConns(3)
 	Database = newDB
-	return nil
 }
 
 func Init(ctx context.Context) error {
-	if err := InitDB(ctx); err != nil {
-		return err
-	}
+	InitDB(ctx)
 
 	// 先初始化用户表
 	if err := UserTable.InitTable(ctx); err != nil {

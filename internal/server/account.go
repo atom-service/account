@@ -12,13 +12,13 @@ import (
 	"github.com/atom-service/account/package/proto"
 )
 
-var AccountServer = &accountClient{}
+var AccountServer = &accountServer{}
 
-type accountClient struct {
+type accountServer struct {
 	proto.UnimplementedAccountServiceServer
 }
 
-func (s *accountClient) SignIn(ctx context.Context, request *proto.SignInRequest) (response *proto.SignInResponse, err error) {
+func (s *accountServer) SignIn(ctx context.Context, request *proto.SignInRequest) (response *proto.SignInResponse, err error) {
 	response = &proto.SignInResponse{}
 
 	var userSelector model.UserSelector
@@ -104,7 +104,7 @@ func (s *accountClient) SignIn(ctx context.Context, request *proto.SignInRequest
 	return
 }
 
-func (s *accountClient) SignUp(ctx context.Context, request *proto.SignUpRequest) (response *proto.SignUpResponse, err error) {
+func (s *accountServer) SignUp(ctx context.Context, request *proto.SignUpRequest) (response *proto.SignUpResponse, err error) {
 	response = &proto.SignUpResponse{}
 
 	countResult, err := model.UserTable.CountUsers(ctx, model.UserSelector{
@@ -203,7 +203,7 @@ func (s *accountClient) SignUp(ctx context.Context, request *proto.SignUpRequest
 	return
 }
 
-func (s *accountClient) SignOut(ctx context.Context, request *proto.SignOutRequest) (response *proto.SignOutResponse, err error) {
+func (s *accountServer) SignOut(ctx context.Context, request *proto.SignOutRequest) (response *proto.SignOutResponse, err error) {
 	response = &proto.SignOutResponse{}
 
 	authData := auth.ResolveAuth(ctx)
@@ -215,7 +215,7 @@ func (s *accountClient) SignOut(ctx context.Context, request *proto.SignOutReque
 	return nil, nil
 }
 
-func (s *accountClient) QueryUsers(ctx context.Context, request *proto.QueryUsersRequest) (response *proto.QueryUsersResponse, err error) {
+func (s *accountServer) QueryUsers(ctx context.Context, request *proto.QueryUsersRequest) (response *proto.QueryUsersResponse, err error) {
 	response = &proto.QueryUsersResponse{}
 	response.Data = &proto.QueryUsersResponse_DataType{}
 
@@ -276,7 +276,7 @@ func (s *accountClient) QueryUsers(ctx context.Context, request *proto.QueryUser
 	return
 }
 
-func (s *accountClient) DeleteUser(ctx context.Context, request *proto.DeleteUserRequest) (response *proto.DeleteUserResponse, err error) {
+func (s *accountServer) DeleteUser(ctx context.Context, request *proto.DeleteUserRequest) (response *proto.DeleteUserResponse, err error) {
 	response = &proto.DeleteUserResponse{}
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
 		matchRules := []model.UserResourcePermissionRule{}
@@ -317,7 +317,7 @@ func (s *accountClient) DeleteUser(ctx context.Context, request *proto.DeleteUse
 	return
 }
 
-func (s *accountClient) CreateSecret(ctx context.Context, request *proto.CreateSecretRequest) (response *proto.CreateSecretResponse, err error) {
+func (s *accountServer) CreateSecret(ctx context.Context, request *proto.CreateSecretRequest) (response *proto.CreateSecretResponse, err error) {
 	response = &proto.CreateSecretResponse{}
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
 		matchRules := []model.UserResourcePermissionRule{}
@@ -375,7 +375,7 @@ func (s *accountClient) CreateSecret(ctx context.Context, request *proto.CreateS
 	return
 }
 
-func (s *accountClient) DisableSecret(ctx context.Context, request *proto.DisableSecretRequest) (response *proto.DisableSecretResponse, err error) {
+func (s *accountServer) DisableSecret(ctx context.Context, request *proto.DisableSecretRequest) (response *proto.DisableSecretResponse, err error) {
 	response = &proto.DisableSecretResponse{}
 
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
@@ -432,7 +432,7 @@ func (s *accountClient) DisableSecret(ctx context.Context, request *proto.Disabl
 	return
 }
 
-func (s *accountClient) DeleteSecret(ctx context.Context, request *proto.DeleteSecreteRequest) (response *proto.DeleteSecreteResponse, err error) {
+func (s *accountServer) DeleteSecret(ctx context.Context, request *proto.DeleteSecreteRequest) (response *proto.DeleteSecreteResponse, err error) {
 	response = &proto.DeleteSecreteResponse{}
 
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
@@ -501,7 +501,7 @@ func (s *accountClient) DeleteSecret(ctx context.Context, request *proto.DeleteS
 	return
 }
 
-func (s *accountClient) QuerySecrets(ctx context.Context, request *proto.QuerySecretsRequest) (response *proto.QuerySecretsResponse, err error) {
+func (s *accountServer) QuerySecrets(ctx context.Context, request *proto.QuerySecretsRequest) (response *proto.QuerySecretsResponse, err error) {
 	response = &proto.QuerySecretsResponse{}
 	response.Data = &proto.QuerySecretsResponse_DataType{}
 
@@ -564,7 +564,7 @@ func (s *accountClient) QuerySecrets(ctx context.Context, request *proto.QuerySe
 	return
 }
 
-func (s *accountClient) UpsertLabel(ctx context.Context, request *proto.UpsertLabelRequest) (response *proto.UpsertLabelResponse, err error) {
+func (s *accountServer) UpsertLabel(ctx context.Context, request *proto.UpsertLabelRequest) (response *proto.UpsertLabelResponse, err error) {
 	response = &proto.UpsertLabelResponse{}
 
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
@@ -602,7 +602,7 @@ func (s *accountClient) UpsertLabel(ctx context.Context, request *proto.UpsertLa
 	return
 }
 
-func (s *accountClient) QueryLabels(ctx context.Context, request *proto.QueryLabelsRequest) (response *proto.QueryLabelsResponse, err error) {
+func (s *accountServer) QueryLabels(ctx context.Context, request *proto.QueryLabelsRequest) (response *proto.QueryLabelsResponse, err error) {
 	response = &proto.QueryLabelsResponse{}
 	response.Data = &proto.QueryLabelsResponse_DataType{}
 
@@ -666,7 +666,7 @@ func (s *accountClient) QueryLabels(ctx context.Context, request *proto.QueryLab
 	return
 }
 
-func (s *accountClient) DeleteLabel(ctx context.Context, request *proto.DeleteLabelRequest) (response *proto.DeleteLabelResponse, err error) {
+func (s *accountServer) DeleteLabel(ctx context.Context, request *proto.DeleteLabelRequest) (response *proto.DeleteLabelResponse, err error) {
 	response = &proto.DeleteLabelResponse{}
 
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
@@ -704,7 +704,7 @@ func (s *accountClient) DeleteLabel(ctx context.Context, request *proto.DeleteLa
 	return
 }
 
-func (s *accountClient) CreateSetting(ctx context.Context, request *proto.CreateSettingRequest) (response *proto.CreateSettingResponse, err error) {
+func (s *accountServer) CreateSetting(ctx context.Context, request *proto.CreateSettingRequest) (response *proto.CreateSettingResponse, err error) {
 	response = &proto.CreateSettingResponse{}
 
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
@@ -761,7 +761,7 @@ func (s *accountClient) CreateSetting(ctx context.Context, request *proto.Create
 	return
 }
 
-func (s *accountClient) UpdateSetting(ctx context.Context, request *proto.UpdateSettingRequest) (response *proto.UpdateSettingResponse, err error) {
+func (s *accountServer) UpdateSetting(ctx context.Context, request *proto.UpdateSettingRequest) (response *proto.UpdateSettingResponse, err error) {
 	response = &proto.UpdateSettingResponse{}
 
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
@@ -822,7 +822,7 @@ func (s *accountClient) UpdateSetting(ctx context.Context, request *proto.Update
 	return
 }
 
-func (s *accountClient) DeleteSetting(ctx context.Context, request *proto.DeleteSettingRequest) (response *proto.DeleteSettingResponse, err error) {
+func (s *accountServer) DeleteSetting(ctx context.Context, request *proto.DeleteSettingRequest) (response *proto.DeleteSettingResponse, err error) {
 	response = &proto.DeleteSettingResponse{}
 
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
@@ -864,7 +864,7 @@ func (s *accountClient) DeleteSetting(ctx context.Context, request *proto.Delete
 	return
 }
 
-func (s *accountClient) QuerySettings(ctx context.Context, request *proto.QuerySettingsRequest) (response *proto.QuerySettingsResponse, err error) {
+func (s *accountServer) QuerySettings(ctx context.Context, request *proto.QuerySettingsRequest) (response *proto.QuerySettingsResponse, err error) {
 	response = &proto.QuerySettingsResponse{}
 	response.Data = &proto.QuerySettingsResponse_DataType{}
 

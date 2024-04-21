@@ -179,6 +179,31 @@ func TestPermissionServer(t *testing.T) {
 			return false
 		}
 
+		if (queryResponse.Data.Roles[0].Resources == nil) {
+			t.Errorf("Unexpected results after created")
+			return false
+		}
+
+		if (queryResponse.Data.Roles[0].Resources[0] == nil) {
+			t.Errorf("Unexpected results after created")
+			return false
+		}
+
+		if (len(queryResponse.Data.Roles[0].Resources[0].Rules) == 0) {
+			t.Errorf("Unexpected results after created")
+			return false
+		}
+
+		if (queryResponse.Data.Roles[0].Resources[0].Rules[0].Key == "TEST_CREATE") {
+			t.Errorf("Unexpected results after created")
+			return false
+		}
+
+		if (queryResponse.Data.Roles[0].Resources[0].Rules[0].Value == "TEST_CREATE") {
+			t.Errorf("Unexpected results after created")
+			return false
+		}
+
 		newName := helper.GenerateRandomString(64, nil)
 		newDescription := helper.GenerateRandomString(64, nil)
 		updateResponse, err := permissionClient.UpdateRole(context, &proto.UpdateRoleRequest{

@@ -60,7 +60,7 @@ type serverAuthInterceptor struct {
 func NewServerAuthInterceptor(accountServerHost, secretKey, secretValue string) *serverAuthInterceptor {
 	authCredentials := grpc.WithPerRPCCredentials(&AuthWithSecretCredentials{secretKey, secretValue})
 	nonSafeCredentials := grpc.WithTransportCredentials(insecure.NewCredentials())
-	conn, err := grpc.Dial(accountServerHost, authCredentials, nonSafeCredentials)
+	conn, err := grpc.NewClient(accountServerHost, authCredentials, nonSafeCredentials)
 	if err != nil {
 		panic(err)
 	}
