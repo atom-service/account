@@ -3,6 +3,7 @@ package model
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log/slog"
@@ -16,14 +17,12 @@ var permissionSchema = "\"permission\""
 var roleTableName = permissionSchema + ".\"roles\""
 var userRoleTableName = permissionSchema + ".\"user_roles\""
 var resourceTableName = permissionSchema + ".\"resources\""
-var resourceRuleTableName = permissionSchema + ".\"resource_rules\""
 var roleResourceTableName = permissionSchema + ".\"role_resources\""
 
 var RoleTable = &roleTable{}
 var UserRoleTable = &userRoleTable{}
 var ResourceTable = &resourceTable{}
 var RoleResourceTable = &roleResourceTable{}
-var RoleResourceRuleTable = &resourceRuleTable{}
 
 var OwnerRoleName = "OWNER"
 var AdminRoleName = "ADMIN"
@@ -585,11 +584,24 @@ func ActionToProto(action string) proto.ResourceAction {
 	return proto.ResourceAction_Insert
 }
 
+type RoleResourceRule struct {
+	Key   string `json:"key"`
+	Value string `json:"value"`
+}
+
+const (
+	// 代表匹配任何 key
+	RoleResourceRuleKeyOfAny = "*"
+	// 代表匹配任何 value
+	RoleResourceRuleValueOfAny = "*"
+)
+
 type RoleResource struct {
 	ID         *int64
 	Action     string
 	RoleID     int64
 	ResourceID int64
+	Rules      []*RoleResourceRule
 }
 
 func (srv *RoleResource) LoadProto(data *proto.RoleResource) {
@@ -666,6 +678,7 @@ func (t *roleResourceTable) InitTable(ctx context.Context) error {
 	s.COLUMN("action character varying(32) NOT NULL")
 	s.COLUMN("resource_id int NOT NULL")
 	s.COLUMN("role_id int NOT NULL")
+	s.COLUMN("rules JSON NULL")
 	s.OPTIONS("CONSTRAINT role_resource_union_unique_keys UNIQUE (action, resource_id, role_id)")
 	slog.DebugContext(ctx, s.String())
 
@@ -689,6 +702,10 @@ func (r *roleResourceTable) CreateRoleResource(ctx context.Context, newResource 
 	s.VALUES("action", s.Param(newResource.Action))
 	s.VALUES("role_id", s.Param(newResource.RoleID))
 	s.VALUES("resource_id", s.Param(newResource.ResourceID))
+
+	if len(newResource.Rules) > 0 {
+		s.VALUES("rules", s.Param(newResource.Rules))
+	}
 
 	slog.DebugContext(ctx, s.String())
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
@@ -757,6 +774,7 @@ func (r *roleResourceTable) QueryRoleResources(ctx context.Context, selector Rol
 	s.SELECT("action")
 	s.SELECT("role_id")
 	s.SELECT("resource_id")
+	s.SELECT("rules")
 	s.FROM(roleResourceTableName)
 
 	if selector.ID != nil {
@@ -805,215 +823,29 @@ func (r *roleResourceTable) QueryRoleResources(ctx context.Context, selector Rol
 
 	defer queryResult.Close()
 	for queryResult.Next() {
+		var roleResourceRules *string
 		roleResource := RoleResource{}
 		if err = queryResult.Scan(
 			&roleResource.ID,
 			&roleResource.Action,
 			&roleResource.RoleID,
 			&roleResource.ResourceID,
+			&roleResourceRules,
 		); err != nil {
 			slog.ErrorContext(ctx, "QueryRoleResources failed", err)
 			return
 		}
+
+		if roleResourceRules != nil {
+			if err = json.Unmarshal([]byte(*roleResourceRules), &roleResource.Rules); err != nil {
+				slog.ErrorContext(ctx, "QueryUserResourceSummaries unmarshal rules failed", err)
+			}
+		}
+
 		result = append(result, &roleResource)
 	}
 	if err = queryResult.Err(); err != nil {
 		slog.ErrorContext(ctx, "QueryRoleResources failed", err)
-	}
-	return
-}
-
-type ResourceRule struct {
-	ID             *int64
-	Key            string
-	Value          string
-	RoleResourceID int64
-}
-
-const (
-	// 代表匹配任何 key
-	ResourceRuleKeyOfAny = "*"
-	// 代表匹配任何 value
-	ResourceRuleValueOfAny = "*"
-)
-
-type ResourceRuleSelector struct {
-	ID             *int64
-	Key            *string
-	RoleResourceID *int64
-}
-
-type resourceRuleTable struct {
-}
-
-func (t *resourceRuleTable) InitTable(ctx context.Context) error {
-	tx, err := Database.BeginTx(ctx, &sql.TxOptions{ReadOnly: false})
-	if err != nil {
-		return err
-	}
-
-	// 创建 schema
-	cs := sqls.CREATE_SCHEMA(permissionSchema).IF_NOT_EXISTS()
-	if _, err = tx.ExecContext(ctx, cs.String()); err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	// 创建 table
-	s := sqls.CREATE_TABLE(resourceRuleTableName).IF_NOT_EXISTS()
-	s.COLUMN("id serial PRIMARY KEY NOT NULL")
-	s.COLUMN("role_resource_id int NOT NULL")
-	s.COLUMN("key character varying(64) NOT NULL")
-	s.COLUMN("value character varying(128) NOT NULL")
-	s.OPTIONS("CONSTRAINT resource_rule_union_unique_keys UNIQUE (role_resource_id, key)")
-	slog.DebugContext(ctx, s.String())
-
-	if _, err = tx.ExecContext(ctx, s.String()); err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	if err := tx.Commit(); err != nil {
-		if rollbackErr := tx.Rollback(); rollbackErr != nil {
-			return errors.Join(err)
-		}
-		return err
-	}
-
-	return nil
-}
-
-func (r *resourceRuleTable) CreateResourceRule(ctx context.Context, newRule ResourceRule) (err error) {
-	s := sqls.INSERT_INTO(resourceRuleTableName)
-	s.VALUES("key", s.Param(newRule.Key))
-	s.VALUES("value", s.Param(newRule.Value))
-	s.VALUES("role_resource_id", s.Param(newRule.RoleResourceID))
-
-	slog.DebugContext(ctx, s.String())
-	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
-	if err != nil {
-		slog.ErrorContext(ctx, "CreateResourceRule failed", err)
-		return
-	}
-
-	return
-}
-
-func (r *resourceRuleTable) DeleteResourceRule(ctx context.Context, selector ResourceRuleSelector) (err error) {
-	s := sqls.DELETE_FROM(resourceRuleTableName)
-
-	if selector.ID != nil {
-		s.WHERE("id=" + s.Param(selector.ID))
-	}
-
-	if selector.Key != nil {
-		s.WHERE("key=" + s.Param(selector.Key))
-	}
-
-	if selector.RoleResourceID != nil {
-		s.WHERE("role_resource_id=" + s.Param(selector.RoleResourceID))
-	}
-
-	slog.DebugContext(ctx, s.String(), slog.Any("params", s.Params()))
-	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
-	if err != nil {
-		slog.ErrorContext(ctx, "DeleteResourceRule failed", err)
-	}
-
-	return
-}
-
-func (r *resourceRuleTable) CountResourceRules(ctx context.Context, selector ResourceRuleSelector) (result int64, err error) {
-	s := sqls.SELECT("COUNT(*) AS count").FROM(resourceRuleTableName)
-
-	if selector.ID != nil {
-		s.WHERE("id=" + s.Param(selector.ID))
-	}
-
-	if selector.Key != nil {
-		s.WHERE("key=" + s.Param(selector.Key))
-	}
-
-	if selector.RoleResourceID != nil {
-		s.WHERE("role_resource_id=" + s.Param(selector.RoleResourceID))
-	}
-
-	slog.DebugContext(ctx, s.String())
-	rowQuery := Database.QueryRowContext(ctx, s.String(), s.Params()...)
-	if err = rowQuery.Scan(&result); err != nil {
-		slog.ErrorContext(ctx, "CountResourceRules failed", err)
-	}
-
-	return
-}
-
-func (r *resourceRuleTable) QueryResourceRules(ctx context.Context, selector ResourceRuleSelector, pagination *Pagination, sort *Sort) (result []*ResourceRule, err error) {
-	s := sqls.SELECT("id")
-	s.SELECT("key")
-	s.SELECT("value")
-	s.SELECT("role_resource_id")
-	s.FROM(resourceRuleTableName)
-
-	if selector.ID != nil {
-		s.WHERE("id=" + s.Param(selector.ID))
-	}
-
-	if selector.Key != nil {
-		s.WHERE("key=" + s.Param(selector.Key))
-	}
-
-	if selector.RoleResourceID != nil {
-		s.WHERE("role_resource_id=" + s.Param(selector.RoleResourceID))
-	}
-
-	if pagination == nil {
-		pagination = &Pagination{}
-	}
-
-	if pagination.Limit == nil {
-		// 默认为 100，防止刷爆
-		defaultLimit := int64(100)
-		pagination.Limit = &defaultLimit
-	}
-
-	s.LIMIT(s.Param(pagination.Limit))
-
-	if pagination.Offset != nil {
-		s.OFFSET(s.Param(pagination.Offset))
-	}
-
-	if sort != nil {
-		var sortType = "ASC"
-		if sort.Type == SortDesc {
-			sortType = "DESC"
-		}
-
-		s.ORDER_BY(s.Param(sort.Key) + " " + sortType)
-	}
-
-	queryResult, err := Database.QueryContext(ctx, s.String(), s.Params()...)
-	if err != nil {
-		slog.ErrorContext(ctx, "QueryResourceRules failed", err)
-		return
-	}
-
-	defer queryResult.Close()
-	for queryResult.Next() {
-		roleResourceRule := ResourceRule{}
-		if err = queryResult.Scan(
-			&roleResourceRule.ID,
-			&roleResourceRule.Key,
-			&roleResourceRule.Value,
-			&roleResourceRule.RoleResourceID,
-		); err != nil {
-			slog.ErrorContext(ctx, "QueryResourceRules failed", err)
-			return
-		}
-		result = append(result, &roleResourceRule)
-	}
-	if err = queryResult.Err(); err != nil {
-		slog.ErrorContext(ctx, "QueryResourceRules failed", err)
-		return
 	}
 	return
 }
@@ -1498,13 +1330,11 @@ func (r *permission) QueryUserResourceSummaries(ctx context.Context, selector Us
 	s.SELECT("d.id AS resourceID")
 	s.SELECT("d.name AS resourceName")
 	s.SELECT("c.action AS action")
-	s.SELECT("e.key AS key")
-	s.SELECT("e.value AS value")
+	s.SELECT("c.rules AS rules")
 	s.FROM(fmt.Sprintf("%s AS a", userRoleTableName))
 	s.LEFT_OUTER_JOIN(fmt.Sprintf("%s AS b ON a.role_id=b.id", roleTableName))
 	s.LEFT_OUTER_JOIN(fmt.Sprintf("%s AS c ON b.id=c.role_id", roleResourceTableName))
 	s.LEFT_OUTER_JOIN(fmt.Sprintf("%s AS d ON c.resource_id=d.id", resourceTableName))
-	s.LEFT_OUTER_JOIN(fmt.Sprintf("%s AS e ON c.id=e.role_resource_id", resourceRuleTableName))
 
 	if selector.UserID != nil {
 		s.WHERE(fmt.Sprintf("a.user_id=%s", s.Param(selector.UserID)))
@@ -1527,64 +1357,29 @@ func (r *permission) QueryUserResourceSummaries(ctx context.Context, selector Us
 	// Close the result set once we are done.
 	defer queryResult.Close()
 
-	// Map to store the user resource summaries, keyed by the cache key.
-	userResourceSummaryMap := make(map[string]*UserResourcePermissionSummary)
-
 	// Iterate over the result set and populate the user resource summary map.
 	for queryResult.Next() {
-		cacheRule := struct {
-			ResourceID   int64
-			ResourceName string
-			Action       string
-			Key          *string
-			Value        *string
-		}{}
+		var roleResourceRules *string
+		cacheRule := &UserResourcePermissionSummary{}
 
 		// Scan the result set row into the cacheRule struct.
 		if err = queryResult.Scan(
 			&cacheRule.ResourceID,
 			&cacheRule.ResourceName,
 			&cacheRule.Action,
-			&cacheRule.Key,
-			&cacheRule.Value,
+			&roleResourceRules,
 		); err != nil {
 			slog.ErrorContext(ctx, "Failed to scan query result", err)
 			return nil, err
 		}
 
-		// Generate the cache key for the user resource summary.
-		cacheKey := fmt.Sprintf("%s-%s", cacheRule.Action, cacheRule.ResourceName)
-
-		// If the cache key doesn't exist in the map, create a new UserResourceSummary object.
-		if _, has := userResourceSummaryMap[cacheKey]; !has {
-			userResourceSummaryMap[cacheKey] = &UserResourcePermissionSummary{
-				ResourceID:   cacheRule.ResourceID,
-				ResourceName: cacheRule.ResourceName,
-				Action:       cacheRule.Action,
-				Rules:        []*UserResourcePermissionRule{},
+		if roleResourceRules != nil {
+			if err = json.Unmarshal([]byte(*roleResourceRules), &cacheRule.Rules); err != nil {
+				slog.ErrorContext(ctx, "QueryUserResourceSummaries unmarshal rules failed", err)
 			}
 		}
 
-		// Add the user resource rule to the user resource summary.
-		userResourceSummary := userResourceSummaryMap[cacheKey]
-		rule := &UserResourcePermissionRule{}
-
-		if cacheRule.Key != nil {
-			rule.Key = *cacheRule.Key
-		}
-
-		if cacheRule.Value != nil {
-			rule.Value = *cacheRule.Value
-		}
-
-		if cacheRule.Key != nil || cacheRule.Value != nil {
-			userResourceSummary.Rules = append(userResourceSummary.Rules, rule)
-		}
-	}
-
-	// Convert the user resource summary map to a list and return.
-	for _, data := range userResourceSummaryMap {
-		result = append(result, data)
+		result = append(result, cacheRule)
 	}
 
 	return

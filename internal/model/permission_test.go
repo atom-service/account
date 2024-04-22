@@ -4,6 +4,7 @@ import (
 	"context"
 	"math"
 	"math/rand"
+	"reflect"
 	"slices"
 	"testing"
 	"testing/quick"
@@ -431,6 +432,16 @@ func TestPermissionRoleResourceTable(t *testing.T) {
 	if err := quick.Check(func() bool {
 		testCreateParams := RoleResource{
 			ResourceID: rand.Int63n(math.MaxInt32),
+			Rules: []*RoleResourceRule{
+				{
+					Key:   helper.GenerateRandomString(12, nil),
+					Value: helper.GenerateRandomString(12, nil),
+				},
+				{
+					Key:   helper.GenerateRandomString(12, nil),
+					Value: helper.GenerateRandomString(12, nil),
+				},
+			},
 		}
 
 		randUseSeed := rand.Intn(4)
@@ -489,6 +500,11 @@ func TestPermissionRoleResourceTable(t *testing.T) {
 			return false
 		}
 
+		if (!reflect.DeepEqual(queryCreateResult[0].Rules, testCreateParams.Rules)) {
+			t.Errorf("Query result are incorrect: %v", queryCreateResult)
+			return false
+		}
+
 		// 最终的结果保存下来给后面的测试使用
 		testRoleResources = append(testRoleResources, queryCreateResult...)
 		return true
@@ -518,7 +534,7 @@ func TestPermissionRoleResourceTable(t *testing.T) {
 			return false
 		}
 
-		if expectedSize > 0 { // 最后一条不需要检查了，删光了
+		if expectedSize > 0 {
 			if queryPaginationResult[0].Action != testRoleResources[offsetInt].Action {
 				t.Errorf("Query result are incorrect: %v", queryPaginationResult)
 				return false
@@ -565,177 +581,6 @@ func TestPermissionRoleResourceTable(t *testing.T) {
 		}
 
 		countUpdateResult, err := roleResourceTable.CountRoleResources(context, roleResourceSelector)
-		if err != nil {
-			t.Errorf("Count failed: %v", err)
-			return
-		}
-
-		if countUpdateResult != 0 {
-			t.Errorf("Unexpected results after deleted: %v", err)
-			return
-		}
-	}
-}
-
-func TestPermissionRoleResourceRuleTable(t *testing.T) {
-	roleResourceRuleTable := &resourceRuleTable{}
-
-	context := context.TODO()
-
-	// 创建表
-	if err := roleResourceRuleTable.InitTable(context); err != nil {
-		t.Errorf("Create table failed: %v", err)
-		return
-	}
-
-	// 获取已初始化的数量，用于下方测试设置偏移
-	preInitedCount, err := roleResourceRuleTable.CountResourceRules(context, ResourceRuleSelector{})
-	if err != nil {
-		t.Errorf("Count failed: %v", err)
-		return
-	}
-
-	config := &quick.Config{
-		MaxCount: 100,
-	}
-
-	testRoleResourceRules := []*ResourceRule{}
-
-	// create test & check result
-	if err := quick.Check(func() bool {
-		testCreateParams := ResourceRule{
-			Key:            helper.GenerateRandomString(64, nil),
-			Value:          helper.GenerateRandomString(128, nil),
-			RoleResourceID: rand.Int63n(math.MaxInt32),
-		}
-
-		roleResourceRuleSelector := ResourceRuleSelector{
-			Key:            &testCreateParams.Key,
-			RoleResourceID: &testCreateParams.RoleResourceID,
-		}
-
-		if err := roleResourceRuleTable.CreateResourceRule(context, testCreateParams); err != nil {
-			t.Errorf("Create failed: %v", err)
-			return false
-		}
-
-		countResult, err := roleResourceRuleTable.CountResourceRules(context, ResourceRuleSelector{})
-		if err != nil {
-			t.Errorf("Count failed: %v", err)
-			return false
-		}
-
-		if countResult != int64(len(testRoleResourceRules)+1)+preInitedCount {
-			t.Errorf("Count result are incorrect: %v", err)
-			return false
-		}
-
-		queryCreateResult, err := roleResourceRuleTable.QueryResourceRules(context, roleResourceRuleSelector, nil, nil)
-		if err != nil {
-			t.Errorf("Query failed: %v", err)
-			return false
-		}
-
-		if len(queryCreateResult) != 1 {
-			t.Errorf("Query result length are incorrect: %v", queryCreateResult)
-			return false
-		}
-
-		if queryCreateResult[0].Key != testCreateParams.Key {
-			t.Errorf("Query result are incorrect: %v", queryCreateResult)
-			return false
-		}
-
-		if queryCreateResult[0].Value != testCreateParams.Value {
-			t.Errorf("Query result are incorrect: %v", queryCreateResult)
-			return false
-		}
-
-		if queryCreateResult[0].RoleResourceID != testCreateParams.RoleResourceID {
-			t.Errorf("Query result are incorrect: %v", queryCreateResult)
-			return false
-		}
-
-		// 最终的结果保存下来给后面的测试使用
-		testRoleResourceRules = append(testRoleResourceRules, queryCreateResult...)
-		return true
-	}, config); err != nil {
-		t.Errorf("Test failed: %v", err)
-	}
-
-	// pagination test & check result
-	if err := quick.Check(func() bool {
-		var limitInt = rand.Intn(config.MaxCount)
-		var offsetInt = rand.Intn(config.MaxCount)
-		var offsetUint64 = int64(offsetInt) + preInitedCount
-		var limitUint64 = int64(limitInt)
-
-		queryPaginationResult, err := roleResourceRuleTable.QueryResourceRules(context, ResourceRuleSelector{}, &Pagination{
-			Offset: &offsetUint64,
-			Limit:  &limitUint64,
-		}, nil)
-		if err != nil {
-			t.Errorf("Query failed: %v", err)
-			return false
-		}
-
-		expectedSize := slices.Min[[]int]([]int{config.MaxCount - offsetInt, limitInt})
-		if len(queryPaginationResult) != expectedSize {
-			t.Errorf("Query result length are incorrect: %v", queryPaginationResult)
-			return false
-		}
-
-		if expectedSize > 0 { // 最后一条不需要检查了，删光了
-			if queryPaginationResult[0].Key != testRoleResourceRules[offsetInt].Key {
-				t.Errorf("Query result are incorrect: %v", queryPaginationResult)
-				return false
-			}
-			if queryPaginationResult[0].Value != testRoleResourceRules[offsetInt].Value {
-				t.Errorf("Query result are incorrect: %v", queryPaginationResult)
-				return false
-			}
-			if queryPaginationResult[0].RoleResourceID != testRoleResourceRules[offsetInt].RoleResourceID {
-				t.Errorf("Query result are incorrect: %v", queryPaginationResult)
-				return false
-			}
-		}
-
-		return true
-	}, config); err != nil {
-		t.Errorf("Test failed: %v", err)
-	}
-
-	// delete test & check result
-	for _, testSecret := range testRoleResourceRules {
-		roleResourceRuleSelector := ResourceRuleSelector{}
-		randUseSeed := rand.Intn(2)
-		if randUseSeed == 0 {
-			roleResourceRuleSelector.ID = testSecret.ID
-		}
-
-		if randUseSeed == 1 {
-			roleResourceRuleSelector.Key = &testSecret.Key
-			roleResourceRuleSelector.RoleResourceID = &testSecret.RoleResourceID
-		}
-
-		err := roleResourceRuleTable.DeleteResourceRule(context, roleResourceRuleSelector)
-		if err != nil {
-			t.Errorf("Delete failed: %v", err)
-			return
-		}
-
-		queryDeletedResult, err := roleResourceRuleTable.QueryResourceRules(context, roleResourceRuleSelector, nil, nil)
-		if err != nil {
-			t.Errorf("Query failed: %v", err)
-			return
-		}
-
-		if len(queryDeletedResult) != 0 {
-			t.Errorf("Unexpected results after deleted: %v", queryDeletedResult)
-			return
-		}
-
-		countUpdateResult, err := roleResourceRuleTable.CountResourceRules(context, roleResourceRuleSelector)
 		if err != nil {
 			t.Errorf("Count failed: %v", err)
 			return

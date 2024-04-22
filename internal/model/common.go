@@ -37,6 +37,7 @@ func InitDB(ctx context.Context) {
 }
 
 func Init(ctx context.Context) error {
+	// slog.SetLogLoggerLevel(slog.LevelDebug)
 	InitDB(ctx)
 
 	// 先初始化用户表
@@ -55,9 +56,6 @@ func Init(ctx context.Context) error {
 		return err
 	}
 	if err := RoleResourceTable.InitTable(ctx); err != nil {
-		return err
-	}
-	if err := RoleResourceRuleTable.InitTable(ctx); err != nil {
 		return err
 	}
 

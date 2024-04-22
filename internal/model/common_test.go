@@ -13,7 +13,6 @@ func dropTables(ctx context.Context) (err error) {
 		roleTableName,
 		userRoleTableName,
 		resourceTableName,
-		resourceRuleTableName,
 		roleResourceTableName,
 		userLabelTableName,
 		userSettingTableName,

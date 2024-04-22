@@ -25,7 +25,7 @@ type testServer struct {
 func (t *testServer) CreateClientConn(token string) *grpc.ClientConn {
 	authCredentials := grpc.WithPerRPCCredentials(&auth.AuthWithTokenCredentials{Token: token})
 	nonSafeCredentials := grpc.WithTransportCredentials(insecure.NewCredentials())
-	conn, err := grpc.Dial(t.address, authCredentials, nonSafeCredentials)
+	conn, err := grpc.NewClient(t.address, authCredentials, nonSafeCredentials)
 	if err != nil {
 		panic(err)
 	}
