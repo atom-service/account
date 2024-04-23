@@ -119,7 +119,7 @@ func TestPermissionServer(t *testing.T) {
 			return false
 		}
 
-		resourceList = append(resourceList, queryResponse.Data.Resources[0])
+		resourceList = append(resourceList, queryUpdatedResponse.Data.Resources[0])
 		return true
 	}, config); err != nil {
 		t.Errorf("Test failed: %v", err)
@@ -127,18 +127,17 @@ func TestPermissionServer(t *testing.T) {
 	}
 
 	roleList := []*proto.Role{}
-	// create role
-	if err := quick.Check(func() bool {
+	for _, resource := range resourceList {
 		name := helper.GenerateRandomString(64, nil)
 		description := helper.GenerateRandomString(64, nil)
-		createResponse, err := permissionClient.CreateRole(context, &proto.CreateRoleRequest{
+		testCreateRequest := &proto.CreateRoleRequest{
 			Name:        name,
 			Description: description,
 			Resources: []*proto.RoleResource{
 				{
-					ResourceID: resourceList[0].ID,
-					ResourceName: resourceList[0].Name,
-					Action:     proto.ResourceAction_Insert,
+					ResourceID:   resource.ID,
+					ResourceName: resource.Name,
+					Action:       proto.ResourceAction_Insert,
 					Rules: []*proto.RoleResourceRule{
 						{
 							Key:   "TEST_CREATE",
@@ -147,14 +146,16 @@ func TestPermissionServer(t *testing.T) {
 					},
 				},
 			},
-		})
+		}
+
+		createResponse, err := permissionClient.CreateRole(context, testCreateRequest)
 		if err != nil {
 			t.Errorf("CreateRole failed: %v", err)
-			return false
+			return
 		}
 		if createResponse.State != proto.State_SUCCESS {
 			t.Errorf("CreateRole failed: %v", err)
-			return false
+			return
 		}
 
 		selector := proto.RoleSelector{Name: &name}
@@ -163,45 +164,44 @@ func TestPermissionServer(t *testing.T) {
 		})
 		if err != nil {
 			t.Errorf("Unexpected results after created: %v", err)
-			return false
+			return
 		}
 		if queryResponse.State != proto.State_SUCCESS {
 			t.Errorf("Unexpected results after created")
-			return false
+			return
 		}
 		if queryResponse.Data.Total != 1 {
 			t.Errorf("Unexpected results after created")
-			return false
+			return
 		}
 
-		if queryResponse.Data.Roles[0].Name != name {
-			t.Errorf("Unexpected results after created")
-			return false
-		}
+		for index, resultResource := range queryResponse.Data.Roles[0].Resources {
+			expectedResource := testCreateRequest.Resources[index]
+			if resultResource.ResourceName != expectedResource.ResourceName {
+				t.Errorf("Unexpected results after created")
+				return
+			}
+			if resultResource.ResourceID != expectedResource.ResourceID {
+				t.Errorf("Unexpected results after created")
+				return
+			}
 
-		if (queryResponse.Data.Roles[0].Resources == nil) {
-			t.Errorf("Unexpected results after created")
-			return false
-		}
+			if len(resultResource.Rules) != len(expectedResource.Rules) {
+				t.Errorf("Unexpected results after created")
+				return
+			}
+			for ruleIndex, resultRule := range resultResource.Rules {
+				expectedRule := expectedResource.Rules[ruleIndex]
+				if resultRule.Key != expectedRule.Key {
+					t.Errorf("Unexpected results after created")
+					return
+				}
+				if resultRule.Value != expectedRule.Value {
+					t.Errorf("Unexpected results after created")
+					return
+				}
 
-		if (queryResponse.Data.Roles[0].Resources[0] == nil) {
-			t.Errorf("Unexpected results after created")
-			return false
-		}
-
-		if (len(queryResponse.Data.Roles[0].Resources[0].Rules) == 0) {
-			t.Errorf("Unexpected results after created")
-			return false
-		}
-
-		if (queryResponse.Data.Roles[0].Resources[0].Rules[0].Key == "TEST_CREATE") {
-			t.Errorf("Unexpected results after created")
-			return false
-		}
-
-		if (queryResponse.Data.Roles[0].Resources[0].Rules[0].Value == "TEST_CREATE") {
-			t.Errorf("Unexpected results after created")
-			return false
+			}
 		}
 
 		newName := helper.GenerateRandomString(64, nil)
@@ -213,9 +213,9 @@ func TestPermissionServer(t *testing.T) {
 				Description: &newDescription,
 				Resources: []*proto.RoleResource{
 					{
-						ResourceID: resourceList[0].ID,
+						ResourceID:   resourceList[0].ID,
 						ResourceName: resourceList[0].Name,
-						Action:     proto.ResourceAction_Insert,
+						Action:       proto.ResourceAction_Insert,
 						Rules: []*proto.RoleResourceRule{
 							{
 								Key:   "TEST_UPDATE",
@@ -228,11 +228,11 @@ func TestPermissionServer(t *testing.T) {
 		})
 		if err != nil {
 			t.Errorf("Unexpected results on update: %v", err)
-			return false
+			return
 		}
 		if updateResponse.State != proto.State_SUCCESS {
 			t.Errorf("Unexpected results on update")
-			return false
+			return
 		}
 
 		queryUpdatedResponse, err := permissionClient.QueryRoles(context, &proto.QueryRolesRequest{
@@ -240,26 +240,23 @@ func TestPermissionServer(t *testing.T) {
 		})
 		if err != nil {
 			t.Errorf("Unexpected results after updated: %v", err)
-			return false
+			return
 		}
 		if queryUpdatedResponse.State != proto.State_SUCCESS {
 			t.Errorf("Unexpected results after updated")
-			return false
+			return
 		}
 		if queryUpdatedResponse.Data.Total != 1 {
 			t.Errorf("Unexpected results after updated")
-			return false
+			return
 		}
 
 		if queryUpdatedResponse.Data.Roles[0].Name != newName {
 			t.Errorf("Unexpected results after updated")
-			return false
+			return
 		}
 
 		roleList = append(roleList, queryResponse.Data.Roles[0])
-		return true
-	}, config); err != nil {
-		t.Errorf("Test failed: %v", err)
 	}
 
 	// test bound role into user

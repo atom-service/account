@@ -1324,6 +1324,7 @@ func (r *permission) InitDefaultPermissions(ctx context.Context) (err error) {
 	return nil
 }
 
+// 这是一个高频调用的方法
 func (r *permission) QueryUserResourceSummaries(ctx context.Context, selector UserResourceSummarySelector) (result []*UserResourcePermissionSummary, err error) {
 	// Build the SQL query to retrieve user resource summaries from the database.
 	s := sqls.SELECT()

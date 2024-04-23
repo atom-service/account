@@ -135,7 +135,7 @@ func (s *permissionServer) QueryRoles(ctx context.Context, request *proto.QueryR
 	var selector model.RoleSelector
 	selector.LoadProto(request.Selector)
 
-	query, err := model.RoleTable.QueryRoles(ctx, selector, &pagination, &sort)
+	roles, err := model.RoleTable.QueryRoles(ctx, selector, &pagination, &sort)
 	if err != nil {
 		response.State = proto.State_FAILURE
 		slog.ErrorContext(ctx, "", err)
@@ -152,27 +152,39 @@ func (s *permissionServer) QueryRoles(ctx context.Context, request *proto.QueryR
 	// 循环查询 role 绑定的 resource
 	var mu sync.Mutex
 	var wg sync.WaitGroup
-	for _, role := range query {
+	for _, role := range roles {
 		wg.Add(1)
 		go func(role *model.Role) {
 			defer wg.Done()
-			localResponse, localErr := model.Permission.QueryUserResourceSummaries(ctx, model.UserResourceSummarySelector{
+			roleResourceResponse, localErr := model.RoleResourceTable.QueryRoleResources(ctx, model.RoleResourceSelector{
 				RoleID: role.ID,
-			})
+			}, nil, nil)
 			if localErr != nil {
-				slog.ErrorContext(ctx, "", err)
 				mu.Lock()
 				err = localErr
 				mu.Unlock()
+				slog.ErrorContext(ctx, "", err)
 				return
 			}
 
 			roleModel := role.ToProto()
-			for _, item := range localResponse {
+			for _, item := range roleResourceResponse {
+				resourceResponse, localErr := model.ResourceTable.QueryResources(ctx, model.ResourceSelector{
+					ID: &item.ResourceID,
+				}, nil, nil)
+				if localErr != nil {
+					mu.Lock()
+					err = localErr
+					mu.Unlock()
+					slog.ErrorContext(ctx, "", err)
+					return
+				}
+
 				roleResource := &proto.RoleResource{
-					ResourceID: item.ResourceID,
-					Action:     model.ActionToProto(item.Action),
-					Rules:      make([]*proto.RoleResourceRule, len(item.Rules)),
+					ResourceID:   item.ResourceID,
+					ResourceName: *resourceResponse[0].Name,
+					Action:       model.ActionToProto(item.Action),
+					Rules:        []*proto.RoleResourceRule{},
 				}
 
 				for _, rule := range item.Rules {
@@ -262,15 +274,6 @@ func (s *permissionServer) UpdateRole(ctx context.Context, request *proto.Update
 
 	// 先无脑删除
 	for _, roleResource := range queryRoleResourceResult {
-		// 先删除 rules
-		err = model.RoleResourceRuleTable.DeleteResourceRule(ctx, model.ResourceRuleSelector{RoleResourceID: roleResource.ID})
-		if err != nil {
-			response.State = proto.State_FAILURE
-			slog.ErrorContext(ctx, "", err)
-			return
-		}
-
-		// 再删除 RoleResource
 		err = model.RoleResourceTable.DeleteRoleResource(ctx, model.RoleResourceSelector{
 			Action:     &roleResource.Action,
 			RoleID:     &roleResource.RoleID,
@@ -290,37 +293,24 @@ func (s *permissionServer) UpdateRole(ctx context.Context, request *proto.Update
 		selector.RoleID = queryRoleResult[0].ID
 		selector.ResourceID = &resource.ResourceID
 
+		rules := []*model.RoleResourceRule{}
+		for _, ruleProto := range resource.Rules {
+			rules = append(rules, &model.RoleResourceRule{
+				Key:   ruleProto.Key,
+				Value: ruleProto.Value,
+			})
+		}
+
 		err = model.RoleResourceTable.CreateRoleResource(ctx, model.RoleResource{
 			RoleID:     *queryRoleResult[0].ID,
 			ResourceID: resource.ResourceID,
 			Action:     *selector.Action,
+			Rules:      rules,
 		})
 		if err != nil {
 			response.State = proto.State_FAILURE
 			slog.ErrorContext(ctx, "", err)
 			return
-		}
-
-		queryResult, err := model.RoleResourceTable.QueryRoleResources(ctx, selector, nil, nil)
-		if err != nil {
-			response.State = proto.State_FAILURE
-			slog.ErrorContext(ctx, "", err)
-			return response, err
-		}
-
-		if len(resource.Rules) > 0 {
-			for _, rule := range resource.Rules {
-				err = model.RoleResourceRuleTable.CreateResourceRule(ctx, model.ResourceRule{
-					RoleResourceID: *queryResult[0].ID,
-					Key:            rule.Key,
-					Value:          rule.Value,
-				})
-				if err != nil {
-					response.State = proto.State_FAILURE
-					slog.ErrorContext(ctx, "", err)
-					return response, err
-				}
-			}
 		}
 	}
 
@@ -367,23 +357,6 @@ func (s *permissionServer) DeleteRole(ctx context.Context, request *proto.Delete
 	// 删除与之相关的所有 RoleResource 以及 Rules
 	roleResourceSelector := model.RoleResourceSelector{}
 	roleResourceSelector.RoleID = queryRoleResult[0].ID
-	queryRoleResourceResult, err := model.RoleResourceTable.QueryRoleResources(ctx, roleResourceSelector, nil, nil)
-	if err != nil {
-		response.State = proto.State_FAILURE
-		slog.ErrorContext(ctx, "", err)
-		return
-	}
-
-	// 删除与之相关的所有 ResourceRule
-	for _, roleResource := range queryRoleResourceResult {
-		err = model.RoleResourceRuleTable.DeleteResourceRule(ctx, model.ResourceRuleSelector{RoleResourceID: roleResource.ID})
-		if err != nil {
-			response.State = proto.State_FAILURE
-			slog.ErrorContext(ctx, "", err)
-			return
-		}
-	}
-
 	err = model.RoleResourceTable.DeleteRoleResource(ctx, roleResourceSelector)
 	if err != nil {
 		response.State = proto.State_FAILURE
