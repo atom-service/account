@@ -16,7 +16,7 @@ services:
     command: sleep infinity # 禁止容器自动关闭
     environment:
       PORT: :80
-      POSTGRES_URI: postgresql://postgres:password@postgresql
+      POSTGRES_URI: postgresql://postgres:password@postgresql/account
     networks:
       - dev-net
 
