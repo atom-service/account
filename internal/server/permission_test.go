@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"reflect"
 	"slices"
 	"testing"
 	"testing/quick"
@@ -206,7 +207,8 @@ func TestPermissionServer(t *testing.T) {
 
 		newName := helper.GenerateRandomString(64, nil)
 		newDescription := helper.GenerateRandomString(64, nil)
-		updateResponse, err := permissionClient.UpdateRole(context, &proto.UpdateRoleRequest{
+
+		updateRoleRequest := &proto.UpdateRoleRequest{
 			Selector: &selector,
 			Data: &proto.UpdateRoleRequest_UpdateData{
 				Name:        &newName,
@@ -225,7 +227,9 @@ func TestPermissionServer(t *testing.T) {
 					},
 				},
 			},
-		})
+		}
+
+		updateResponse, err := permissionClient.UpdateRole(context, updateRoleRequest)
 		if err != nil {
 			t.Errorf("Unexpected results on update: %v", err)
 			return
@@ -256,7 +260,7 @@ func TestPermissionServer(t *testing.T) {
 			return
 		}
 
-		roleList = append(roleList, queryResponse.Data.Roles[0])
+		roleList = append(roleList, queryUpdatedResponse.Data.Roles[0])
 	}
 
 	// test bound role into user
@@ -298,12 +302,7 @@ func TestPermissionServer(t *testing.T) {
 			fined := slices.ContainsFunc[[]*proto.RoleResource](summaryResponse.Data, func(summary *proto.RoleResource) bool {
 				// 如果 resource 和 action 对的上就进一步比对 rules
 				if summary.ResourceID == resources.ResourceID && summary.Action == resources.Action {
-					same := slices.EqualFunc[[]*proto.RoleResourceRule, []*proto.RoleResourceRule](summary.Rules, resources.Rules, func(a, b *proto.RoleResourceRule) bool {
-						return a.Key == b.Key && a.Value == b.Value
-					})
-
-					if !same {
-						// 不匹配有问题！
+					if !reflect.DeepEqual(summary.Rules, resources.Rules) {
 						t.Errorf("SummaryForUser failed: %v", err)
 						return false
 					}
