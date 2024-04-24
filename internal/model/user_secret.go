@@ -301,7 +301,7 @@ func (r *secretTable) CountSecrets(ctx context.Context, selector SecretSelector)
 		s.WHERE("type=" + s.Param(selector.Type))
 	}
 
-	s.WHERE("(deleted_time<CURRENT_TIMESTAMP OR deleted_time IS NULL)")
+	s.WHERE("(deleted_time>=CURRENT_TIMESTAMP OR deleted_time IS NULL)")
 
 	slog.DebugContext(ctx, s.String(), slog.Any("params", s.Params()))
 	rowQuery := Database.QueryRowContext(ctx, s.String(), s.Params()...)
@@ -336,7 +336,7 @@ func (r *secretTable) QuerySecrets(ctx context.Context, selector SecretSelector,
 		s.WHERE("type=" + s.Param(selector.Type))
 	}
 
-	s.WHERE("(deleted_time<CURRENT_TIMESTAMP OR deleted_time IS NULL)")
+	s.WHERE("(deleted_time>=CURRENT_TIMESTAMP OR deleted_time IS NULL)")
 
 	if pagination == nil {
 		pagination = &Pagination{}

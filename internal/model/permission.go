@@ -193,6 +193,7 @@ func (r *roleTable) DeleteRole(ctx context.Context, selector RoleSelector) (err 
 	if selector.ID != nil {
 		s.WHERE("id=" + s.Param(selector.ID))
 	}
+
 	if selector.Name != nil {
 		s.WHERE("name=" + s.Param(selector.Name))
 	}
@@ -218,7 +219,7 @@ func (r *roleTable) CountRoles(ctx context.Context, selector RoleSelector) (resu
 		s.WHERE("name=" + s.Param(selector.Name))
 	}
 
-	s.WHERE("(deleted_time<CURRENT_TIMESTAMP OR deleted_time IS NULL)")
+	s.WHERE("(deleted_time>=CURRENT_TIMESTAMP OR deleted_time IS NULL)")
 
 	slog.DebugContext(ctx, s.String())
 	rowQuery := Database.QueryRowContext(ctx, s.String(), s.Params()...)
@@ -246,7 +247,7 @@ func (r *roleTable) QueryRoles(ctx context.Context, selector RoleSelector, pagin
 		s.WHERE("name=" + s.Param(selector.Name))
 	}
 
-	s.WHERE("(deleted_time<CURRENT_TIMESTAMP OR deleted_time IS NULL)")
+	s.WHERE("(deleted_time>=CURRENT_TIMESTAMP OR deleted_time IS NULL)")
 
 	if pagination == nil {
 		pagination = &Pagination{}
@@ -473,7 +474,7 @@ func (r *resourceTable) CountResources(ctx context.Context, selector ResourceSel
 		s.WHERE("name=" + s.Param(selector.Name))
 	}
 
-	s.WHERE("(deleted_time<CURRENT_TIMESTAMP OR deleted_time IS NULL)")
+	s.WHERE("(deleted_time>=CURRENT_TIMESTAMP OR deleted_time IS NULL)")
 
 	slog.DebugContext(ctx, s.String())
 	rowQuery := Database.QueryRowContext(ctx, s.String(), s.Params()...)
@@ -500,7 +501,7 @@ func (r *resourceTable) QueryResources(ctx context.Context, selector ResourceSel
 		s.WHERE("name=" + s.Param(selector.Name))
 	}
 
-	s.WHERE("(deleted_time<CURRENT_TIMESTAMP OR deleted_time IS NULL)")
+	s.WHERE("(deleted_time>=CURRENT_TIMESTAMP OR deleted_time IS NULL)")
 
 	if pagination == nil {
 		pagination = &Pagination{}

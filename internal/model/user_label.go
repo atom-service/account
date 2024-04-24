@@ -181,7 +181,7 @@ func (r *labelTable) CountLabels(ctx context.Context, selector LabelSelector) (r
 		s.WHERE("user_id=" + s.Param(selector.UserID))
 	}
 
-	s.WHERE("(deleted_time<CURRENT_TIMESTAMP OR deleted_time IS NULL)")
+	s.WHERE("(deleted_time>=CURRENT_TIMESTAMP OR deleted_time IS NULL)")
 
 	slog.DebugContext(ctx, s.String())
 	rowQuery := Database.QueryRowContext(ctx, s.String(), s.Params()...)
@@ -216,7 +216,7 @@ func (r *labelTable) QueryLabels(ctx context.Context, selector LabelSelector, pa
 		s.WHERE("user_id=" + s.Param(selector.UserID))
 	}
 
-	s.WHERE("(deleted_time<CURRENT_TIMESTAMP OR deleted_time IS NULL)")
+	s.WHERE("(deleted_time>=CURRENT_TIMESTAMP OR deleted_time IS NULL)")
 
 	if pagination == nil {
 		pagination = &Pagination{}

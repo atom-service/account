@@ -3,11 +3,11 @@ module github.com/atom-service/account
 go 1.21.0
 
 require (
-	github.com/yinxulai/goconf v0.0.2
+	github.com/yinxulai/goconf v0.0.4
 	google.golang.org/grpc v1.63.0
 	github.com/jackc/pgx/v5 v5.5.5
 	google.golang.org/protobuf v1.33.0
-	github.com/yinxulai/sqls v0.0.0-20240406131616-61fdac9a1ad8
+	github.com/yinxulai/sqls v1.0.3
 )
 
 require (

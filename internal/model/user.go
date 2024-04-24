@@ -302,7 +302,7 @@ func (r *userTable) CountUsers(ctx context.Context, selector UserSelector) (resu
 		s.WHERE("username=" + s.Param(selector.Username))
 	}
 
-	s.WHERE("(deleted_time<CURRENT_TIMESTAMP OR deleted_time IS NULL)")
+	s.WHERE("(deleted_time>=CURRENT_TIMESTAMP OR deleted_time IS NULL)")
 
 	slog.DebugContext(ctx, s.String(), slog.Any("params", s.Params()))
 	rowQuery := Database.QueryRowContext(ctx, s.String(), s.Params()...)
@@ -332,7 +332,7 @@ func (r *userTable) QueryUsers(ctx context.Context, selector UserSelector, pagin
 		s.WHERE("username=" + s.Param(selector.Username))
 	}
 
-	s.WHERE("(deleted_time<CURRENT_TIMESTAMP OR deleted_time IS NULL)")
+	s.WHERE("(deleted_time>=CURRENT_TIMESTAMP OR deleted_time IS NULL)")
 
 	if pagination == nil {
 		pagination = &Pagination{}
