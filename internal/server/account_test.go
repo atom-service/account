@@ -188,7 +188,7 @@ func TestAccountServer(t *testing.T) {
 			return
 		}
 
-		deleteResponse, err := accountClientWithUserAuth.DeleteSetting(context, &proto.DeleteSettingRequest{
+		deleteResponse, err := accountClientWithUserAuth.DeleteSettings(context, &proto.DeleteSettingsRequest{
 			Selector: &proto.SettingSelector{
 				Key: &queryResponse.Data.Settings[0].Key,
 			},
@@ -281,7 +281,7 @@ func TestAccountServer(t *testing.T) {
 			return
 		}
 
-		deleteResponse, err := accountClientWithUserAuth.DeleteLabel(context, &proto.DeleteLabelRequest{
+		deleteResponse, err := accountClientWithUserAuth.DeleteLabels(context, &proto.DeleteLabelsRequest{
 			Selector: &proto.LabelSelector{
 				Key: &newTestKey,
 			},
@@ -326,7 +326,7 @@ func TestAccountServer(t *testing.T) {
 			return
 		}
 
-		deleteResponse, err := accountClientWithUserAuth.DeleteSecret(context, &proto.DeleteSecreteRequest{
+		deleteResponse, err := accountClientWithUserAuth.DeleteSecrets(context, &proto.DeleteSecretsRequest{
 			Selector: &proto.SecretSelector{
 				UserID: &user.UserID,
 				Key:    &queryResponse.Data.Secrets[0].Key,
@@ -360,7 +360,7 @@ func TestAccountServer(t *testing.T) {
 			return
 		}
 
-		deleteSecretResponse2, err := accountClientWithUserAuth.DeleteSecret(context, &proto.DeleteSecreteRequest{
+		deleteSecretResponse2, err := accountClientWithUserAuth.DeleteSecrets(context, &proto.DeleteSecretsRequest{
 			Selector: &proto.SecretSelector{
 				UserID: &user.UserID,
 				Key:    &queryResponse.Data.Secrets[0].Key,

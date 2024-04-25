@@ -18,14 +18,8 @@ github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UV
 github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/stretchr/testify v1.9.0 h1:HtqpIVDClZ4nwg75+f6Lvsy/wHu+3BoSGCbBAcpTsTg=
 github.com/stretchr/testify v1.9.0/go.mod h1:r2ic/lqez/lEtzL7wO/rwa5dbSLXVDPFyf8C91i36aY=
-github.com/yinxulai/goconf v0.0.2 h1:pUAlFXGxBkc/yfDzebzv7qnDj5IQnTYWhen8/7LMglU=
-github.com/yinxulai/goconf v0.0.2/go.mod h1:DjDE6PnoBtg/gwe3XuAOSJxzVJ7DcaDWK5H8RWMD2yg=
-github.com/yinxulai/goconf v0.0.3 h1:bjJIVbdiB6517yLTprLH4FgrXzYoj6rI0OMf0mXBU6Q=
-github.com/yinxulai/goconf v0.0.3/go.mod h1:i/I0p+soaNuHbwpABP2bkTtUQih5MFPH813lYsoFoFY=
 github.com/yinxulai/goconf v0.0.4 h1:qjVFq6iZ1zG6iTSRvmcmM9hPLcRSgunfFvo1bJ5xNcU=
 github.com/yinxulai/goconf v0.0.4/go.mod h1:zonqrO4YvfPuzEaFtU64PmgDn9ZHFlIbHVzNEHFMHls=
-github.com/yinxulai/sqls v0.0.0-20240406131616-61fdac9a1ad8 h1:urOFjIuxnR3ORudk+Pg+iFzOwDIdWTPNxH4Yoq5eNas=
-github.com/yinxulai/sqls v0.0.0-20240406131616-61fdac9a1ad8/go.mod h1:XSn/npeAtmerIcf2DGIq4hfgE+ddr8MwBpcK5wW000g=
 github.com/yinxulai/sqls v1.0.3 h1:2Gvgc7PLkmIJchqBP6PRIQMLFGzFbB/LtloHq41Fidw=
 github.com/yinxulai/sqls v1.0.3/go.mod h1:XSn/npeAtmerIcf2DGIq4hfgE+ddr8MwBpcK5wW000g=
 golang.org/x/crypto v0.22.0 h1:g1v0xeRhjcugydODzvb3mEM9SQ0HGp9s/nh3COQ/C30=

@@ -116,11 +116,11 @@ message DisableSecretResponse {
   string Code = 2;
 }
 
-message DeleteSecretseRequest {
+message DeleteSecretsRequest {
   SecretSelector Selector = 1;
 }
 
-message DeleteSecretseResponse {
+message DeleteSecretsResponse {
   State State = 1;
   string Code = 2;
 }
@@ -275,7 +275,7 @@ service AccountService {
   rpc CreateSecret(CreateSecretRequest)returns(CreateSecretResponse){}
   rpc QuerySecrets(QuerySecretsRequest)returns(QuerySecretsResponse){}
   rpc DisableSecret(DisableSecretRequest)returns(DisableSecretResponse){}
-  rpc DeleteSecrets(DeleteSecretseRequest)returns(DeleteSecretseResponse){}
+  rpc DeleteSecrets(DeleteSecretsRequest)returns(DeleteSecretsResponse){}
 
   // 标签系统用于保存一些用户状态之类的数据（侧重于用户不直接可见可改）
   rpc UpsertLabel(UpsertLabelRequest)returns(UpsertLabelResponse){}

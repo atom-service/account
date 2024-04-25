@@ -375,7 +375,7 @@ func TestPermissionServer(t *testing.T) {
 	// test remove resource
 	for _, resource := range resourceList {
 		selector := proto.ResourceSelector{ID: &resource.ID}
-		removeResponse, err := permissionClient.DeleteResource(context, &proto.DeleteResourceRequest{
+		removeResponse, err := permissionClient.DeleteResources(context, &proto.DeleteResourcesRequest{
 			Selector: &selector,
 		})
 		if err != nil {

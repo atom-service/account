@@ -471,8 +471,8 @@ func (s *permissionServer) QueryResources(ctx context.Context, request *proto.Qu
 	return
 }
 
-func (s *permissionServer) DeleteResource(ctx context.Context, request *proto.DeleteResourceRequest) (response *proto.DeleteResourceResponse, err error) {
-	response = &proto.DeleteResourceResponse{}
+func (s *permissionServer) DeleteResources(ctx context.Context, request *proto.DeleteResourcesRequest) (response *proto.DeleteResourcesResponse, err error) {
+	response = &proto.DeleteResourcesResponse{}
 
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
 		return permission.ResourceName == "permission.resource" && permission.Action == model.ActionDelete

@@ -438,8 +438,8 @@ func (s *accountServer) DisableSecret(ctx context.Context, request *proto.Disabl
 	return
 }
 
-func (s *accountServer) DeleteSecret(ctx context.Context, request *proto.DeleteSecreteRequest) (response *proto.DeleteSecreteResponse, err error) {
-	response = &proto.DeleteSecreteResponse{}
+func (s *accountServer) DeleteSecrets(ctx context.Context, request *proto.DeleteSecretsRequest) (response *proto.DeleteSecretsResponse, err error) {
+	response = &proto.DeleteSecretsResponse{}
 
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
 		matchRules := []model.UserResourcePermissionRule{}
@@ -685,8 +685,8 @@ func (s *accountServer) QueryLabels(ctx context.Context, request *proto.QueryLab
 	return
 }
 
-func (s *accountServer) DeleteLabel(ctx context.Context, request *proto.DeleteLabelRequest) (response *proto.DeleteLabelResponse, err error) {
-	response = &proto.DeleteLabelResponse{}
+func (s *accountServer) DeleteLabels(ctx context.Context, request *proto.DeleteLabelsRequest) (response *proto.DeleteLabelsResponse, err error) {
+	response = &proto.DeleteLabelsResponse{}
 
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
 		matchRules := []model.UserResourcePermissionRule{}
@@ -847,8 +847,8 @@ func (s *accountServer) UpdateSetting(ctx context.Context, request *proto.Update
 	return
 }
 
-func (s *accountServer) DeleteSetting(ctx context.Context, request *proto.DeleteSettingRequest) (response *proto.DeleteSettingResponse, err error) {
-	response = &proto.DeleteSettingResponse{}
+func (s *accountServer) DeleteSettings(ctx context.Context, request *proto.DeleteSettingsRequest) (response *proto.DeleteSettingsResponse, err error) {
+	response = &proto.DeleteSettingsResponse{}
 
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
 		matchRules := []model.UserResourcePermissionRule{}
