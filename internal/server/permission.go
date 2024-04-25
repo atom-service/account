@@ -21,7 +21,7 @@ func (s *permissionServer) CreateRole(ctx context.Context, request *proto.Create
 	response = &proto.CreateRoleResponse{}
 
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
-		return permission.ResourceName == "permission.role" && permission.Action == model.ActionInsert
+		return permission.MatchActions(model.PermissionRoleResourceName, model.ActionInsert)
 	}); !pass {
 		response.State = proto.State_NO_PERMISSION
 		return
@@ -122,7 +122,7 @@ func (s *permissionServer) QueryRoles(ctx context.Context, request *proto.QueryR
 	response.Data = &proto.QueryRolesResponse_DataType{}
 
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
-		return permission.ResourceName == "permission.role" && permission.Action == model.ActionQuery
+		return permission.MatchActions(model.PermissionRoleResourceName, model.ActionQuery)
 	}); !pass {
 		response.State = proto.State_NO_PERMISSION
 		return
@@ -221,7 +221,7 @@ func (s *permissionServer) UpdateRole(ctx context.Context, request *proto.Update
 	response = &proto.UpdateRoleResponse{}
 
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
-		return permission.ResourceName == "permission.role" && permission.Action == model.ActionUpdate
+		return permission.MatchActions(model.PermissionRoleResourceName, model.ActionUpdate)
 	}); !pass {
 		response.State = proto.State_NO_PERMISSION
 		return
@@ -339,7 +339,7 @@ func (s *permissionServer) DeleteRole(ctx context.Context, request *proto.Delete
 	response = &proto.DeleteRoleResponse{}
 
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
-		return permission.ResourceName == "permission.role" && permission.Action == model.ActionDelete
+		return permission.MatchActions(model.PermissionRoleResourceName, model.ActionDelete)
 	}); !pass {
 		response.State = proto.State_NO_PERMISSION
 		return
@@ -379,7 +379,7 @@ func (s *permissionServer) CreateResource(ctx context.Context, request *proto.Cr
 	response = &proto.CreateResourceResponse{}
 
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
-		return permission.ResourceName == "permission.resource" && permission.Action == model.ActionInsert
+		return permission.MatchRules(model.PermissionResourceResourceName, model.ActionInsert)
 	}); !pass {
 		response.State = proto.State_NO_PERMISSION
 		return
@@ -432,7 +432,7 @@ func (s *permissionServer) QueryResources(ctx context.Context, request *proto.Qu
 	response.Data = &proto.QueryResourcesResponse_DataType{}
 
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
-		return permission.ResourceName == "permission.resource" && permission.Action == model.ActionQuery
+		return permission.MatchActions(model.PermissionResourceResourceName, model.ActionQuery)
 	}); !pass {
 		response.State = proto.State_NO_PERMISSION
 		return
@@ -475,7 +475,7 @@ func (s *permissionServer) DeleteResources(ctx context.Context, request *proto.D
 	response = &proto.DeleteResourcesResponse{}
 
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
-		return permission.ResourceName == "permission.resource" && permission.Action == model.ActionDelete
+		return permission.MatchActions(model.PermissionResourceResourceName, model.ActionDelete)
 	}); !pass {
 		response.State = proto.State_NO_PERMISSION
 		return
@@ -519,7 +519,7 @@ func (s *permissionServer) UpdateResource(ctx context.Context, request *proto.Up
 	response = &proto.UpdateResourceResponse{}
 
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
-		return permission.ResourceName == "permission.resource" && permission.Action == model.ActionInsert
+		return permission.MatchActions(model.PermissionResourceResourceName, model.ActionUpdate)
 	}); !pass {
 		response.State = proto.State_NO_PERMISSION
 		return
@@ -559,7 +559,7 @@ func (s *permissionServer) SummaryForUser(ctx context.Context, request *proto.Su
 	response = &proto.SummaryForUserResponse{}
 
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
-		return permission.ResourceName == "permission" && permission.Action == model.ActionInsert
+		return permission.MatchActions(model.PermissionResourceName, model.ActionQuery)
 	}); !pass {
 		response.State = proto.State_NO_PERMISSION
 		return
@@ -589,7 +589,9 @@ func (s *permissionServer) ApplyRoleForUser(ctx context.Context, request *proto.
 	response = &proto.ApplyRoleForUserResponse{}
 
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
-		return permission.ResourceName == "permission" && permission.Action == model.ActionUpdate
+		matchDelete := permission.MatchActions(model.PermissionResourceName, model.ActionInsert)
+		matchUpdate := permission.MatchActions(model.PermissionResourceName, model.ActionUpdate)
+		return matchDelete || matchUpdate
 	}); !pass {
 		response.State = proto.State_NO_PERMISSION
 		return
@@ -661,7 +663,10 @@ func (s *permissionServer) RemoveRoleForUser(ctx context.Context, request *proto
 	response = &proto.RemoveRoleForUserResponse{}
 
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
-		return permission.ResourceName == "permission" && permission.Action == model.ActionUpdate
+		matchRules := []model.UserResourcePermissionRule{}
+		matchDelete := permission.MatchRules(model.PermissionResourceName, model.ActionDelete, matchRules...)
+		matchUpdate := permission.MatchRules(model.PermissionResourceName, model.ActionUpdate, matchRules...)
+		return matchDelete || matchUpdate
 	}); !pass {
 		response.State = proto.State_NO_PERMISSION
 		return

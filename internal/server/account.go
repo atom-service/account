@@ -239,7 +239,7 @@ func (s *accountServer) QueryUsers(ctx context.Context, request *proto.QueryUser
 				return true
 			}
 		}
-		return permission.MatchRules("user", model.ActionQuery, matchRules...)
+		return permission.MatchRules(model.UserResourceName, model.ActionQuery, matchRules...)
 	}); !pass {
 		response.State = proto.State_NO_PERMISSION
 		return
@@ -299,7 +299,7 @@ func (s *accountServer) DeleteUser(ctx context.Context, request *proto.DeleteUse
 			}
 		}
 
-		return permission.MatchRules("user", model.ActionDelete, matchRules...)
+		return permission.MatchRules(model.UserResourceName, model.ActionDelete, matchRules...)
 	}); !pass {
 		response.State = proto.State_NO_PERMISSION
 		return
@@ -338,7 +338,7 @@ func (s *accountServer) CreateSecret(ctx context.Context, request *proto.CreateS
 			Value: strconv.FormatInt(*request.UserID, 10),
 		})
 
-		return permission.MatchRules("secret", model.ActionInsert, matchRules...)
+		return permission.MatchRules(model.UserSecretResourceName, model.ActionInsert, matchRules...)
 	}); !pass {
 		response.State = proto.State_NO_PERMISSION
 		return
@@ -389,7 +389,7 @@ func (s *accountServer) DisableSecret(ctx context.Context, request *proto.Disabl
 			}
 		}
 
-		if (request.Selector.UserID == nil) {
+		if request.Selector.UserID == nil {
 			request.Selector.UserID = user.ID
 		}
 
@@ -401,7 +401,7 @@ func (s *accountServer) DisableSecret(ctx context.Context, request *proto.Disabl
 			Key:   "user_id",
 			Value: strconv.FormatInt(*request.Selector.UserID, 10),
 		})
-		return permission.MatchRules("secret", model.ActionUpdate, matchRules...)
+		return permission.MatchRules(model.UserSecretResourceName, model.ActionUpdate, matchRules...)
 	}); !pass {
 		response.State = proto.State_NO_PERMISSION
 		return
@@ -450,7 +450,7 @@ func (s *accountServer) DeleteSecrets(ctx context.Context, request *proto.Delete
 			}
 		}
 
-		if (request.Selector.UserID == nil) {
+		if request.Selector.UserID == nil {
 			request.Selector.UserID = user.ID
 		}
 
@@ -462,7 +462,7 @@ func (s *accountServer) DeleteSecrets(ctx context.Context, request *proto.Delete
 			Key:   "user_id",
 			Value: strconv.FormatInt(*request.Selector.UserID, 10),
 		})
-		return permission.MatchRules("secret", model.ActionDelete, matchRules...)
+		return permission.MatchRules(model.UserSecretResourceName, model.ActionDelete, matchRules...)
 	}); !pass {
 		response.State = proto.State_NO_PERMISSION
 		return
@@ -524,7 +524,7 @@ func (s *accountServer) QuerySecrets(ctx context.Context, request *proto.QuerySe
 			}
 		}
 
-		if (request.Selector.UserID == nil) {
+		if request.Selector.UserID == nil {
 			request.Selector.UserID = user.ID
 		}
 
@@ -539,7 +539,7 @@ func (s *accountServer) QuerySecrets(ctx context.Context, request *proto.QuerySe
 			Value: strconv.FormatInt(*request.Selector.UserID, 10),
 		})
 
-		return permission.MatchRules("secret", model.ActionQuery, matchRules...)
+		return permission.MatchRules(model.UserSecretResourceName, model.ActionQuery, matchRules...)
 	}); !pass {
 		response.State = proto.State_NO_PERMISSION
 		return
@@ -551,9 +551,9 @@ func (s *accountServer) QuerySecrets(ctx context.Context, request *proto.QuerySe
 	sort.LoadProto(request.Sort)
 	pagination.LoadProto(request.Pagination)
 	selector.LoadProto(request.Selector)
-	
+
 	// 外部调用默认查询用户级别
-	if (selector.Type == nil) {
+	if selector.Type == nil {
 		selector.Type = &model.UserSecretType
 	}
 
@@ -600,7 +600,7 @@ func (s *accountServer) UpsertLabel(ctx context.Context, request *proto.UpsertLa
 			Key:   "user_id",
 			Value: strconv.FormatInt(*request.UserID, 10),
 		})
-		return permission.MatchRules("label", model.ActionInsert, matchRules...)
+		return permission.MatchRules(model.UserLabelResourceName, model.ActionInsert, matchRules...)
 	}); !pass {
 		response.State = proto.State_NO_PERMISSION
 		return
@@ -646,7 +646,7 @@ func (s *accountServer) QueryLabels(ctx context.Context, request *proto.QueryLab
 			Key:   "user_id",
 			Value: strconv.FormatInt(*request.Selector.UserID, 10),
 		})
-		return permission.MatchRules("setting", model.ActionQuery, matchRules...)
+		return permission.MatchRules(model.UserSettingResourceName, model.ActionQuery, matchRules...)
 	}); !pass {
 		response.State = proto.State_NO_PERMISSION
 		return
@@ -709,7 +709,7 @@ func (s *accountServer) DeleteLabels(ctx context.Context, request *proto.DeleteL
 			Key:   "user_id",
 			Value: strconv.FormatInt(*request.Selector.UserID, 10),
 		})
-		return permission.MatchRules("setting", model.ActionQuery, matchRules...)
+		return permission.MatchRules(model.UserSettingResourceName, model.ActionQuery, matchRules...)
 	}); !pass {
 		response.State = proto.State_NO_PERMISSION
 		return
@@ -748,7 +748,7 @@ func (s *accountServer) CreateSetting(ctx context.Context, request *proto.Create
 			Key:   "user_id",
 			Value: strconv.FormatInt(*request.UserID, 10),
 		})
-		return permission.MatchRules("setting", model.ActionInsert, matchRules...)
+		return permission.MatchRules(model.UserSettingResourceName, model.ActionInsert, matchRules...)
 	}); !pass {
 		response.State = proto.State_NO_PERMISSION
 		return
@@ -809,7 +809,7 @@ func (s *accountServer) UpdateSetting(ctx context.Context, request *proto.Update
 			Key:   "user_id",
 			Value: strconv.FormatInt(*request.Selector.UserID, 10),
 		})
-		return permission.MatchRules("setting", model.ActionInsert, matchRules...)
+		return permission.MatchRules(model.UserSettingResourceName, model.ActionInsert, matchRules...)
 	}); !pass {
 		response.State = proto.State_NO_PERMISSION
 		return
@@ -869,7 +869,7 @@ func (s *accountServer) DeleteSettings(ctx context.Context, request *proto.Delet
 			Key:   "user_id",
 			Value: strconv.FormatInt(*request.Selector.UserID, 10),
 		})
-		return permission.MatchRules("setting", model.ActionDelete, matchRules...)
+		return permission.MatchRules(model.UserSettingResourceName, model.ActionDelete, matchRules...)
 	}); !pass {
 		response.State = proto.State_NO_PERMISSION
 		return
@@ -914,7 +914,7 @@ func (s *accountServer) QuerySettings(ctx context.Context, request *proto.QueryS
 			Key:   "user_id",
 			Value: strconv.FormatInt(*request.Selector.UserID, 10),
 		})
-		return permission.MatchRules("setting", model.ActionQuery, matchRules...)
+		return permission.MatchRules(model.UserSettingResourceName, model.ActionQuery, matchRules...)
 	}); !pass {
 		response.State = proto.State_NO_PERMISSION
 		return

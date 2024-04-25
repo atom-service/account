@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"slices"
 	"time"
 
 	"github.com/atom-service/account/package/proto"
@@ -1100,8 +1101,16 @@ func (p *UserResourcePermissionSummary) HasOwner() bool {
 	return p.ResourceName == OwnerResourceName
 }
 
+func (p *UserResourcePermissionSummary) MatchActions(name string, actions ...string) bool {
+	if p.ResourceName != name {
+		return false
+	}
+
+	return slices.Contains(actions, p.Action)
+}
+
 func (p *UserResourcePermissionSummary) MatchRules(name string, action string, rules ...UserResourcePermissionRule) bool {
-	if p.ResourceName != name || p.Action != action {
+	if !p.MatchActions(name, action) {
 		return false
 	}
 
@@ -1322,6 +1331,28 @@ func (r *permission) InitDefaultPermissions(ctx context.Context) (err error) {
 	if _, err := createUserRole(ownerUserRole); err != nil {
 		return err
 	}
+	return nil
+}
+
+// 根据给定的 Resource 自动检查是否存在并创建
+func (s *permission) AutoCreateResources(ctx context.Context, data []Resource) (err error) {
+	if len(data) == 0 {
+		return nil
+	}
+
+	for _, resource := range data {
+		selector := ResourceSelector{Name: resource.Name}
+		count, err := ResourceTable.CountResources(ctx, selector)
+		if err != nil {
+			return err
+		}
+		if count <= 0 {
+			if err := ResourceTable.CreateResource(ctx, resource); err != nil {
+				return err
+			}
+		}
+	}
+
 	return nil
 }
 
