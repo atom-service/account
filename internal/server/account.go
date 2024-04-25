@@ -389,6 +389,10 @@ func (s *accountServer) DisableSecret(ctx context.Context, request *proto.Disabl
 			}
 		}
 
+		if (request.Selector.UserID == nil) {
+			request.Selector.UserID = user.ID
+		}
+
 		if permission.HasOwner() && *request.Selector.UserID == *user.ID {
 			return true
 		}
@@ -446,6 +450,10 @@ func (s *accountServer) DeleteSecret(ctx context.Context, request *proto.DeleteS
 			}
 		}
 
+		if (request.Selector.UserID == nil) {
+			request.Selector.UserID = user.ID
+		}
+
 		if permission.HasOwner() && *request.Selector.UserID == *user.ID {
 			return true
 		}
@@ -485,7 +493,7 @@ func (s *accountServer) DeleteSecret(ctx context.Context, request *proto.DeleteS
 	}
 
 	if queryResult[0].DisabledTime != nil {
-		if queryResult[0].DisabledTime.Before(time.Now()) {
+		if queryResult[0].DisabledTime.After(time.Now()) {
 			response.State = proto.State_FAILURE
 			response.Code = code.USER_SECRET_NOT_DISABLED
 			return
@@ -516,6 +524,10 @@ func (s *accountServer) QuerySecrets(ctx context.Context, request *proto.QuerySe
 			}
 		}
 
+		if (request.Selector.UserID == nil) {
+			request.Selector.UserID = user.ID
+		}
+
 		// 检查用户是否拥有 owner 权限并且正在操作自己的资源
 		if permission.HasOwner() && *request.Selector.UserID == *user.ID {
 			return true
@@ -539,6 +551,11 @@ func (s *accountServer) QuerySecrets(ctx context.Context, request *proto.QuerySe
 	sort.LoadProto(request.Sort)
 	pagination.LoadProto(request.Pagination)
 	selector.LoadProto(request.Selector)
+	
+	// 外部调用默认查询用户级别
+	if (selector.Type == nil) {
+		selector.Type = &model.UserSecretType
+	}
 
 	query, err := model.SecretTable.QuerySecrets(ctx, selector, &pagination, &sort)
 	if err != nil {
@@ -674,6 +691,12 @@ func (s *accountServer) DeleteLabel(ctx context.Context, request *proto.DeleteLa
 	if pass := auth.ResolvePermission(ctx, func(user *model.User, permission *model.UserResourcePermissionSummary) bool {
 		matchRules := []model.UserResourcePermissionRule{}
 		// 不指定则操作当前账号
+		if request.Selector == nil {
+			request.Selector = &proto.LabelSelector{
+				UserID: user.ID,
+			}
+		}
+
 		if request.Selector.UserID == nil {
 			request.Selector.UserID = user.ID
 		}

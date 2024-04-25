@@ -185,7 +185,7 @@ func TestPermissionRoleTable(t *testing.T) {
 			t.Errorf("Delete failed: %v", err)
 			return
 		}
-
+	
 		queryDeletedResult, err := roleTable.QueryRoles(context, roleSelector, nil, nil)
 		if err != nil {
 			t.Errorf("Query failed: %v", err)
@@ -500,7 +500,7 @@ func TestPermissionRoleResourceTable(t *testing.T) {
 			return false
 		}
 
-		if (!reflect.DeepEqual(queryCreateResult[0].Rules, testCreateParams.Rules)) {
+		if !reflect.DeepEqual(queryCreateResult[0].Rules, testCreateParams.Rules) {
 			t.Errorf("Query result are incorrect: %v", queryCreateResult)
 			return false
 		}
