@@ -116,11 +116,11 @@ message DisableSecretResponse {
   string Code = 2;
 }
 
-message DeleteSecreteRequest {
+message DeleteSecretseRequest {
   SecretSelector Selector = 1;
 }
 
-message DeleteSecreteResponse {
+message DeleteSecretseResponse {
   State State = 1;
   string Code = 2;
 }
@@ -168,11 +168,11 @@ message UpsertLabelResponse {
   string Code = 2;
 }
 
-message DeleteLabelRequest {
+message DeleteLabelsRequest {
   LabelSelector Selector = 1;
 }
 
-message DeleteLabelResponse {
+message DeleteLabelsResponse {
   State State = 1;
   string Code = 2;
 }
@@ -238,11 +238,11 @@ message UpdateSettingResponse {
   string Code = 2;
 }
 
-message DeleteSettingRequest {
+message DeleteSettingsRequest {
   SettingSelector Selector = 1;
 }
 
-message DeleteSettingResponse {
+message DeleteSettingsResponse {
   State State = 1;
   string Code = 2;
 }
@@ -275,16 +275,16 @@ service AccountService {
   rpc CreateSecret(CreateSecretRequest)returns(CreateSecretResponse){}
   rpc QuerySecrets(QuerySecretsRequest)returns(QuerySecretsResponse){}
   rpc DisableSecret(DisableSecretRequest)returns(DisableSecretResponse){}
-  rpc DeleteSecret(DeleteSecreteRequest)returns(DeleteSecreteResponse){}
+  rpc DeleteSecrets(DeleteSecretseRequest)returns(DeleteSecretseResponse){}
 
   // 标签系统用于保存一些用户状态之类的数据（侧重于用户不直接可见可改）
   rpc UpsertLabel(UpsertLabelRequest)returns(UpsertLabelResponse){}
   rpc QueryLabels(QueryLabelsRequest)returns(QueryLabelsResponse){}
-  rpc DeleteLabel(DeleteLabelRequest)returns(DeleteLabelResponse){}
+  rpc DeleteLabels(DeleteLabelsRequest)returns(DeleteLabelsResponse){}
 
   // 设置系统用于保存一些用户偏好设置之类的数据（侧重于用户直接可见可改）
   rpc CreateSetting(CreateSettingRequest)returns(CreateSettingResponse){}
   rpc UpdateSetting(UpdateSettingRequest)returns(UpdateSettingResponse){}
-  rpc DeleteSetting(DeleteSettingRequest)returns(DeleteSettingResponse){}
   rpc QuerySettings(QuerySettingsRequest)returns(QuerySettingsResponse){}
+  rpc DeleteSettings(DeleteSettingsRequest)returns(DeleteSettingsResponse){}
 }

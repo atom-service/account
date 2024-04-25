@@ -137,11 +137,11 @@ message QueryResourcesResponse {
   DataType Data = 3;
 }
 
-message DeleteResourceRequest {
+message DeleteResourcesRequest {
   ResourceSelector Selector = 1;
 }
 
-message DeleteResourceResponse {
+message DeleteResourcesResponse {
   State State = 1;
   string Code = 2;
 }
@@ -199,8 +199,8 @@ service PermissionService {
 
   rpc CreateResource(CreateResourceRequest)returns(CreateResourceResponse){}
   rpc QueryResources(QueryResourcesRequest)returns(QueryResourcesResponse){}
-  rpc DeleteResource(DeleteResourceRequest)returns(DeleteResourceResponse){}
   rpc UpdateResource(UpdateResourceRequest)returns(UpdateResourceResponse){}
+  rpc DeleteResources(DeleteResourcesRequest)returns(DeleteResourcesResponse){}
 
   rpc SummaryForUser(SummaryForUserRequest)returns(SummaryForUserResponse){}
   rpc ApplyRoleForUser(ApplyRoleForUserRequest)returns(ApplyRoleForUserResponse){}

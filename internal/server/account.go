@@ -73,25 +73,26 @@ func (s *accountServer) SignIn(ctx context.Context, request *proto.SignInRequest
 	})
 
 	go func() {
+		var internalError error
 		localContext, cancel := context.WithTimeout(context.Background(), time.Minute)
 		defer cancel()
 
 		// 异步更新一下 label 上的状态
 		currentTime := time.Now().String()
-		if err = model.LabelTable.UpsertLabel(localContext, model.Label{
+		if internalError = model.LabelTable.UpsertLabel(localContext, model.Label{
 			UserID: *queryResult[0].ID,
 			Key:    model.LabelLastSignInTime,
 			Value:  &currentTime,
-		}); err != nil {
-			slog.ErrorContext(localContext, "Update last sign in time failed: %s", err)
+		}); internalError != nil {
+			slog.ErrorContext(localContext, "Update last sign in time failed: %s", internalError)
 		}
 
-		if err = model.LabelTable.UpsertLabel(localContext, model.Label{
+		if internalError = model.LabelTable.UpsertLabel(localContext, model.Label{
 			UserID: *queryResult[0].ID,
 			Key:    model.LabelLastVerifyTime,
 			Value:  &currentTime,
-		}); err != nil {
-			slog.ErrorContext(localContext, "Update last sign in time failed: %s", err)
+		}); internalError != nil {
+			slog.ErrorContext(localContext, "Update last sign in time failed: %s", internalError)
 		}
 	}()
 
@@ -185,17 +186,18 @@ func (s *accountServer) SignUp(ctx context.Context, request *proto.SignUpRequest
 	}
 
 	go func() {
+		var internalError error
 		localContext, cancel := context.WithTimeout(context.Background(), time.Minute)
 		defer cancel()
 
 		// 异步更新一下 label 上的状态
 		currentTime := time.Now().String()
-		if err = model.LabelTable.UpsertLabel(localContext, model.Label{
+		if internalError = model.LabelTable.UpsertLabel(localContext, model.Label{
 			UserID: *queryUserResult[0].ID,
 			Value:  &currentTime,
 			Key:    model.LabelLastVerifyTime,
-		}); err != nil {
-			slog.ErrorContext(localContext, "Update last sign in time failed: %s", err)
+		}); internalError != nil {
+			slog.ErrorContext(localContext, "Update last sign in time failed: %s", internalError)
 		}
 	}()
 

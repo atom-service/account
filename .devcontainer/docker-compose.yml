@@ -12,8 +12,7 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - ../../:/workspaces:cached
-    command: sleep infinity # 禁止容器自动关闭
+      - ../:/workspace
     environment:
       PORT: :80
       POSTGRES_URI: postgresql://postgres:password@postgresql/account
