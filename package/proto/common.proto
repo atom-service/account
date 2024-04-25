@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+// 声明包为当前目录下的 proto
+option go_package = "./proto";
+
+message PaginationOption {
+  optional int64 Limit = 1;
+  optional int64 Offset = 2;
+}
+
+message SortOption {
+  enum TypeOption {
+    Asc = 0;
+    Desc = 1;
+  }
+
+  string Key = 1;
+  TypeOption Type = 2;
+}
+
+// 状态
+enum State {
+  UNKNOWN = 0; // 未知
+  SUCCESS = 1; // 成功
+  FAILURE = 2; // 失败
+  NO_PERMISSION = 3; // 权限不足
+  PARAMS_INVALID = 4; // 参数不合法
+  ILLEGAL_REQUEST = 5; // 非法请求
+}

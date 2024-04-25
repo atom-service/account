@@ -1,38 +1,30 @@
 package main
 
 import (
-	"flag"
-	"net"
-	"os"
+	"context"
+	"time"
 
-	"github.com/yinxulai/goutils/grpc/interceptor"
-	"github.com/yinxulai/grpc-services/account/provider"
-	"github.com/yinxulai/grpc-services/account/standard"
-	"google.golang.org/grpc"
+	"github.com/atom-service/account/internal/model"
+	"github.com/atom-service/account/internal/server"
+	"github.com/yinxulai/goconf"
 )
 
-var isDev bool
-
 func init() {
-	flag.BoolVar(&isDev, "dev", false, "运行模式，可选 dev")
+	goconf.Declare("port", "8080", true, "服务监听的端口")
 }
 
 func main() {
-	flag.Parse() // 解析获取参数
+	// 声明&初始化配置
+	goconf.MustLoad()
 
-	rpcListenAddress := os.Getenv("PRC_LISTEN_ADDRESS")
-	httpDevListenAddress := os.Getenv("HTTP_DEV_LISTEN_ADDRESS")
+	context, cancel := context.WithTimeout(context.TODO(), time.Minute)
+	defer cancel()
 
-	if isDev { // 开发模式 启动一个调试工具
-		go standard.Serve(httpDevListenAddress, rpcListenAddress, standard.DefaultHtmlStringer, grpc.WithInsecure())
-	}
-
-	lis, err := net.Listen("tcp", rpcListenAddress)
-	if err != nil {
+	// 初始化 model
+	if err := model.Init(context); err != nil {
 		panic(err)
 	}
 
-	grpcServer := grpc.NewServer(interceptor.NewCalllogs()...)
-	standard.RegisterAccountServer(grpcServer, provider.NewService())
-	panic(grpcServer.Serve(lis))
+	listenAddress := ":" + goconf.MustGet("port")
+	panic(server.StartServer(listenAddress))
 }

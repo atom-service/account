@@ -1,0 +1,42 @@
+version: '3.8'
+
+# 创建虚拟网络
+networks:
+  dev-net:
+    driver: bridge
+
+services:
+  # 开发环境
+  workspace:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ../:/workspace
+    environment:
+      PORT: :80
+      POSTGRES_URI: postgresql://postgres:password@postgresql/account
+    networks:
+      - dev-net
+
+  # 数据库
+  postgresql:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: account
+      POSTGRES_PASSWORD: password
+    networks:
+      - dev-net
+    ports:
+      - 35432:5432
+
+  # postgresql 管理平台
+  postgresql-adminer:
+    image: adminer
+    restart: always
+    networks:
+      - dev-net
+    ports:
+      - 35433:8080
+    

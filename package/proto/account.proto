@@ -1,0 +1,290 @@
+syntax = "proto3";
+
+// 声明包为当前目录下的 proto
+option go_package = "./proto";
+
+import  "common.proto";
+
+message UserSelector {
+  optional int64 ID = 1;
+  optional string Username = 2;
+}
+
+message User {
+  int64 ID = 1;
+	string Username = 3;
+  string Password = 4;
+  string CreatedTime = 5;
+  string UpdatedTime = 6;
+  optional string DeletedTime = 7;
+  optional string DisabledTime = 8;
+}
+
+message SignInRequest {
+  UserSelector Selector = 1;
+  string Password = 2;
+}
+
+message SignedInToken {
+  int64 UserID = 1;
+  string Token = 2;
+  string ExpiredTime = 3;
+}
+
+message SignInResponse {
+  State State = 1;
+  string Code = 2;
+  SignedInToken Token = 3;
+}
+
+message SignUpRequest {
+  string Username = 1;
+  string Password = 2;
+}
+
+message SignUpResponse {
+  State State = 1;
+  string Code = 2;
+}
+
+message SignOutRequest {
+  
+}
+
+message SignOutResponse {
+  State State = 1;
+  string Code = 2;
+}
+
+message QueryUsersRequest {
+  UserSelector Selector = 1;
+  optional SortOption Sort = 2;
+  optional PaginationOption Pagination = 3;
+}
+
+message QueryUsersResponse {
+  message DataType {
+    int64 Total = 1;
+    repeated User Users = 2;
+  }
+
+  State State = 1;
+  string Code = 2;
+  DataType Data = 3;
+}
+
+message DeleteUserRequest {
+  UserSelector Selector = 1;
+}
+
+message DeleteUserResponse {
+  State State = 1;
+  string Code = 2;
+}
+
+message Secret {
+  string Key = 1;
+  string Value = 2;
+  int64  UserID = 3;
+  string Description = 4;
+  string CreatedTime = 5;
+  string UpdatedTime = 6;
+  optional string DeletedTime = 7;
+  optional string DisabledTime = 8;
+}
+
+message SecretSelector {
+  optional string Key = 1;
+  optional int64  UserID = 2;
+}
+
+message CreateSecretRequest {
+  optional int64  UserID = 1;
+}
+
+message CreateSecretResponse {
+  State State = 1;
+  string Code = 2;
+}
+
+message DisableSecretRequest {
+  SecretSelector Selector = 1;
+}
+
+message DisableSecretResponse {
+  State State = 1;
+  string Code = 2;
+}
+
+message DeleteSecretsRequest {
+  SecretSelector Selector = 1;
+}
+
+message DeleteSecretsResponse {
+  State State = 1;
+  string Code = 2;
+}
+
+message QuerySecretsRequest {
+  SecretSelector Selector = 1;
+  optional SortOption Sort = 2;
+  optional PaginationOption Pagination = 3;
+}
+
+message QuerySecretsResponse {
+  message DataType {
+    int64 Total = 1;
+    repeated Secret Secrets = 2;
+  }
+
+  State State = 1;
+  string Code = 2;
+  DataType Data = 3;
+}
+
+message Label {
+  string Key = 1;
+  string Value = 2;
+  optional int64  UserID = 3;
+  optional string Description = 4;
+  optional string CreatedTime = 5;
+  optional string UpdatedTime = 6;
+  optional string DeletedTime = 7;
+}
+
+message LabelSelector {
+  optional string Key = 1;
+  optional int64  UserID = 2;
+}
+
+message UpsertLabelRequest {
+  optional string Key = 1;
+  optional string Value = 2;
+  optional int64  UserID = 3;
+}
+
+message UpsertLabelResponse {
+  State State = 1;
+  string Code = 2;
+}
+
+message DeleteLabelsRequest {
+  LabelSelector Selector = 1;
+}
+
+message DeleteLabelsResponse {
+  State State = 1;
+  string Code = 2;
+}
+
+message QueryLabelsRequest {
+  LabelSelector Selector = 1;
+  optional SortOption Sort = 2;
+  optional PaginationOption Pagination = 3;
+}
+
+message QueryLabelsResponse {
+  message DataType {
+    int64 Total = 1;
+    repeated Label Labels = 2;
+  }
+
+  State State = 1;
+  string Code = 2;
+  DataType Data = 3;
+}
+
+
+message Setting {
+  int64 ID = 1;
+  string Key = 2;
+  string Value = 3;
+  int64  UserID = 4;
+  string Description = 5;
+  string CreatedTime = 6;
+  string UpdatedTime = 7;
+  optional string DeletedTime = 8;
+}
+
+message SettingSelector {
+  optional int64 ID = 1;
+  optional string Key = 2;
+  optional int64  UserID = 3;
+}
+
+message CreateSettingRequest {
+  string Key = 1;
+  string Value = 2;
+  optional int64  UserID = 3;
+}
+
+message CreateSettingResponse {
+  State State = 1;
+  string Code = 2;
+}
+
+message UpdateSettingRequest {
+  message UpdateData {
+    optional string Key = 1;
+    optional string Value = 2;
+  }
+
+  SettingSelector Selector = 1;
+  UpdateData Data = 2;
+}
+
+message UpdateSettingResponse {
+  State State = 1;
+  string Code = 2;
+}
+
+message DeleteSettingsRequest {
+  SettingSelector Selector = 1;
+}
+
+message DeleteSettingsResponse {
+  State State = 1;
+  string Code = 2;
+}
+
+message QuerySettingsRequest {
+  SettingSelector Selector = 1;
+  optional SortOption Sort = 2;
+  optional PaginationOption Pagination = 3;
+}
+
+message QuerySettingsResponse {
+  message DataType {
+    int64 Total = 1;
+    repeated Setting Settings = 2;
+  }
+
+  State State = 1;
+  string Code = 2;
+  DataType Data = 3;
+}
+
+service AccountService {
+  rpc SignIn(SignInRequest)returns(SignInResponse){} // 登录
+  rpc SignUp(SignUpRequest)returns(SignUpResponse){} // 注册
+  rpc SignOut(SignOutRequest)returns(SignOutResponse){} // 登出
+  rpc QueryUsers(QueryUsersRequest)returns(QueryUsersResponse){} // 查询用户
+  rpc DeleteUser(DeleteUserRequest)returns(DeleteUserResponse){} // 删除用户
+
+  // 密钥系统用于用户管理 API 调用的凭证
+  rpc CreateSecret(CreateSecretRequest)returns(CreateSecretResponse){}
+  rpc QuerySecrets(QuerySecretsRequest)returns(QuerySecretsResponse){}
+  rpc DisableSecret(DisableSecretRequest)returns(DisableSecretResponse){}
+  rpc DeleteSecrets(DeleteSecretsRequest)returns(DeleteSecretsResponse){}
+
+  // 标签系统用于保存一些用户状态之类的数据（侧重于用户不直接可见可改）
+  rpc UpsertLabel(UpsertLabelRequest)returns(UpsertLabelResponse){}
+  rpc QueryLabels(QueryLabelsRequest)returns(QueryLabelsResponse){}
+  rpc DeleteLabels(DeleteLabelsRequest)returns(DeleteLabelsResponse){}
+
+  // 设置系统用于保存一些用户偏好设置之类的数据（侧重于用户直接可见可改）
+  rpc CreateSetting(CreateSettingRequest)returns(CreateSettingResponse){}
+  rpc UpdateSetting(UpdateSettingRequest)returns(UpdateSettingResponse){}
+  rpc QuerySettings(QuerySettingsRequest)returns(QuerySettingsResponse){}
+  rpc DeleteSettings(DeleteSettingsRequest)returns(DeleteSettingsResponse){}
+}
