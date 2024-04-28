@@ -4,11 +4,10 @@
 
 replicaCount: 2
 
-init:
-  admin_password:
-  admin_secret_key:
-  admin_secret_value:
-  postgres_uri: postgresql://postgres:password@localhost/account
+postgres_uri:
+admin_password: 
+admin_secret_key: 
+admin_secret_value: 
 
 image:
   repository: ghcr.io/atom-service/account

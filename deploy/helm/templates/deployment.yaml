@@ -33,17 +33,7 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          env:
-            - name: PORT
-              value: {{ .Values.service.port }}
-            - name: POSTGRES_URI
-              value: {{ .Values.init.postgres_uri }}
-            - name: ADMIN_PASSWORD
-              value: {{ .Values.init.admin_password }}
-            - name: ADMIN_SECRET_KEY
-              value: {{ .Values.init.admin_secret_key }}
-            - name: ADMIN_SECRET_VALUE
-              value: {{ .Values.init.admin_secret_value }}
+          env: {{ include "account.serviceAccountEnv" . | indent 12 }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}

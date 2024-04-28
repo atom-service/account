@@ -60,3 +60,30 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+
+{{/*
+Create the name of the service account to use
+*/}}
+{{- define "account.serviceAccountEnv" -}}
+{{- if .Values.service.port }}
+- name: PORT
+  value: {{ .Values.service.port | quote }}
+{{- end }}
+{{- if .Values.postgres_uri }}
+- name: POSTGRES_URI
+  value: {{ .Values.postgres_uri | quote }}
+{{- end }}
+{{- if .Values.admin_password }}
+- name: ADMIN_PASSWORD
+  value: {{ .Values.admin_password | quote }}
+{{- end }}
+{{- if .Values.admin_secret_key }}
+- name: ADMIN_SECRET_KEY
+  value: {{ .Values.admin_secret_key | quote }}
+{{- end }}
+{{- if .Values.admin_secret_value }}
+- name: ADMIN_SECRET_VALUE
+  value: {{ .Values.admin_secret_value | quote }}
+{{- end }}
+{{- end }}
