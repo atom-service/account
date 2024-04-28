@@ -6,16 +6,16 @@ on:
 
 env:
   REGISTRY: ghcr.io
+  CHARTS_PATH_PREFIX: account
+  CHARTS_REPOSITORY: helm-charts
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  build-and-push-image:
+  container-image:
     runs-on: ubuntu-latest
-
     permissions:
       contents: read
       packages: write
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -25,13 +25,11 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
@@ -40,3 +38,27 @@ jobs:
           file: build/Dockerfile
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+  push-helm-chart:
+    needs: container-image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout current repository
+        uses: actions/checkout@v4
+      - name: Checkout helm charts repository
+        uses: actions/checkout@v4
+        with:
+          path: ${{ env.CHARTS_REPOSITORY }}
+          token: ${{ secrets.HELM_CHARTS_PUSH_GITHUB_KEY }}
+          repository: ${{ github.repository_owner }}/${{env.CHARTS_REPOSITORY}}
+      - run: |
+          CHARTS_PATH=${{ github.workspace }}/${{env.CHARTS_REPOSITORY}}/${{env.CHARTS_PATH_PREFIX}}@${{github.ref_name}}
+          [ -d "$CHARTS_PATH" ] && { echo "this helm charts version is already exists ${{github.ref_name}}"; exit 1; }
+          mkdir -p $CHARTS_PATH && cp -r ${{ github.workspace }}/deploy/helm/* $CHARTS_PATH
+          cd ${{ github.workspace }}/${{env.CHARTS_REPOSITORY}}
+          git config user.email github-actions@github.com
+          git config user.name github-actions
+          git add .
+          git commit -m "update ${{env.CHARTS_PATH_PREFIX}}@${{github.ref_name}} helm charts"
+          git push
