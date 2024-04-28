@@ -10,7 +10,7 @@ import (
 )
 
 func init() {
-	goconf.Declare("port", "8080", true, "服务监听的端口")
+	goconf.Declare("port", "8080", true, "Service listening port")
 }
 
 func main() {

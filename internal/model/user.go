@@ -17,10 +17,11 @@ import (
 )
 
 func init() {
-	goconf.Declare("init_admin_password", helper.GenerateRandomString(12, nil), true, "admin 用户的初始密码")
-	goconf.Declare("init_admin_username", helper.GenerateRandomString(12, nil), true, "admin 用户的初始账号名")
+	goconf.Declare("admin_password", "", true, "Admin user’s initial password")
 }
 
+var AdminUserID = int64(1)
+var AdminUsername = "admin"
 var userSchemaName = "\"user\""
 var userTableName = userSchemaName + ".\"users\""
 
@@ -133,21 +134,25 @@ func (srv *UserSelector) LoadProto(data *proto.UserSelector) {
 var UserTable = &userTable{}
 
 func (s *userTable) initData(ctx context.Context) (err error) {
-	adminUserID := int64(1)
-	userSelector := UserSelector{ID: &adminUserID}
+	userSelector := UserSelector{ID: &AdminUserID}
 	queryResult, err := s.QueryUsers(ctx, userSelector, nil, nil)
 	if err != nil {
 		return err
 	}
 
-	adminUsername := goconf.MustGet("init_admin_username")
-	adminPassword := goconf.MustGet("init_admin_password")
+	adminPassword := goconf.MustGet("admin_password")
+
+	if adminPassword == "" {
+		adminPassword = helper.GenerateRandomString(12, nil)
+		slog.InfoContext(ctx, "admin_password not set, use random strings")
+	}
+
 	adminPasswordHash := Password.Hash(adminPassword)
-	adminUser := &User{Username: &adminUsername, Password: &adminPasswordHash}
+	adminUser := &User{Username: &AdminUsername, Password: &adminPasswordHash}
 
 	if len(queryResult) > 0 {
-		adminUsername = *queryResult[0].Username
-		err = s.UpdateUser(ctx, UserSelector{ID: &adminUserID}, adminUser)
+		AdminUsername = *queryResult[0].Username
+		err = s.UpdateUser(ctx, UserSelector{ID: &AdminUserID}, adminUser)
 		if err != nil {
 			return err
 		}
@@ -160,8 +165,8 @@ func (s *userTable) initData(ctx context.Context) (err error) {
 
 	slog.InfoContext(
 		ctx, "admin user are upsert",
-		slog.String("username", adminUsername),
 		slog.String("password", adminPassword),
+		slog.String("username", AdminUsername),
 	)
 
 	return nil
@@ -236,7 +241,7 @@ func (r *userTable) DeleteUser(ctx context.Context, selector UserSelector) (err 
 		return fmt.Errorf("selector conditions cannot be admin user")
 	}
 
-	if selector.Username != nil && *selector.Username == "admin" {
+	if selector.Username != nil && *selector.Username == AdminUsername {
 		return fmt.Errorf("selector conditions cannot be admin user")
 	}
 

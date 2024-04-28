@@ -2,14 +2,21 @@ package auth
 
 import (
 	"context"
+	"log/slog"
 
 	"github.com/atom-service/account/internal/model"
 	publicAuth "github.com/atom-service/account/package/auth"
+	"github.com/yinxulai/goconf"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
 
 type serverAuthInterceptor struct {
+}
+
+func init() {
+	goconf.Declare("admin_secret_key", "", false, "Global administrator secret key")
+	goconf.Declare("admin_secret_value", "", false, "Global administrator secret value")
 }
 
 func NewServerAuthInterceptor() *serverAuthInterceptor {
@@ -32,29 +39,53 @@ func (ai *serverAuthInterceptor) resolveUserIncomingContext(ctx context.Context)
 		return ctx
 	}
 
+	var secretInfo *model.Secret
+
 	paginationLimit := int64(1)
 	paginationOption := &model.Pagination{Limit: &paginationLimit}
-	secretSelector := model.SecretSelector{Key: &tokenInfo.SecretKey}
-	querySecretsResponse, err := model.SecretTable.QuerySecrets(ctx, secretSelector, paginationOption, nil)
-	if err != nil || len(querySecretsResponse) == 0 {
-		return ctx
+
+	globalAdminSecretKey := goconf.MustGet("admin_secret_key")
+	globalAdminSecretValue := goconf.MustGet("admin_secret_value")
+	if globalAdminSecretKey != "" && globalAdminSecretKey == tokenInfo.SecretKey {
+		if globalAdminSecretValue == "" {
+			slog.ErrorContext(ctx, "Global administrator secret value is empty")
+			return ctx
+		}
+
+		// 管理员身份
+		secretInfo = &model.Secret{
+			UserID: &model.AdminUserID,
+			Key:    &globalAdminSecretKey,
+			Value:  &globalAdminSecretValue,
+		}
 	}
 
-	// 验证 token 是否有效
-	firstSecret := querySecretsResponse[0]
+	if secretInfo == nil {
+		secretSelector := model.SecretSelector{Key: &tokenInfo.SecretKey}
+		querySecretsResponse, err := model.SecretTable.QuerySecrets(ctx, secretSelector, paginationOption, nil)
+		if err != nil || len(querySecretsResponse) == 0 {
+			slog.InfoContext(ctx, " Invalid token, possibly invalid secret")
+			return ctx
+		}
+
+		secretInfo = querySecretsResponse[0]
+	}
 
 	// 是否已经被禁用
-	if firstSecret.IsDisabled() {
+	if secretInfo.IsDisabled() {
+		slog.InfoContext(ctx, " Invalid token, possibly invalid secret")
 		return ctx
 	}
 
-	if !publicAuth.VerifyToken(*firstSecret.Key, *firstSecret.Value, tokens[0]) {
+	if !publicAuth.VerifyToken(*secretInfo.Key, *secretInfo.Value, tokens[0]) {
+		slog.InfoContext(ctx, " Invalid token, possibly invalid secret")
 		return ctx
 	}
 
-	userSelector := model.UserSelector{ID: firstSecret.UserID}
+	userSelector := model.UserSelector{ID: secretInfo.UserID}
 	queryUserResponse, err := model.UserTable.QueryUsers(ctx, userSelector, paginationOption, nil)
 	if err != nil || len(queryUserResponse) == 0 {
+		slog.InfoContext(ctx, " Invalid token, possibly invalid secret")
 		return ctx
 	}
 
@@ -64,11 +95,12 @@ func (ai *serverAuthInterceptor) resolveUserIncomingContext(ctx context.Context)
 	summaryForUserRequest := model.UserResourceSummarySelector{UserID: firstUser.ID}
 	summaryForUserResponse, err := model.Permission.QueryUserResourceSummaries(ctx, summaryForUserRequest)
 	if err != nil {
+		slog.InfoContext(ctx, " Invalid token, possibly invalid secret")
 		return ctx
 	}
 
 	ctx = context.WithValue(ctx, publicAuth.ContextUserSymbol, firstUser)
-	ctx = context.WithValue(ctx, publicAuth.ContextSecretSymbol, firstSecret)
+	ctx = context.WithValue(ctx, publicAuth.ContextSecretSymbol, secretInfo)
 	ctx = context.WithValue(ctx, publicAuth.ContextPermissionsSymbol, summaryForUserResponse)
 	return ctx
 }

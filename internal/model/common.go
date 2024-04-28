@@ -41,7 +41,7 @@ var initPermissionResources = []Resource{
 }
 
 func init() {
-	goconf.Declare("postgres_uri", "postgresql://postgres:password@localhost/account", true, "postgres 的数据库连接 uri")
+	goconf.Declare("postgres_uri", "postgresql://postgres:password@localhost/account", true, "Postgres database connection uri")
 }
 
 func InitDB(ctx context.Context) {
