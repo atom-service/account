@@ -53,8 +53,7 @@ jobs:
           token: ${{ secrets.HELM_CHARTS_PUSH_GITHUB_KEY }}
           repository: ${{ github.repository_owner }}/${{env.CHARTS_REPOSITORY}}
       - run: |
-          CHARTS_PATH=${{ github.workspace }}/${{env.CHARTS_REPOSITORY}}/${{env.CHARTS_PATH_PREFIX}}@${{github.ref_name}}
-          [ -d "$CHARTS_PATH" ] && { echo "this helm charts version is already exists ${{github.ref_name}}"; exit 1; }
+          CHARTS_PATH=${{ github.workspace }}/${{env.CHARTS_REPOSITORY}}/charts/${{env.CHARTS_PATH_PREFIX}}
           mkdir -p $CHARTS_PATH && cp -r ${{ github.workspace }}/deploy/helm/* $CHARTS_PATH
           cd ${{ github.workspace }}/${{env.CHARTS_REPOSITORY}}
           git config user.email github-actions@github.com
