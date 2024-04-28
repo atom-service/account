@@ -54,7 +54,7 @@ jobs:
           repository: ${{ github.repository_owner }}/${{env.CHARTS_REPOSITORY}}
       - run: |
           CHARTS_PATH=${{ github.workspace }}/${{env.CHARTS_REPOSITORY}}/charts/${{env.CHARTS_PATH_PREFIX}}
-          mkdir -p $CHARTS_PATH && cp -r ${{ github.workspace }}/deploy/helm/* $CHARTS_PATH
+          rm -rf $CHARTS_PATH && mkdir -p $CHARTS_PATH && cp -r ${{ github.workspace }}/deploy/helm/* $CHARTS_PATH
           cd ${{ github.workspace }}/${{env.CHARTS_REPOSITORY}}
           git config user.email github-actions@github.com
           git config user.name github-actions
