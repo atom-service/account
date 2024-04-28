@@ -42,7 +42,7 @@ type AuthWithSecretCredentials struct {
 func (x *AuthWithSecretCredentials) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
 	return map[string]string{
 		"authorization": SignToken(x.SecretKey, x.SecretValue, SignData{
-			ExpiresAt: time.Now().Add(24 * 7 * time.Hour), // 1 周有效期
+			ExpiresAt: time.Now().UTC().Add(24 * 7 * time.Hour), // 1 周有效期
 		}),
 	}, nil
 }

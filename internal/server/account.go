@@ -97,7 +97,7 @@ func (s *accountServer) SignIn(ctx context.Context, request *proto.SignInRequest
 	}()
 
 	response.Token = &proto.SignedInToken{
-		ExpiredTime: ExpiredTime.String(),
+		ExpiredTime: ExpiredTime.UTC().String(),
 		UserID:      *queryResult[0].ID,
 		Token:       token,
 	}

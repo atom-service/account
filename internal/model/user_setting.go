@@ -41,17 +41,17 @@ func (srv *Setting) ToProto() *proto.Setting {
 	}
 
 	if srv.DeletedTime != nil {
-		timeString := srv.DeletedTime.String()
+		timeString := srv.DeletedTime.UTC().String()
 		setting.DeletedTime = &timeString
 	}
 
 	if srv.CreatedTime != nil {
-		timeString := srv.CreatedTime.String()
+		timeString := srv.CreatedTime.UTC().String()
 		setting.CreatedTime = timeString
 	}
 
 	if srv.UpdatedTime != nil {
-		timeString := srv.UpdatedTime.String()
+		timeString := srv.UpdatedTime.UTC().String()
 		setting.UpdatedTime = timeString
 	}
 
@@ -95,9 +95,9 @@ func (t *settingTable) InitTable(ctx context.Context) error {
 	s.COLUMN("key character varying(64) NOT NULL")
 	s.COLUMN("value character varying(513) NOT NULL")
 	s.COLUMN("description character varying(128) NULL")
-	s.COLUMN("created_time timestamp without time zone NULL DEFAULT now()")
-	s.COLUMN("updated_time timestamp without time zone NULL DEFAULT now()")
-	s.COLUMN("deleted_time timestamp without time zone NULL")
+	s.COLUMN("created_time timestamp with time zone NULL DEFAULT now()")
+	s.COLUMN("updated_time timestamp with time zone NULL DEFAULT now()")
+	s.COLUMN("deleted_time timestamp with time zone NULL")
 	s.OPTIONS("CONSTRAINT user_setting_union_unique_keys UNIQUE (user_id, key)")
 	slog.DebugContext(ctx, s.String())
 

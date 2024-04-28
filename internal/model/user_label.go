@@ -44,17 +44,17 @@ func (srv *Label) ToProto() *proto.Label {
 	}
 
 	if srv.CreatedTime != nil {
-		timeString := srv.CreatedTime.String()
+		timeString := srv.CreatedTime.UTC().String()
 		secret.CreatedTime = &timeString
 	}
 
 	if srv.UpdatedTime != nil {
-		timeString := srv.UpdatedTime.String()
+		timeString := srv.UpdatedTime.UTC().String()
 		secret.UpdatedTime = &timeString
 	}
 
 	if srv.DeletedTime != nil {
-		timeString := srv.DeletedTime.String()
+		timeString := srv.DeletedTime.UTC().String()
 		secret.DeletedTime = &timeString
 	}
 
@@ -95,9 +95,9 @@ func (t *labelTable) InitTable(ctx context.Context) error {
 	s.COLUMN("key character varying(64) NOT NULL")
 	s.COLUMN("value character varying(128) NOT NULL")
 	s.COLUMN("description character varying(128) NULL")
-	s.COLUMN("created_time timestamp without time zone NULL DEFAULT now()")
-	s.COLUMN("updated_time timestamp without time zone NULL DEFAULT now()")
-	s.COLUMN("deleted_time timestamp without time zone NULL")
+	s.COLUMN("created_time timestamp with time zone NULL DEFAULT now()")
+	s.COLUMN("updated_time timestamp with time zone NULL DEFAULT now()")
+	s.COLUMN("deleted_time timestamp with time zone NULL")
 	s.OPTIONS("CONSTRAINT user_label_union_unique_keys UNIQUE (user_id, key)")
 	slog.DebugContext(ctx, s.String())
 

@@ -42,28 +42,29 @@ func (srv *Secret) LoadProto(secret *proto.Secret) (err error) {
 	srv.UserID = &secret.UserID
 	srv.Description = &secret.Description
 
-	createdTime, err := time.Parse(time.RFC3339Nano, secret.CreatedTime)
-	if err != nil {
-		return err
-	}
+	// 处理时区问题
+	// createdTime, err := time.Parse(time.RFC3339Nano, secret.CreatedTime)
+	// if err != nil {
+	// 	return err
+	// }
 
-	srv.CreatedTime = &createdTime
+	// srv.CreatedTime = &createdTime
 
-	updatedTime, err := time.Parse(time.RFC3339Nano, secret.UpdatedTime)
-	if err != nil {
-		return err
-	}
+	// updatedTime, err := time.Parse(time.RFC3339Nano, secret.UpdatedTime)
+	// if err != nil {
+	// 	return err
+	// }
 
-	srv.UpdatedTime = &updatedTime
+	// srv.UpdatedTime = &updatedTime
 
-	if secret.DeletedTime != nil {
-		deletedTime, err := time.Parse(time.RFC3339Nano, *secret.DeletedTime)
-		if err != nil {
-			return err
-		}
+	// if secret.DeletedTime != nil {
+	// 	deletedTime, err := time.Parse(time.RFC3339Nano, *secret.DeletedTime)
+	// 	if err != nil {
+	// 		return err
+	// 	}
 
-		srv.DeletedTime = &deletedTime
-	}
+	// 	srv.DeletedTime = &deletedTime
+	// }
 
 	return
 }
@@ -84,15 +85,15 @@ func (srv *Secret) ToProto() *proto.Secret {
 	}
 
 	if srv.CreatedTime != nil {
-		secret.CreatedTime = srv.CreatedTime.String()
+		secret.CreatedTime = srv.CreatedTime.UTC().String()
 	}
 
 	if srv.UpdatedTime != nil {
-		secret.UpdatedTime = srv.UpdatedTime.String()
+		secret.UpdatedTime = srv.UpdatedTime.UTC().String()
 	}
 
 	if srv.DeletedTime != nil {
-		timeString := srv.DeletedTime.String()
+		timeString := srv.DeletedTime.UTC().String()
 		secret.DeletedTime = &timeString
 	}
 
@@ -168,10 +169,10 @@ func (t *secretTable) InitTable(ctx context.Context) error {
 	s.COLUMN("value character varying(64) NOT NULL")
 	s.COLUMN("user_id integer NOT NULL")
 	s.COLUMN("description character varying(128) NULL")
-	s.COLUMN("created_time timestamp without time zone NULL DEFAULT now()")
-	s.COLUMN("updated_time timestamp without time zone NULL DEFAULT now()")
-	s.COLUMN("disabled_time timestamp without time zone NULL")
-	s.COLUMN("deleted_time timestamp without time zone NULL")
+	s.COLUMN("created_time timestamp with time zone NULL DEFAULT now()")
+	s.COLUMN("updated_time timestamp with time zone NULL DEFAULT now()")
+	s.COLUMN("disabled_time timestamp with time zone NULL")
+	s.COLUMN("deleted_time timestamp with time zone NULL")
 	s.OPTIONS("CONSTRAINT user_secret_union_unique_keys UNIQUE (user_id, key, type)")
 	slog.DebugContext(ctx, s.String())
 

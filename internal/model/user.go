@@ -56,33 +56,34 @@ func (srv *User) LoadProto(user *proto.User) (err error) {
 	srv.Username = &user.Username
 	srv.Password = &user.Password
 
-	createdTime, err := time.Parse(time.RFC3339Nano, user.CreatedTime)
-	if err != nil {
-		return fmt.Errorf("failed to parse created time: %v", err)
-	}
-	srv.CreatedTime = &createdTime
+	// 处理时区问题
+	// createdTime, err := time.Parse(time.RFC3339Nano, user.CreatedTime)
+	// if err != nil {
+	// 	return fmt.Errorf("failed to parse created time: %v", err)
+	// }
+	// srv.CreatedTime = &createdTime
 
-	updatedTime, err := time.Parse(time.RFC3339Nano, user.UpdatedTime)
-	if err != nil {
-		return fmt.Errorf("failed to parse updated time: %v", err)
-	}
-	srv.UpdatedTime = &updatedTime
+	// updatedTime, err := time.Parse(time.RFC3339Nano, user.UpdatedTime)
+	// if err != nil {
+	// 	return fmt.Errorf("failed to parse updated time: %v", err)
+	// }
+	// srv.UpdatedTime = &updatedTime
 
-	if user.DeletedTime != nil {
-		deletedTime, err := time.Parse(time.RFC3339Nano, *user.DeletedTime)
-		if err != nil {
-			return fmt.Errorf("failed to parse deleted time: %v", err)
-		}
-		srv.DeletedTime = &deletedTime
-	}
+	// if user.DeletedTime != nil {
+	// 	deletedTime, err := time.Parse(time.RFC3339Nano, *user.DeletedTime)
+	// 	if err != nil {
+	// 		return fmt.Errorf("failed to parse deleted time: %v", err)
+	// 	}
+	// 	srv.DeletedTime = &deletedTime
+	// }
 
-	if user.DisabledTime != nil {
-		disabledTime, err := time.Parse(time.RFC3339Nano, *user.DisabledTime)
-		if err != nil {
-			return fmt.Errorf("failed to parse disabled time: %v", err)
-		}
-		srv.DisabledTime = &disabledTime
-	}
+	// if user.DisabledTime != nil {
+	// 	disabledTime, err := time.Parse(time.RFC3339Nano, *user.DisabledTime)
+	// 	if err != nil {
+	// 		return fmt.Errorf("failed to parse disabled time: %v", err)
+	// 	}
+	// 	srv.DisabledTime = &disabledTime
+	// }
 
 	return nil
 }
@@ -96,16 +97,16 @@ func (srv *User) ToProto() *proto.User {
 		user.Username = *srv.Username
 	}
 
-	user.CreatedTime = srv.CreatedTime.String()
-	user.UpdatedTime = srv.UpdatedTime.String()
+	user.CreatedTime = srv.CreatedTime.UTC().String()
+	user.UpdatedTime = srv.UpdatedTime.UTC().String()
 
 	if srv.DeletedTime != nil {
-		timeString := srv.DeletedTime.String()
+		timeString := srv.DeletedTime.UTC().String()
 		user.DeletedTime = &timeString
 	}
 
 	if srv.DisabledTime != nil {
-		timeString := srv.DisabledTime.String()
+		timeString := srv.DisabledTime.UTC().String()
 		user.DisabledTime = &timeString
 	}
 
@@ -192,10 +193,10 @@ func (t *userTable) InitTable(ctx context.Context) error {
 	ct.COLUMN("parent_id integer NULL")
 	ct.COLUMN("username character varying(64) UNIQUE NOT NULL")
 	ct.COLUMN("password character varying(256) NOT NULL")
-	ct.COLUMN("created_time timestamp without time zone NULL DEFAULT now()")
-	ct.COLUMN("updated_time timestamp without time zone NULL DEFAULT now()")
-	ct.COLUMN("disabled_time timestamp without time zone NULL")
-	ct.COLUMN("deleted_time timestamp without time zone NULL")
+	ct.COLUMN("created_time timestamp with time zone NULL DEFAULT now()")
+	ct.COLUMN("updated_time timestamp with time zone NULL DEFAULT now()")
+	ct.COLUMN("disabled_time timestamp with time zone NULL")
+	ct.COLUMN("deleted_time timestamp with time zone NULL")
 
 	slog.DebugContext(ctx, ct.String())
 	_, err = tx.ExecContext(ctx, ct.String())

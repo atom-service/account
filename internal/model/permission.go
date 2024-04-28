@@ -57,15 +57,15 @@ func (srv *Role) ToProto() *proto.Role {
 	}
 
 	if srv.CreatedTime != nil {
-		role.CreatedTime = srv.CreatedTime.String()
+		role.CreatedTime = srv.CreatedTime.UTC().String()
 	}
 
 	if srv.UpdatedTime != nil {
-		role.UpdatedTime = srv.UpdatedTime.String()
+		role.UpdatedTime = srv.UpdatedTime.UTC().String()
 	}
 
 	if srv.DeletedTime != nil {
-		timeString := srv.DeletedTime.String()
+		timeString := srv.DeletedTime.UTC().String()
 		role.DeletedTime = &timeString
 	}
 
@@ -110,10 +110,10 @@ func (t *roleTable) InitTable(ctx context.Context) error {
 	s.COLUMN("id serial PRIMARY KEY NOT NULL")
 	s.COLUMN("name character varying(64) UNIQUE NOT NULL")
 	s.COLUMN("description character varying(128) NULL")
-	s.COLUMN("created_time timestamp without time zone NULL DEFAULT now()")
-	s.COLUMN("updated_time timestamp without time zone NULL DEFAULT now()")
-	s.COLUMN("disabled_time timestamp without time zone NULL")
-	s.COLUMN("deleted_time timestamp without time zone NULL")
+	s.COLUMN("created_time timestamp with time zone NULL DEFAULT now()")
+	s.COLUMN("updated_time timestamp with time zone NULL DEFAULT now()")
+	s.COLUMN("disabled_time timestamp with time zone NULL")
+	s.COLUMN("deleted_time timestamp with time zone NULL")
 	slog.DebugContext(ctx, s.String())
 
 	if _, err = tx.ExecContext(ctx, s.String()); err != nil {
@@ -323,11 +323,11 @@ func (srv *Resource) ToProto() *proto.Resource {
 		resource.Name = *srv.Name
 	}
 
-	resource.CreatedTime = srv.CreatedTime.String()
-	resource.UpdatedTime = srv.UpdatedTime.String()
+	resource.CreatedTime = srv.CreatedTime.UTC().String()
+	resource.UpdatedTime = srv.UpdatedTime.UTC().String()
 
 	if srv.DeletedTime != nil {
-		timeString := srv.DeletedTime.String()
+		timeString := srv.DeletedTime.UTC().String()
 		resource.DeletedTime = &timeString
 	}
 
@@ -367,9 +367,9 @@ func (t *resourceTable) InitTable(ctx context.Context) error {
 	s.COLUMN("id serial PRIMARY KEY NOT NULL")
 	s.COLUMN("name character varying(64) UNIQUE NOT NULL")
 	s.COLUMN("description character varying(128) NULL")
-	s.COLUMN("created_time timestamp without time zone NULL DEFAULT now()")
-	s.COLUMN("updated_time timestamp without time zone NULL DEFAULT now()")
-	s.COLUMN("deleted_time timestamp without time zone NULL")
+	s.COLUMN("created_time timestamp with time zone NULL DEFAULT now()")
+	s.COLUMN("updated_time timestamp with time zone NULL DEFAULT now()")
+	s.COLUMN("deleted_time timestamp with time zone NULL")
 	slog.DebugContext(ctx, s.String())
 
 	if _, err = tx.ExecContext(ctx, s.String()); err != nil {
@@ -889,9 +889,9 @@ func (t *userRoleTable) InitTable(ctx context.Context) error {
 	s.COLUMN("id serial PRIMARY KEY NOT NULL")
 	s.COLUMN("user_id int NOT NULL")
 	s.COLUMN("role_id int NOT NULL")
-	s.COLUMN("created_time timestamp without time zone NULL DEFAULT now()")
-	s.COLUMN("updated_time timestamp without time zone NULL DEFAULT now()")
-	s.COLUMN("disabled_time timestamp without time zone NULL")
+	s.COLUMN("created_time timestamp with time zone NULL DEFAULT now()")
+	s.COLUMN("updated_time timestamp with time zone NULL DEFAULT now()")
+	s.COLUMN("disabled_time timestamp with time zone NULL")
 	s.OPTIONS("CONSTRAINT user_role_union_unique_keys UNIQUE (user_id, role_id)")
 	slog.DebugContext(ctx, s.String())
 

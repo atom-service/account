@@ -17,7 +17,7 @@ func TestToken(t *testing.T) {
 		sk := helper.GenerateRandomString(64, nil)
 
 		token := SignToken(ak, sk, SignData{
-			ExpiresAt: time.Now().Add(time.Second),
+			ExpiresAt: time.Now().UTC().Add(time.Second),
 		})
 
 		tokenInfo, err := ParseToken(token)

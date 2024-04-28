@@ -30,7 +30,7 @@ func TestAccountServer(t *testing.T) {
 	}
 
 	token := auth.SignToken(*adminSecret[0].Key, *adminSecret[0].Value, auth.SignData{
-		ExpiresAt: time.Now().Add(time.Hour),
+		ExpiresAt: time.Now().UTC().Add(time.Hour),
 	})
 
 	adminAccountClient := testServer.CreateAccountClientWithToken(token)
