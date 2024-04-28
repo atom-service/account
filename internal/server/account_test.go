@@ -371,7 +371,12 @@ func TestAccountServer(t *testing.T) {
 			return
 		}
 		if deleteSecretResponse2.State != proto.State_SUCCESS {
-			t.Errorf("DeleteSecret failed: %v", err)
+			t.Errorf(
+				"DeleteSecret failed: %s, %s, %v",
+				deleteSecretResponse2.State,
+				deleteSecretResponse2.Code,
+				err,
+			)
 			return
 		}
 	}

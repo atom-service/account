@@ -169,8 +169,8 @@ func (r *roleTable) UpdateRole(ctx context.Context, selector RoleSelector, role 
 		s.SET("description", s.Param(*role.Description))
 	}
 
-	if role.DeletedTime != nil {
-		s.SET("disabled_time", s.Param(*role.DeletedTime))
+	if role.DisabledTime != nil {
+		s.SET("disabled_time", s.Param(*role.DisabledTime))
 	}
 
 	s.SET("updated_time", "CURRENT_TIMESTAMP")
@@ -306,12 +306,13 @@ func (r *roleTable) QueryRoles(ctx context.Context, selector RoleSelector, pagin
 }
 
 type Resource struct {
-	ID          *int64
-	Name        *string
-	Description *string
-	CreatedTime *time.Time
-	UpdatedTime *time.Time
-	DeletedTime *time.Time
+	ID           *int64
+	Name         *string
+	Description  *string
+	CreatedTime  *time.Time
+	UpdatedTime  *time.Time
+	DeletedTime  *time.Time
+	DisabledTime *time.Time
 }
 
 func (srv *Resource) ToProto() *proto.Resource {
@@ -424,8 +425,8 @@ func (r *resourceTable) UpdateResource(ctx context.Context, selector ResourceSel
 		s.SET("description", s.Param(*resource.Description))
 	}
 
-	if resource.DeletedTime != nil {
-		s.SET("disabled_time", s.Param(*resource.DeletedTime))
+	if resource.DisabledTime != nil {
+		s.SET("disabled_time", s.Param(*resource.DisabledTime))
 	}
 
 	s.SET("updated_time", "CURRENT_TIMESTAMP")
