@@ -3,7 +3,7 @@ name: go test
 on: [pull_request, push]
 
 jobs:
-  golang:
+  test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout (GitHub)
