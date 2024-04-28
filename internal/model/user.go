@@ -252,7 +252,7 @@ func (r *userTable) DeleteUser(ctx context.Context, selector UserSelector) (err 
 		s.WHERE("username=" + s.Param(selector.Username))
 	}
 
-	s.SET("deleted_time", s.Param(time.Now()))
+	s.SET("deleted_time", "CURRENT_TIMESTAMP")
 
 	slog.DebugContext(ctx, s.String(), slog.Any("params", s.Params()))
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
@@ -286,7 +286,7 @@ func (r *userTable) UpdateUser(ctx context.Context, selector UserSelector, user 
 		s.SET("disabled_time", s.Param(*user.DisabledTime))
 	}
 
-	s.SET("updated_time", s.Param(time.Now()))
+	s.SET("updated_time", "CURRENT_TIMESTAMP")
 
 	slog.DebugContext(ctx, s.String(), slog.Any("params", s.Params()))
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)

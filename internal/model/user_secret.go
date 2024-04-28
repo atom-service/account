@@ -252,7 +252,7 @@ func (r *secretTable) DeleteSecret(ctx context.Context, selector SecretSelector)
 		s.WHERE("type=" + s.Param(selector.Type))
 	}
 
-	s.SET("deleted_time", s.Param(time.Now()))
+	s.SET("deleted_time", "CURRENT_TIMESTAMP")
 
 	slog.DebugContext(ctx, s.String(), slog.Any("params", s.Params()))
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
@@ -277,7 +277,7 @@ func (r *secretTable) UpdateSecret(ctx context.Context, selector SecretSelector,
 		s.SET("disabled_time", s.Param(*user.DisabledTime))
 	}
 
-	s.SET("updated_time", s.Param(time.Now()))
+	s.SET("updated_time", "CURRENT_TIMESTAMP")
 
 	slog.DebugContext(ctx, s.String(), slog.Any("params", s.Params()))
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)

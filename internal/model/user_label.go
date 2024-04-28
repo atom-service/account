@@ -155,7 +155,7 @@ func (r *labelTable) DeleteLabel(ctx context.Context, selector LabelSelector) (e
 		s.WHERE("user_id=" + s.Param(selector.UserID))
 	}
 
-	s.SET("deleted_time", s.Param(time.Now()))
+	s.SET("deleted_time", "CURRENT_TIMESTAMP")
 
 	slog.DebugContext(ctx, s.String(), slog.Any("params", s.Params()))
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)

@@ -166,7 +166,7 @@ func (r *settingTable) UpdateSetting(ctx context.Context, selector SettingSelect
 		s.SET("deleted_time", s.Param(*role.DeletedTime))
 	}
 
-	s.SET("updated_time", s.Param(time.Now()))
+	s.SET("updated_time", "CURRENT_TIMESTAMP")
 
 	slog.DebugContext(ctx, s.String(), slog.Any("params", s.Params()))
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
@@ -196,7 +196,7 @@ func (r *settingTable) DeleteSetting(ctx context.Context, selector SettingSelect
 		s.WHERE("user_id=" + s.Param(selector.UserID))
 	}
 
-	s.SET("deleted_time", s.Param(time.Now()))
+	s.SET("deleted_time", "CURRENT_TIMESTAMP")
 
 	slog.DebugContext(ctx, s.String(), slog.Any("params", s.Params()))
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)

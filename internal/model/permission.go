@@ -173,7 +173,7 @@ func (r *roleTable) UpdateRole(ctx context.Context, selector RoleSelector, role 
 		s.SET("disabled_time", s.Param(*role.DeletedTime))
 	}
 
-	s.SET("updated_time", s.Param(time.Now()))
+	s.SET("updated_time", "CURRENT_TIMESTAMP")
 
 	slog.DebugContext(ctx, s.String(), slog.Any("params", s.Params()))
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
@@ -199,7 +199,7 @@ func (r *roleTable) DeleteRole(ctx context.Context, selector RoleSelector) (err 
 		s.WHERE("name=" + s.Param(selector.Name))
 	}
 
-	s.SET("deleted_time", s.Param(time.Now()))
+	s.SET("deleted_time", "CURRENT_TIMESTAMP")
 
 	slog.DebugContext(ctx, s.String(), slog.Any("params", s.Params()))
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
@@ -428,7 +428,7 @@ func (r *resourceTable) UpdateResource(ctx context.Context, selector ResourceSel
 		s.SET("disabled_time", s.Param(*resource.DeletedTime))
 	}
 
-	s.SET("updated_time", s.Param(time.Now()))
+	s.SET("updated_time", "CURRENT_TIMESTAMP")
 
 	slog.DebugContext(ctx, s.String(), slog.Any("params", s.Params()))
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
@@ -454,7 +454,7 @@ func (r *resourceTable) DeleteResource(ctx context.Context, selector ResourceSel
 		s.WHERE("name=" + s.Param(selector.Name))
 	}
 
-	s.SET("deleted_time", s.Param(time.Now()))
+	s.SET("deleted_time", "CURRENT_TIMESTAMP")
 
 	slog.DebugContext(ctx, s.String(), slog.Any("params", s.Params()))
 	_, err = Database.ExecContext(ctx, s.String(), s.Params()...)
