@@ -35,17 +35,9 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env: {{ include "account.serviceAccountEnv" . | indent 12 }}
           ports:
-            - name: http
-              containerPort: {{ .Values.service.port }}
+            - name: grpc
               protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
+              containerPort: {{ .Values.service.port }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
