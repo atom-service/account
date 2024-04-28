@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"log/slog"
 	"time"
 
 	"github.com/atom-service/account/internal/model"
@@ -73,7 +74,6 @@ func NewServerAuthInterceptor(accountServerHost, secretKey, secretValue string) 
 	}
 }
 
-// 通过 ctx 中的 authorization 解析用户信息，并设置到 ctx，以便程序访问
 func (ai *serverAuthInterceptor) resolveUserIncomingContext(ctx context.Context) context.Context {
 	metadata, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
@@ -87,18 +87,7 @@ func (ai *serverAuthInterceptor) resolveUserIncomingContext(ctx context.Context)
 
 	tokenInfo, err := ParseToken(tokens[0])
 	if err != nil || tokenInfo.SecretKey == "" {
-		return ctx
-	}
-
-	// 说明是 serverAuthInterceptor 自己的请求
-	// 比如下面代码中的 QuerySecrets、QueryUsers 等
-	// 如果是自己的请求，则直接构造一个 Secret，不然就死循环了
-	isSelfBackToken := VerifyToken(ai.secretKey, ai.secretValue, tokens[0])
-	if isSelfBackToken {
-		ctx = context.WithValue(ctx, ContextSecretSymbol, &proto.Secret{
-			Key:   ai.secretKey,
-			Value: ai.secretValue,
-		})
+		slog.InfoContext(ctx, " Invalid token, possibly invalid secret")
 		return ctx
 	}
 
@@ -108,9 +97,11 @@ func (ai *serverAuthInterceptor) resolveUserIncomingContext(ctx context.Context)
 	querySecretsRequest := &proto.QuerySecretsRequest{Selector: secretSelector, Pagination: paginationOption}
 	querySecretsResponse, err := ai.accountClient.QuerySecrets(ctx, querySecretsRequest)
 	if err != nil || querySecretsResponse.State != proto.State_SUCCESS {
+		slog.InfoContext(ctx, " Invalid token, possibly invalid secret")
 		return ctx
 	}
 	if querySecretsResponse.Data.Total == 0 {
+		slog.InfoContext(ctx, " Invalid token, possibly invalid secret")
 		return ctx
 	}
 
@@ -121,22 +112,26 @@ func (ai *serverAuthInterceptor) resolveUserIncomingContext(ctx context.Context)
 	secretModel := new(model.Secret)
 	secretModel.LoadProto(secret)
 	if secretModel.IsDisabled() {
+		slog.InfoContext(ctx, " Invalid token, possibly invalid secret")
 		return ctx
 	}
 
 	if !VerifyToken(secret.Key, secret.Value, tokens[0]) {
+		slog.InfoContext(ctx, " Invalid token, possibly invalid secret")
 		return ctx
 	}
 
 	userSelector := &proto.UserSelector{ID: &secret.UserID}
 	queryUserResponse, err := ai.accountClient.QueryUsers(ctx, &proto.QueryUsersRequest{Selector: userSelector})
 	if err != nil || queryUserResponse.State != proto.State_SUCCESS || querySecretsResponse.Data.Total == 0 {
+		slog.InfoContext(ctx, " Invalid token, possibly invalid secret")
 		return ctx
 	}
 
 	summaryForUserRequest := &proto.SummaryForUserRequest{UserSelector: userSelector}
 	summaryForUserResponse, err := ai.permissionClient.SummaryForUser(ctx, summaryForUserRequest)
 	if err != nil || queryUserResponse.State != proto.State_SUCCESS {
+		slog.InfoContext(ctx, " Invalid token, possibly invalid secret")
 		return ctx
 	}
 
