@@ -7,6 +7,7 @@ import (
 	"github.com/atom-service/account/internal/auth"
 	"github.com/atom-service/account/package/proto"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
 func StartServer(addr string) error {
@@ -21,5 +22,6 @@ func StartServer(addr string) error {
 	proto.RegisterAccountServiceServer(grpcServer, AccountServer)
 	proto.RegisterPermissionServiceServer(grpcServer, PermissionServer)
 	log.Printf("start server at: %s", addr)
+	reflection.Register(grpcServer)
 	return grpcServer.Serve(listen)
 }
