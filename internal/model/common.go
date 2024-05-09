@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"log/slog"
 
+	"github.com/atom-service/account/internal/config"
 	"github.com/atom-service/account/package/proto"
 	_ "github.com/jackc/pgx/v5/stdlib"
-	"github.com/yinxulai/goconf"
 )
 
 var Database *sql.DB
@@ -40,12 +40,8 @@ var initPermissionResources = []Resource{
 	{Name: &PermissionResourceResourceName, Description: &PermissionResourceResourceDescription},
 }
 
-func init() {
-	goconf.Declare("postgres_uri", "postgresql://postgres:password@localhost/account", true, "Postgres database connection uri")
-}
-
 func InitDB(ctx context.Context) {
-	newDB, err := sql.Open("pgx", goconf.MustGet("postgres_uri"))
+	newDB, err := sql.Open("pgx", config.Database.Uri)
 	if err != nil {
 		panic(fmt.Errorf("unable to connect to database: %v", err))
 	}

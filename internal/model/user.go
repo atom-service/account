@@ -10,15 +10,11 @@ import (
 	"log/slog"
 	"time"
 
+	"github.com/atom-service/account/internal/config"
 	"github.com/atom-service/account/internal/helper"
 	"github.com/atom-service/account/package/proto"
-	"github.com/yinxulai/goconf"
 	"github.com/yinxulai/sqls"
 )
-
-func init() {
-	goconf.Declare("admin_password", "", true, "Admin user’s initial password")
-}
 
 var AdminUserID = int64(1)
 var AdminUsername = "admin"
@@ -141,7 +137,12 @@ func (s *userTable) initData(ctx context.Context) (err error) {
 		return err
 	}
 
-	adminPassword := goconf.MustGet("admin_password")
+	var adminPassword string
+	if config.Admin != nil && config.Admin.Password != nil {
+		if *config.Admin.Password != "" {
+			adminPassword = *config.Admin.Password
+		}
+	}
 
 	if adminPassword == "" {
 		adminPassword = helper.GenerateRandomString(12, nil)
@@ -165,9 +166,9 @@ func (s *userTable) initData(ctx context.Context) (err error) {
 	}
 
 	slog.InfoContext(
-		ctx, "admin user are upsert",
-		slog.String("password", adminPassword),
+		ctx, "admin password are upsert",
 		slog.String("username", AdminUsername),
+		slog.String("password", adminPassword),
 	)
 
 	return nil

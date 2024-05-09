@@ -1,0 +1,9 @@
+server:
+  port: 80
+database:
+  uri: postgresql://postgres:password@postgresql/account
+admin:
+  password: test
+secret:
+  key: test
+  value: test

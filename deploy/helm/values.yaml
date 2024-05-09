@@ -4,10 +4,16 @@
 
 replicaCount: 1
 
-postgres_uri:
-admin_password:
-admin_secret_key:
-admin_secret_value:
+account:
+  service:
+    port: 80
+  database:
+    uri: postgresql://postgres:password@postgresql/account
+  admin:
+    password: example-admin-password
+  secret:
+    key: example-secret-key
+    value: example-secret-value
 
 image:
   repository: ghcr.io/atom-service/account

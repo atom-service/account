@@ -27,17 +27,27 @@ spec:
       serviceAccountName: {{ include "account.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      volumes:
+        - name: config-volume
+          configMap:
+            name: config.yaml
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          env: {{ include "account.serviceAccountEnv" . | indent 12 }}
           ports:
             - name: grpc
               protocol: TCP
-              containerPort: {{ .Values.service.port }}
+              containerPort: {{ .Values.account.service.port }}
+          volumeMounts:
+              - name: config-volume
+                mountPath: /workspace/config
+                readOnly: true
+          env:
+            - name: CONFIG
+              value: /workspace/config/config.yaml
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
