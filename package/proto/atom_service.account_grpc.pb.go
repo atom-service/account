@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v3.21.12
-// source: account.proto
+// source: atom_service.account.proto
 
 package proto
 
@@ -53,7 +53,7 @@ func NewAccountServiceClient(cc grpc.ClientConnInterface) AccountServiceClient {
 
 func (c *accountServiceClient) SignIn(ctx context.Context, in *SignInRequest, opts ...grpc.CallOption) (*SignInResponse, error) {
 	out := new(SignInResponse)
-	err := c.cc.Invoke(ctx, "/AccountService/SignIn", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/atom_service.account.AccountService/SignIn", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +62,7 @@ func (c *accountServiceClient) SignIn(ctx context.Context, in *SignInRequest, op
 
 func (c *accountServiceClient) SignUp(ctx context.Context, in *SignUpRequest, opts ...grpc.CallOption) (*SignUpResponse, error) {
 	out := new(SignUpResponse)
-	err := c.cc.Invoke(ctx, "/AccountService/SignUp", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/atom_service.account.AccountService/SignUp", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -71,7 +71,7 @@ func (c *accountServiceClient) SignUp(ctx context.Context, in *SignUpRequest, op
 
 func (c *accountServiceClient) SignOut(ctx context.Context, in *SignOutRequest, opts ...grpc.CallOption) (*SignOutResponse, error) {
 	out := new(SignOutResponse)
-	err := c.cc.Invoke(ctx, "/AccountService/SignOut", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/atom_service.account.AccountService/SignOut", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -80,7 +80,7 @@ func (c *accountServiceClient) SignOut(ctx context.Context, in *SignOutRequest, 
 
 func (c *accountServiceClient) QueryUsers(ctx context.Context, in *QueryUsersRequest, opts ...grpc.CallOption) (*QueryUsersResponse, error) {
 	out := new(QueryUsersResponse)
-	err := c.cc.Invoke(ctx, "/AccountService/QueryUsers", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/atom_service.account.AccountService/QueryUsers", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -89,7 +89,7 @@ func (c *accountServiceClient) QueryUsers(ctx context.Context, in *QueryUsersReq
 
 func (c *accountServiceClient) DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*DeleteUserResponse, error) {
 	out := new(DeleteUserResponse)
-	err := c.cc.Invoke(ctx, "/AccountService/DeleteUser", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/atom_service.account.AccountService/DeleteUser", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -98,7 +98,7 @@ func (c *accountServiceClient) DeleteUser(ctx context.Context, in *DeleteUserReq
 
 func (c *accountServiceClient) CreateSecret(ctx context.Context, in *CreateSecretRequest, opts ...grpc.CallOption) (*CreateSecretResponse, error) {
 	out := new(CreateSecretResponse)
-	err := c.cc.Invoke(ctx, "/AccountService/CreateSecret", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/atom_service.account.AccountService/CreateSecret", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -107,7 +107,7 @@ func (c *accountServiceClient) CreateSecret(ctx context.Context, in *CreateSecre
 
 func (c *accountServiceClient) QuerySecrets(ctx context.Context, in *QuerySecretsRequest, opts ...grpc.CallOption) (*QuerySecretsResponse, error) {
 	out := new(QuerySecretsResponse)
-	err := c.cc.Invoke(ctx, "/AccountService/QuerySecrets", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/atom_service.account.AccountService/QuerySecrets", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -116,7 +116,7 @@ func (c *accountServiceClient) QuerySecrets(ctx context.Context, in *QuerySecret
 
 func (c *accountServiceClient) DisableSecret(ctx context.Context, in *DisableSecretRequest, opts ...grpc.CallOption) (*DisableSecretResponse, error) {
 	out := new(DisableSecretResponse)
-	err := c.cc.Invoke(ctx, "/AccountService/DisableSecret", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/atom_service.account.AccountService/DisableSecret", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -125,7 +125,7 @@ func (c *accountServiceClient) DisableSecret(ctx context.Context, in *DisableSec
 
 func (c *accountServiceClient) DeleteSecrets(ctx context.Context, in *DeleteSecretsRequest, opts ...grpc.CallOption) (*DeleteSecretsResponse, error) {
 	out := new(DeleteSecretsResponse)
-	err := c.cc.Invoke(ctx, "/AccountService/DeleteSecrets", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/atom_service.account.AccountService/DeleteSecrets", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -134,7 +134,7 @@ func (c *accountServiceClient) DeleteSecrets(ctx context.Context, in *DeleteSecr
 
 func (c *accountServiceClient) UpsertLabel(ctx context.Context, in *UpsertLabelRequest, opts ...grpc.CallOption) (*UpsertLabelResponse, error) {
 	out := new(UpsertLabelResponse)
-	err := c.cc.Invoke(ctx, "/AccountService/UpsertLabel", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/atom_service.account.AccountService/UpsertLabel", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -143,7 +143,7 @@ func (c *accountServiceClient) UpsertLabel(ctx context.Context, in *UpsertLabelR
 
 func (c *accountServiceClient) QueryLabels(ctx context.Context, in *QueryLabelsRequest, opts ...grpc.CallOption) (*QueryLabelsResponse, error) {
 	out := new(QueryLabelsResponse)
-	err := c.cc.Invoke(ctx, "/AccountService/QueryLabels", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/atom_service.account.AccountService/QueryLabels", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -152,7 +152,7 @@ func (c *accountServiceClient) QueryLabels(ctx context.Context, in *QueryLabelsR
 
 func (c *accountServiceClient) DeleteLabels(ctx context.Context, in *DeleteLabelsRequest, opts ...grpc.CallOption) (*DeleteLabelsResponse, error) {
 	out := new(DeleteLabelsResponse)
-	err := c.cc.Invoke(ctx, "/AccountService/DeleteLabels", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/atom_service.account.AccountService/DeleteLabels", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -161,7 +161,7 @@ func (c *accountServiceClient) DeleteLabels(ctx context.Context, in *DeleteLabel
 
 func (c *accountServiceClient) CreateSetting(ctx context.Context, in *CreateSettingRequest, opts ...grpc.CallOption) (*CreateSettingResponse, error) {
 	out := new(CreateSettingResponse)
-	err := c.cc.Invoke(ctx, "/AccountService/CreateSetting", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/atom_service.account.AccountService/CreateSetting", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -170,7 +170,7 @@ func (c *accountServiceClient) CreateSetting(ctx context.Context, in *CreateSett
 
 func (c *accountServiceClient) UpdateSetting(ctx context.Context, in *UpdateSettingRequest, opts ...grpc.CallOption) (*UpdateSettingResponse, error) {
 	out := new(UpdateSettingResponse)
-	err := c.cc.Invoke(ctx, "/AccountService/UpdateSetting", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/atom_service.account.AccountService/UpdateSetting", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -179,7 +179,7 @@ func (c *accountServiceClient) UpdateSetting(ctx context.Context, in *UpdateSett
 
 func (c *accountServiceClient) QuerySettings(ctx context.Context, in *QuerySettingsRequest, opts ...grpc.CallOption) (*QuerySettingsResponse, error) {
 	out := new(QuerySettingsResponse)
-	err := c.cc.Invoke(ctx, "/AccountService/QuerySettings", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/atom_service.account.AccountService/QuerySettings", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -188,7 +188,7 @@ func (c *accountServiceClient) QuerySettings(ctx context.Context, in *QuerySetti
 
 func (c *accountServiceClient) DeleteSettings(ctx context.Context, in *DeleteSettingsRequest, opts ...grpc.CallOption) (*DeleteSettingsResponse, error) {
 	out := new(DeleteSettingsResponse)
-	err := c.cc.Invoke(ctx, "/AccountService/DeleteSettings", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/atom_service.account.AccountService/DeleteSettings", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -296,7 +296,7 @@ func _AccountService_SignIn_Handler(srv interface{}, ctx context.Context, dec fu
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/AccountService/SignIn",
+		FullMethod: "/atom_service.account.AccountService/SignIn",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AccountServiceServer).SignIn(ctx, req.(*SignInRequest))
@@ -314,7 +314,7 @@ func _AccountService_SignUp_Handler(srv interface{}, ctx context.Context, dec fu
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/AccountService/SignUp",
+		FullMethod: "/atom_service.account.AccountService/SignUp",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AccountServiceServer).SignUp(ctx, req.(*SignUpRequest))
@@ -332,7 +332,7 @@ func _AccountService_SignOut_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/AccountService/SignOut",
+		FullMethod: "/atom_service.account.AccountService/SignOut",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AccountServiceServer).SignOut(ctx, req.(*SignOutRequest))
@@ -350,7 +350,7 @@ func _AccountService_QueryUsers_Handler(srv interface{}, ctx context.Context, de
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/AccountService/QueryUsers",
+		FullMethod: "/atom_service.account.AccountService/QueryUsers",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AccountServiceServer).QueryUsers(ctx, req.(*QueryUsersRequest))
@@ -368,7 +368,7 @@ func _AccountService_DeleteUser_Handler(srv interface{}, ctx context.Context, de
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/AccountService/DeleteUser",
+		FullMethod: "/atom_service.account.AccountService/DeleteUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AccountServiceServer).DeleteUser(ctx, req.(*DeleteUserRequest))
@@ -386,7 +386,7 @@ func _AccountService_CreateSecret_Handler(srv interface{}, ctx context.Context, 
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/AccountService/CreateSecret",
+		FullMethod: "/atom_service.account.AccountService/CreateSecret",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AccountServiceServer).CreateSecret(ctx, req.(*CreateSecretRequest))
@@ -404,7 +404,7 @@ func _AccountService_QuerySecrets_Handler(srv interface{}, ctx context.Context, 
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/AccountService/QuerySecrets",
+		FullMethod: "/atom_service.account.AccountService/QuerySecrets",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AccountServiceServer).QuerySecrets(ctx, req.(*QuerySecretsRequest))
@@ -422,7 +422,7 @@ func _AccountService_DisableSecret_Handler(srv interface{}, ctx context.Context,
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/AccountService/DisableSecret",
+		FullMethod: "/atom_service.account.AccountService/DisableSecret",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AccountServiceServer).DisableSecret(ctx, req.(*DisableSecretRequest))
@@ -440,7 +440,7 @@ func _AccountService_DeleteSecrets_Handler(srv interface{}, ctx context.Context,
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/AccountService/DeleteSecrets",
+		FullMethod: "/atom_service.account.AccountService/DeleteSecrets",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AccountServiceServer).DeleteSecrets(ctx, req.(*DeleteSecretsRequest))
@@ -458,7 +458,7 @@ func _AccountService_UpsertLabel_Handler(srv interface{}, ctx context.Context, d
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/AccountService/UpsertLabel",
+		FullMethod: "/atom_service.account.AccountService/UpsertLabel",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AccountServiceServer).UpsertLabel(ctx, req.(*UpsertLabelRequest))
@@ -476,7 +476,7 @@ func _AccountService_QueryLabels_Handler(srv interface{}, ctx context.Context, d
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/AccountService/QueryLabels",
+		FullMethod: "/atom_service.account.AccountService/QueryLabels",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AccountServiceServer).QueryLabels(ctx, req.(*QueryLabelsRequest))
@@ -494,7 +494,7 @@ func _AccountService_DeleteLabels_Handler(srv interface{}, ctx context.Context, 
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/AccountService/DeleteLabels",
+		FullMethod: "/atom_service.account.AccountService/DeleteLabels",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AccountServiceServer).DeleteLabels(ctx, req.(*DeleteLabelsRequest))
@@ -512,7 +512,7 @@ func _AccountService_CreateSetting_Handler(srv interface{}, ctx context.Context,
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/AccountService/CreateSetting",
+		FullMethod: "/atom_service.account.AccountService/CreateSetting",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AccountServiceServer).CreateSetting(ctx, req.(*CreateSettingRequest))
@@ -530,7 +530,7 @@ func _AccountService_UpdateSetting_Handler(srv interface{}, ctx context.Context,
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/AccountService/UpdateSetting",
+		FullMethod: "/atom_service.account.AccountService/UpdateSetting",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AccountServiceServer).UpdateSetting(ctx, req.(*UpdateSettingRequest))
@@ -548,7 +548,7 @@ func _AccountService_QuerySettings_Handler(srv interface{}, ctx context.Context,
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/AccountService/QuerySettings",
+		FullMethod: "/atom_service.account.AccountService/QuerySettings",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AccountServiceServer).QuerySettings(ctx, req.(*QuerySettingsRequest))
@@ -566,7 +566,7 @@ func _AccountService_DeleteSettings_Handler(srv interface{}, ctx context.Context
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/AccountService/DeleteSettings",
+		FullMethod: "/atom_service.account.AccountService/DeleteSettings",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AccountServiceServer).DeleteSettings(ctx, req.(*DeleteSettingsRequest))
@@ -578,7 +578,7 @@ func _AccountService_DeleteSettings_Handler(srv interface{}, ctx context.Context
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var AccountService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "AccountService",
+	ServiceName: "atom_service.account.AccountService",
 	HandlerType: (*AccountServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -647,5 +647,5 @@ var AccountService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "account.proto",
+	Metadata: "atom_service.account.proto",
 }

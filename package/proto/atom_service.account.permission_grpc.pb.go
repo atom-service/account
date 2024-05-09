@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v3.21.12
-// source: permission.proto
+// source: atom_service.account.permission.proto
 
 package proto
 
@@ -45,7 +45,7 @@ func NewPermissionServiceClient(cc grpc.ClientConnInterface) PermissionServiceCl
 
 func (c *permissionServiceClient) CreateRole(ctx context.Context, in *CreateRoleRequest, opts ...grpc.CallOption) (*CreateRoleResponse, error) {
 	out := new(CreateRoleResponse)
-	err := c.cc.Invoke(ctx, "/PermissionService/CreateRole", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/atom_service.account.PermissionService/CreateRole", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +54,7 @@ func (c *permissionServiceClient) CreateRole(ctx context.Context, in *CreateRole
 
 func (c *permissionServiceClient) QueryRoles(ctx context.Context, in *QueryRolesRequest, opts ...grpc.CallOption) (*QueryRolesResponse, error) {
 	out := new(QueryRolesResponse)
-	err := c.cc.Invoke(ctx, "/PermissionService/QueryRoles", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/atom_service.account.PermissionService/QueryRoles", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +63,7 @@ func (c *permissionServiceClient) QueryRoles(ctx context.Context, in *QueryRoles
 
 func (c *permissionServiceClient) UpdateRole(ctx context.Context, in *UpdateRoleRequest, opts ...grpc.CallOption) (*UpdateRoleResponse, error) {
 	out := new(UpdateRoleResponse)
-	err := c.cc.Invoke(ctx, "/PermissionService/UpdateRole", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/atom_service.account.PermissionService/UpdateRole", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +72,7 @@ func (c *permissionServiceClient) UpdateRole(ctx context.Context, in *UpdateRole
 
 func (c *permissionServiceClient) DeleteRole(ctx context.Context, in *DeleteRoleRequest, opts ...grpc.CallOption) (*DeleteRoleResponse, error) {
 	out := new(DeleteRoleResponse)
-	err := c.cc.Invoke(ctx, "/PermissionService/DeleteRole", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/atom_service.account.PermissionService/DeleteRole", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -81,7 +81,7 @@ func (c *permissionServiceClient) DeleteRole(ctx context.Context, in *DeleteRole
 
 func (c *permissionServiceClient) CreateResource(ctx context.Context, in *CreateResourceRequest, opts ...grpc.CallOption) (*CreateResourceResponse, error) {
 	out := new(CreateResourceResponse)
-	err := c.cc.Invoke(ctx, "/PermissionService/CreateResource", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/atom_service.account.PermissionService/CreateResource", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +90,7 @@ func (c *permissionServiceClient) CreateResource(ctx context.Context, in *Create
 
 func (c *permissionServiceClient) QueryResources(ctx context.Context, in *QueryResourcesRequest, opts ...grpc.CallOption) (*QueryResourcesResponse, error) {
 	out := new(QueryResourcesResponse)
-	err := c.cc.Invoke(ctx, "/PermissionService/QueryResources", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/atom_service.account.PermissionService/QueryResources", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -99,7 +99,7 @@ func (c *permissionServiceClient) QueryResources(ctx context.Context, in *QueryR
 
 func (c *permissionServiceClient) UpdateResource(ctx context.Context, in *UpdateResourceRequest, opts ...grpc.CallOption) (*UpdateResourceResponse, error) {
 	out := new(UpdateResourceResponse)
-	err := c.cc.Invoke(ctx, "/PermissionService/UpdateResource", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/atom_service.account.PermissionService/UpdateResource", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -108,7 +108,7 @@ func (c *permissionServiceClient) UpdateResource(ctx context.Context, in *Update
 
 func (c *permissionServiceClient) DeleteResources(ctx context.Context, in *DeleteResourcesRequest, opts ...grpc.CallOption) (*DeleteResourcesResponse, error) {
 	out := new(DeleteResourcesResponse)
-	err := c.cc.Invoke(ctx, "/PermissionService/DeleteResources", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/atom_service.account.PermissionService/DeleteResources", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -117,7 +117,7 @@ func (c *permissionServiceClient) DeleteResources(ctx context.Context, in *Delet
 
 func (c *permissionServiceClient) SummaryForUser(ctx context.Context, in *SummaryForUserRequest, opts ...grpc.CallOption) (*SummaryForUserResponse, error) {
 	out := new(SummaryForUserResponse)
-	err := c.cc.Invoke(ctx, "/PermissionService/SummaryForUser", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/atom_service.account.PermissionService/SummaryForUser", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -126,7 +126,7 @@ func (c *permissionServiceClient) SummaryForUser(ctx context.Context, in *Summar
 
 func (c *permissionServiceClient) ApplyRoleForUser(ctx context.Context, in *ApplyRoleForUserRequest, opts ...grpc.CallOption) (*ApplyRoleForUserResponse, error) {
 	out := new(ApplyRoleForUserResponse)
-	err := c.cc.Invoke(ctx, "/PermissionService/ApplyRoleForUser", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/atom_service.account.PermissionService/ApplyRoleForUser", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -135,7 +135,7 @@ func (c *permissionServiceClient) ApplyRoleForUser(ctx context.Context, in *Appl
 
 func (c *permissionServiceClient) RemoveRoleForUser(ctx context.Context, in *RemoveRoleForUserRequest, opts ...grpc.CallOption) (*RemoveRoleForUserResponse, error) {
 	out := new(RemoveRoleForUserResponse)
-	err := c.cc.Invoke(ctx, "/PermissionService/RemoveRoleForUser", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/atom_service.account.PermissionService/RemoveRoleForUser", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -220,7 +220,7 @@ func _PermissionService_CreateRole_Handler(srv interface{}, ctx context.Context,
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/PermissionService/CreateRole",
+		FullMethod: "/atom_service.account.PermissionService/CreateRole",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(PermissionServiceServer).CreateRole(ctx, req.(*CreateRoleRequest))
@@ -238,7 +238,7 @@ func _PermissionService_QueryRoles_Handler(srv interface{}, ctx context.Context,
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/PermissionService/QueryRoles",
+		FullMethod: "/atom_service.account.PermissionService/QueryRoles",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(PermissionServiceServer).QueryRoles(ctx, req.(*QueryRolesRequest))
@@ -256,7 +256,7 @@ func _PermissionService_UpdateRole_Handler(srv interface{}, ctx context.Context,
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/PermissionService/UpdateRole",
+		FullMethod: "/atom_service.account.PermissionService/UpdateRole",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(PermissionServiceServer).UpdateRole(ctx, req.(*UpdateRoleRequest))
@@ -274,7 +274,7 @@ func _PermissionService_DeleteRole_Handler(srv interface{}, ctx context.Context,
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/PermissionService/DeleteRole",
+		FullMethod: "/atom_service.account.PermissionService/DeleteRole",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(PermissionServiceServer).DeleteRole(ctx, req.(*DeleteRoleRequest))
@@ -292,7 +292,7 @@ func _PermissionService_CreateResource_Handler(srv interface{}, ctx context.Cont
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/PermissionService/CreateResource",
+		FullMethod: "/atom_service.account.PermissionService/CreateResource",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(PermissionServiceServer).CreateResource(ctx, req.(*CreateResourceRequest))
@@ -310,7 +310,7 @@ func _PermissionService_QueryResources_Handler(srv interface{}, ctx context.Cont
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/PermissionService/QueryResources",
+		FullMethod: "/atom_service.account.PermissionService/QueryResources",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(PermissionServiceServer).QueryResources(ctx, req.(*QueryResourcesRequest))
@@ -328,7 +328,7 @@ func _PermissionService_UpdateResource_Handler(srv interface{}, ctx context.Cont
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/PermissionService/UpdateResource",
+		FullMethod: "/atom_service.account.PermissionService/UpdateResource",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(PermissionServiceServer).UpdateResource(ctx, req.(*UpdateResourceRequest))
@@ -346,7 +346,7 @@ func _PermissionService_DeleteResources_Handler(srv interface{}, ctx context.Con
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/PermissionService/DeleteResources",
+		FullMethod: "/atom_service.account.PermissionService/DeleteResources",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(PermissionServiceServer).DeleteResources(ctx, req.(*DeleteResourcesRequest))
@@ -364,7 +364,7 @@ func _PermissionService_SummaryForUser_Handler(srv interface{}, ctx context.Cont
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/PermissionService/SummaryForUser",
+		FullMethod: "/atom_service.account.PermissionService/SummaryForUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(PermissionServiceServer).SummaryForUser(ctx, req.(*SummaryForUserRequest))
@@ -382,7 +382,7 @@ func _PermissionService_ApplyRoleForUser_Handler(srv interface{}, ctx context.Co
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/PermissionService/ApplyRoleForUser",
+		FullMethod: "/atom_service.account.PermissionService/ApplyRoleForUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(PermissionServiceServer).ApplyRoleForUser(ctx, req.(*ApplyRoleForUserRequest))
@@ -400,7 +400,7 @@ func _PermissionService_RemoveRoleForUser_Handler(srv interface{}, ctx context.C
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/PermissionService/RemoveRoleForUser",
+		FullMethod: "/atom_service.account.PermissionService/RemoveRoleForUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(PermissionServiceServer).RemoveRoleForUser(ctx, req.(*RemoveRoleForUserRequest))
@@ -412,7 +412,7 @@ func _PermissionService_RemoveRoleForUser_Handler(srv interface{}, ctx context.C
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var PermissionService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "PermissionService",
+	ServiceName: "atom_service.account.PermissionService",
 	HandlerType: (*PermissionServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -461,5 +461,5 @@ var PermissionService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "permission.proto",
+	Metadata: "atom_service.account.permission.proto",
 }

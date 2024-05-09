@@ -25,7 +25,7 @@ build/proto:
 		--go-grpc_out=package/proto \
 		--go-grpc_opt=paths=source_relative \
 		--proto_path=package/proto \
-		package/proto/* 
+		package/proto/*.proto
 
 ## build: build the application
 .PHONY: build
