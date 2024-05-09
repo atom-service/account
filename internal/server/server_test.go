@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/atom-service/account/internal/config"
 	"github.com/atom-service/account/internal/model"
 	"github.com/atom-service/account/package/auth"
 	"github.com/atom-service/account/package/proto"
@@ -14,6 +15,7 @@ import (
 )
 
 func TestMain(m *testing.M) {
+	config.MustInit("../../config.yaml")
 	model.Init(context.TODO())
 	m.Run()
 }

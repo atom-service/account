@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/atom-service/account/internal/config"
 	"github.com/yinxulai/sqls"
 )
 
@@ -30,6 +31,7 @@ func dropTables(ctx context.Context) (err error) {
 }
 
 func TestMain(m *testing.M) {
+	config.MustInit("../../config.yaml")
 	InitDB(context.TODO())
 	dropTables(context.TODO())
 	m.Run()

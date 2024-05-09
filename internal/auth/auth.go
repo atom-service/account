@@ -4,19 +4,14 @@ import (
 	"context"
 	"log/slog"
 
+	"github.com/atom-service/account/internal/config"
 	"github.com/atom-service/account/internal/model"
 	publicAuth "github.com/atom-service/account/package/auth"
-	"github.com/yinxulai/goconf"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
 
 type serverAuthInterceptor struct {
-}
-
-func init() {
-	goconf.Declare("admin_secret_key", "", false, "Global administrator secret key")
-	goconf.Declare("admin_secret_value", "", false, "Global administrator secret value")
 }
 
 func NewServerAuthInterceptor() *serverAuthInterceptor {
@@ -44,19 +39,12 @@ func (ai *serverAuthInterceptor) resolveUserIncomingContext(ctx context.Context)
 	paginationLimit := int64(1)
 	paginationOption := &model.Pagination{Limit: &paginationLimit}
 
-	globalAdminSecretKey := goconf.MustGet("admin_secret_key")
-	globalAdminSecretValue := goconf.MustGet("admin_secret_value")
-	if globalAdminSecretKey != "" && globalAdminSecretKey == tokenInfo.SecretKey {
-		if globalAdminSecretValue == "" {
-			slog.ErrorContext(ctx, "Global administrator secret value is empty")
-			return ctx
-		}
-
+	if config.Secret != nil && config.Secret.Key == tokenInfo.SecretKey {
 		// 管理员身份
 		secretInfo = &model.Secret{
 			UserID: &model.AdminUserID,
-			Key:    &globalAdminSecretKey,
-			Value:  &globalAdminSecretValue,
+			Key:    &config.Secret.Key,
+			Value:  &config.Secret.Value,
 		}
 	}
 

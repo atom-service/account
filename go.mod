@@ -6,7 +6,6 @@ toolchain go1.22.1
 
 require (
 	github.com/jackc/pgx/v5 v5.5.5
-	github.com/yinxulai/goconf v0.0.4
 	github.com/yinxulai/sqls v1.0.3
 	google.golang.org/grpc v1.63.0
 	google.golang.org/protobuf v1.33.0
@@ -26,4 +25,5 @@ require (
 	golang.org/x/sys v0.19.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240401170217-c3f982113cda // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

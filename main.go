@@ -2,20 +2,17 @@ package main
 
 import (
 	"context"
+	"strconv"
 	"time"
 
+	"github.com/atom-service/account/internal/config"
 	"github.com/atom-service/account/internal/model"
 	"github.com/atom-service/account/internal/server"
-	"github.com/yinxulai/goconf"
 )
-
-func init() {
-	goconf.Declare("port", "8080", true, "Service listening port")
-}
 
 func main() {
 	// 声明&初始化配置
-	goconf.MustLoad()
+	config.MustInit()
 
 	context, cancel := context.WithTimeout(context.TODO(), time.Minute)
 	defer cancel()
@@ -25,6 +22,6 @@ func main() {
 		panic(err)
 	}
 
-	listenAddress := ":" + goconf.MustGet("port")
+	listenAddress := ":" + strconv.Itoa(config.Server.Port) 
 	panic(server.StartServer(listenAddress))
 }

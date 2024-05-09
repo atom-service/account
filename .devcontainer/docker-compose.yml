@@ -13,9 +13,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ../:/workspace
-    environment:
-      PORT: :80
-      POSTGRES_URI: postgresql://postgres:password@postgresql/account
+      - ./config.yaml:/workspace/config.yaml
     networks:
       - dev-net
 
