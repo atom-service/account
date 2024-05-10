@@ -30,7 +30,7 @@ spec:
       volumes:
         - name: config-volume
           configMap:
-            name: config.yaml
+            name: {{ include "account.fullname" . }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
