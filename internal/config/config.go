@@ -9,10 +9,10 @@ import (
 
 var Admin *adminConfig
 var Secret *secretConfig
-var Server serverConfig
+var Service serviceConfig
 var Database databaseConfig
 
-type serverConfig struct {
+type serviceConfig struct {
 	Port int `yaml:"port"`
 }
 
@@ -56,7 +56,7 @@ func MustInit(configPaths ...string) {
 	}
 
 	var config struct {
-		Server   serverConfig   `yaml:"server"`
+		Server   serviceConfig   `yaml:"service"`
 		Database databaseConfig `yaml:"database"`
 		Admin    *adminConfig   `yaml:"admin"`
 		Secret   *secretConfig  `yaml:"secret"`
@@ -69,6 +69,6 @@ func MustInit(configPaths ...string) {
 
 	Admin = config.Admin
 	Secret = config.Secret
-	Server = config.Server
+	Service = config.Server
 	Database = config.Database
 }

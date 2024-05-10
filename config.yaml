@@ -1,4 +1,4 @@
-server:
+service:
   port: 8080
 database:
   uri: postgresql://postgres:password@localhost/account

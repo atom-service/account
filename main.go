@@ -22,6 +22,6 @@ func main() {
 		panic(err)
 	}
 
-	listenAddress := ":" + strconv.Itoa(config.Server.Port) 
+	listenAddress := ":" + strconv.Itoa(config.Service.Port) 
 	panic(server.StartServer(listenAddress))
 }
