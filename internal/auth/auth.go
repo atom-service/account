@@ -12,7 +12,7 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-func matchRuntimeSecretIfExits(secretKey string) *model.Secret {
+func matchRuntimeSecretIfExits(ctx context.Context, secretKey string) *model.Secret {
 	for _, secret := range config.Secrets {
 		if secret != nil && secret.Key == secretKey {
 			return &model.Secret{
@@ -58,17 +58,17 @@ func (ai *serverAuthInterceptor) resolveUserIncomingContext(ctx context.Context)
 
 	paginationLimit := int64(1)
 	paginationOption := &model.Pagination{Limit: &paginationLimit}
-	var secretInfo = matchRuntimeSecretIfExits(tokenInfo.SecretKey)
+	var secretInfo = matchRuntimeSecretIfExits(ctx, tokenInfo.SecretKey)
 
 	if secretInfo == nil {
 		secretSelector := model.SecretSelector{Key: &tokenInfo.SecretKey}
 		querySecretsResponse, err := model.SecretTable.QuerySecrets(ctx, secretSelector, paginationOption, nil)
 		if err != nil {
-			slog.InfoContext(ctx, " Invalid token, possibly invalid secret, err: %v", err)
+			slog.InfoContext(ctx, "Invalid token, possibly invalid secret, err: %v", err)
 		}
 
 		if len(querySecretsResponse) == 0 {
-			slog.InfoContext(ctx, " Invalid token, possibly invalid secret")
+			slog.InfoContext(ctx, "Invalid token, possibly invalid secret")
 			return ctx
 		}
 
@@ -77,23 +77,23 @@ func (ai *serverAuthInterceptor) resolveUserIncomingContext(ctx context.Context)
 
 	// 是否已经被禁用
 	if secretInfo.IsDisabled() {
-		slog.InfoContext(ctx, " Invalid token, possibly invalid secret, secret is disabled")
+		slog.InfoContext(ctx, "Invalid token, possibly invalid secret, secret is disabled")
 		return ctx
 	}
 
-	if !publicAuth.VerifyToken(*secretInfo.Key, *secretInfo.Value, tokens[0]) {
-		slog.InfoContext(ctx, " Invalid token, possibly invalid secret, verify token failed")
+	if !publicAuth.VerifyToken(*secretInfo.Key, *secretInfo.Value, firstToken) {
+		slog.InfoContext(ctx, "Invalid token, possibly invalid secret, verify token failed")
 		return ctx
 	}
 
 	userSelector := model.UserSelector{ID: secretInfo.UserID}
 	queryUserResponse, err := model.UserTable.QueryUsers(ctx, userSelector, paginationOption, nil)
 	if err != nil {
-		slog.InfoContext(ctx, " Invalid token, possibly invalid secret, err: %v", err)
+		slog.InfoContext(ctx, "Invalid token, possibly invalid secret, err: %v", err)
 	}
 
 	if len(queryUserResponse) == 0 {
-		slog.InfoContext(ctx, " Invalid token, possibly invalid secret, secret user not found")
+		slog.InfoContext(ctx, "Invalid token, possibly invalid secret, secret user not found")
 		return ctx
 	}
 
@@ -102,7 +102,7 @@ func (ai *serverAuthInterceptor) resolveUserIncomingContext(ctx context.Context)
 	summaryForUserRequest := model.UserResourceSummarySelector{UserID: firstUser.ID}
 	summaryForUserResponse, err := model.Permission.QueryUserResourceSummaries(ctx, summaryForUserRequest)
 	if err != nil {
-		slog.InfoContext(ctx, " Invalid token, possibly invalid secret, err: %v", err)
+		slog.InfoContext(ctx, "Invalid token, possibly invalid secret, err: %v", err)
 		return ctx
 	}
 

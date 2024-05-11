@@ -21,9 +21,9 @@ type adminConfig struct {
 }
 
 type secretConfig struct {
-	Key         string `yaml:"key"`
-	Value       string `yaml:"value"`
-	Description string `yaml:"description"`
+	Name  string `yaml:"name"`
+	Key   string `yaml:"key"`
+	Value string `yaml:"value"`
 }
 
 type databaseConfig struct {

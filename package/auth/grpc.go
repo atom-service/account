@@ -3,6 +3,7 @@ package auth
 import (
 	"context"
 	"log/slog"
+	"strings"
 	"time"
 
 	"github.com/atom-service/account/internal/model"
@@ -12,7 +13,7 @@ import (
 	metadata "google.golang.org/grpc/metadata"
 )
 
-type contextSymbol struct { name string }
+type contextSymbol struct{ name string }
 
 var (
 	ContextUserSymbol        = contextSymbol{"ContextUserSymbol"}
@@ -98,9 +99,21 @@ func (ai *serverAuthInterceptor) resolveUserIncomingContext(ctx context.Context)
 		return ctx
 	}
 
-	tokenInfo, err := ParseToken(tokens[0])
-	if err != nil || tokenInfo.SecretKey == "" {
-		slog.InfoContext(ctx, " Invalid token, possibly invalid secret")
+	firstToken := tokens[0]
+
+	// 标准的 Bearer token
+	if strings.HasPrefix(firstToken, "Bearer") {
+		// 从 Bearer token 中提取 token 值
+		firstToken = strings.TrimPrefix(firstToken, "Bearer ")
+	}
+
+	tokenInfo, err := ParseToken(firstToken)
+	if err != nil {
+		slog.InfoContext(ctx, "Invalid token, possibly invalid secret, err: %v", err)
+	}
+
+	if tokenInfo == nil || tokenInfo.SecretKey == "" {
+		slog.InfoContext(ctx, "Invalid token, possibly invalid secret")
 		return ctx
 	}
 
@@ -109,12 +122,16 @@ func (ai *serverAuthInterceptor) resolveUserIncomingContext(ctx context.Context)
 	paginationOption := &proto.PaginationOption{Limit: &paginationLimit}
 	querySecretsRequest := &proto.QuerySecretsRequest{Selector: secretSelector, Pagination: paginationOption}
 	querySecretsResponse, err := ai.accountClient.QuerySecrets(ctx, querySecretsRequest)
-	if err != nil || querySecretsResponse.State != proto.State_SUCCESS {
-		slog.InfoContext(ctx, " Invalid token, possibly invalid secret")
+	if err != nil {
+		slog.InfoContext(ctx, "Invalid token, possibly invalid secret, err: %v", err)
+	}
+
+	if querySecretsResponse.State != proto.State_SUCCESS {
+		slog.InfoContext(ctx, "Invalid token, possibly invalid secret")
 		return ctx
 	}
 	if querySecretsResponse.Data.Total == 0 {
-		slog.InfoContext(ctx, " Invalid token, possibly invalid secret")
+		slog.InfoContext(ctx, "Invalid token, possibly invalid secret")
 		return ctx
 	}
 
@@ -125,26 +142,34 @@ func (ai *serverAuthInterceptor) resolveUserIncomingContext(ctx context.Context)
 	secretModel := new(model.Secret)
 	secretModel.LoadProto(secret)
 	if secretModel.IsDisabled() {
-		slog.InfoContext(ctx, " Invalid token, possibly invalid secret")
+		slog.InfoContext(ctx, "Invalid token, possibly invalid secret, secret is disabled")
 		return ctx
 	}
 
-	if !VerifyToken(secret.Key, secret.Value, tokens[0]) {
-		slog.InfoContext(ctx, " Invalid token, possibly invalid secret")
+	if !VerifyToken(secret.Key, secret.Value, firstToken) {
+		slog.InfoContext(ctx, "Invalid token, possibly invalid secret, verify token failed")
 		return ctx
 	}
 
 	userSelector := &proto.UserSelector{ID: &secret.UserID}
 	queryUserResponse, err := ai.accountClient.QueryUsers(ctx, &proto.QueryUsersRequest{Selector: userSelector})
-	if err != nil || queryUserResponse.State != proto.State_SUCCESS || querySecretsResponse.Data.Total == 0 {
-		slog.InfoContext(ctx, " Invalid token, possibly invalid secret")
+	if err != nil {
+		slog.InfoContext(ctx, "Invalid token, possibly invalid secret, err: %v", err)
+	}
+
+	if queryUserResponse.State != proto.State_SUCCESS || querySecretsResponse.Data.Total == 0 {
+		slog.InfoContext(ctx, "Invalid token, possibly invalid secret, secret user not found")
 		return ctx
 	}
 
 	summaryForUserRequest := &proto.SummaryForUserRequest{UserSelector: userSelector}
 	summaryForUserResponse, err := ai.permissionClient.SummaryForUser(ctx, summaryForUserRequest)
-	if err != nil || queryUserResponse.State != proto.State_SUCCESS {
-		slog.InfoContext(ctx, " Invalid token, possibly invalid secret")
+	if err != nil {
+		slog.InfoContext(ctx, "Invalid token, possibly invalid secret, err: %v", err)
+	}
+
+	if queryUserResponse.State != proto.State_SUCCESS {
+		slog.InfoContext(ctx, "Invalid token, possibly invalid secret")
 		return ctx
 	}
 
