@@ -12,7 +12,7 @@ import (
 	metadata "google.golang.org/grpc/metadata"
 )
 
-type contextSymbol struct{ name string }
+type contextSymbol struct { name string }
 
 var (
 	ContextUserSymbol        = contextSymbol{"ContextUserSymbol"}
@@ -20,26 +20,39 @@ var (
 	ContextPermissionsSymbol = contextSymbol{"ContextPermissionsSymbol"}
 )
 
-type AuthWithTokenCredentials struct {
+func NewTokenCredential(token string) *tokenCredential {
+	return &tokenCredential{
+		Token: token,
+	}
+}
+
+type tokenCredential struct {
 	Token string
 }
 
-func (x *AuthWithTokenCredentials) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
+func (x *tokenCredential) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
 	return map[string]string{
 		"authorization": x.Token,
 	}, nil
 }
 
-func (x *AuthWithTokenCredentials) RequireTransportSecurity() bool {
+func (x *tokenCredential) RequireTransportSecurity() bool {
 	return false
 }
 
-type AuthWithSecretCredentials struct {
+func NewSecretCredential(secretKey, secretValue string) *secretCredential {
+	return &secretCredential{
+		SecretKey:   secretKey,
+		SecretValue: secretValue,
+	}
+}
+
+type secretCredential struct {
 	SecretKey   string
 	SecretValue string
 }
 
-func (x *AuthWithSecretCredentials) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
+func (x *secretCredential) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
 	return map[string]string{
 		"authorization": SignToken(x.SecretKey, x.SecretValue, SignData{
 			ExpiresAt: time.Now().UTC().Add(24 * 7 * time.Hour), // 1 周有效期
@@ -47,7 +60,7 @@ func (x *AuthWithSecretCredentials) GetRequestMetadata(ctx context.Context, uri 
 	}, nil
 }
 
-func (x *AuthWithSecretCredentials) RequireTransportSecurity() bool {
+func (x *secretCredential) RequireTransportSecurity() bool {
 	return false
 }
 
@@ -59,7 +72,7 @@ type serverAuthInterceptor struct {
 }
 
 func NewServerAuthInterceptor(accountServerHost, secretKey, secretValue string) *serverAuthInterceptor {
-	authCredentials := grpc.WithPerRPCCredentials(&AuthWithSecretCredentials{secretKey, secretValue})
+	authCredentials := grpc.WithPerRPCCredentials(&secretCredential{secretKey, secretValue})
 	nonSafeCredentials := grpc.WithTransportCredentials(insecure.NewCredentials())
 	conn, err := grpc.NewClient(accountServerHost, authCredentials, nonSafeCredentials)
 	if err != nil {
