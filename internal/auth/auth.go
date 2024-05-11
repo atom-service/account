@@ -3,6 +3,7 @@ package auth
 import (
 	"context"
 	"log/slog"
+	"strings"
 
 	"github.com/atom-service/account/internal/config"
 	"github.com/atom-service/account/internal/model"
@@ -28,8 +29,16 @@ func (ai *serverAuthInterceptor) resolveUserIncomingContext(ctx context.Context)
 	if !ok || len(tokens) == 0 {
 		return ctx
 	}
+	
+	firstToken := tokens[0]
 
-	tokenInfo, err := publicAuth.ParseToken(tokens[0])
+	// 标准的 Bearer token
+	if (strings.HasPrefix(firstToken, "Bearer")) {
+		// 从 Bearer token 中提取 token 值
+		firstToken = strings.TrimPrefix(firstToken, "Bearer ")
+	}
+
+	tokenInfo, err := publicAuth.ParseToken(firstToken)
 	if err != nil || tokenInfo.SecretKey == "" {
 		return ctx
 	}
@@ -51,7 +60,11 @@ func (ai *serverAuthInterceptor) resolveUserIncomingContext(ctx context.Context)
 	if secretInfo == nil {
 		secretSelector := model.SecretSelector{Key: &tokenInfo.SecretKey}
 		querySecretsResponse, err := model.SecretTable.QuerySecrets(ctx, secretSelector, paginationOption, nil)
-		if err != nil || len(querySecretsResponse) == 0 {
+		if err != nil {
+			slog.InfoContext(ctx, " Invalid token, possibly invalid secret, err: %v", err)
+		}
+
+		if len(querySecretsResponse) == 0 {
 			slog.InfoContext(ctx, " Invalid token, possibly invalid secret")
 			return ctx
 		}
@@ -61,29 +74,32 @@ func (ai *serverAuthInterceptor) resolveUserIncomingContext(ctx context.Context)
 
 	// 是否已经被禁用
 	if secretInfo.IsDisabled() {
-		slog.InfoContext(ctx, " Invalid token, possibly invalid secret")
+		slog.InfoContext(ctx, " Invalid token, possibly invalid secret, secret is disabled")
 		return ctx
 	}
 
 	if !publicAuth.VerifyToken(*secretInfo.Key, *secretInfo.Value, tokens[0]) {
-		slog.InfoContext(ctx, " Invalid token, possibly invalid secret")
+		slog.InfoContext(ctx, " Invalid token, possibly invalid secret, verify token failed")
 		return ctx
 	}
 
 	userSelector := model.UserSelector{ID: secretInfo.UserID}
 	queryUserResponse, err := model.UserTable.QueryUsers(ctx, userSelector, paginationOption, nil)
-	if err != nil || len(queryUserResponse) == 0 {
-		slog.InfoContext(ctx, " Invalid token, possibly invalid secret")
+	if err != nil {
+		slog.InfoContext(ctx, " Invalid token, possibly invalid secret, err: %v", err)
+	}
+
+	if len(queryUserResponse) == 0 {
+		slog.InfoContext(ctx, " Invalid token, possibly invalid secret, secret user not found")
 		return ctx
 	}
 
 	// 验证 token 是否有效
 	firstUser := queryUserResponse[0]
-
 	summaryForUserRequest := model.UserResourceSummarySelector{UserID: firstUser.ID}
 	summaryForUserResponse, err := model.Permission.QueryUserResourceSummaries(ctx, summaryForUserRequest)
 	if err != nil {
-		slog.InfoContext(ctx, " Invalid token, possibly invalid secret")
+		slog.InfoContext(ctx, " Invalid token, possibly invalid secret, err: %v", err)
 		return ctx
 	}
 

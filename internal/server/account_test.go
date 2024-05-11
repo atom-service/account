@@ -40,7 +40,7 @@ func TestAccountServer(t *testing.T) {
 	}
 
 	// 已登录的用户
-	signedInTokenUsers := []*proto.SignedInToken{}
+	signedInTokenUsers := []*proto.SignInResponse_DataType{}
 
 	// sign up & sign in
 	if err := quick.Check(func() bool {
@@ -73,7 +73,7 @@ func TestAccountServer(t *testing.T) {
 			return false
 		}
 
-		signedInTokenUsers = append(signedInTokenUsers, signInResponse.Token)
+		signedInTokenUsers = append(signedInTokenUsers, signInResponse.Data)
 		return true
 	}, config); err != nil {
 		t.Errorf("Test failed: %v", err)
