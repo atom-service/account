@@ -4,6 +4,8 @@ database:
   uri: postgresql://postgres:password@localhost/account
 admin:
   password: test
-secret:
-  key: test
-  value: test
+secrets:
+  - key: test
+    value: test
+  - key: test2
+    value: test2

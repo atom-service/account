@@ -12,6 +12,19 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+func matchRuntimeSecretIfExits(secretKey string) *model.Secret {
+	for _, secret := range config.Secrets {
+		if secret != nil && secret.Key == secretKey {
+			return &model.Secret{
+				UserID: &model.AdminUserID,
+				Key:    &secret.Key,
+				Value:  &secret.Value,
+			}
+		}
+	}
+	return nil
+}
+
 type serverAuthInterceptor struct {
 }
 
@@ -29,11 +42,11 @@ func (ai *serverAuthInterceptor) resolveUserIncomingContext(ctx context.Context)
 	if !ok || len(tokens) == 0 {
 		return ctx
 	}
-	
+
 	firstToken := tokens[0]
 
 	// 标准的 Bearer token
-	if (strings.HasPrefix(firstToken, "Bearer")) {
+	if strings.HasPrefix(firstToken, "Bearer") {
 		// 从 Bearer token 中提取 token 值
 		firstToken = strings.TrimPrefix(firstToken, "Bearer ")
 	}
@@ -43,19 +56,9 @@ func (ai *serverAuthInterceptor) resolveUserIncomingContext(ctx context.Context)
 		return ctx
 	}
 
-	var secretInfo *model.Secret
-
 	paginationLimit := int64(1)
 	paginationOption := &model.Pagination{Limit: &paginationLimit}
-
-	if config.Secret != nil && config.Secret.Key == tokenInfo.SecretKey {
-		// 管理员身份
-		secretInfo = &model.Secret{
-			UserID: &model.AdminUserID,
-			Key:    &config.Secret.Key,
-			Value:  &config.Secret.Value,
-		}
-	}
+	var secretInfo = matchRuntimeSecretIfExits(tokenInfo.SecretKey)
 
 	if secretInfo == nil {
 		secretSelector := model.SecretSelector{Key: &tokenInfo.SecretKey}
