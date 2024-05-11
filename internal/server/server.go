@@ -3,7 +3,7 @@ package server
 import (
 	"context"
 	"fmt"
-	"log"
+	"log/slog"
 	"net"
 
 	"github.com/atom-service/account/internal/auth"
@@ -24,7 +24,7 @@ func StartServer(addr string) error {
 
 	proto.RegisterAccountServiceServer(grpcServer, AccountServer)
 	proto.RegisterPermissionServiceServer(grpcServer, PermissionServer)
-	log.Printf("start server at: %s", addr)
+	slog.Info("start server at", "addr", addr)
 	reflection.Register(grpcServer)
 	return grpcServer.Serve(listen)
 }
@@ -44,16 +44,16 @@ func UnaryLogInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryS
 	}
 
 	// 处理请求之前的逻辑
-	log.Printf("Received request %s: %s %v", loggerPrefix, info.FullMethod, req)
+	slog.DebugContext(ctx, "Received request %s: %s %v", loggerPrefix, info.FullMethod, req)
 
 	// 调用实际的 gRPC 处理程序处理请求
 	resp, err := handler(ctx, req)
 
 	// 处理请求之后的逻辑
 	if err != nil {
-		log.Printf("Error occurred during request %s: %v", loggerPrefix, err)
+		slog.ErrorContext(ctx, "Error occurred during request %s: %v", loggerPrefix, err)
 	} else {
-		log.Printf("Sent response %s: %v", loggerPrefix, resp)
+		slog.DebugContext(ctx, "Sent response %s: %v", loggerPrefix, resp)
 	}
 
 	return resp, err

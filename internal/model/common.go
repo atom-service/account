@@ -52,7 +52,7 @@ func InitDB(ctx context.Context) {
 		panic(fmt.Errorf("failed to query database version: %v", err))
 	}
 
-	slog.DebugContext(ctx, "Server run on database: %s\n", slog.String("version", version))
+	slog.DebugContext(ctx, "Server run on database:", slog.String("version", version))
 
 	newDB.SetMaxOpenConns(10)
 	newDB.SetMaxIdleConns(3)
