@@ -3,30 +3,40 @@ package logger
 import (
 	"context"
 	"log/slog"
+	"os"
 
 	"github.com/atom-service/account/internal/config"
 )
 
 func Init(ctx context.Context) error {
+	var level = slog.LevelInfo
+
 	if config.Logger != nil {
 		if config.Logger.Level != "" {
 			if config.Logger.Level == "debug" {
-				slog.SetLogLoggerLevel(slog.LevelDebug)
+				level = slog.LevelDebug
 			}
 
 			if config.Logger.Level == "info" {
-				slog.SetLogLoggerLevel(slog.LevelInfo)
+				level = slog.LevelInfo
 			}
 
 			if config.Logger.Level == "warn" {
-				slog.SetLogLoggerLevel(slog.LevelWarn)
+				level = slog.LevelWarn
 			}
 
 			if config.Logger.Level == "error" {
-				slog.SetLogLoggerLevel(slog.LevelError)
+				level = slog.LevelError
 			}
 		}
 	}
+
+	logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
+		AddSource: true,
+		Level:     level,
+	}))
+
+	slog.SetDefault(logger)
 
 	return nil
 }
