@@ -27,7 +27,7 @@ func (s *accountServer) SignIn(ctx context.Context, request *proto.SignInRequest
 	queryResult, err := model.UserTable.QueryUsers(ctx, userSelector, nil, nil)
 	if err != nil {
 		response.State = proto.State_FAILURE
-		slog.ErrorContext(ctx, "QueryUsers failed: %s", err)
+		slog.ErrorContext(ctx, "QueryUsers failed", slog.Any("error", err))
 		return
 	}
 
@@ -84,7 +84,7 @@ func (s *accountServer) SignIn(ctx context.Context, request *proto.SignInRequest
 			Key:    model.LabelLastSignInTime,
 			Value:  &currentTime,
 		}); internalError != nil {
-			slog.ErrorContext(localContext, "Update last sign in time failed: %s", internalError)
+			slog.ErrorContext(localContext, "Update last sign in time failed", slog.Any("error", internalError))
 		}
 
 		if internalError = model.LabelTable.UpsertLabel(localContext, model.Label{
@@ -92,7 +92,7 @@ func (s *accountServer) SignIn(ctx context.Context, request *proto.SignInRequest
 			Key:    model.LabelLastVerifyTime,
 			Value:  &currentTime,
 		}); internalError != nil {
-			slog.ErrorContext(localContext, "Update last sign in time failed: %s", internalError)
+			slog.ErrorContext(localContext, "Update last sign in time failed", slog.Any("error", internalError))
 		}
 	}()
 
@@ -197,7 +197,7 @@ func (s *accountServer) SignUp(ctx context.Context, request *proto.SignUpRequest
 			Value:  &currentTime,
 			Key:    model.LabelLastVerifyTime,
 		}); internalError != nil {
-			slog.ErrorContext(localContext, "Update last sign in time failed: %s", internalError)
+			slog.ErrorContext(localContext, "Update last sign in time failed", slog.Any("error", internalError))
 		}
 	}()
 
