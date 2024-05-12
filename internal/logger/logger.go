@@ -3,7 +3,6 @@ package logger
 import (
 	"context"
 	"log/slog"
-	"os"
 
 	"github.com/atom-service/account/internal/config"
 )
@@ -31,11 +30,8 @@ func Init(ctx context.Context) error {
 		}
 	}
 
-	logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
-		AddSource: true,
-		Level:     level,
-	}))
-
+	handler:= NewHandler(level)
+	logger := slog.New(handler)
 	slog.SetDefault(logger)
 
 	return nil
