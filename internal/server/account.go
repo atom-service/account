@@ -552,11 +552,6 @@ func (s *accountServer) QuerySecrets(ctx context.Context, request *proto.QuerySe
 	pagination.LoadProto(request.Pagination)
 	selector.LoadProto(request.Selector)
 
-	// 外部调用默认查询用户级别
-	if selector.Type == nil {
-		selector.Type = &model.UserSecretType
-	}
-
 	query, err := model.SecretTable.QuerySecrets(ctx, selector, &pagination, &sort)
 	if err != nil {
 		response.State = proto.State_FAILURE
