@@ -7,19 +7,21 @@ replicaCount: 1
 account:
   service:
     port: 80
+  logger:
+    level: debug
   database:
     uri: postgresql://postgres:password@postgresql/account
   admin:
     password: example-admin-password
-  secret:
-    key: example-secret-key
-    value: example-secret-value
+  secrets:
+    - key: example-secret-key
+      value: example-secret-value
 
 image:
   repository: ghcr.io/atom-service/account
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "v0.1.3"
+  tag: "v0.1.4"
 
 imagePullSecrets: []
 nameOverride: ""

@@ -8,12 +8,17 @@ import (
 )
 
 var Admin *adminConfig
-var Secret *secretConfig
+var Logger *loggerConfig
 var Service serviceConfig
+var Secrets []*secretConfig
 var Database databaseConfig
 
 type serviceConfig struct {
 	Port int `yaml:"port"`
+}
+
+type loggerConfig struct {
+	Level string `yaml:"level"`
 }
 
 type adminConfig struct {
@@ -21,6 +26,7 @@ type adminConfig struct {
 }
 
 type secretConfig struct {
+	Name  string `yaml:"name"`
 	Key   string `yaml:"key"`
 	Value string `yaml:"value"`
 }
@@ -56,10 +62,11 @@ func MustInit(configPaths ...string) {
 	}
 
 	var config struct {
+		Admin    *adminConfig    `yaml:"admin"`
+		Logger   *loggerConfig   `yaml:"logger"`
 		Server   serviceConfig   `yaml:"service"`
-		Database databaseConfig `yaml:"database"`
-		Admin    *adminConfig   `yaml:"admin"`
-		Secret   *secretConfig  `yaml:"secret"`
+		Secrets  []*secretConfig `yaml:"secrets"`
+		Database databaseConfig  `yaml:"database"`
 	}
 
 	err = yaml.Unmarshal(data, &config)
@@ -68,7 +75,8 @@ func MustInit(configPaths ...string) {
 	}
 
 	Admin = config.Admin
-	Secret = config.Secret
+	Logger = config.Logger
 	Service = config.Server
+	Secrets = config.Secrets
 	Database = config.Database
 }

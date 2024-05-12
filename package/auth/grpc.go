@@ -3,6 +3,7 @@ package auth
 import (
 	"context"
 	"log/slog"
+	"strings"
 	"time"
 
 	"github.com/atom-service/account/internal/model"
@@ -20,26 +21,39 @@ var (
 	ContextPermissionsSymbol = contextSymbol{"ContextPermissionsSymbol"}
 )
 
-type AuthWithTokenCredentials struct {
+func NewTokenCredential(token string) *tokenCredential {
+	return &tokenCredential{
+		Token: token,
+	}
+}
+
+type tokenCredential struct {
 	Token string
 }
 
-func (x *AuthWithTokenCredentials) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
+func (x *tokenCredential) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
 	return map[string]string{
 		"authorization": x.Token,
 	}, nil
 }
 
-func (x *AuthWithTokenCredentials) RequireTransportSecurity() bool {
+func (x *tokenCredential) RequireTransportSecurity() bool {
 	return false
 }
 
-type AuthWithSecretCredentials struct {
+func NewSecretCredential(secretKey, secretValue string) *secretCredential {
+	return &secretCredential{
+		SecretKey:   secretKey,
+		SecretValue: secretValue,
+	}
+}
+
+type secretCredential struct {
 	SecretKey   string
 	SecretValue string
 }
 
-func (x *AuthWithSecretCredentials) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
+func (x *secretCredential) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
 	return map[string]string{
 		"authorization": SignToken(x.SecretKey, x.SecretValue, SignData{
 			ExpiresAt: time.Now().UTC().Add(24 * 7 * time.Hour), // 1 周有效期
@@ -47,7 +61,7 @@ func (x *AuthWithSecretCredentials) GetRequestMetadata(ctx context.Context, uri 
 	}, nil
 }
 
-func (x *AuthWithSecretCredentials) RequireTransportSecurity() bool {
+func (x *secretCredential) RequireTransportSecurity() bool {
 	return false
 }
 
@@ -59,7 +73,7 @@ type serverAuthInterceptor struct {
 }
 
 func NewServerAuthInterceptor(accountServerHost, secretKey, secretValue string) *serverAuthInterceptor {
-	authCredentials := grpc.WithPerRPCCredentials(&AuthWithSecretCredentials{secretKey, secretValue})
+	authCredentials := grpc.WithPerRPCCredentials(&secretCredential{secretKey, secretValue})
 	nonSafeCredentials := grpc.WithTransportCredentials(insecure.NewCredentials())
 	conn, err := grpc.NewClient(accountServerHost, authCredentials, nonSafeCredentials)
 	if err != nil {
@@ -85,9 +99,21 @@ func (ai *serverAuthInterceptor) resolveUserIncomingContext(ctx context.Context)
 		return ctx
 	}
 
-	tokenInfo, err := ParseToken(tokens[0])
-	if err != nil || tokenInfo.SecretKey == "" {
-		slog.InfoContext(ctx, " Invalid token, possibly invalid secret")
+	firstToken := tokens[0]
+
+	// 标准的 Bearer token
+	if strings.HasPrefix(firstToken, "Bearer") {
+		// 从 Bearer token 中提取 token 值
+		firstToken = strings.TrimPrefix(firstToken, "Bearer ")
+	}
+
+	tokenInfo, err := ParseToken(firstToken)
+	if err != nil {
+		slog.InfoContext(ctx, "Invalid token, possibly invalid secret", slog.String("token", firstToken), slog.Any("error", err))
+	}
+
+	if tokenInfo == nil || tokenInfo.SecretKey == "" {
+		slog.InfoContext(ctx, "Invalid token, possibly invalid secret", slog.String("token", firstToken))
 		return ctx
 	}
 
@@ -96,12 +122,16 @@ func (ai *serverAuthInterceptor) resolveUserIncomingContext(ctx context.Context)
 	paginationOption := &proto.PaginationOption{Limit: &paginationLimit}
 	querySecretsRequest := &proto.QuerySecretsRequest{Selector: secretSelector, Pagination: paginationOption}
 	querySecretsResponse, err := ai.accountClient.QuerySecrets(ctx, querySecretsRequest)
-	if err != nil || querySecretsResponse.State != proto.State_SUCCESS {
-		slog.InfoContext(ctx, " Invalid token, possibly invalid secret")
+	if err != nil {
+		slog.InfoContext(ctx, "Invalid token, possibly invalid secret", slog.String("token", firstToken), slog.Any("error", err))
+	}
+
+	if querySecretsResponse.State != proto.State_SUCCESS {
+		slog.InfoContext(ctx, "Invalid token, possibly invalid secret", slog.String("token", firstToken))
 		return ctx
 	}
 	if querySecretsResponse.Data.Total == 0 {
-		slog.InfoContext(ctx, " Invalid token, possibly invalid secret")
+		slog.InfoContext(ctx, "Invalid token, possibly invalid secret", slog.String("token", firstToken))
 		return ctx
 	}
 
@@ -112,26 +142,34 @@ func (ai *serverAuthInterceptor) resolveUserIncomingContext(ctx context.Context)
 	secretModel := new(model.Secret)
 	secretModel.LoadProto(secret)
 	if secretModel.IsDisabled() {
-		slog.InfoContext(ctx, " Invalid token, possibly invalid secret")
+		slog.InfoContext(ctx, "Invalid token, possibly invalid secret, secret is disabled", slog.String("token", firstToken))
 		return ctx
 	}
 
-	if !VerifyToken(secret.Key, secret.Value, tokens[0]) {
-		slog.InfoContext(ctx, " Invalid token, possibly invalid secret")
+	if !VerifyToken(secret.Key, secret.Value, firstToken) {
+		slog.InfoContext(ctx, "Invalid token, possibly invalid secret, verify token failed", slog.String("token", firstToken))
 		return ctx
 	}
 
 	userSelector := &proto.UserSelector{ID: &secret.UserID}
 	queryUserResponse, err := ai.accountClient.QueryUsers(ctx, &proto.QueryUsersRequest{Selector: userSelector})
-	if err != nil || queryUserResponse.State != proto.State_SUCCESS || querySecretsResponse.Data.Total == 0 {
-		slog.InfoContext(ctx, " Invalid token, possibly invalid secret")
+	if err != nil {
+		slog.InfoContext(ctx, "Invalid token, possibly invalid secret", slog.String("token", firstToken), slog.Any("error", err))
+	}
+
+	if queryUserResponse.State != proto.State_SUCCESS || querySecretsResponse.Data.Total == 0 {
+		slog.InfoContext(ctx, "Invalid token, possibly invalid secret, secret user not found", slog.String("token", firstToken))
 		return ctx
 	}
 
 	summaryForUserRequest := &proto.SummaryForUserRequest{UserSelector: userSelector}
 	summaryForUserResponse, err := ai.permissionClient.SummaryForUser(ctx, summaryForUserRequest)
-	if err != nil || queryUserResponse.State != proto.State_SUCCESS {
-		slog.InfoContext(ctx, " Invalid token, possibly invalid secret")
+	if err != nil {
+		slog.InfoContext(ctx, "Invalid token, possibly invalid secret", slog.String("token", firstToken), slog.Any("error", err))
+	}
+
+	if queryUserResponse.State != proto.State_SUCCESS {
+		slog.InfoContext(ctx, "Invalid token, possibly invalid secret", slog.String("token", firstToken))
 		return ctx
 	}
 

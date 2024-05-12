@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/atom-service/account/internal/config"
+	"github.com/atom-service/account/internal/logger"
 	"github.com/atom-service/account/internal/model"
 	"github.com/atom-service/account/internal/server"
 )
@@ -17,11 +18,15 @@ func main() {
 	context, cancel := context.WithTimeout(context.TODO(), time.Minute)
 	defer cancel()
 
+	if err := logger.Init(context); err != nil {
+		panic(err)
+	}
+
 	// 初始化 model
 	if err := model.Init(context); err != nil {
 		panic(err)
 	}
 
-	listenAddress := ":" + strconv.Itoa(config.Service.Port) 
+	listenAddress := ":" + strconv.Itoa(config.Service.Port)
 	panic(server.StartServer(listenAddress))
 }

@@ -3,6 +3,7 @@ package auth
 import (
 	"context"
 	"log/slog"
+	"strings"
 
 	"github.com/atom-service/account/internal/config"
 	"github.com/atom-service/account/internal/model"
@@ -10,6 +11,19 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
+
+func matchRuntimeSecretIfExits(ctx context.Context, secretKey string) *model.Secret {
+	for _, secret := range config.Secrets {
+		if secret != nil && secret.Key == secretKey {
+			return &model.Secret{
+				UserID: &model.AdminUserID,
+				Key:    &secret.Key,
+				Value:  &secret.Value,
+			}
+		}
+	}
+	return nil
+}
 
 type serverAuthInterceptor struct {
 }
@@ -29,30 +43,38 @@ func (ai *serverAuthInterceptor) resolveUserIncomingContext(ctx context.Context)
 		return ctx
 	}
 
-	tokenInfo, err := publicAuth.ParseToken(tokens[0])
-	if err != nil || tokenInfo.SecretKey == "" {
+	firstToken := tokens[0]
+
+	// 标准的 Bearer token
+	if strings.HasPrefix(firstToken, "Bearer") {
+		// 从 Bearer token 中提取 token 值
+		firstToken = strings.TrimPrefix(firstToken, "Bearer ")
+	}
+
+	tokenInfo, err := publicAuth.ParseToken(firstToken)
+	if err != nil {
+		slog.InfoContext(ctx, "Invalid token, possibly invalid secret", slog.String("token", firstToken), slog.Any("error", err))
 		return ctx
 	}
 
-	var secretInfo *model.Secret
+	if tokenInfo.SecretKey == "" {
+		slog.InfoContext(ctx, "Invalid token, possibly invalid secret", slog.String("token", firstToken))
+		return ctx
+	}
 
 	paginationLimit := int64(1)
 	paginationOption := &model.Pagination{Limit: &paginationLimit}
-
-	if config.Secret != nil && config.Secret.Key == tokenInfo.SecretKey {
-		// 管理员身份
-		secretInfo = &model.Secret{
-			UserID: &model.AdminUserID,
-			Key:    &config.Secret.Key,
-			Value:  &config.Secret.Value,
-		}
-	}
+	var secretInfo = matchRuntimeSecretIfExits(ctx, tokenInfo.SecretKey)
 
 	if secretInfo == nil {
 		secretSelector := model.SecretSelector{Key: &tokenInfo.SecretKey}
 		querySecretsResponse, err := model.SecretTable.QuerySecrets(ctx, secretSelector, paginationOption, nil)
-		if err != nil || len(querySecretsResponse) == 0 {
-			slog.InfoContext(ctx, " Invalid token, possibly invalid secret")
+		if err != nil {
+			slog.InfoContext(ctx, "Invalid token, possibly invalid secret", slog.String("token", firstToken), slog.Any("error", err))
+		}
+
+		if len(querySecretsResponse) == 0 {
+			slog.InfoContext(ctx, "Invalid token, possibly invalid secret", slog.String("token", firstToken))
 			return ctx
 		}
 
@@ -61,29 +83,32 @@ func (ai *serverAuthInterceptor) resolveUserIncomingContext(ctx context.Context)
 
 	// 是否已经被禁用
 	if secretInfo.IsDisabled() {
-		slog.InfoContext(ctx, " Invalid token, possibly invalid secret")
+		slog.InfoContext(ctx, "Invalid token, possibly invalid secret, secret is disabled", slog.String("token", firstToken))
 		return ctx
 	}
 
-	if !publicAuth.VerifyToken(*secretInfo.Key, *secretInfo.Value, tokens[0]) {
-		slog.InfoContext(ctx, " Invalid token, possibly invalid secret")
+	if !publicAuth.VerifyToken(*secretInfo.Key, *secretInfo.Value, firstToken) {
+		slog.InfoContext(ctx, "Invalid token, possibly invalid secret, verify token failed", slog.String("token", firstToken))
 		return ctx
 	}
 
 	userSelector := model.UserSelector{ID: secretInfo.UserID}
 	queryUserResponse, err := model.UserTable.QueryUsers(ctx, userSelector, paginationOption, nil)
-	if err != nil || len(queryUserResponse) == 0 {
-		slog.InfoContext(ctx, " Invalid token, possibly invalid secret")
+	if err != nil {
+		slog.InfoContext(ctx, "Invalid token, possibly invalid secret", slog.String("token", firstToken), slog.Any("error", err))
+	}
+
+	if len(queryUserResponse) == 0 {
+		slog.InfoContext(ctx, "Invalid token, possibly invalid secret, secret user not found", slog.String("token", firstToken))
 		return ctx
 	}
 
 	// 验证 token 是否有效
 	firstUser := queryUserResponse[0]
-
 	summaryForUserRequest := model.UserResourceSummarySelector{UserID: firstUser.ID}
 	summaryForUserResponse, err := model.Permission.QueryUserResourceSummaries(ctx, summaryForUserRequest)
 	if err != nil {
-		slog.InfoContext(ctx, " Invalid token, possibly invalid secret")
+		slog.InfoContext(ctx, "Invalid token, possibly invalid secret", slog.Any("error", err))
 		return ctx
 	}
 
