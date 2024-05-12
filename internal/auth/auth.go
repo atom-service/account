@@ -71,6 +71,7 @@ func (ai *serverAuthInterceptor) resolveUserIncomingContext(ctx context.Context)
 		querySecretsResponse, err := model.SecretTable.QuerySecrets(ctx, secretSelector, paginationOption, nil)
 		if err != nil {
 			slog.InfoContext(ctx, "Invalid token, possibly invalid secret", slog.String("token", firstToken), slog.Any("error", err))
+			return ctx
 		}
 
 		if len(querySecretsResponse) == 0 {
@@ -96,6 +97,7 @@ func (ai *serverAuthInterceptor) resolveUserIncomingContext(ctx context.Context)
 	queryUserResponse, err := model.UserTable.QueryUsers(ctx, userSelector, paginationOption, nil)
 	if err != nil {
 		slog.InfoContext(ctx, "Invalid token, possibly invalid secret", slog.String("token", firstToken), slog.Any("error", err))
+		return ctx
 	}
 
 	if len(queryUserResponse) == 0 {

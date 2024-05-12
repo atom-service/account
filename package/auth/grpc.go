@@ -110,6 +110,7 @@ func (ai *serverAuthInterceptor) resolveUserIncomingContext(ctx context.Context)
 	tokenInfo, err := ParseToken(firstToken)
 	if err != nil {
 		slog.InfoContext(ctx, "Invalid token, possibly invalid secret", slog.String("token", firstToken), slog.Any("error", err))
+		return ctx
 	}
 
 	if tokenInfo == nil || tokenInfo.SecretKey == "" {
@@ -124,6 +125,7 @@ func (ai *serverAuthInterceptor) resolveUserIncomingContext(ctx context.Context)
 	querySecretsResponse, err := ai.accountClient.QuerySecrets(ctx, querySecretsRequest)
 	if err != nil {
 		slog.InfoContext(ctx, "Invalid token, possibly invalid secret", slog.String("token", firstToken), slog.Any("error", err))
+		return ctx
 	}
 
 	if querySecretsResponse.State != proto.State_SUCCESS {
@@ -155,6 +157,7 @@ func (ai *serverAuthInterceptor) resolveUserIncomingContext(ctx context.Context)
 	queryUserResponse, err := ai.accountClient.QueryUsers(ctx, &proto.QueryUsersRequest{Selector: userSelector})
 	if err != nil {
 		slog.InfoContext(ctx, "Invalid token, possibly invalid secret", slog.String("token", firstToken), slog.Any("error", err))
+		return ctx
 	}
 
 	if queryUserResponse.State != proto.State_SUCCESS || querySecretsResponse.Data.Total == 0 {
@@ -166,6 +169,7 @@ func (ai *serverAuthInterceptor) resolveUserIncomingContext(ctx context.Context)
 	summaryForUserResponse, err := ai.permissionClient.SummaryForUser(ctx, summaryForUserRequest)
 	if err != nil {
 		slog.InfoContext(ctx, "Invalid token, possibly invalid secret", slog.String("token", firstToken), slog.Any("error", err))
+		return ctx
 	}
 
 	if queryUserResponse.State != proto.State_SUCCESS {
