@@ -7,7 +7,7 @@ import (
 	"github.com/atom-service/account/internal/config"
 )
 
-func Init(ctx context.Context) error	{
+func Init(ctx context.Context) error {
 	if config.Logger != nil {
 		if config.Logger.Level != "" {
 			if config.Logger.Level == "debug" {
