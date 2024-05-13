@@ -8,24 +8,24 @@ import (
 	publicAuth "github.com/atom-service/account/package/auth"
 )
 
-type Handler struct {
+type handler struct {
 	slog.Handler
 }
 
-func NewHandler(level slog.Level) *Handler {
-	return &Handler{
+func NewHandler(level slog.Level) *handler {
+	return &handler{
 		Handler: slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
-			AddSource: true,
+			AddSource: level.Level() == slog.LevelDebug,
 			Level:     level,
 		}),
 	}
 }
 
-func (h *Handler) Enabled(ctx context.Context, level slog.Level) bool {
+func (h *handler) Enabled(ctx context.Context, level slog.Level) bool {
 	return h.Handler.Enabled(ctx, level)
 }
 
-func (h *Handler) Handle(ctx context.Context, r slog.Record) error {
+func (h *handler) Handle(ctx context.Context, r slog.Record) error {
 	authData := publicAuth.ResolveAuth(ctx)
 
 	if authData != nil {
