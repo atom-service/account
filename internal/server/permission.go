@@ -565,8 +565,24 @@ func (s *permissionServer) SummaryForUser(ctx context.Context, request *proto.Su
 		return
 	}
 
+	userSelector := model.UserSelector{}
+	userSelector.LoadProto(request.UserSelector)
+
+	userQueryResult, err := model.UserTable.QueryUsers(ctx, userSelector, nil, nil)
+	if err != nil {
+		response.State = proto.State_FAILURE
+		slog.ErrorContext(ctx, "", err)
+		return
+	}
+
+	if len(userQueryResult) <= 0 {
+		response.State = proto.State_FAILURE
+		response.Code = code.USER_NOT_EXIST
+		return
+	}
+
 	// 这个方法调用率极高, 所以应该添加缓存
-	selector := model.UserResourceSummarySelector{UserID: request.UserSelector.ID}
+	selector := model.UserResourceSummarySelector{UserID: userQueryResult[0].ID}
 	queryResult, err := model.Permission.QueryUserResourceSummaries(ctx, selector)
 	if err != nil {
 		response.State = proto.State_FAILURE
@@ -672,8 +688,24 @@ func (s *permissionServer) RemoveRoleForUser(ctx context.Context, request *proto
 		return
 	}
 
+	userSelector := model.UserSelector{}
+	userSelector.LoadProto(request.User)
+
+	userQueryResult, err := model.UserTable.QueryUsers(ctx, userSelector, nil, nil)
+	if err != nil {
+		response.State = proto.State_FAILURE
+		slog.ErrorContext(ctx, "", err)
+		return
+	}
+
+	if len(userQueryResult) <= 0 {
+		response.State = proto.State_FAILURE
+		response.Code = code.USER_NOT_EXIST
+		return
+	}
+
 	countResult, err := model.UserRoleTable.CountUserRoles(ctx, model.UserRoleSelector{
-		UserID: request.User.ID,
+		UserID: userQueryResult[0].ID,
 		RoleID: request.Role.ID,
 	})
 	if err != nil {
