@@ -122,6 +122,15 @@ func (srv *SecretSelector) LoadProto(data *proto.SecretSelector) {
 	if data != nil {
 		srv.Key = data.Key
 		srv.UserID = data.UserID
+
+		if data.Type != nil {
+			if *data.Type == proto.SecretType_SystemType {
+				srv.Type = &SystemSecretType
+			}
+			if *data.Type == proto.SecretType_UserType {
+				srv.Type = &UserSecretType
+			}
+		}
 	}
 }
 
