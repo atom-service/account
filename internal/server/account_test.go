@@ -310,7 +310,9 @@ func TestAccountServer(t *testing.T) {
 		}
 
 		queryResponse, err := accountClientWithUserAuth.QuerySecrets(context, &proto.QuerySecretsRequest{
-			Selector: &proto.SecretSelector{},
+			Selector: &proto.SecretSelector{
+				Type: proto.SecretType_UserType.Enum(),
+			},
 		})
 		if err != nil {
 			t.Errorf("QuerySecrets failed: %v", err)
