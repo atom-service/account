@@ -243,6 +243,7 @@ func ResolvePermission(ctx context.Context, handler func(*model.User, *model.Use
 	if len(authData.Permissions) != 0 {
 		for _, permission := range authData.Permissions {
 			if permission.ResourceName == model.AllResourceName {
+				// 最高的管理员权限
 				return true
 			}
 
