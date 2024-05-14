@@ -38,11 +38,6 @@ RUN apk --no-cache add ca-certificates
 
 WORKDIR /root/
 
-ARG PORT=8080
-ARG POSTGRES_URI
-ARG INIT_ADMIN_PASSWORD
-ARG INIT_ADMIN_USERNAME
-
 COPY --from=builder /workspace/main .
 
 CMD ["./main"]

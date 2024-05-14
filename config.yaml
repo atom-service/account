@@ -7,7 +7,7 @@ database:
 admin:
   password: test
 secrets:
-  - key: test
-    value: test
+  - key: BwRdL3Qj8NdMBBLS
+    value: C2BmqmNydSDMfyKt
   - key: test2
     value: test2
